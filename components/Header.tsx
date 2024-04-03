@@ -5,8 +5,12 @@ import { Navbar, NavbarBrand, NavbarContent, NavbarItem, NavbarMenuToggle, Navba
 import { IconSvgProps } from '~/types';
 import { ThemeSwitch } from '~/components/DarkToggle';
 import VaulDrawer from '~/components/VaulDrawer';
+import Logo from '~/components/Logo';
+import { useBreakpoints } from '~/utils/useBreakpoints';
 
 export default function Header() {
+    const { smAndLarger } = useBreakpoints();
+
     const GithubIcon: React.FC<IconSvgProps> = ({size = 24, width, height, ...props}) => {
         return (
             <svg height={size || height} viewBox="0 0 24 24" width={size || width} {...props}>
@@ -22,7 +26,7 @@ export default function Header() {
     return (
         <Navbar>
             <NavbarBrand>
-
+                <Logo />
             </NavbarBrand>
             <NavbarContent className="hidden sm:flex gap-4 select-none" justify="center">
                 <NavbarItem>
@@ -48,10 +52,8 @@ export default function Header() {
                     </Link>
                 </NavbarItem>
                 <NavbarItem className="flex h-full items-center">
-                    <ThemeSwitch/>
-                    {/*<div className="md:invisible">*/}
-                    {/*    <VaulDrawer/>*/}
-                    {/*</div>*/}
+                    { smAndLarger && <ThemeSwitch/> }
+                    { !smAndLarger && <VaulDrawer/> }
                 </NavbarItem>
             </NavbarContent>
         </Navbar>

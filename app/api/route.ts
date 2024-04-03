@@ -1,4 +1,6 @@
+import 'server-only'
+
 export async function GET() {
 
-    return Response.json('666')
+    return Response.json('hello')
 }
