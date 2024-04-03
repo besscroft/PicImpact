@@ -1,0 +1,17 @@
+[
+    {
+        "title": "Cosplay",
+        "url": "/cosplay",
+        "icon": "i-carbon-camera"
+    },
+    {
+        "title": "集邮",
+        "url": "/tietie",
+        "icon": "i-carbon-thumbs-up"
+    },
+    {
+        "title": "时光相册",
+        "url": "/timeline",
+        "icon": "i-carbon-image-search"
+    }
+]

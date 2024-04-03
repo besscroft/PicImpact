@@ -1,0 +1,16 @@
+name: Greetings
+
+on: [pull_request_target, issues]
+
+jobs:
+  greeting:
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+      pull-requests: write
+    steps:
+      - uses: actions/first-interaction@v1
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          issue-message: "非常感谢您提交了 issues，我们很高兴能够与您一起合作解决这个问题。我们将尽快进行审核，并会在 24 小时内回复您。在此期间，如有任何问题，请随时联系我们。再次感谢您的贡献！"
+          pr-message: "非常感谢您提交了 pr，我们很高兴能够与您一起合并这个 pr。我们将尽快进行审核，并会在 24 小时内回复您。在此期间，如有任何问题，请随时联系我们。再次感谢您的贡献！"

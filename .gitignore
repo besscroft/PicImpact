@@ -1,0 +1,16 @@
+node_modules
+*.log
+dist
+.output
+.idea/
+.vercel/
+
+# next.js
+/.next/
+/out/
+
+# production
+/build
+
+# local env files
+.env*.local
