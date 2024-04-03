@@ -8,10 +8,7 @@ PicImpact
   <img src="https://img.shields.io/github/repo-size/besscroft/PicImpact?style=flat-square&color=328657" alt="存储库大小">
 </p>
 
-一款专供摄影佬使用的记录网站，基于 Nuxt 3 开发，瀑布流展示图片，预览图片及 EXIF 信息，支持常见的图片格式。
-可读取 EXIF 信息并上传、管理维护图片数据，首页精品照片展示，子页分类展示等功能。
-图片存储兼容 S3 API、AList API、支持 CDN 配置。同时适配了 PC 和移动端的样式与交互。
-今天又是想当二次元摄影高手的一天呢！
+开发中...
 
 ### 无障碍支持
 
