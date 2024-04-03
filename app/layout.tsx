@@ -1,7 +1,8 @@
 import type { Metadata } from 'next';
 import '~/style/globals.css';
-import { Providers } from '~/app/providers';
+import { Providers } from '~/app/providers/providers';
 import Header from '~/components/Header';
+import { UserStoreProvider } from '~/app/providers/userStoreProvider';
 
 export const metadata: Metadata = {
   title: "PicImpact",
@@ -19,10 +20,12 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <Providers>
-          <Header />
-          {children}
-        </Providers>
+        <UserStoreProvider>
+          <Providers>
+            <Header />
+            {children}
+          </Providers>
+        </UserStoreProvider>
       </body>
     </html>
   );
