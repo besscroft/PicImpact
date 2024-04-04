@@ -17,8 +17,10 @@
     "react-dom": "^18.2.0",
     "react-responsive": "^10.0.0",
     "server-only": "^0.0.1",
+    "sonner": "^1.4.41",
     "swr": "^2.2.5",
-    "vaul": "^0.9.0"
+    "vaul": "^0.9.0",
+    "zustand": "^4.5.2"
   },
   "devDependencies": {
     "@types/node": "^20.12.2",
