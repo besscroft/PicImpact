@@ -5,14 +5,10 @@ import { Input } from '@nextui-org/input'
 import Link from 'next/link'
 import { Button } from '@nextui-org/react'
 import { useRouter } from 'next/navigation'
-import { authenticate } from '~/app/actions'
-// import { useFormState, useFormStatus } from 'react-dom'
+import { toast } from 'sonner'
 
 export const UserFrom = () => {
   const router = useRouter()
-
-  // const [errorMessage, dispatch] = useFormState(authenticate, undefined)
-  // const { pending } = useFormStatus()
 
   const [isLoading, setIsLoading] = useState<boolean>(false)
 
@@ -63,11 +59,7 @@ export const UserFrom = () => {
           type="submit"
           className="w-full"
           isLoading={isLoading}
-          onClick={async () => {
-            setIsLoading(true)
-            await authenticate(email, password)
-            setIsLoading(false)
-          }}
+          onClick={() => toast.info('还没写！')}
         >
           登录
         </Button>
