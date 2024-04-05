@@ -13,7 +13,7 @@ export default function DynamicNavbar() {
   return (
     <>
       { hydrated ? smAndLarger ? <ThemeSwitch/> : <VaulDrawer/> : null }
-      <DropMenu/>
+      { hydrated && smAndLarger && <DropMenu/> }
     </>
   )
 }

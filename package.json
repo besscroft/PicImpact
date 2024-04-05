@@ -9,10 +9,13 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@auth/pg-adapter": "^0.7.2",
     "@nextui-org/react": "^2.2.10",
     "framer-motion": "^11.0.24",
     "next": "^14.1.4",
+    "next-auth": "5.0.0-beta.16",
     "next-themes": "^0.3.0",
+    "pg": "^8.11.5",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-responsive": "^10.0.0",
@@ -20,10 +23,12 @@
     "sonner": "^1.4.41",
     "swr": "^2.2.5",
     "vaul": "^0.9.0",
+    "zod": "^3.22.4",
     "zustand": "^4.5.2"
   },
   "devDependencies": {
     "@types/node": "^20.12.2",
+    "@types/pg": "^8.11.4",
     "@types/react": "^18.2.73",
     "@types/react-dom": "^18.2.23",
     "autoprefixer": "^10.4.19",

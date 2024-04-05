@@ -1,3 +1,52 @@
+CREATE TABLE verification_token
+(
+    identifier TEXT NOT NULL,
+    expires TIMESTAMPTZ NOT NULL,
+    token TEXT NOT NULL,
+
+    PRIMARY KEY (identifier, token)
+);
+
+CREATE TABLE accounts
+(
+    id SERIAL,
+    "userId" INTEGER NOT NULL,
+    type VARCHAR(255) NOT NULL,
+    provider VARCHAR(255) NOT NULL,
+    "providerAccountId" VARCHAR(255) NOT NULL,
+    refresh_token TEXT,
+    access_token TEXT,
+    expires_at BIGINT,
+    id_token TEXT,
+    scope TEXT,
+    session_state TEXT,
+    token_type TEXT,
+
+    PRIMARY KEY (id)
+);
+
+CREATE TABLE sessions
+(
+    id SERIAL,
+    "userId" INTEGER NOT NULL,
+    expires TIMESTAMPTZ NOT NULL,
+    "sessionToken" VARCHAR(255) NOT NULL,
+
+    PRIMARY KEY (id)
+);
+
+CREATE TABLE users
+(
+    id SERIAL,
+    name VARCHAR(255),
+    email VARCHAR(255),
+    password VARCHAR(255),
+    "emailVerified" TIMESTAMPTZ,
+    image TEXT,
+
+    PRIMARY KEY (id)
+);
+
 -- ----------------------------
 -- Table structure for picimpact_image
 -- ----------------------------
@@ -72,5 +121,3 @@ INSERT INTO "public"."picimpact_config" VALUES (12, 'cdn_url', '', 'CDN 域名�
 INSERT INTO "public"."picimpact_config" VALUES (5, 'auth_key', 'picimpact', '权限 key，jwt 和 hash 都需要用到它。如果您更改了它，请自行生成新密码，默认值：picimpact', '2023-12-25 16:45:46.12813', NULL);
 INSERT INTO "public"."picimpact_config" VALUES (4, 'alist_token', '', 'alist 令牌 ', '2023-12-25 16:45:08.661365', NULL);
 INSERT INTO "public"."picimpact_config" VALUES (3, 'alist_url', '', 'AList 地址，如：https://alist.besscroft.com', '2023-12-25 16:44:55.289006', NULL);
-INSERT INTO "public"."picimpact_config" VALUES (1, 'username', 'admin', '系统用户账号，默认值：admin，单次登录有效期 24 小时。', '2023-12-25 16:44:29.653008', NULL);
-INSERT INTO "public"."picimpact_config" VALUES (2, 'password', '2a2a3d2b5dcef92937839896bcf07dc62605ebe2ac428f57ea061c734d950d075667654a5e130a9fee5b85512a98eac8138100f32a40953b8678243dbfc97297', '系统用户密码，默认值(666666)在 `.env.local` 文件中可查，如果需要更改密码，可在登录后进入后台自行生成后替换。', '2023-12-25 16:44:43.899401', NULL);

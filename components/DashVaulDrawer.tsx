@@ -2,10 +2,10 @@
 
 import { Drawer } from 'vaul'
 import { useRouter } from 'next/navigation'
+import React from 'react';
 import { Listbox, ListboxItem } from '@nextui-org/react'
-import React from "react";
 
-export default function VaulDrawer() {
+export default function DashVaulDrawer() {
   const router = useRouter()
 
   return (
@@ -24,6 +24,9 @@ export default function VaulDrawer() {
                   <ListboxItem key="new">菜单1</ListboxItem>
                   <ListboxItem key="copy">菜单2</ListboxItem>
                   <ListboxItem key="edit">菜单3</ListboxItem>
+                  <ListboxItem key="delete" className="text-danger" color="danger">
+                    菜单4
+                  </ListboxItem>
                 </Listbox>
               </div>
             </div>

@@ -1,23 +1,18 @@
 'use client'
 
-import React, { useEffect } from 'react'
+import React from 'react'
 import { Dropdown, DropdownTrigger, DropdownMenu, DropdownItem, Button } from '@nextui-org/react'
-import { useUserStore } from '~/app/providers/userStoreProvider'
-import type { UserStore } from '~/stores/userStore'
 import { useRouter } from 'next/navigation'
+import { getSession } from '~/utils/lib/session'
 
-export const DropMenu = () => {
-  const { token, setToken, removeToken } = useUserStore((state: UserStore) => state)
+export const DashDropMenu = async () => {
   const router = useRouter()
-
-  useEffect(() => {
-    setToken('666666')
-  }, [])
+  const session = await getSession()
 
   return (
     <>
       {
-        token ?
+        session ?
           <Dropdown>
             <DropdownTrigger>
               <span className="cursor-pointer select-none px-2">
@@ -26,7 +21,9 @@ export const DropMenu = () => {
             </DropdownTrigger>
             <DropdownMenu aria-label="Static Actions">
               <DropdownItem key="new" onClick={() => router.push('/admin')}>后台</DropdownItem>
-              <DropdownItem key="copy" onClick={() => { removeToken(); router.push('/') }}>退出登录</DropdownItem>
+              <DropdownItem key="copy" onClick={() => {
+                router.push('/')
+              }}>退出登录</DropdownItem>
             </DropdownMenu>
           </Dropdown>
           :
