@@ -60,9 +60,13 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     },
     async session({ token, session }) {
       if (token) {
+        // @ts-ignore
         session.user.id = token.id
+        // @ts-ignore
         session.user.name = token.name
+        // @ts-ignore
         session.user.email = token.email
+        // @ts-ignore
         session.user.image = token.image
       }
 
