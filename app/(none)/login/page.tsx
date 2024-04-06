@@ -9,7 +9,7 @@ export default function Login() {
         <Image
           src={fufu}
           alt="Image"
-          className="h-full w-full object-cover dark:brightness-[0.2] dark:grayscale"
+          className="h-full w-full object-cover dark:brightness-[0.2]"
           style={{
             width: 'auto',
             height: '100%',

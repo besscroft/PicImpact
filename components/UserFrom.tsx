@@ -63,7 +63,12 @@ export const UserFrom = () => {
           onClick={async () => {
             setIsLoading(true)
 
-            await authenticate(email, password)
+            try {
+              await authenticate(email, password)
+              toast.success('登录成功！')
+            } catch (e) {
+              toast.error('登录失败！')
+            }
 
             setIsLoading(false)
           }}

@@ -4,6 +4,7 @@ import { PrismaClient } from '@prisma/client'
 import CredentialsProvider from 'next-auth/providers/credentials'
 import { db } from '~/server/lib/db'
 import { z } from 'zod'
+import CryptoJS from 'crypto-js'
 
 const prisma = new PrismaClient()
 
@@ -38,10 +39,10 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             },
           })
 
-          if (user) {
-            // TODO 登录校验
+          const hashedPassword = CryptoJS.HmacSHA512(password, process.env.SECRET_KEY).toString()
 
-            return user
+          if (user && hashedPassword === user.password) {
+            return user;
           } else {
             return null
           }
