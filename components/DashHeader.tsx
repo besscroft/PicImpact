@@ -11,7 +11,7 @@ export default function DashHeader() {
         <Logo/>
       </NavbarBrand>
       <NavbarContent className="hidden sm:flex gap-4 select-none" justify="center">
-        6
+        后台顶栏
       </NavbarContent>
       <NavbarContent justify="end">
         <NavbarItem className="flex h-full items-center">

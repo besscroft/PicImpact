@@ -1,4 +1,3 @@
-import React from 'react'
 import { Navbar, NavbarBrand, NavbarContent, NavbarItem, NavbarMenuToggle, NavbarMenu, Link } from '@nextui-org/react'
 import Logo from '~/components/Logo'
 import DynamicNavbar from '~/components/DynamicNavbar'

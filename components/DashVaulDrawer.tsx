@@ -10,7 +10,7 @@ export default function DashVaulDrawer() {
 
   return (
     <Drawer.Root>
-      <Drawer.Trigger>菜单</Drawer.Trigger>
+      <Drawer.Trigger>Mobile菜单</Drawer.Trigger>
       <Drawer.Portal>
         <Drawer.Overlay className="fixed inset-0 bg-black/40 dark:bg-slate-800" />
         <Drawer.Content className="bg-zinc-100 dark:bg-slate-900 flex flex-col rounded-t-[10px] h-[88%] mt-24 fixed bottom-0 left-0 right-0">

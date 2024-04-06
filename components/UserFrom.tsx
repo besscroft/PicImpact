@@ -6,6 +6,7 @@ import Link from 'next/link'
 import { Button } from '@nextui-org/react'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
+import { authenticate } from '~/server/lib/actions'
 
 export const UserFrom = () => {
   const router = useRouter()
@@ -59,7 +60,13 @@ export const UserFrom = () => {
           type="submit"
           className="w-full"
           isLoading={isLoading}
-          onClick={() => toast.info('还没写！')}
+          onClick={async () => {
+            setIsLoading(true)
+
+            await authenticate(email, password)
+
+            setIsLoading(false)
+          }}
         >
           登录
         </Button>
