@@ -39,7 +39,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             },
           })
 
-          const hashedPassword = CryptoJS.HmacSHA512(password, process.env.SECRET_KEY).toString()
+          const hashedPassword = CryptoJS.HmacSHA512(password, process.env.SECRET_KEY || '').toString()
 
           if (user && hashedPassword === user.password) {
             return user;
