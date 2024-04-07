@@ -29,6 +29,7 @@ export const DropMenu = () => {
     <Dropdown>
       <DropdownTrigger>
         <Avatar
+          className="cursor-pointer"
           size="sm"
           isBordered
           src={session?.user?.image || ''}

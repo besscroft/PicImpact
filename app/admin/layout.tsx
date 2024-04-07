@@ -14,7 +14,7 @@ export default function AdminLayout({
           <aside className="hidden w-[200px] flex-col sm:flex">
             <BaseSide/>
           </aside>
-          <main className="flex w-full flex-1 flex-col overflow-hidden p-2">
+          <main className="flex w-full h-full flex-1 flex-col overflow-hidden p-2">
             {children}
           </main>
         </div>
