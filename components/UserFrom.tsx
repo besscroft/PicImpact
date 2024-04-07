@@ -7,15 +7,15 @@ import { Button } from '@nextui-org/react'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 import { authenticate } from '~/server/lib/actions'
-import {SafeParseReturnType, z} from 'zod'
+import { SafeParseReturnType, z } from 'zod'
 
 export const UserFrom = () => {
   const router = useRouter()
 
   const [isLoading, setIsLoading] = useState<boolean>(false)
 
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
+  const [email, setEmail] = useState('admin@qq.com')
+  const [password, setPassword] = useState('666666')
   
   function zHandle(): SafeParseReturnType<string | any, string | any> {
     const parsedCredentials = z
@@ -68,6 +68,8 @@ export const UserFrom = () => {
         <Button
           type="submit"
           className="w-full"
+          color="primary"
+          variant="shadow"
           isLoading={isLoading}
           onClick={async () => {
             setIsLoading(true)
@@ -89,7 +91,12 @@ export const UserFrom = () => {
         >
           登录
         </Button>
-        <Button type="submit" className="w-full" onClick={() => router.push('/')}>
+        <Button
+          type="submit"
+          className="w-full"
+          variant="shadow"
+          onClick={() => router.push('/')}
+        >
           返回首页
         </Button>
       </div>

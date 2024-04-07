@@ -6,7 +6,10 @@ export default async function Admin() {
   return (
     <>
       { user ?
-        '控制台（已登录）'
+        <div>
+          <p>控制台（已登录）</p>
+          <p>{JSON.stringify(user)}</p>
+        </div>
         :
         '控制台（未登录）'
       }

@@ -1,31 +1,19 @@
-import { Link, Navbar, NavbarBrand, NavbarContent, NavbarItem } from '@nextui-org/react'
+import { Navbar, NavbarBrand, NavbarContent, NavbarItem, Link } from '@nextui-org/react'
 import Logo from '~/components/Logo'
-import {GithubIcon} from '~/style/icons/GitHub'
-import DashNavbar from '~/components/DashNavbar'
-import React from 'react'
+import DynamicNavbar from '~/components/DynamicNavbar'
 
 export default function DashHeader() {
   return (
     <Navbar>
       <NavbarBrand>
-        <Logo/>
+        <Logo />
       </NavbarBrand>
       <NavbarContent className="hidden sm:flex gap-4 select-none" justify="center">
-        后台顶栏
+        控制台顶栏
       </NavbarContent>
       <NavbarContent justify="end">
-        <NavbarItem className="flex h-full items-center">
-          <Link
-            isExternal
-            aria-label="Github"
-            className="p-1"
-            href="https://github.com/besscroft/PicImpact"
-          >
-            <GithubIcon className="text-default-600 dark:text-white" />
-          </Link>
-        </NavbarItem>
         <NavbarItem className="flex h-full items-center space-x-2">
-          <DashNavbar />
+          <DynamicNavbar />
         </NavbarItem>
       </NavbarContent>
     </Navbar>

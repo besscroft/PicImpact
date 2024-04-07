@@ -1,6 +1,7 @@
 import '~/style/globals.css'
 import { Providers } from '~/app/providers/providers'
 import { ToasterProviders } from '~/app/providers/toaster-providers'
+import { SessionProviders } from '~/app/providers/session-providers'
 
 export default function RootLayout({
  children,
@@ -10,10 +11,12 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <Providers>
-          <ToasterProviders />
-          {children}
-        </Providers>
+        <SessionProviders>
+          <Providers>
+            <ToasterProviders />
+            {children}
+          </Providers>
+        </SessionProviders>
       </body>
     </html>
   );
