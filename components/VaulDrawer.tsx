@@ -7,6 +7,7 @@ import {
   AnchorIcon,
   AvatarIcon,
   CloseIcon,
+  LockFilledIcon,
   MonitorMobileIcon,
   MoonFilledIcon,
   SunFilledIcon
@@ -67,6 +68,13 @@ export default function VaulDrawer() {
                             后台
                           </ListboxItem>
                       }
+                      <ListboxItem
+                        key="settings"
+                        startContent={<LockFilledIcon className={iconClasses} />}
+                        onClick={() => router.push('/admin/settings')}
+                      >
+                        设置
+                      </ListboxItem>
                       <ListboxItem
                         key="loginOut"
                         startContent={<CloseIcon className={iconClasses} />}
