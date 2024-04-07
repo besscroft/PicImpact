@@ -1,6 +1,6 @@
 import '~/style/globals.css'
 import { Providers } from '~/app/providers/providers'
-import { Toaster } from 'sonner'
+import { ToasterProviders } from '~/app/providers/toaster-providers'
 
 export default function RootLayout({
  children,
@@ -11,7 +11,7 @@ export default function RootLayout({
     <html lang="en">
       <body>
         <Providers>
-          <Toaster position="top-right" />
+          <ToasterProviders />
           {children}
         </Providers>
       </body>

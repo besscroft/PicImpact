@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 import '~/style/globals.css'
 import { Providers } from '~/app/providers/providers'
 import DashHeader from '~/components/DashHeader'
-import { Toaster } from 'sonner'
+import { ToasterProviders } from '~/app/providers/toaster-providers'
 
 export const metadata: Metadata = {
   title: "PicImpact",
@@ -21,7 +21,7 @@ export default function RootLayout({
     <html lang="en">
     <body>
       <Providers>
-        <Toaster position="top-right"/>
+        <ToasterProviders />
         <DashHeader/>
         <div className="container grid flex-1 gap-12 sm:grid-cols-[200px_1fr]">
           <aside className="hidden w-[200px] flex-col sm:flex">
