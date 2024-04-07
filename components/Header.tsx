@@ -1,23 +1,24 @@
+'use client'
+
 import { Navbar, NavbarBrand, NavbarContent, NavbarItem, Link } from '@nextui-org/react'
 import Logo from '~/components/Logo'
 import DynamicNavbar from '~/components/DynamicNavbar'
+import { useRouter } from 'next/navigation'
 
 export default function Header() {
+  const router = useRouter()
+
   return (
     <Navbar>
       <NavbarBrand>
         <Logo />
       </NavbarBrand>
       <NavbarContent className="hidden sm:flex gap-4 select-none" justify="center">
-        <NavbarItem>
-          <Link color="foreground" href="/">
-            首页
-          </Link>
+        <NavbarItem onClick={() => router.push('/')}>
+          首页
         </NavbarItem>
-        <NavbarItem>
-          <Link color="foreground" href="/about">
-            关于
-          </Link>
+        <NavbarItem onClick={() => router.push('/about')}>
+          关于
         </NavbarItem>
       </NavbarContent>
       <NavbarContent justify="end">
