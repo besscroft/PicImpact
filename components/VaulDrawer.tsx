@@ -3,20 +3,25 @@
 import { Drawer } from 'vaul'
 import { usePathname, useRouter } from 'next/navigation'
 import { Listbox, ListboxItem } from '@nextui-org/react'
-import {
-  AnchorIcon,
-  AvatarIcon,
-  CloseIcon,
-  LockFilledIcon,
-  MonitorMobileIcon,
-  MoonFilledIcon,
-  SunFilledIcon
-} from '@nextui-org/shared-icons'
 import { useSession } from 'next-auth/react'
 import { useEffect, useState } from 'react'
 import { useTheme } from 'next-themes'
 import { loginOut } from '~/server/lib/actions'
-import { AppIcon } from '~/style/icons/App'
+import {
+  BookmarkIcon,
+  DashboardIcon,
+  DesktopIcon,
+  ExitIcon,
+  GearIcon,
+  HomeIcon,
+  InfoCircledIcon,
+  MoonIcon,
+  Pencil2Icon,
+  PersonIcon,
+  RocketIcon,
+  SunIcon
+} from '@radix-ui/react-icons'
+
 
 export default function VaulDrawer() {
   const { data: session, status } = useSession()
@@ -36,7 +41,7 @@ export default function VaulDrawer() {
   return (
     <Drawer.Root>
       <Drawer.Trigger>
-        <AppIcon aria-label="菜单" className="rounded dark:bg-blue-50" />
+        <DashboardIcon aria-label="菜单" className="rounded dark:bg-blue-50" />
       </Drawer.Trigger>
       <Drawer.Portal>
         <Drawer.Overlay className="fixed inset-0 bg-black/40 dark:bg-slate-800" />
@@ -55,7 +60,7 @@ export default function VaulDrawer() {
                           pathname === '/admin' ?
                             <ListboxItem
                               key="home"
-                              startContent={<AnchorIcon className={iconClasses} />}
+                              startContent={<HomeIcon className={iconClasses} />}
                               onClick={() => router.push('/')}
                             >
                               <Drawer.Close className="w-full text-left">
@@ -65,27 +70,27 @@ export default function VaulDrawer() {
                             :
                             <ListboxItem
                               key="home"
-                              startContent={<MonitorMobileIcon className={iconClasses} />}
+                              startContent={<DesktopIcon className={iconClasses} />}
                               onClick={() => router.push('/admin')}
                             >
                               <Drawer.Close className="w-full text-left">
-                                后台
+                                控制台
                               </Drawer.Close>
                             </ListboxItem>
                           :
                           <ListboxItem
                             key="home"
-                            startContent={<MonitorMobileIcon className={iconClasses} />}
+                            startContent={<DesktopIcon className={iconClasses} />}
                             onClick={() => router.push('/admin')}
                           >
                             <Drawer.Close className="w-full text-left">
-                              后台
+                              控制台
                             </Drawer.Close>
                           </ListboxItem>
                       }
                       <ListboxItem
                         key="upload"
-                        startContent={<LockFilledIcon className={iconClasses} />}
+                        startContent={<RocketIcon className={iconClasses} />}
                         onClick={() => router.push('/admin/upload')}
                       >
                         <Drawer.Close className="w-full text-left">
@@ -94,7 +99,7 @@ export default function VaulDrawer() {
                       </ListboxItem>
                       <ListboxItem
                         key="list"
-                        startContent={<LockFilledIcon className={iconClasses} />}
+                        startContent={<Pencil2Icon className={iconClasses} />}
                         onClick={() => router.push('/admin/list')}
                       >
                         <Drawer.Close className="w-full text-left">
@@ -103,7 +108,7 @@ export default function VaulDrawer() {
                       </ListboxItem>
                       <ListboxItem
                         key="tag"
-                        startContent={<LockFilledIcon className={iconClasses} />}
+                        startContent={<BookmarkIcon className={iconClasses} />}
                         onClick={() => router.push('/admin/tag')}
                       >
                         <Drawer.Close className="w-full text-left">
@@ -112,7 +117,7 @@ export default function VaulDrawer() {
                       </ListboxItem>
                       <ListboxItem
                         key="settings"
-                        startContent={<LockFilledIcon className={iconClasses} />}
+                        startContent={<GearIcon className={iconClasses} />}
                         onClick={() => router.push('/admin/settings')}
                         showDivider
                       >
@@ -122,7 +127,7 @@ export default function VaulDrawer() {
                       </ListboxItem>
                       <ListboxItem
                         key="loginOut"
-                        startContent={<CloseIcon className={iconClasses} />}
+                        startContent={<ExitIcon className={iconClasses} />}
                       >
                         <div onClick={async () => {
                           await loginOut()
@@ -132,7 +137,7 @@ export default function VaulDrawer() {
                       </ListboxItem>
                       <ListboxItem
                         key="theme"
-                        startContent={theme === 'light' ? <SunFilledIcon className={iconClasses} /> : <MoonFilledIcon className={iconClasses} />}
+                        startContent={theme === 'light' ? <SunIcon className={iconClasses} /> : <MoonIcon className={iconClasses} />}
                         onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
                       >
                         { theme === 'light' ? '切换至⌈常夜⌋' : '切换至⌈白夜⌋' }
@@ -145,28 +150,32 @@ export default function VaulDrawer() {
                       <ListboxItem
                         key="home"
                         onClick={() => router.push('/')}
-                        startContent={<AvatarIcon className={iconClasses} />}
+                        startContent={<HomeIcon className={iconClasses} />}
                       >
-                        首页
+                        <Drawer.Close className="w-full text-left">
+                          首页
+                        </Drawer.Close>
                       </ListboxItem>
                       <ListboxItem
                         key="about"
                         showDivider
                         onClick={() => router.push('/about')}
-                        startContent={<AvatarIcon className={iconClasses} />}
+                        startContent={<InfoCircledIcon className={iconClasses} />}
                       >
-                        关于
+                        <Drawer.Close className="w-full text-left">
+                          关于
+                        </Drawer.Close>
                       </ListboxItem>
                       <ListboxItem
                         key="login"
                         onClick={() => router.push('/login')}
-                        startContent={<AvatarIcon className={iconClasses} />}
+                        startContent={<PersonIcon className={iconClasses} />}
                       >
                         登录
                       </ListboxItem>
                       <ListboxItem
                         key="theme"
-                        startContent={theme === 'light' ? <SunFilledIcon className={iconClasses} /> : <MoonFilledIcon className={iconClasses} />}
+                        startContent={theme === 'light' ? <SunIcon className={iconClasses} /> : <MoonIcon className={iconClasses} />}
                         onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
                       >
                         { theme === 'light' ? '切换至⌈常夜⌋' : '切换至⌈白夜⌋' }

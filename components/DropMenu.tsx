@@ -4,11 +4,9 @@ import { Dropdown, DropdownTrigger, DropdownMenu, DropdownItem, Avatar } from '@
 import { usePathname, useRouter } from 'next/navigation'
 import { loginOut } from '~/server/lib/actions'
 import { useSession } from 'next-auth/react'
-import { CameraIcon } from '~/style/icons/Camera'
-import { AvatarIcon, MonitorMobileIcon, CloseIcon, AnchorIcon, MoonFilledIcon, SunFilledIcon } from '@nextui-org/shared-icons'
-import { GithubIcon } from '~/style/icons/GitHub'
 import { useEffect, useState } from 'react'
 import { useTheme } from 'next-themes'
+import { DesktopIcon, ExitIcon, GitHubLogoIcon, HomeIcon, MoonIcon, PersonIcon, SunIcon } from '@radix-ui/react-icons'
 
 export const DropMenu = () => {
   const router = useRouter()
@@ -33,9 +31,6 @@ export const DropMenu = () => {
           size="sm"
           isBordered
           src={session?.user?.image || ''}
-          fallback={
-            <CameraIcon className="animate-pulse w-6 h-6 text-default-500" fill="currentColor" size={20} />
-          }
         />
       </DropdownTrigger>
         {
@@ -45,7 +40,7 @@ export const DropMenu = () => {
                 pathname.startsWith('/admin') ?
                   <DropdownItem
                     key="home"
-                    startContent={<AnchorIcon className={iconClasses} />}
+                    startContent={<HomeIcon className={iconClasses} />}
                     onClick={() => router.push('/')}
                   >
                     首页
@@ -53,15 +48,15 @@ export const DropMenu = () => {
                   :
                   <DropdownItem
                     key="admin"
-                    startContent={<MonitorMobileIcon className={iconClasses} />}
+                    startContent={<DesktopIcon className={iconClasses} />}
                     onClick={() => router.push('/admin')}
                   >
-                    后台
+                    控制台
                   </DropdownItem>
               }
               <DropdownItem
                 key="loginOut"
-                startContent={<CloseIcon className={iconClasses} />}
+                startContent={<ExitIcon className={iconClasses} />}
                 showDivider
               >
                 <div onClick={async () => {
@@ -72,14 +67,14 @@ export const DropMenu = () => {
               </DropdownItem>
               <DropdownItem
                 key="theme"
-                startContent={theme === 'light' ? <SunFilledIcon className={iconClasses} /> : <MoonFilledIcon className={iconClasses} />}
+                startContent={theme === 'light' ? <SunIcon className={iconClasses} /> : <MoonIcon className={iconClasses} />}
                 onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
               >
                 { theme === 'light' ? '切换至⌈常夜⌋' : '切换至⌈白夜⌋' }
               </DropdownItem>
               <DropdownItem
                 key="github"
-                startContent={<GithubIcon className={iconClasses} />}
+                startContent={<GitHubLogoIcon className={iconClasses} />}
                 onClick={() => router.push('https://github.com/besscroft')}
               >
                 GitHub
@@ -91,20 +86,20 @@ export const DropMenu = () => {
                 key="login"
                 showDivider
                 onClick={() => router.push('/login')}
-                startContent={<AvatarIcon className={iconClasses} />}
+                startContent={<PersonIcon className={iconClasses} />}
               >
                 登录
               </DropdownItem>
               <DropdownItem
                 key="theme"
-                startContent={theme === 'light' ? <SunFilledIcon className={iconClasses} /> : <MoonFilledIcon className={iconClasses} />}
+                startContent={theme === 'light' ? <SunIcon className={iconClasses} /> : <MoonIcon className={iconClasses} />}
                 onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
               >
                 { theme === 'light' ? '切换至⌈常夜⌋' : '切换至⌈白夜⌋' }
               </DropdownItem>
               <DropdownItem
                 key="github"
-                startContent={<GithubIcon className={iconClasses} />}
+                startContent={<GitHubLogoIcon className={iconClasses} />}
                 onClick={() => router.push('https://github.com/besscroft')}
               >
                 GitHub

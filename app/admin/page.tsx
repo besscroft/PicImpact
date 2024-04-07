@@ -8,22 +8,16 @@ export default async function Admin() {
     <div className="flex flex-col space-y-2 h-full flex-1">
       <Card>
         <CardBody>
-          <p>
-            {user ?
-              <div>
-                <p>控制台（已登录）</p>
-              </div>
-              :
-              '控制台（未登录）'
-            }
-          </p>
+          {user ?
+            <p>控制台（已登录）</p>
+            :
+            '控制台（未登录）'
+          }
         </CardBody>
       </Card>
       <Card className="flex-1">
         <CardBody>
-          <p>
-            <p>{JSON.stringify(user)}</p>
-          </p>
+          <p>{JSON.stringify(user)}</p>
         </CardBody>
       </Card>
     </div>

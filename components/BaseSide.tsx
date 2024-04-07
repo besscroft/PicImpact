@@ -1,12 +1,9 @@
 'use client'
 
 import { Listbox, ListboxItem } from '@nextui-org/react'
-import {
-  MonitorMobileIcon,
-  LockFilledIcon,
-} from '@nextui-org/shared-icons'
 import { useSession } from 'next-auth/react'
 import { usePathname, useRouter } from 'next/navigation'
+import { BookmarkIcon, DesktopIcon, GearIcon, Pencil2Icon, RocketIcon } from '@radix-ui/react-icons'
 
 export const BaseSide = () => {
   const { data: session, status } = useSession()
@@ -25,7 +22,7 @@ export const BaseSide = () => {
           <ListboxItem
             className={pathname === '/admin' ? 'text-teal-300 ' + buttonClasses : buttonClasses}
             key="home"
-            startContent={<MonitorMobileIcon className={iconClasses}/>}
+            startContent={<DesktopIcon className={iconClasses}/>}
             onClick={() => router.push('/admin')}
           >
             控制台
@@ -33,7 +30,7 @@ export const BaseSide = () => {
           <ListboxItem
             className={pathname === '/admin/upload' ? 'text-teal-300 ' + buttonClasses : buttonClasses}
             key="upload"
-            startContent={<MonitorMobileIcon className={iconClasses}/>}
+            startContent={<RocketIcon className={iconClasses}/>}
             onClick={() => router.push('/admin/upload')}
           >
             上传
@@ -41,7 +38,7 @@ export const BaseSide = () => {
           <ListboxItem
             className={pathname === '/admin/list' ? 'text-teal-300 ' + buttonClasses : buttonClasses}
             key="list"
-            startContent={<MonitorMobileIcon className={iconClasses}/>}
+            startContent={<Pencil2Icon className={iconClasses}/>}
             onClick={() => router.push('/admin/list')}
           >
             图片维护
@@ -49,7 +46,7 @@ export const BaseSide = () => {
           <ListboxItem
             className={pathname === '/admin/tag' ? 'text-teal-300 ' + buttonClasses : buttonClasses}
             key="tag"
-            startContent={<MonitorMobileIcon className={iconClasses}/>}
+            startContent={<BookmarkIcon className={iconClasses}/>}
             onClick={() => router.push('/admin/tag')}
           >
             标签管理
@@ -57,7 +54,7 @@ export const BaseSide = () => {
           <ListboxItem
             className={pathname === '/admin/settings' ? 'text-teal-400 ' + buttonClasses : buttonClasses}
             key="settings"
-            startContent={<LockFilledIcon className={iconClasses}/>}
+            startContent={<GearIcon className={iconClasses}/>}
             onClick={() => router.push('/admin/settings')}
           >
             设置
