@@ -52,20 +52,35 @@ export default function VaulDrawer() {
                     >
                       {
                         pathname.startsWith('/admin') ?
-                          <ListboxItem
-                            key="home"
-                            startContent={<AnchorIcon className={iconClasses} />}
-                            onClick={() => router.push('/')}
-                          >
-                            首页
-                          </ListboxItem>
+                          pathname === '/admin' ?
+                            <ListboxItem
+                              key="home"
+                              startContent={<AnchorIcon className={iconClasses} />}
+                              onClick={() => router.push('/')}
+                            >
+                              <Drawer.Close className="w-full text-left">
+                                首页
+                              </Drawer.Close>
+                            </ListboxItem>
+                            :
+                            <ListboxItem
+                              key="home"
+                              startContent={<MonitorMobileIcon className={iconClasses} />}
+                              onClick={() => router.push('/admin')}
+                            >
+                              <Drawer.Close className="w-full text-left">
+                                后台
+                              </Drawer.Close>
+                            </ListboxItem>
                           :
                           <ListboxItem
                             key="home"
                             startContent={<MonitorMobileIcon className={iconClasses} />}
                             onClick={() => router.push('/admin')}
                           >
-                            后台
+                            <Drawer.Close className="w-full text-left">
+                              后台
+                            </Drawer.Close>
                           </ListboxItem>
                       }
                       <ListboxItem
@@ -73,7 +88,9 @@ export default function VaulDrawer() {
                         startContent={<LockFilledIcon className={iconClasses} />}
                         onClick={() => router.push('/admin/settings')}
                       >
-                        设置
+                        <Drawer.Close className="w-full text-left">
+                          设置
+                        </Drawer.Close>
                       </ListboxItem>
                       <ListboxItem
                         key="loginOut"
