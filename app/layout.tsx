@@ -1,8 +1,12 @@
-import '~/style/globals.css'
-import { Providers } from '~/app/providers/providers'
+import type { Metadata } from 'next'
+
+import { NextUIProviders } from '~/app/providers/next-ui-providers'
 import { ToasterProviders } from '~/app/providers/toaster-providers'
 import { SessionProviders } from '~/app/providers/session-providers'
-import type { Metadata } from 'next'
+import { ThemeProviders } from '~/app/providers/theme-providers'
+
+import '~/style/globals.css'
+import '@radix-ui/themes/styles.css'
 
 export const metadata: Metadata = {
   title: "PicImpact",
@@ -21,10 +25,12 @@ export default function RootLayout({
     <html lang="en">
       <body>
         <SessionProviders>
-          <Providers>
+          <NextUIProviders>
             <ToasterProviders />
-            {children}
-          </Providers>
+            <ThemeProviders>
+              {children}
+            </ThemeProviders>
+          </NextUIProviders>
         </SessionProviders>
       </body>
     </html>
