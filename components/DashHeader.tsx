@@ -21,7 +21,7 @@ export default function DashHeader() {
             className="p-1"
             href="https://github.com/besscroft/PicImpact"
           >
-            <GithubIcon className="text-default-600 dark:text-default-500 dark:text-white" />
+            <GithubIcon className="text-default-600 dark:text-white" />
           </Link>
         </NavbarItem>
         <NavbarItem className="flex h-full items-center space-x-2">

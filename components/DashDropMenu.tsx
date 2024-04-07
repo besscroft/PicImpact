@@ -2,6 +2,7 @@
 
 import { Dropdown, DropdownTrigger, DropdownMenu, DropdownItem } from '@nextui-org/react'
 import Link from 'next/link'
+import { loginOut } from '~/server/lib/actions'
 
 export const DashDropMenu = async () => {
   return (
@@ -11,16 +12,18 @@ export const DashDropMenu = async () => {
           菜单
         </span>
       </DropdownTrigger>
-      <DropdownMenu aria-label="Static Actions">
-        <DropdownItem key="new">
+      <DropdownMenu aria-label="下拉菜单">
+        <DropdownItem key="admin">
           <Link href="/admin">
             后台
           </Link>
         </DropdownItem>
-        <DropdownItem key="copy">
-          <Link href="/">
+        <DropdownItem key="loginOut">
+          <div onClick={async () => {
+            await loginOut()
+          }}>
             退出登录
-          </Link>
+          </div>
         </DropdownItem>
       </DropdownMenu>
     </Dropdown>
