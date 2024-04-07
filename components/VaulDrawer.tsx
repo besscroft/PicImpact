@@ -44,10 +44,10 @@ export default function VaulDrawer() {
         <DashboardIcon aria-label="菜单" className="rounded dark:bg-blue-50" />
       </Drawer.Trigger>
       <Drawer.Portal>
-        <Drawer.Overlay className="fixed inset-0 bg-black/40 dark:bg-slate-800" />
-        <Drawer.Content className="bg-zinc-100 dark:bg-slate-900 flex flex-col rounded-t-[10px] h-[88%] mt-24 fixed bottom-0 left-0 right-0">
-          <div className="p-4 bg-white dark:bg-slate-900 rounded-t-[10px] flex-1">
-            <div className="mx-auto w-12 h-1.5 flex-shrink-0 rounded-full bg-zinc-300 mb-8" />
+        <Drawer.Overlay className="fixed inset-0 z-50 bg-black/80" />
+        <Drawer.Content className="fixed inset-x-0 bottom-0 z-50 mt-24 flex h-auto flex-col rounded-t-[10px] border bg-background">
+          <div className="p-4 rounded-t-[10px] flex-1">
+            <div className="mx-auto w-12 h-1.5 flex-shrink-0 rounded-full bg-gray-300 mb-2" />
             <div className="flex flex-col gap-4">
               <div className="w-full px-1 py-2 rounded-small">
                 {
@@ -185,7 +185,7 @@ export default function VaulDrawer() {
               </div>
             </div>
           </div>
-          <div className="p-4 bg-zinc-100 dark:bg-slate-800 border-t border-zinc-200 mt-auto">
+          <div className="p-4 border-t border-zinc-200 mt-auto">
             <div className="flex gap-6 justify-end max-w-md mx-auto">
               <a
                 className="text-xs text-zinc-600 flex items-center gap-0.25"

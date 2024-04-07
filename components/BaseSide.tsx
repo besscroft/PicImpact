@@ -1,6 +1,6 @@
 'use client'
 
-import { Listbox, ListboxItem } from '@nextui-org/react'
+import { Listbox, ListboxItem} from '@nextui-org/react'
 import { useSession } from 'next-auth/react'
 import { usePathname, useRouter } from 'next/navigation'
 import { BookmarkIcon, DesktopIcon, GearIcon, Pencil2Icon, RocketIcon } from '@radix-ui/react-icons'
@@ -14,7 +14,7 @@ export const BaseSide = () => {
   const buttonClasses = 'active:scale-95 duration-200 ease-in-out'
 
   return (
-    <div className="bg-slate-50 dark:bg-zinc-950 w-full h-full p-2">
+    <div className="w-full h-full p-2">
       <div className="w-full px-1 py-2 rounded-small">
         <Listbox
           aria-label="移动端菜单"
