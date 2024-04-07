@@ -1,7 +1,8 @@
 'use client'
 
 import { Dropdown, DropdownTrigger, DropdownMenu, DropdownItem, Avatar } from '@nextui-org/react'
-import { usePathname, useRouter } from 'next/navigation'
+import { usePathname } from 'next/navigation'
+import { useRouter } from 'next-nprogress-bar'
 import { loginOut } from '~/server/lib/actions'
 import { useSession } from 'next-auth/react'
 import { useEffect, useState } from 'react'

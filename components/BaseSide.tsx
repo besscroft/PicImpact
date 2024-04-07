@@ -2,7 +2,8 @@
 
 import { Listbox, ListboxItem} from '@nextui-org/react'
 import { useSession } from 'next-auth/react'
-import { usePathname, useRouter } from 'next/navigation'
+import { usePathname } from 'next/navigation'
+import { useRouter } from 'next-nprogress-bar'
 import { BookmarkIcon, DesktopIcon, GearIcon, Pencil2Icon, RocketIcon } from '@radix-ui/react-icons'
 
 export const BaseSide = () => {

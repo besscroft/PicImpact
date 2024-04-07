@@ -4,6 +4,7 @@ import { NextUIProviders } from '~/app/providers/next-ui-providers'
 import { ToasterProviders } from '~/app/providers/toaster-providers'
 import { SessionProviders } from '~/app/providers/session-providers'
 import { ThemeProviders } from '~/app/providers/theme-providers'
+import { ProgressBarProviders } from '~/app/providers/progress-bar-providers'
 
 import '~/style/globals.css'
 import '@radix-ui/themes/styles.css'
@@ -28,7 +29,9 @@ export default function RootLayout({
           <NextUIProviders>
             <ToasterProviders />
             <ThemeProviders>
-              {children}
+              <ProgressBarProviders>
+                {children}
+              </ProgressBarProviders>
             </ThemeProviders>
           </NextUIProviders>
         </SessionProviders>

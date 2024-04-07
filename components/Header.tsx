@@ -3,7 +3,7 @@
 import { Navbar, NavbarBrand, NavbarContent, NavbarItem, Link } from '@nextui-org/react'
 import Logo from '~/components/Logo'
 import DynamicNavbar from '~/components/DynamicNavbar'
-import { useRouter } from 'next/navigation'
+import { useRouter } from 'next-nprogress-bar'
 
 export default function Header() {
   const router = useRouter()

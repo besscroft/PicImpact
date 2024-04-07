@@ -1,7 +1,8 @@
 'use client'
 
 import { Drawer } from 'vaul'
-import { usePathname, useRouter } from 'next/navigation'
+import { usePathname } from 'next/navigation'
+import { useRouter } from 'next-nprogress-bar'
 import { Listbox, ListboxItem } from '@nextui-org/react'
 import { useSession } from 'next-auth/react'
 import { useEffect, useState } from 'react'
