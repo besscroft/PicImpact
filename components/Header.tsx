@@ -14,10 +14,10 @@ export default function Header() {
         <Logo />
       </NavbarBrand>
       <NavbarContent className="hidden sm:flex gap-4 select-none" justify="center">
-        <NavbarItem onClick={() => router.push('/')}>
+        <NavbarItem onClick={() => router.push('/')} className="cursor-pointer">
           首页
         </NavbarItem>
-        <NavbarItem onClick={() => router.push('/about')}>
+        <NavbarItem onClick={() => router.push('/about')} className="cursor-pointer">
           关于
         </NavbarItem>
       </NavbarContent>

@@ -31,6 +31,30 @@ export const BaseSide = () => {
             控制台
           </ListboxItem>
           <ListboxItem
+            className={pathname === '/admin/upload' ? 'text-teal-300 ' + buttonClasses : buttonClasses}
+            key="upload"
+            startContent={<MonitorMobileIcon className={iconClasses}/>}
+            onClick={() => router.push('/admin/upload')}
+          >
+            上传
+          </ListboxItem>
+          <ListboxItem
+            className={pathname === '/admin/list' ? 'text-teal-300 ' + buttonClasses : buttonClasses}
+            key="list"
+            startContent={<MonitorMobileIcon className={iconClasses}/>}
+            onClick={() => router.push('/admin/list')}
+          >
+            图片维护
+          </ListboxItem>
+          <ListboxItem
+            className={pathname === '/admin/tag' ? 'text-teal-300 ' + buttonClasses : buttonClasses}
+            key="tag"
+            startContent={<MonitorMobileIcon className={iconClasses}/>}
+            onClick={() => router.push('/admin/tag')}
+          >
+            标签管理
+          </ListboxItem>
+          <ListboxItem
             className={pathname === '/admin/settings' ? 'text-teal-400 ' + buttonClasses : buttonClasses}
             key="settings"
             startContent={<LockFilledIcon className={iconClasses}/>}

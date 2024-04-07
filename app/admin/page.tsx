@@ -27,5 +27,5 @@ export default async function Admin() {
         </CardBody>
       </Card>
     </div>
-)
+  )
 }

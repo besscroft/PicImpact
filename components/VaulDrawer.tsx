@@ -84,9 +84,37 @@ export default function VaulDrawer() {
                           </ListboxItem>
                       }
                       <ListboxItem
+                        key="upload"
+                        startContent={<LockFilledIcon className={iconClasses} />}
+                        onClick={() => router.push('/admin/upload')}
+                      >
+                        <Drawer.Close className="w-full text-left">
+                          上传
+                        </Drawer.Close>
+                      </ListboxItem>
+                      <ListboxItem
+                        key="list"
+                        startContent={<LockFilledIcon className={iconClasses} />}
+                        onClick={() => router.push('/admin/list')}
+                      >
+                        <Drawer.Close className="w-full text-left">
+                          图片维护
+                        </Drawer.Close>
+                      </ListboxItem>
+                      <ListboxItem
+                        key="tag"
+                        startContent={<LockFilledIcon className={iconClasses} />}
+                        onClick={() => router.push('/admin/tag')}
+                      >
+                        <Drawer.Close className="w-full text-left">
+                          标签管理
+                        </Drawer.Close>
+                      </ListboxItem>
+                      <ListboxItem
                         key="settings"
                         startContent={<LockFilledIcon className={iconClasses} />}
                         onClick={() => router.push('/admin/settings')}
+                        showDivider
                       >
                         <Drawer.Close className="w-full text-left">
                           设置
@@ -95,7 +123,6 @@ export default function VaulDrawer() {
                       <ListboxItem
                         key="loginOut"
                         startContent={<CloseIcon className={iconClasses} />}
-                        showDivider
                       >
                         <div onClick={async () => {
                           await loginOut()
@@ -116,8 +143,22 @@ export default function VaulDrawer() {
                       aria-label="移动端菜单"
                     >
                       <ListboxItem
-                        key="login"
+                        key="home"
+                        onClick={() => router.push('/')}
+                        startContent={<AvatarIcon className={iconClasses} />}
+                      >
+                        首页
+                      </ListboxItem>
+                      <ListboxItem
+                        key="about"
                         showDivider
+                        onClick={() => router.push('/about')}
+                        startContent={<AvatarIcon className={iconClasses} />}
+                      >
+                        关于
+                      </ListboxItem>
+                      <ListboxItem
+                        key="login"
                         onClick={() => router.push('/login')}
                         startContent={<AvatarIcon className={iconClasses} />}
                       >
