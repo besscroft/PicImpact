@@ -1,4 +1,5 @@
 import Header from '~/components/Header'
+import Transitions, { Animate } from '~/components/Transitions'
 
 export default async function DefaultLayout({
   children,
@@ -7,8 +8,12 @@ export default async function DefaultLayout({
 }>) {
   return (
     <>
-      <Header/>
-      {children}
+      <Transitions className="h-full flex flex-col">
+        <Header/>
+        <Animate className="flex-1">
+          {children}
+        </Animate>
+      </Transitions>
     </>
   );
 }

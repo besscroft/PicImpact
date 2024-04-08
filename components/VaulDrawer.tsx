@@ -23,7 +23,6 @@ import {
   SunIcon
 } from '@radix-ui/react-icons'
 
-
 export default function VaulDrawer() {
   const { data: session, status } = useSession()
   const router = useRouter()
@@ -56,39 +55,34 @@ export default function VaulDrawer() {
                     <Listbox
                       aria-label="移动端菜单"
                     >
-                      {
-                        pathname.startsWith('/admin') ?
-                          pathname === '/admin' ?
-                            <ListboxItem
-                              key="home"
-                              startContent={<HomeIcon className={iconClasses} />}
-                              onClick={() => router.push('/')}
-                            >
-                              <Drawer.Close className="w-full text-left">
-                                首页
-                              </Drawer.Close>
-                            </ListboxItem>
-                            :
-                            <ListboxItem
-                              key="home"
-                              startContent={<DesktopIcon className={iconClasses} />}
-                              onClick={() => router.push('/admin')}
-                            >
-                              <Drawer.Close className="w-full text-left">
-                                控制台
-                              </Drawer.Close>
-                            </ListboxItem>
-                          :
-                          <ListboxItem
-                            key="home"
-                            startContent={<DesktopIcon className={iconClasses} />}
-                            onClick={() => router.push('/admin')}
-                          >
-                            <Drawer.Close className="w-full text-left">
-                              控制台
-                            </Drawer.Close>
-                          </ListboxItem>
-                      }
+                      <ListboxItem
+                        key="home"
+                        startContent={<HomeIcon className={iconClasses} />}
+                        onClick={() => router.push('/')}
+                      >
+                        <Drawer.Close className="w-full text-left">
+                          首页
+                        </Drawer.Close>
+                      </ListboxItem>
+                      <ListboxItem
+                        key="about"
+                        startContent={<InfoCircledIcon className={iconClasses} />}
+                        onClick={() => router.push('/about')}
+                        showDivider
+                      >
+                        <Drawer.Close className="w-full text-left">
+                          关于
+                        </Drawer.Close>
+                      </ListboxItem>
+                      <ListboxItem
+                        key="admin"
+                        startContent={<DesktopIcon className={iconClasses} />}
+                        onClick={() => router.push('/admin')}
+                      >
+                        <Drawer.Close className="w-full text-left">
+                          控制台
+                        </Drawer.Close>
+                      </ListboxItem>
                       <ListboxItem
                         key="upload"
                         startContent={<RocketIcon className={iconClasses} />}

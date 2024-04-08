@@ -1,24 +1,20 @@
-'use client'
-
-import { Navbar, NavbarBrand, NavbarContent, NavbarItem, Link } from '@nextui-org/react'
+import { Navbar, NavbarBrand, NavbarContent, NavbarItem } from '@nextui-org/react'
 import Logo from '~/components/Logo'
 import DynamicNavbar from '~/components/DynamicNavbar'
-import { useRouter } from 'next-nprogress-bar'
+import Link from 'next/link'
 
 export default function Header() {
-  const router = useRouter()
-
   return (
     <Navbar>
       <NavbarBrand>
         <Logo />
       </NavbarBrand>
       <NavbarContent className="hidden sm:flex gap-4 select-none" justify="center">
-        <NavbarItem onClick={() => router.push('/')} className="cursor-pointer">
-          首页
+        <NavbarItem className="cursor-pointer">
+          <Link href="/">首页</Link>
         </NavbarItem>
-        <NavbarItem onClick={() => router.push('/about')} className="cursor-pointer">
-          关于
+        <NavbarItem className="cursor-pointer">
+          <Link href="/about">关于</Link>
         </NavbarItem>
       </NavbarContent>
       <NavbarContent justify="end">
