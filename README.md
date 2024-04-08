@@ -18,20 +18,14 @@ PicImpact
 
 你可以 Fork 后点击下面的按钮来一键部署到 Vercel（自定义配置及容器部署请往下看）
 
-<a href="https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fbesscroft%2FPicImpact&env=POSTGRE_HOST,POSTGRE_PORT,POSTGRE_DATABASE,POSTGRE_USERNAME,POSTGRE_PASSWORD"><img src="https://vercel.com/button" alt="Deploy with Vercel"/></a>
+<a href="https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fbesscroft%2FPicImpact&env=DATABASE_URL,AUTH_SECRET,SECRET_KEY"><img src="https://vercel.com/button" alt="Deploy with Vercel"/></a>
 
-当然，如果你想部署到其它平台或者自部署也是可以的，只需要改一下预设即可 `nuxt.config.ts`：
-
-```ts
-nitro: {
-  preset: 'vercel' // 可选 vercel、netlify、node-server，或者删除这一行，构建时也会自适应的。
-}
-```
+> 当然，如果你想部署到其它平台或者自部署也是可以的。但是由于生态兼容性，暂不支持 All Edge。
 
 #### 数据库
 
 数据库请选择兼容 PostgreSQL 的数据库，我推荐 [SupaBase](https://supabase.com/)，它的每月免费额度足够个人使用了！
-创建数据库后，将 `doc/sql/schema.sql` 导入到数据库执行。在 `Dashboard` 的 `Settings` 找到 `Database` 部分，你就能查看连接信息了。
+创建数据库后，等待程序构建/部署成功，程序会自动初始化和更新表结构，待表结构同步完成后，将 `doc/sql/data.sql` 导入到数据库执行。在 `Dashboard` 的 `Settings` 找到 `Database` 部分，你就能查看连接信息了。
 当然，只要是兼容 pg 的数据库都是可以选择的，不必局限于某个平台。
 
 > 注：从 2024-01-26 起，将[删除通过 IPv4 和 pgBouncer 的数据库访问方式](https://github.com/orgs/supabase/discussions/17817)。
@@ -40,9 +34,9 @@ nitro: {
 
 > 请确保您的数据库用户配置了正确的 Row Level Security（行级别安全性）权限，否则将无法正常访问。
 >
-> 如果您是第一次部署，仅需要执行 `schema.sql` 即可，如果您是升级到涉及数据库变更的版本，请在执行对应版本编号的 sql 后再升级部署！
+> 如果您是第一次部署，仅需要执行 `data.sql` 即可，如果您是升级到涉及数据库变更的版本，请在执行对应版本编号的 sql 后再升级部署！
 > 
-> 系统默认账号密码为：admin / 666666
+> 系统默认账号密码为：admin@qq.com / 666666
 
 #### 图片存储
 
@@ -64,34 +58,24 @@ nitro: {
 > 
 > 项目内默认的 key 都是用作演示用途！
 
-| Key              | 备注                                    |
-|------------------|---------------------------------------|
-| POSTGRE_HOST     | Postgre 数据库主机，如：db.picimpact.supabase.co |
-| POSTGRE_PORT     | Postgre 数据库端口，默认值：5432                |
-| POSTGRE_DATABASE | Postgre 数据库名称，默认值：postgres            |
-| POSTGRE_USERNAME | Postgre 数据库用户名，默认值：postgres           |
-| POSTGRE_PASSWORD | Postgre 数据库密码，默认值：postgres            |
+| Key              | 备注                                                                                        |
+|------------------|-------------------------------------------------------------------------------------------|
+| DATABASE_URL     | Postgre 数据库 url，如：postgres://账号:密码@aws-0-ap-northeast-1.pooler.supabase.com:5432/postgres |
+| AUTH_SECRET     | 权限机密，你可以执行 npx auth secret 生成一个，反正是随机的字符串就行                                               |
+| SECRET_KEY | 密码盐，默认值：pic-impact，你最好知道是干嘛的再去改。                                                          |
 
 ### 容器部署
 
-我把容器部署往后放，是不希望前面的内容被跳过，这样你在构建/部署时才能得心应手！
-
 #### 直接部署
 
-如果你想用我的镜像（由 GitHub Actions 构建），就意味着你的某些配置与我相同，比如网站的几个目录。
-但实际上你肯定得改一下网站标题，配置子页面啊之类的，改一下音乐播放器里面的歌之类的。
-
-所以我的镜像只适合你快速体验预览之类的，还是建议你自己构建（反正也很方便），或者你直接部署到 Vercel 之类的平台。
 如果你要运行我的镜像，你只需要执行下面的命令即可部署：
 
 ```shell
 docker run -d --name PicImpact \
   -p 3000:3000 \
-  -e POSTGRE_HOST="db.supabase.co" \
-  -e POSTGRE_PORT="5432" \
-  -e POSTGRE_DATABASE="postgres" \
-  -e POSTGRE_USERNAME="postgres" \
-  -e POSTGRE_PASSWORD="postgres" \
+  -e DATABASE_URL="postgres://账号:密码@aws-0-ap-northeast-1.pooler.supabase.com:5432/postgres" \
+  -e AUTH_SECRET="your-secret-key" \
+  -e SECRET_KEY="pic-impact" \
   besscroft/picimpact:latest
 ```
 
@@ -99,12 +83,7 @@ docker run -d --name PicImpact \
 
 #### 自己构建镜像
 
-无需多说，直接 fork 本项目，然后更改任意文件并 `commit` 后，会自动触发 GitHub Actions 构建。
-当然在那之前，你需要先在你 fork 的仓库创建 2 个机密，具体看[为存储库创建机密](https://docs.github.com/zh/actions/security-guides/using-secrets-in-github-actions#creating-secrets-for-a-repository)
-
-> `DOCKERHUB_USERNAME` 和 `DOCKERHUB_TOKEN` 这两个，这样才能在构建后，上传到你自己的 docker 仓库去。
-
-在构建好镜像之后，你可以用上面的命令执行（记得镜像换成你自己构建的哈），如果你要 Docker Compose 执行：
+如果你要 Docker Compose 执行：
 
 ```yaml
 version: '3'
@@ -115,18 +94,16 @@ services:
     ports:
       - 3000:3000
     environment:
-      - POSTGRE_HOST="db.supabase.co"
-      - POSTGRE_PORT=5432
-      - POSTGRE_DATABASE="postgres"
-      - POSTGRE_USERNAME="postgres"
-      - POSTGRE_PASSWORD="postgres"
+      - DATABASE_URL="postgres://账号:密码@aws-0-ap-northeast-1.pooler.supabase.com:5432/postgres"
+      - AUTH_SECRET="your-secret-key"
+      - SECRET_KEY="pic-impact"
 ```
 
 > 一样的，参考上面的环境变量表格，配置你自己的环境变量。
 
 #### 构建镜像 Q&A
 
-Q：我 fork 仓库后，网站设置也改了自己的之后，构建的镜像被人使用会有风险吗？
+Q：我 fork 仓库后，构建的镜像被人使用会有风险吗？
 
 A：原则上没有，但如果你自己要往文件里面填写机密信息，那是你自己的问题！
 别人并不知道你的环境变量的值，除非你自己泄露！
@@ -163,7 +140,7 @@ pnpm run dev
 
 PicImpact 欢迎各种贡献，包括但不限于改进，新功能，文档和代码改进，问题和错误报告。`dev` 分支接受 `PR`！
 
-> 有需求和建议都可以提，有空的话我会处理，但受限于 Nuxt3 / SSR 的⌈局限性⌋，很多功能的设计上可能会有取舍。
+> 有需求和建议都可以提，有空的话我会处理，但受限于 Next / SSR 的⌈局限性⌋，很多功能的设计上可能会有取舍。
 
 ### 隐私安全
 
@@ -184,6 +161,7 @@ PicImpact 欢迎各种贡献，包括但不限于改进，新功能，文档和�
   - [Next](https://github.com/vercel/next.js)
 - UI 框架：
   - [Next UI](https://github.com/nextui-org/nextui)
+  - [Radix](https://www.radix-ui.com/)
 - 更多组件参见 package.json
 
 ### 感谢
