@@ -8,6 +8,7 @@ import { useRouter } from 'next-nprogress-bar'
 import { toast } from 'sonner'
 import { authenticate } from '~/server/lib/actions'
 import { SafeParseReturnType, z } from 'zod'
+import confetti from 'canvas-confetti'
 
 export const UserFrom = () => {
   const router = useRouter()
@@ -24,6 +25,16 @@ export const UserFrom = () => {
 
     return parsedCredentials;
   }
+
+  const handleConfetti = () => {
+    confetti({
+      particleCount: 100,
+      spread: 360,
+      startVelocity: 30,
+      ticks: 60,
+      origin: { x: Math.random() - 0.1, y: Math.random() - 0.2 }
+    });
+  };
 
   return (
     <div className="mx-auto grid w-[350px] gap-6">
@@ -71,6 +82,7 @@ export const UserFrom = () => {
           color="primary"
           variant="shadow"
           isLoading={isLoading}
+          onPress={handleConfetti}
           onClick={async () => {
             setIsLoading(true)
 
