@@ -2,6 +2,8 @@ import DashHeader from '~/components/DashHeader'
 import { BaseSide } from '~/components/BaseSide'
 import Transitions, { Animate } from '~/components/Transitions'
 
+import { AntdRegistry } from '@ant-design/nextjs-registry'
+
 export default function AdminLayout({
   children,
 }: Readonly<{
@@ -18,7 +20,7 @@ export default function AdminLayout({
             </aside>
             <main className="flex w-full h-full flex-1 flex-col overflow-hidden p-2">
               <Animate className="flex-1">
-                {children}
+                <AntdRegistry>{children}</AntdRegistry>
               </Animate>
             </main>
           </div>

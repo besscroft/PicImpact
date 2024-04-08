@@ -15,3 +15,7 @@
     --background-end-rgb: 0, 0, 0;
   }
 }
+
+.ant-upload-list-item-progress {
+  display: none;
+}
