@@ -88,7 +88,7 @@ const columns: TableProps<DataType>['columns'] = [
   },
 ];
 
-export default async function List() {
+export default function List() {
   const { data, error, isLoading, isValidating, mutate  } = useSWR('/api/get-images', fetcher)
 
   if (error) {
