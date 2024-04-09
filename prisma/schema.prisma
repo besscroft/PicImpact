@@ -82,6 +82,7 @@ model Tags {
   tag_value   String    @unique
   detail      String?   @db.Text
   show        Int       @default(1) @db.SmallInt
+  sort        Int       @default(0) @db.SmallInt
   create_time DateTime? @default(now()) @db.Timestamp()
   update_time DateTime? @db.Timestamp()
   del         Int       @default(0) @db.SmallInt
