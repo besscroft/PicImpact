@@ -15,6 +15,7 @@ export async function POST(request: Request) {
     const alistToken = findConfig.find((item) => item.config_key === 'alist_token')?.config_value || '';
     const alistUrl = findConfig.find((item) => item.config_key === 'alist_url')?.config_value || '';
 
+    // @ts-ignore
     const filePath = encodeURIComponent(`${mountPath.toString() === '/' ? '' : mountPath}/${type}/${file?.name}`)
     console.log(filePath)
     const data = await fetch(`${alistUrl}/api/fs/put`, {
