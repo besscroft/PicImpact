@@ -1,18 +1,31 @@
-import { Card, CardBody } from '@nextui-org/card'
+import { Card, CardBody, CardHeader } from '@nextui-org/card'
 import FileUpload from '~/components/FileUpload'
+import { Button } from '@nextui-org/react'
+import UploadSelect from '~/components/UploadSelect'
 
 export default async function Upload() {
+
 
   return (
     <div className="flex flex-col space-y-2 h-full flex-1">
       <Card>
-        <CardBody>
-          <p>
-            上传
-          </p>
-        </CardBody>
+        <CardHeader className="justify-between">
+          <div className="flex gap-5">
+            <div className="flex flex-col gap-1 items-start justify-center">
+              <h4 className="text-small font-semibold leading-none text-default-600 select-none">上传</h4>
+            </div>
+          </div>
+          <Button
+            color="primary"
+            radius="full"
+            size="sm"
+          >
+            提交
+          </Button>
+        </CardHeader>
       </Card>
       <Card className="flex-1">
+        <UploadSelect />
         <CardBody>
           <FileUpload />
         </CardBody>
