@@ -46,3 +46,23 @@ export async function fetchAListInfo() {
 
   return findConfig;
 }
+
+export async function fetchTagsList() {
+  const findAll = await db.tags.findMany({
+    where: {
+      del: 0
+    }
+  })
+
+  return findAll;
+}
+
+export async function fetchImagesList() {
+  const findAll = await db.images.findMany({
+    where: {
+      del: 0
+    }
+  })
+
+  return findAll;
+}
