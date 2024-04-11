@@ -1,6 +1,6 @@
 import Image from "next/image"
 import fufu from '~/public/112962239_p0.jpg'
-import { UserFrom } from '~/components/UserFrom'
+import { UserFrom } from '~/components/login/UserFrom'
 
 export default function Login() {
   return (

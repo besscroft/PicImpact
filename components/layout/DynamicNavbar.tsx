@@ -1,5 +1,5 @@
-import VaulDrawer from '~/components/VaulDrawer'
-import { DropMenu } from '~/components/DropMenu'
+import VaulDrawer from '~/components/layout/VaulDrawer'
+import { DropMenu } from '~/components/layout/DropMenu'
 
 export default async function DynamicNavbar() {
   return (

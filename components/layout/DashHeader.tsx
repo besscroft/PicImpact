@@ -1,6 +1,6 @@
 import { Navbar, NavbarBrand, NavbarContent, NavbarItem, Link } from '@nextui-org/react'
-import Logo from '~/components/Logo'
-import DynamicNavbar from '~/components/DynamicNavbar'
+import Logo from '~/components/layout/Logo'
+import DynamicNavbar from '~/components/layout/DynamicNavbar'
 
 export default function DashHeader() {
   return (

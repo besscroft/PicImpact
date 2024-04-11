@@ -1,5 +1,5 @@
 import { fetchTagsList } from '~/server/lib/query'
-import TagList from '~/components/TagList'
+import TagList from '~/components/admin/tag/TagList'
 import { Card, CardHeader } from '@nextui-org/card'
 import RefreshButton from '~/components/RefreshButton'
 import { HandleProps } from '~/types'

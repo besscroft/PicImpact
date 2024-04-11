@@ -1,5 +1,5 @@
-import Header from '~/components/Header'
-import Transitions, { Animate } from '~/components/Transitions'
+import Header from '~/components/layout/Header'
+import Transitions, { Animate } from '~/components/layout/Transitions'
 
 export default async function DefaultLayout({
   children,

@@ -1,7 +1,7 @@
 import { Card, CardBody, CardHeader } from '@nextui-org/card'
-import FileUpload from '~/components/FileUpload'
+import FileUpload from '~/components/admin/upload/FileUpload'
 import { Button } from '@nextui-org/react'
-import UploadSelect from '~/components/UploadSelect'
+import UploadSelect from '~/components/admin/upload/UploadSelect'
 
 export default async function Upload() {
 

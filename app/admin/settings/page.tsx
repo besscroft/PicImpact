@@ -2,9 +2,9 @@
 
 import React from 'react'
 import { Tabs, Tab } from '@nextui-org/react'
-import SettingsTab from '~/components/SettingsTab'
-import AListTabs from '~/components/AListTabs'
-import S3Tabs from '~/components/S3Tabs'
+import SettingsTab from '~/components/admin/settings/SettingsTab'
+import AListTabs from '~/components/admin/settings/AListTabs'
+import S3Tabs from '~/components/admin/settings/S3Tabs'
 
 export default async function Settings() {
   return (

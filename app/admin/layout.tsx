@@ -1,6 +1,6 @@
-import DashHeader from '~/components/DashHeader'
-import { BaseSide } from '~/components/BaseSide'
-import Transitions, { Animate } from '~/components/Transitions'
+import DashHeader from '~/components/layout/DashHeader'
+import { BaseSide } from '~/components/layout/BaseSide'
+import Transitions, { Animate } from '~/components/layout/Transitions'
 
 import { AntdRegistry } from '@ant-design/nextjs-registry'
 
