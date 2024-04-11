@@ -30,7 +30,7 @@ export default function TagList(props : Readonly<HandleProps>) {
       {
         !isLoading && !error && data ?
           data.map((tag: DataType) => (
-            <ContextMenu>
+            <ContextMenu key={tag.id}>
               <ContextMenuTrigger>
                 <Card>
                   <CardHeader className="flex gap-3">
