@@ -41,7 +41,7 @@ export default function VaulDrawer() {
   return (
     <Drawer.Root>
       <Drawer.Trigger>
-        <DashboardIcon aria-label="菜单" className="rounded dark:bg-blue-50" />
+        <DashboardIcon aria-label="菜单" className="rounded dark:text-white" />
       </Drawer.Trigger>
       <Drawer.Portal>
         <Drawer.Overlay className="fixed inset-0 z-50 bg-black/80" />

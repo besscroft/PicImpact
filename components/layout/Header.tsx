@@ -11,7 +11,7 @@ export default function Header() {
       </NavbarBrand>
       <NavbarContent className="hidden sm:flex gap-4 select-none" justify="center">
         <NavbarItem className="cursor-pointer">
-          <Link href="/public">首页</Link>
+          <Link href="/">首页</Link>
         </NavbarItem>
         <NavbarItem className="cursor-pointer">
           <Link href="/about">关于</Link>

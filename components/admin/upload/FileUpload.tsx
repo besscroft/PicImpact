@@ -47,8 +47,8 @@ export default function FileUpload() {
       <p className="ant-upload-drag-icon">
         <InboxOutlined />
       </p>
-      <p className="ant-upload-text">点击上传文件或拖拽文件到这里</p>
-      <p className="ant-upload-hint">
+      <p className="ant-upload-text dark:!text-white">点击上传文件或拖拽文件到这里</p>
+      <p className="ant-upload-hint dark:!text-gray-200">
         Vercel 等平台 Free 订阅限制上传大小 6M。
       </p>
     </Dragger>

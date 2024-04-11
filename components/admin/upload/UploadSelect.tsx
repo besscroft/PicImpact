@@ -25,7 +25,6 @@ export default async function UploadSelect() {
     <CardHeader className="justify-between space-x-1">
       <Select
         isRequired
-        color="primary"
         variant="bordered"
         label="存储"
         placeholder="请选择存储"
@@ -39,7 +38,6 @@ export default async function UploadSelect() {
       </Select>
       <Select
         isRequired
-        color="secondary"
         variant="bordered"
         label="标签"
         placeholder="请选择标签"

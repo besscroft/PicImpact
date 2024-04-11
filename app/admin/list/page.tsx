@@ -20,7 +20,7 @@ export default async function List() {
         <CardHeader className="justify-between">
           <div className="flex gap-5">
             <div className="flex flex-col gap-1 items-start justify-center">
-              <h4 className="text-small font-semibold leading-none text-default-600 select-none">标签管理</h4>
+              <h4 className="text-small font-semibold leading-none text-default-600 select-none">图片维护</h4>
             </div>
           </div>
           <RefreshButton {...props} />
