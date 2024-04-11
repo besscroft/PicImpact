@@ -13,7 +13,7 @@ export default async function List() {
 
   const props: HandleProps = {
     handle: getData,
-    args: 'getImages',
+    args: 'getTags',
   }
 
   return (
