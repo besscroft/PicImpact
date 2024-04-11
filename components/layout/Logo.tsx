@@ -4,7 +4,7 @@ import Link from 'next/link'
 
 export default function Logo() {
   return (
-    <Link href="/public">
+    <Link href="/">
       <Image
         src={favicon}
         alt="Picture of the author"
