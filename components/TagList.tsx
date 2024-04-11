@@ -5,7 +5,8 @@ import { Table, type TableProps } from 'antd'
 import { Button, Dropdown, DropdownItem, DropdownMenu, DropdownTrigger } from '@nextui-org/react'
 import { DeleteDocumentBulkIcon, EditDocumentBulkIcon, SendFilledIcon } from '@nextui-org/shared-icons'
 import { toast } from 'sonner'
-import useSWR from 'swr'
+import { HandleProps } from '~/types'
+import { useSWRHydrated } from '~/hooks/useSWRHydrated'
 
 interface DataType {
   id: number;
@@ -17,13 +18,12 @@ interface DataType {
 
 const iconClasses = 'text-xl text-default-500 pointer-events-none flex-shrink-0'
 
-export default function TagList({handleClick: onClick}: any) {
-  const { data, error, isLoading, isValidating } = useSWR('getTags',
-    () => {
-    return onClick()
-  })
+export default function TagList(props : Readonly<HandleProps>) {
+  const { data, isLoading, error } = useSWRHydrated(props)
 
-  console.log(data)
+  if (error) {
+    toast.error('获取失败！')
+  }
 
   const columns: TableProps<DataType>['columns'] = [
     {
@@ -82,8 +82,8 @@ export default function TagList({handleClick: onClick}: any) {
     <Table
       bordered
       columns={columns}
-      loading={isValidating}
-      dataSource={data}
+      loading={isLoading}
+      dataSource={!error && data ? data : []}
     />
   )
 }

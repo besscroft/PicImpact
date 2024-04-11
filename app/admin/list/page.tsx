@@ -1,15 +1,18 @@
 import { Card, CardHeader } from '@nextui-org/card'
 import { fetchImagesList } from '~/server/lib/query'
 import RefreshButton from '~/components/RefreshButton'
+import { HandleProps } from '~/types'
 
 export default async function List() {
   const getData = async () => {
     'use server'
-    const data = await fetchImagesList()
-    return data
+    return await fetchImagesList()
   }
 
-  const data = await getData();
+  const props: HandleProps = {
+    handle: getData,
+    args: 'getImages',
+  }
 
   return (
     <div className="flex flex-col space-y-2 h-full flex-1">
@@ -20,7 +23,7 @@ export default async function List() {
               <h4 className="text-small font-semibold leading-none text-default-600 select-none">标签管理</h4>
             </div>
           </div>
-          <RefreshButton handleClick={getData} />
+          <RefreshButton {...props} />
         </CardHeader>
       </Card>
     </div>
