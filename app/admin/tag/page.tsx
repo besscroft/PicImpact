@@ -3,6 +3,8 @@ import TagList from '~/components/admin/tag/TagList'
 import { Card, CardHeader } from '@nextui-org/card'
 import RefreshButton from '~/components/RefreshButton'
 import { HandleProps } from '~/types'
+import {Button} from "@nextui-org/react";
+import React from "react";
 
 export default async function List() {
 
@@ -25,7 +27,17 @@ export default async function List() {
               <h4 className="text-small font-semibold leading-none text-default-600 select-none">标签管理</h4>
             </div>
           </div>
-          <RefreshButton {...props} />
+          <div className="flex items-center space-x-2">
+            <Button
+              color="primary"
+              radius="full"
+              size="sm"
+              variant="shadow"
+            >
+              新增
+            </Button>
+            <RefreshButton {...props} />
+          </div>
         </CardHeader>
       </Card>
       <TagList {...props} />

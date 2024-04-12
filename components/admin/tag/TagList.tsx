@@ -11,7 +11,8 @@ import {
   ContextMenuItem,
   ContextMenuTrigger,
 } from '~/components/ContextMenu'
-import {toast} from "sonner";
+import { toast } from 'sonner'
+import DefaultTag from '~/components/admin/tag/DefaultTag'
 
 interface DataType {
   id: number;
@@ -29,7 +30,9 @@ export default function TagList(props : Readonly<HandleProps>) {
     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
       {
         !isLoading && !error && data ?
-          data.map((tag: DataType) => (
+          <>
+            <DefaultTag />
+            {data.map((tag: DataType) => (
             <ContextMenu key={tag.id}>
               <ContextMenuTrigger>
                 <Card>
@@ -80,9 +83,10 @@ export default function TagList(props : Readonly<HandleProps>) {
                 <ContextMenuItem className="cursor-pointer" onClick={() => toast.warning('还没写！')}>删除</ContextMenuItem>
               </ContextMenuContent>
             </ContextMenu>
-          ))
+            ))}
+          </>
           : error ?
-            <p>没数据哦！</p>
+            <DefaultTag />
             : <p>加载中...</p>
       }
     </div>
