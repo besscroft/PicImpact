@@ -10,7 +10,7 @@ import {
   ContextMenuContent,
   ContextMenuItem,
   ContextMenuTrigger,
-} from '~/components/ContextMenu'
+} from '~/components/ui/ContextMenu'
 import { toast } from 'sonner'
 import DefaultTag from '~/components/admin/tag/DefaultTag'
 
