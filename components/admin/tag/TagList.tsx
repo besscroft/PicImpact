@@ -13,18 +13,15 @@ import {
 } from '~/components/ui/ContextMenu'
 import { toast } from 'sonner'
 import DefaultTag from '~/components/admin/tag/DefaultTag'
+import { TagType } from '~/types'
+import { useButtonStore } from '~/app/providers/button-store-Providers'
 
-interface DataType {
-  id: number;
-  name: string;
-  tag_value: string;
-  detail: string;
-  show: number;
-  sort: number;
-}
 
 export default function TagList(props : Readonly<HandleProps>) {
   const { data, isLoading, error } = useSWRHydrated(props)
+  const { setTagEdit } = useButtonStore(
+    (state) => state,
+  )
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
@@ -32,7 +29,7 @@ export default function TagList(props : Readonly<HandleProps>) {
         !isLoading && !error && data ?
           <>
             <DefaultTag />
-            {data.map((tag: DataType) => (
+            {data.map((tag: TagType) => (
             <ContextMenu key={tag.id}>
               <ContextMenuTrigger>
                 <Card>
@@ -79,8 +76,14 @@ export default function TagList(props : Readonly<HandleProps>) {
                 </Card>
               </ContextMenuTrigger>
               <ContextMenuContent>
-                <ContextMenuItem className="cursor-pointer" onClick={() => toast.warning('还没写！')}>编辑</ContextMenuItem>
-                <ContextMenuItem className="cursor-pointer" onClick={() => toast.warning('还没写！')}>删除</ContextMenuItem>
+                <ContextMenuItem
+                  className="cursor-pointer"
+                  onClick={() => setTagEdit(true, tag)}
+                >编辑</ContextMenuItem>
+                <ContextMenuItem
+                  className="cursor-pointer"
+                  onClick={() => toast.warning('还没写！')}
+                >删除</ContextMenuItem>
               </ContextMenuContent>
             </ContextMenu>
             ))}

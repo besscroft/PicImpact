@@ -6,6 +6,7 @@ import { HandleProps } from '~/types'
 import React from 'react'
 import TagAddSheet from '~/components/admin/tag/TagAddSheet'
 import TagAddButton from '~/components/admin/tag/TagAddButton'
+import TagEditSheet from '~/components/admin/tag/TagEditSheet'
 
 export default async function List() {
 
@@ -36,6 +37,7 @@ export default async function List() {
       </Card>
       <TagList {...props} />
       <TagAddSheet />
+      <TagEditSheet />
     </div>
   )
 }
