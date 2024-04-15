@@ -6,7 +6,7 @@ import { fetcher } from '~/utils/fetcher'
 import { toast } from 'sonner'
 
 export default function S3Tabs() {
-  const { data, error, isLoading } = useSWR('/api/s3-info', fetcher)
+  const { data, error, isLoading } = useSWR('/api/v1/s3-info', fetcher)
 
   if (error) {
     toast.error('请求失败！')

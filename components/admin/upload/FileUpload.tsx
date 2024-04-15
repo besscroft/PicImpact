@@ -17,7 +17,7 @@ export default function FileUpload() {
     formData.append('storage', 'alist')
     formData.append('type', 'test')
     formData.append('mountPath', '/')
-    const data = await fetch('/api/file-upload', {
+    const data = await fetch('/api/v1/file-upload', {
       method: 'POST',
       body: formData
     }).then((res) => res.json())

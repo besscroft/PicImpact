@@ -6,7 +6,7 @@ import { fetcher } from '~/utils/fetcher'
 import { toast } from 'sonner'
 
 export default function AListTabs() {
-  const { data, error, isLoading } = useSWR('/api/alist-info', fetcher)
+  const { data, error, isLoading } = useSWR('/api/v1/alist-info', fetcher)
 
   if (error) {
     toast.error('请求失败！')

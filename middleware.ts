@@ -2,6 +2,13 @@ import { auth } from '~/server/auth'
 import { NextResponse } from 'next/server'
 
 export default auth((req) => {
+
+  if (req.nextUrl.pathname.startsWith('/api/v1') && !req.auth) {
+    return Response.json(
+      { success: false, message: 'authentication failed' },
+      { status: 401 }
+    )
+  }
   if (req.nextUrl.pathname.startsWith('/admin') && !req.auth) {
     return NextResponse.redirect(new URL('/login', req.url))
   }
@@ -14,7 +21,8 @@ export default auth((req) => {
 // Read more: https://nextjs.org/docs/app/building-your-application/routing/middleware#matcher
 export const config = {
   matcher: [
-    "/((?!api|_next/static|_next/image|favicon.ico).*)",
-    "/admin/:path*"
+    "/((?!_next/static|_next/image|favicon.ico).*)",
+    "/admin/:path*",
+    '/api/v1/:path*',
   ],
 }

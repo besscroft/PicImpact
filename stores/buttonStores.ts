@@ -5,12 +5,13 @@ import { TagType } from '~/types'
 export type ButtonState = {
   tagAdd: boolean
   tagEdit: boolean
-  tag: TagType | null
+  tag: TagType
 }
 
 export type ButtonActions = {
   setTagAdd: (tagAdd: boolean) => void
-  setTagEdit: (tagEdit: boolean, tag: TagType | null) => void
+  setTagEdit: (tagEdit: boolean) => void
+  setTagEditData: (tag: TagType) => void
 }
 
 export type ButtonStore = ButtonState & ButtonActions
@@ -19,14 +20,14 @@ export const initButtonStore = (): ButtonState => {
   return {
     tagAdd: false,
     tagEdit: false,
-    tag: null
+    tag: {} as TagType
   }
 }
 
 export const defaultInitState: ButtonState = {
   tagAdd: false,
   tagEdit: false,
-  tag: null
+  tag: {} as TagType
 }
 
 export const createButtonStore = (
@@ -37,11 +38,13 @@ export const createButtonStore = (
       (set, get) => ({
         ...initState,
         setTagAdd: (tagAddValue) => set(() => ({
-          tagAdd: tagAddValue
+          tagAdd: tagAddValue,
         })),
-        setTagEdit: (tagEditValue, tagValue) => set(() => ({
+        setTagEdit: (tagEditValue) => set(() => ({
           tagEdit: tagEditValue,
-          tag: tagValue
+        })),
+        setTagEditData: (tagValue) => set(() => ({
+          tag: tagValue,
         }))
       }),
       {

@@ -36,8 +36,8 @@ export default async function List() {
         </CardHeader>
       </Card>
       <TagList {...props} />
-      <TagAddSheet />
-      <TagEditSheet />
+      <TagAddSheet {...props} />
+      <TagEditSheet {...props} />
     </div>
   )
 }
