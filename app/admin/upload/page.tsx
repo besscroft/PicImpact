@@ -1,9 +1,8 @@
 import { Card, CardBody, CardHeader } from '@nextui-org/card'
 import FileUpload from '~/components/admin/upload/FileUpload'
 import { Button } from '@nextui-org/react'
-import UploadSelect from '~/components/admin/upload/UploadSelect'
 
-export default async function Upload() {
+export default function Upload() {
 
 
   return (
@@ -25,7 +24,6 @@ export default async function Upload() {
         </CardHeader>
       </Card>
       <Card className="flex-1">
-        <UploadSelect />
         <CardBody>
           <FileUpload />
         </CardBody>

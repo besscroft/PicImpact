@@ -66,3 +66,13 @@ export async function fetchImagesList() {
 
   return findAll;
 }
+
+export async function fetchTags() {
+  const findAll = await db.tags.findMany({
+    where: {
+      del: 0
+    }
+  })
+
+  return findAll;
+}
