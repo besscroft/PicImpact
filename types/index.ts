@@ -13,6 +13,8 @@ export type HandleListProps = {
   handle: (pageNum: number) => any
   args: string
   totalHandle: () => any
+  data: any
+  total: number
 }
 
 export type TagType = {
