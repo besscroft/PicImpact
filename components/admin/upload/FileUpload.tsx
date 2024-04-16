@@ -228,7 +228,7 @@ export default function FileUpload() {
               label="存储"
               placeholder="请选择存储"
               selectedKeys={storage}
-              onSelectionChange={(keys) => {
+              onSelectionChange={(keys: any) => {
                 const updatedSet = new Set([] as string[]);
                 updatedSet.add(keys?.currentKey);
                 setStorage(updatedSet)
@@ -252,7 +252,7 @@ export default function FileUpload() {
               placeholder="请选择标签"
               isLoading={isLoading}
               selectedKeys={tag}
-              onSelectionChange={(keys) => {
+              onSelectionChange={(keys: any) => {
                 const updatedSet = new Set([] as string[]);
                 updatedSet.add(keys?.currentKey);
                 setTag(updatedSet)
@@ -275,13 +275,13 @@ export default function FileUpload() {
                   label="目录"
                   placeholder="请选择Alist目录"
                   selectedKeys={alistMountPath}
-                  onSelectionChange={(keys) => {
+                  onSelectionChange={(keys: any) => {
                     const updatedSet = new Set([] as string[]);
                     updatedSet.add(keys?.currentKey);
                     setAlistMountPath(updatedSet)
                   }}
                 >
-                  {alistStorage?.map((storage) => (
+                  {alistStorage?.map((storage: any) => (
                     <SelectItem key={storage?.mount_path} value={storage?.mount_path}>
                       {storage?.mount_path}
                     </SelectItem>
