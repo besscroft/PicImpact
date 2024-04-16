@@ -203,7 +203,7 @@ export default function ListProps(props : Readonly<HandleListProps>) {
         </ModalContent>
       </Modal>
       <ImageEditSheet {...{...props, pageNum}} />
-      <ImageView {...{...props, pageNum}} />
+      <ImageView />
     </div>
   )
 }
