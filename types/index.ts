@@ -17,3 +17,32 @@ export type TagType = {
   show: number;
   sort: number;
 }
+
+export type ExifType = {
+  make: any;
+  model: any;
+  bits: any;
+  data_time: any;
+  exposure_time: any;
+  f_number: any;
+  exposure_program: any;
+  iso_speed_rating: any;
+  focal_length: any;
+  lens_specification: any;
+  lens_model: any;
+  exposure_mode: any;
+  cfa_pattern: any;
+  color_space: any;
+  white_balance: any;
+}
+
+export type ImageType = {
+  id: number;
+  url: string;
+  exif: ExifType;
+  tag: string;
+  detail: string;
+  show: number;
+  sort: number;
+  rating: number;
+}

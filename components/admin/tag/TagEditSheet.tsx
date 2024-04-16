@@ -98,7 +98,6 @@ export default function TagEditSheet(props : Readonly<HandleProps>) {
               isSelected={tag?.show === 0}
               value={tag?.show === 0 ? 'true' : 'false'}
               onValueChange={(value) => {
-                console.log(value)
                 setTagEditData({ ...tag, show: value ? 0 : 1 })
               }}
               classNames={{
