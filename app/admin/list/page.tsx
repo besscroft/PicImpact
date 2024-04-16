@@ -1,31 +1,25 @@
-import { Card, CardHeader } from '@nextui-org/card'
-import { fetchImagesList } from '~/server/lib/query'
-import RefreshButton from '~/components/RefreshButton'
-import { HandleProps } from '~/types'
+import { fetchImagesList, fetchImagesTotal } from '~/server/lib/query'
+import { HandleListProps } from '~/types'
+import ListProps from '~/components/admin/list/ListProps'
 
 export default async function List() {
-  const getData = async () => {
+  const getData = async (pageNum: number) => {
     'use server'
-    return await fetchImagesList()
+    return await fetchImagesList(pageNum)
   }
 
-  const props: HandleProps = {
+  const getTotal = async () => {
+    'use server'
+    return await fetchImagesTotal()
+  }
+
+  const props: HandleListProps = {
     handle: getData,
     args: 'getImages',
+    totalHandle: getTotal,
   }
 
   return (
-    <div className="flex flex-col space-y-2 h-full flex-1">
-      <Card>
-        <CardHeader className="justify-between">
-          <div className="flex gap-5">
-            <div className="flex flex-col gap-1 items-start justify-center">
-              <h4 className="text-small font-semibold leading-none text-default-600 select-none">图片维护</h4>
-            </div>
-          </div>
-          <RefreshButton {...props} />
-        </CardHeader>
-      </Card>
-    </div>
+    <ListProps {...props} />
   )
 }

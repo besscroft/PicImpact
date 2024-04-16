@@ -9,6 +9,12 @@ export type HandleProps = {
   args: string
 }
 
+export type HandleListProps = {
+  handle: (pageNum: number) => any
+  args: string
+  totalHandle: () => any
+}
+
 export type TagType = {
   id: number;
   name: string;

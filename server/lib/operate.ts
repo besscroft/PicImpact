@@ -74,3 +74,16 @@ export async function insertImage(image: ImageType) {
   })
   return resultRow
 }
+
+export async function deleteImage(id: number) {
+  const resultRow = await db.images.update({
+    where: {
+      id: Number(id)
+    },
+    data: {
+      del: 1,
+      update_time: new Date(),
+    }
+  })
+  return resultRow
+}

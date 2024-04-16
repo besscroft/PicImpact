@@ -57,8 +57,13 @@ export async function fetchTagsList() {
   return findAll;
 }
 
-export async function fetchImagesList() {
+export async function fetchImagesList(pageNum: number) {
+  if (pageNum < 1) {
+    pageNum = 1
+  }
   const findAll = await db.images.findMany({
+    skip: (pageNum - 1) * 8,
+    take: 8,
     where: {
       del: 0
     }
@@ -75,4 +80,14 @@ export async function fetchTags() {
   })
 
   return findAll;
+}
+
+export async function fetchImagesTotal() {
+  const total = await db.images.count({
+    where: {
+      del: 0
+    }
+  })
+
+  return total > 0 ? Math.ceil(total / 8) : 0;
 }
