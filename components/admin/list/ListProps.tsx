@@ -20,8 +20,6 @@ import {
   ModalFooter,
   Button,
   Pagination,
-  PaginationItem,
-  PaginationCursor
 } from '@nextui-org/react'
 import { CaretSortIcon } from '@radix-ui/react-icons'
 import {
@@ -154,8 +152,10 @@ export default function ListProps(props : Readonly<HandleListProps>) {
         }
       </div>
       <Pagination
+        className="!m-0"
         total={total}
         color="secondary"
+        size="sm"
         page={pageNum}
         onChange={async (page) => {
           console.log(page)
