@@ -30,6 +30,8 @@ import {
 } from '~/components/ui/ContextMenu'
 import { toast } from 'sonner'
 import { useButtonStore } from '~/app/providers/button-store-Providers'
+import ImageEditSheet from '~/components/admin/list/ImageEditSheet'
+import ImageView from '~/components/admin/list/ImageView'
 
 export default function ListProps(props : Readonly<HandleListProps>) {
   const [pageNum, setPageNum] = useState(1)
@@ -38,7 +40,7 @@ export default function ListProps(props : Readonly<HandleListProps>) {
   const [isOpen, setIsOpen] = useState(false)
   const [image, setImage] = useState({} as ImageType)
   const [deleteLoading, setDeleteLoading] = useState(false)
-  const { setImageEdit, setImageEditData } = useButtonStore(
+  const { setImageEdit, setImageEditData, setImageView, setImageViewData } = useButtonStore(
     (state) => state,
   )
 
@@ -97,7 +99,7 @@ export default function ListProps(props : Readonly<HandleListProps>) {
                   <ContextMenuTrigger>
                     <Card className="h-64">
                       <CardHeader className="flex gap-3">
-                        <p>{image.detail}</p>
+                        <Chip variant="shadow">{image.tag}</Chip>
                       </CardHeader>
                       <CardBody>
                         <p>{image.detail || '没有介绍'}</p>
@@ -131,6 +133,13 @@ export default function ListProps(props : Readonly<HandleListProps>) {
                     <ContextMenuItem
                       className="cursor-pointer"
                       onClick={() => {
+                        setImageViewData(image)
+                        setImageView(true)
+                      }}
+                    >查看</ContextMenuItem>
+                    <ContextMenuItem
+                      className="cursor-pointer"
+                      onClick={() => {
                         setImageEditData(image)
                         setImageEdit(true)
                       }}
@@ -154,11 +163,10 @@ export default function ListProps(props : Readonly<HandleListProps>) {
       <Pagination
         className="!m-0"
         total={total}
-        color="secondary"
+        color="primary"
         size="sm"
         page={pageNum}
         onChange={async (page) => {
-          console.log(page)
           setPageNum(page)
           await mutate()
         }}
@@ -194,6 +202,8 @@ export default function ListProps(props : Readonly<HandleListProps>) {
           </ModalFooter>
         </ModalContent>
       </Modal>
+      <ImageEditSheet {...{...props, pageNum}} />
+      <ImageView {...{...props, pageNum}} />
     </div>
   )
 }

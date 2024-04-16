@@ -87,3 +87,29 @@ export async function deleteImage(id: number) {
   })
   return resultRow
 }
+
+export async function updateImage(image: ImageType) {
+  if (!image.sort || image.sort < 0) {
+    image.sort = 0
+  }
+  if (!image.rating || image.rating < 0) {
+    image.rating = 0
+  }
+  const resultRow = await db.images.update({
+    where: {
+      id: Number(image.id)
+    },
+    data: {
+      url: image.url,
+      exif: image.exif,
+      tag: image.tag,
+      detail: image.detail,
+      sort: image.sort,
+      show: image.show,
+      rating: image.rating,
+      update_time: new Date(),
+    }
+  }
+  )
+  return resultRow
+}

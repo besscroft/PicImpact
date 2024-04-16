@@ -7,17 +7,19 @@ export type ButtonState = {
   tagEdit: boolean
   tag: TagType
   image: ImageType
-  imageAdd: boolean
   imageEdit: boolean
+  imageViewData: ImageType
+  imageView: boolean
 }
 
 export type ButtonActions = {
   setTagAdd: (tagAdd: boolean) => void
   setTagEdit: (tagEdit: boolean) => void
   setTagEditData: (tag: TagType) => void
-  setImageAdd: (imageAdd: boolean) => void
   setImageEdit: (imageEdit: boolean) => void
   setImageEditData: (image: ImageType) => void
+  setImageView: (imageView: boolean) => void
+  setImageViewData: (imageViewData: ImageType) => void
 }
 
 export type ButtonStore = ButtonState & ButtonActions
@@ -27,9 +29,10 @@ export const initButtonStore = (): ButtonState => {
     tagAdd: false,
     tagEdit: false,
     tag: {} as TagType,
-    imageAdd: false,
     imageEdit: false,
-    image: {} as ImageType
+    image: {} as ImageType,
+    imageView: false,
+    imageViewData: {} as ImageType
   }
 }
 
@@ -37,9 +40,10 @@ export const defaultInitState: ButtonState = {
   tagAdd: false,
   tagEdit: false,
   tag: {} as TagType,
-  imageAdd: false,
   imageEdit: false,
-  image: {} as ImageType
+  image: {} as ImageType,
+  imageView: false,
+  imageViewData: {} as ImageType
 }
 
 export const createButtonStore = (
@@ -58,14 +62,17 @@ export const createButtonStore = (
         setTagEditData: (tagValue) => set(() => ({
           tag: tagValue,
         })),
-        setImageAdd: (imageAddValue) => set(() => ({
-          imageAdd: imageAddValue,
-        })),
         setImageEdit: (imageEditValue) => set(() => ({
           imageEdit: imageEditValue,
         })),
-        setImageEditData: (imageValue) => set(() => ({
-          image: imageValue,
+        setImageEditData: (imageDataValue) => set(() => ({
+          image: imageDataValue,
+        })),
+        setImageView: (imageViewValue) => set(() => ({
+          imageView: imageViewValue,
+        })),
+        setImageViewData: (imageViewDataValue) => set(() => ({
+          imageViewData: imageViewDataValue,
         })),
       }),
       {
