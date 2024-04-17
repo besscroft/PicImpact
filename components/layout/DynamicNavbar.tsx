@@ -1,7 +1,7 @@
 import VaulDrawer from '~/components/layout/VaulDrawer'
 import { DropMenu } from '~/components/layout/DropMenu'
 
-export default async function DynamicNavbar() {
+export default function DynamicNavbar() {
   return (
     <>
       <div className="flex sm:hidden">

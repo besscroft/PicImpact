@@ -12,7 +12,7 @@ export default function AdminLayout({
     <>
       <div className="flex flex-col h-screen">
         <DashHeader/>
-        <div className="grid flex-1 sm:grid-cols-[200px_1fr] h-full w-full bg-gray-100 dark:bg-zinc-900">
+        <div className="grid flex-1 sm:grid-cols-[200px_1fr] h-full w-full bg-gray-50 dark:bg-zinc-900">
           <aside className="hidden w-[200px] flex-col sm:flex">
             <BaseSide/>
           </aside>

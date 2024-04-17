@@ -72,7 +72,7 @@ export default function TagList(props : Readonly<HandleProps>) {
               {data.map((tag: TagType) => (
                 <ContextMenu key={tag.id}>
                   <ContextMenuTrigger>
-                    <Card>
+                    <Card shadow="sm">
                       <CardHeader className="flex gap-3">
                         <p>{tag.name}</p>
                         <Popover placement="top">

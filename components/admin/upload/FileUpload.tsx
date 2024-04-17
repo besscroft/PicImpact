@@ -201,7 +201,7 @@ export default function FileUpload() {
 
   return (
     <div className="flex flex-col space-y-2 h-full flex-1">
-      <Card>
+      <Card shadow="sm">
         <CardHeader className="justify-between">
           <div className="flex gap-5">
             <div className="flex flex-col gap-1 items-start justify-center">
@@ -219,7 +219,7 @@ export default function FileUpload() {
           </Button>
         </CardHeader>
       </Card>
-      <Card className="flex-1">
+      <Card shadow="sm" className="flex-1">
         <CardHeader className="flex flex-col space-y-1 pb-1">
           <div className="flex w-full justify-between space-x-1">
             <Select

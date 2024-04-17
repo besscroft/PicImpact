@@ -25,7 +25,7 @@ export const DropMenu = () => {
   if(!mounted) return null
 
   return (
-    <Dropdown>
+    <Dropdown shadow="sm">
       <DropdownTrigger>
         <Avatar
           className="cursor-pointer"

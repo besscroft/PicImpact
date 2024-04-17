@@ -1,12 +1,11 @@
 'use client'
 
 import { Card, CardHeader, Button } from '@nextui-org/react'
-import { toast } from 'sonner'
 
 export default function SettingsTab() {
   return (
     <div className="space-y-2">
-      <Card>
+      <Card shadow="sm">
         <CardHeader className="justify-between">
           <div className="flex gap-5">
             <div className="flex flex-col gap-1 items-start justify-center">

@@ -6,7 +6,7 @@ import { ArrowDown10 } from 'lucide-react'
 
 export default function DefaultTag() {
   return (
-    <Card>
+    <Card shadow="sm">
       <CardHeader className="flex gap-3">
         <p>首页</p>
         <Popover placement="top">

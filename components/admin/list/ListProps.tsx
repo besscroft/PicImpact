@@ -67,7 +67,7 @@ export default function ListProps(props : Readonly<HandleListProps>) {
 
   return (
     <div className="flex flex-col space-y-2 h-full flex-1">
-      <Card>
+      <Card shadow="sm">
         <CardHeader className="justify-between">
           <div className="flex gap-5">
             <div className="flex flex-col gap-1 items-start justify-center">
@@ -97,7 +97,7 @@ export default function ListProps(props : Readonly<HandleListProps>) {
               {data.map((image: ImageType) => (
                 <ContextMenu key={image.id}>
                   <ContextMenuTrigger>
-                    <Card className="h-64">
+                    <Card shadow="sm" className="h-64">
                       <CardHeader className="flex gap-3">
                         <Chip variant="shadow">{image.tag}</Chip>
                       </CardHeader>

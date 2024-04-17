@@ -7,7 +7,7 @@ export default function Logo() {
     <Link href="/">
       <Image
         src={favicon}
-        alt="Picture of the author"
+        alt="Logo"
         width={36}
         height={36}
       />

@@ -1,10 +1,15 @@
-import { Navbar, NavbarBrand, NavbarContent, NavbarItem, Link } from '@nextui-org/react'
+'use client'
+
+import { Navbar, NavbarBrand, NavbarContent, NavbarItem } from '@nextui-org/react'
 import Logo from '~/components/layout/Logo'
 import DynamicNavbar from '~/components/layout/DynamicNavbar'
+import { usePathname } from 'next/navigation'
 
 export default function DashHeader() {
+  const pathname = usePathname()
+
   return (
-    <Navbar>
+    <Navbar className={pathname.startsWith('/admin/settings/') ? 'hidden sm:flex' : 'flex'}>
       <NavbarBrand>
         <Logo />
       </NavbarBrand>

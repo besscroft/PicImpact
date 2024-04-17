@@ -14,7 +14,7 @@ export default function S3Tabs() {
 
   return (
     <div className="space-y-2">
-      <Card>
+      <Card shadow="sm">
         <CardHeader className="justify-between">
           <div className="flex gap-5">
             <div className="flex flex-col gap-1 items-start justify-center">

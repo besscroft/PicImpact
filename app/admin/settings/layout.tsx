@@ -3,7 +3,7 @@
 import { usePathname } from 'next/navigation'
 import { cn } from '~/utils'
 import { Listbox, ListboxItem } from '@nextui-org/react'
-import { SlidersHorizontal, Server, Info } from 'lucide-react'
+import { SlidersHorizontal, Server, Info, ArrowLeft } from 'lucide-react'
 import { useRouter } from 'next-nprogress-bar'
 
 export default function AdminLayout({
@@ -18,7 +18,7 @@ export default function AdminLayout({
   const buttonClasses = 'active:scale-95 duration-200 ease-in-out'
   return (
     <div className="h-full flex">
-      <div className={cn('min-w-64 sm:border-r-2 h-full',
+      <div className={cn('min-w-64 sm:border-r-1 h-full',
         pathname === '/admin/settings' ? 'block sm:flex-none flex-1' : 'hidden sm:block'
       )}>
         <Listbox
@@ -60,6 +60,14 @@ export default function AdminLayout({
         </Listbox>
       </div>
       <div className={pathname === '/admin/settings' ? 'hidden sm:block flex-1' : 'block flex-1'}>
+        <div className={cn(
+          'flex items-center p-2 border-b-1',
+          pathname === '/admin/settings' ? 'hidden' : 'block'
+        )}>
+          <div className="flex items-center cursor-pointer" onClick={() => router.back()}>
+            <ArrowLeft /><span>返回</span>
+          </div>
+        </div>
         {children}
       </div>
     </div>
