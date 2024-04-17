@@ -21,7 +21,7 @@ import {
   Button,
   Pagination,
 } from '@nextui-org/react'
-import { CaretSortIcon } from '@radix-ui/react-icons'
+import { ArrowDown10 } from 'lucide-react'
 import {
   ContextMenu,
   ContextMenuContent,
@@ -116,7 +116,7 @@ export default function ListProps(props : Readonly<HandleListProps>) {
                             <Chip
                               color="primary"
                               variant="shadow"
-                              startContent={<CaretSortIcon/>}
+                              startContent={<ArrowDown10 size={20} />}
                             >{image.sort}</Chip>
                           </PopoverTrigger>
                           <PopoverContent>

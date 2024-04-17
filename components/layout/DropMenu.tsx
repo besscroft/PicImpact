@@ -7,7 +7,7 @@ import { loginOut } from '~/server/lib/actions'
 import { useSession } from 'next-auth/react'
 import { useEffect, useState } from 'react'
 import { useTheme } from 'next-themes'
-import { DesktopIcon, ExitIcon, GitHubLogoIcon, HomeIcon, MoonIcon, PersonIcon, SunIcon } from '@radix-ui/react-icons'
+import { Home, MonitorDot, SunMedium, MoonStar, Github, LogOut, LogIn } from 'lucide-react'
 
 export const DropMenu = () => {
   const router = useRouter()
@@ -41,7 +41,7 @@ export const DropMenu = () => {
                 pathname.startsWith('/admin') ?
                   <DropdownItem
                     key="home"
-                    startContent={<HomeIcon className={iconClasses} />}
+                    startContent={<Home size={20} className={iconClasses} />}
                     onClick={() => router.push('/')}
                   >
                     首页
@@ -49,7 +49,7 @@ export const DropMenu = () => {
                   :
                   <DropdownItem
                     key="admin"
-                    startContent={<DesktopIcon className={iconClasses} />}
+                    startContent={<MonitorDot size={20} className={iconClasses} />}
                     onClick={() => router.push('/admin')}
                   >
                     控制台
@@ -57,7 +57,7 @@ export const DropMenu = () => {
               }
               <DropdownItem
                 key="loginOut"
-                startContent={<ExitIcon className={iconClasses} />}
+                startContent={<LogOut size={20} className={iconClasses} />}
                 showDivider
               >
                 <div onClick={async () => {
@@ -68,14 +68,14 @@ export const DropMenu = () => {
               </DropdownItem>
               <DropdownItem
                 key="theme"
-                startContent={theme === 'light' ? <SunIcon className={iconClasses} /> : <MoonIcon className={iconClasses} />}
+                startContent={theme === 'light' ? <SunMedium size={20} className={iconClasses} /> : <MoonStar size={20} className={iconClasses} />}
                 onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
               >
                 { theme === 'light' ? '切换至⌈常夜⌋' : '切换至⌈白夜⌋' }
               </DropdownItem>
               <DropdownItem
                 key="github"
-                startContent={<GitHubLogoIcon className={iconClasses} />}
+                startContent={<Github size={20} className={iconClasses} />}
                 onClick={() => router.push('https://github.com/besscroft')}
               >
                 GitHub
@@ -87,20 +87,20 @@ export const DropMenu = () => {
                 key="login"
                 showDivider
                 onClick={() => router.push('/login')}
-                startContent={<PersonIcon className={iconClasses} />}
+                startContent={<LogIn size={20} className={iconClasses} />}
               >
                 登录
               </DropdownItem>
               <DropdownItem
                 key="theme"
-                startContent={theme === 'light' ? <SunIcon className={iconClasses} /> : <MoonIcon className={iconClasses} />}
+                startContent={theme === 'light' ? <SunMedium size={20} className={iconClasses} /> : <MoonStar size={20} className={iconClasses} />}
                 onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
               >
                 { theme === 'light' ? '切换至⌈常夜⌋' : '切换至⌈白夜⌋' }
               </DropdownItem>
               <DropdownItem
                 key="github"
-                startContent={<GitHubLogoIcon className={iconClasses} />}
+                startContent={<Github size={20} className={iconClasses} />}
                 onClick={() => router.push('https://github.com/besscroft')}
               >
                 GitHub

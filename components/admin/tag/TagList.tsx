@@ -19,7 +19,7 @@ import {
   ModalFooter,
   Button
 } from '@nextui-org/react'
-import { CaretSortIcon } from '@radix-ui/react-icons'
+import { ArrowDown10 } from 'lucide-react'
 import {
   ContextMenu,
   ContextMenuContent,
@@ -102,7 +102,7 @@ export default function TagList(props : Readonly<HandleProps>) {
                             <Chip
                               color="primary"
                               variant="shadow"
-                              startContent={<CaretSortIcon/>}
+                              startContent={<ArrowDown10 size={20} />}
                             >{tag.sort}</Chip>
                           </PopoverTrigger>
                           <PopoverContent>

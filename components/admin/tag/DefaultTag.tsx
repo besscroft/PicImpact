@@ -1,8 +1,8 @@
 'use client'
 
 import { Card, CardBody, CardFooter, CardHeader, Chip, Popover, PopoverContent, PopoverTrigger } from '@nextui-org/react'
-import { CaretSortIcon } from '@radix-ui/react-icons'
 import React from 'react'
+import { ArrowDown10 } from 'lucide-react'
 
 export default function DefaultTag() {
   return (
@@ -31,7 +31,7 @@ export default function DefaultTag() {
             <Chip
               color="primary"
               variant="shadow"
-              startContent={<CaretSortIcon />}
+              startContent={<ArrowDown10 size={20} />}
             >-1</Chip>
           </PopoverTrigger>
           <PopoverContent>

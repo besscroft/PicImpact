@@ -4,7 +4,8 @@ import { Listbox, ListboxItem} from '@nextui-org/react'
 import { useSession } from 'next-auth/react'
 import { usePathname } from 'next/navigation'
 import { useRouter } from 'next-nprogress-bar'
-import { BookmarkIcon, DesktopIcon, GearIcon, Pencil2Icon, RocketIcon } from '@radix-ui/react-icons'
+import { Settings, Milestone, Image, ImageUp, MonitorDot } from 'lucide-react'
+import { cn } from '~/utils'
 
 export const BaseSide = () => {
   const { data: session, status } = useSession()
@@ -16,49 +17,64 @@ export const BaseSide = () => {
 
   return (
     <div className="w-full h-full p-2">
-      <div className="w-full px-1 py-2 rounded-small">
+      <div className="w-full px-1 py-2">
         <Listbox
           aria-label="移动端菜单"
         >
           <ListboxItem
-            className={pathname === '/admin' ? 'text-teal-300 ' + buttonClasses : buttonClasses}
+            className={cn(
+              pathname === '/admin' ? 'text-teal-400' : '',
+              buttonClasses
+            )}
             key="home"
-            startContent={<DesktopIcon className={iconClasses}/>}
+            startContent={<MonitorDot size={20} className={iconClasses}/>}
             onClick={() => router.push('/admin')}
           >
-            控制台
+            <span className="text-lg">控制台</span>
           </ListboxItem>
           <ListboxItem
-            className={pathname === '/admin/upload' ? 'text-teal-300 ' + buttonClasses : buttonClasses}
+            className={cn(
+              pathname === '/admin/upload' ? 'text-teal-400' : '',
+              buttonClasses
+            )}
             key="upload"
-            startContent={<RocketIcon className={iconClasses}/>}
+            startContent={<ImageUp size={20} className={iconClasses}/>}
             onClick={() => router.push('/admin/upload')}
           >
-            上传
+            <span className="text-lg font-sans">上传</span>
           </ListboxItem>
           <ListboxItem
-            className={pathname === '/admin/list' ? 'text-teal-300 ' + buttonClasses : buttonClasses}
+            className={cn(
+              pathname === '/admin/list' ? 'text-teal-400' : '',
+              buttonClasses
+            )}
             key="list"
-            startContent={<Pencil2Icon className={iconClasses}/>}
+            startContent={<Image size={20} className={iconClasses}/>}
             onClick={() => router.push('/admin/list')}
           >
-            图片维护
+            <span className="text-lg font-sans">图片维护</span>
           </ListboxItem>
           <ListboxItem
-            className={pathname === '/admin/tag' ? 'text-teal-300 ' + buttonClasses : buttonClasses}
+            className={cn(
+              pathname === '/admin/tag' ? 'text-teal-400' : '',
+              buttonClasses
+            )}
             key="tag"
-            startContent={<BookmarkIcon className={iconClasses}/>}
+            startContent={<Milestone size={20} className={iconClasses}/>}
             onClick={() => router.push('/admin/tag')}
           >
-            标签管理
+            <span className="text-lg font-sans">标签管理</span>
           </ListboxItem>
           <ListboxItem
-            className={pathname === '/admin/settings' ? 'text-teal-400 ' + buttonClasses : buttonClasses}
+            className={cn(
+              pathname.startsWith('/admin/settings') ? 'text-teal-400' : '',
+              buttonClasses
+            )}
             key="settings"
-            startContent={<GearIcon className={iconClasses}/>}
+            startContent={<Settings size={20} className={iconClasses}/>}
             onClick={() => router.push('/admin/settings')}
           >
-            设置
+            <span className="text-lg font-sans">设置</span>
           </ListboxItem>
         </Listbox>
       </div>
