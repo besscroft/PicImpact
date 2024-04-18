@@ -8,6 +8,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
+    "prisma:format": "npx prisma format",
+    "prisma:dev": "npx prisma migrate dev && npx prisma generate",
     "postinstall": "npx prisma migrate deploy && npx prisma generate"
   },
   "dependencies": {

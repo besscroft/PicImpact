@@ -64,6 +64,8 @@ export async function insertImage(image: ImageType) {
     data: {
       url: image.url,
       exif: image.exif,
+      width: image.width,
+      height: image.height,
       tag: image.tag,
       detail: image.detail,
       show: 1,

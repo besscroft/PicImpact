@@ -21,6 +21,8 @@ export default function FileUpload() {
   const [exif, setExif] = useState({} as ExifType)
   const [url, setUrl] = useState('')
   const [loading, setLoading] = useState(false)
+  const [width, setWidth] = useState(0)
+  const [height, setHeight] = useState(0)
   const [detail, setDetail] = useState('')
 
   const { data, error, isLoading } = useSWR('/api/v1/get-tags', fetcher)
@@ -60,6 +62,8 @@ export default function FileUpload() {
     exifObj.color_space = tags?.ColorSpace?.description
     exifObj.white_balance = tags?.WhiteBalance?.description
     setExif(exifObj)
+    setWidth(Number(tags?.['Image Width']?.value))
+    setHeight(Number(tags?.['Image Height']?.value))
   }
 
   async function submit() {
@@ -78,7 +82,9 @@ export default function FileUpload() {
         tag: tagArray[0],
         url: url,
         exif: exif,
-        detail: detail
+        detail: detail,
+        width: width,
+        height: height,
       } as ImageType
       const res = await fetch('/api/v1/image-add', {
         headers: {
@@ -258,6 +264,9 @@ export default function FileUpload() {
                 setTag(updatedSet)
               }}
             >
+              <SelectItem key="/" value="/">
+                首页
+              </SelectItem>
               {data?.map((tag: TagType) => (
                 <SelectItem key={tag.tag_value} value={tag.tag_value}>
                   {tag.name}

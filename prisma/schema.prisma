@@ -58,6 +58,8 @@ model Images {
   tag         String
   url         String?   @db.Text
   exif        Json?     @db.Json
+  width       Int       @default(0)
+  height      Int       @default(0)
   rating      Int?      @db.SmallInt
   detail      String?   @db.Text
   show        Int       @default(1) @db.SmallInt

@@ -48,6 +48,8 @@ export type ImageType = {
   id: number;
   url: string;
   exif: ExifType;
+  width: number;
+  height: number;
   tag: string;
   detail: string;
   show: number;
