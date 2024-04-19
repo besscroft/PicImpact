@@ -3,7 +3,6 @@ import { fetchClientImagesListByTag, fetchClientImagesPageTotalByTag } from '~/s
 import { ImageHandleProps } from '~/types'
 
 export default function Page({ params }: { params: { tag: string } }) {
-  console.log(params.tag)
   const getData = async (pageNum: number, tag: string) => {
     'use server'
     return await fetchClientImagesListByTag(pageNum, tag)

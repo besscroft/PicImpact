@@ -1,24 +1,25 @@
 'use client'
 
-import React, { useEffect, useState } from 'react'
+import React from 'react'
 import { ImageHandleProps, ImageType } from '~/types'
 import PhotoAlbum from 'react-photo-album'
 import { Button } from '@nextui-org/react'
-import { useSWRInfiniteHook } from '~/hooks/useSWRInfiniteHook'
 import { useSWRPageTotalHook } from '~/hooks/useSWRPageTotalHook'
+import useSWRInfinite from 'swr/infinite'
 
 export default function Masonry(props : Readonly<ImageHandleProps>) {
-  const [pageNum, setPageNum] = useState(1)
   const { data: pageTotal } = useSWRPageTotalHook(props)
-  const { data, isLoading, mutate } = useSWRInfiniteHook(props, pageNum)
-
-  const [dataList, setDataList] = useState<ImageType[]>([])
-
-  useEffect(() => {
-    if (data) {
-      setDataList((prevData: ImageType[]) => [...prevData, ...data])
-    }
-  }, [data])
+  const { data, error, isLoading, isValidating, size, setSize } = useSWRInfinite((index, previousPageData) => {
+    return [`client--${index}-${props.tag}`, index]
+    },
+    (index: any[]) => {
+      return props.handle(index[1] + 1, props.tag)
+    }, {
+      revalidateOnFocus: false,
+      revalidateIfStale: false,
+      revalidateOnReconnect: false,
+    })
+  const dataList = data ? [].concat(...data) : [];
   return (
     <div className="w-full sm:w-4/5 mx-auto p-2">
       <PhotoAlbum
@@ -38,14 +39,13 @@ export default function Masonry(props : Readonly<ImageHandleProps>) {
       } />
       <div className="flex items-center justify-center my-4">
         {
-          pageNum < pageTotal ?
+          size < pageTotal ?
             <Button
               color="primary"
               variant="bordered"
               isLoading={isLoading}
               onClick={() => {
-                setPageNum(pageNum + 1)
-                mutate()
+                setSize(size + 1)
               }}
             >
               加载更多

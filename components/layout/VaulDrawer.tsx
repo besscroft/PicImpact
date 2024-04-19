@@ -40,7 +40,6 @@ export default function VaulDrawer() {
         const response = await fetch('/api/get-link', {
           method: 'GET',
         }).then((res) => res.json());
-        console.log(response)
         setData(response);
       } catch (error) {
         console.error('Error fetching data:', error);
