@@ -7,21 +7,22 @@ import { Listbox, ListboxItem } from '@nextui-org/react'
 import { useSession } from 'next-auth/react'
 import { useEffect, useState } from 'react'
 import { useTheme } from 'next-themes'
-import { loginOut } from '~/server/lib/actions'
 import {
   LayoutGrid,
-  MonitorDot,
-  ImageUp,
-  Image,
-  Milestone,
-  Settings,
-  Info,
-  LogOut,
   SunMedium,
   MoonStar,
   LogIn,
-  Home
+  Home,
+  Image,
+  MonitorDot,
+  ImageUp,
+  Milestone,
+  Settings,
+  Heart,
+  LogOut
 } from 'lucide-react'
+import { TagType } from '~/types'
+import { loginOut } from '~/server/lib/actions'
 
 export default function VaulDrawer() {
   const { data: session, status } = useSession()
@@ -29,10 +30,24 @@ export default function VaulDrawer() {
   const pathname = usePathname()
   const [mounted, setMounted] = useState(false)
   const { theme, setTheme } = useTheme()
+  const [data, setData] = useState<any>([])
 
   const iconClasses = 'text-xl text-default-500 pointer-events-none flex-shrink-0'
 
   useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch('/api/get-link', {
+          method: 'GET',
+        }).then((res) => res.json());
+        console.log(response)
+        setData(response);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
+
+    fetchData();
     setMounted(true)
   }, [])
 
@@ -57,23 +72,25 @@ export default function VaulDrawer() {
                     >
                       <ListboxItem
                         key="home"
-                        startContent={<MonitorDot size={20} className={iconClasses} />}
+                        startContent={<Home size={20} className={iconClasses} />}
                         onClick={() => router.push('/')}
                       >
                         <Drawer.Close className="w-full text-left">
                           首页
                         </Drawer.Close>
                       </ListboxItem>
-                      <ListboxItem
-                        key="about"
-                        startContent={<Info size={20} className={iconClasses} />}
-                        onClick={() => router.push('/about')}
-                        showDivider
-                      >
-                        <Drawer.Close className="w-full text-left">
-                          关于
-                        </Drawer.Close>
-                      </ListboxItem>
+                      {data && data?.map((tag: TagType, index: any, array: TagType[]) => (
+                        <ListboxItem
+                          key={tag.id}
+                          startContent={<Heart size={20} className={iconClasses} />}
+                          onClick={() => router.push(tag.tag_value)}
+                          showDivider={index === array.length - 1}
+                        >
+                          <Drawer.Close className="w-full text-left">
+                            {tag.name}
+                          </Drawer.Close>
+                        </ListboxItem>
+                      ))}
                       <ListboxItem
                         key="admin"
                         startContent={<MonitorDot size={20} className={iconClasses} />}
@@ -149,16 +166,6 @@ export default function VaulDrawer() {
                       >
                         <Drawer.Close className="w-full text-left">
                           首页
-                        </Drawer.Close>
-                      </ListboxItem>
-                      <ListboxItem
-                        key="about"
-                        showDivider
-                        onClick={() => router.push('/about')}
-                        startContent={<Info size={20} className={iconClasses} />}
-                      >
-                        <Drawer.Close className="w-full text-left">
-                          关于
                         </Drawer.Close>
                       </ListboxItem>
                       <ListboxItem

@@ -16,6 +16,11 @@ export type ImageHandleProps = {
   totalHandle: (tag: string) => any
 }
 
+export type LinkProps = {
+  handle: () => any
+  args: string
+}
+
 export type TagType = {
   id: number;
   name: string;

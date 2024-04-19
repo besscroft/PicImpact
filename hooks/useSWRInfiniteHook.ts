@@ -7,6 +7,8 @@ export const useSWRInfiniteHook = ({ handle, args, tag }: ImageHandleProps, page
       return handle(pageNum, tag)
     }, {
       revalidateOnFocus: false,
+      revalidateIfStale: false,
+      revalidateOnReconnect: false,
     })
 
   return {

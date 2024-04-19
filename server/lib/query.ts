@@ -73,6 +73,9 @@ export async function fetchServerImagesListByTag(pageNum: number, tag: string) {
         not: ''
       },
       show: 0
+    },
+    orderBy: {
+      sort: 'desc'
     }
   })
 
@@ -116,6 +119,9 @@ export async function fetchClientImagesListByTag(pageNum: number, tag: string) {
       del: 0,
       tag: tag,
       show: 0
+    },
+    orderBy: {
+      sort: 'desc'
     }
   })
 
@@ -131,4 +137,18 @@ export async function fetchClientImagesPageTotalByTag(tag: string) {
     }
   })
   return pageTotal > 0 ? Math.ceil(pageTotal / 12) : 0
+}
+
+export async function fetchTagsShow() {
+  const findAll = await db.tags.findMany({
+    where: {
+      del: 0,
+      show: 0
+    },
+    orderBy: {
+      sort: 'desc'
+    }
+  })
+
+  return findAll;
 }

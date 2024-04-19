@@ -4,7 +4,7 @@ import Link from 'next/link'
 
 export default function Logo() {
   return (
-    <Link href="/">
+    <Link href="/" className="select-none">
       <Image
         src={favicon}
         alt="Logo"

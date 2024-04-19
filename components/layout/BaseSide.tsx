@@ -14,6 +14,7 @@ export const BaseSide = () => {
 
   const iconClasses = 'text-xl text-default-500 pointer-events-none flex-shrink-0'
   const buttonClasses = 'active:scale-95 duration-200 ease-in-out'
+  const textClasses = 'text-lg font-sans select-none'
 
   return (
     <div className="w-full h-full p-2">
@@ -30,7 +31,7 @@ export const BaseSide = () => {
             startContent={<MonitorDot size={20} className={iconClasses}/>}
             onClick={() => router.push('/admin')}
           >
-            <span className="text-lg">控制台</span>
+            <span className={textClasses}>控制台</span>
           </ListboxItem>
           <ListboxItem
             className={cn(
@@ -41,7 +42,7 @@ export const BaseSide = () => {
             startContent={<ImageUp size={20} className={iconClasses}/>}
             onClick={() => router.push('/admin/upload')}
           >
-            <span className="text-lg font-sans">上传</span>
+            <span className={textClasses}>上传</span>
           </ListboxItem>
           <ListboxItem
             className={cn(
@@ -52,7 +53,7 @@ export const BaseSide = () => {
             startContent={<Image size={20} className={iconClasses}/>}
             onClick={() => router.push('/admin/list')}
           >
-            <span className="text-lg font-sans">图片维护</span>
+            <span className={textClasses}>图片维护</span>
           </ListboxItem>
           <ListboxItem
             className={cn(
@@ -63,7 +64,7 @@ export const BaseSide = () => {
             startContent={<Milestone size={20} className={iconClasses}/>}
             onClick={() => router.push('/admin/tag')}
           >
-            <span className="text-lg font-sans">标签管理</span>
+            <span className={textClasses}>标签管理</span>
           </ListboxItem>
           <ListboxItem
             className={cn(
@@ -74,7 +75,7 @@ export const BaseSide = () => {
             startContent={<Settings size={20} className={iconClasses}/>}
             onClick={() => router.push('/admin/settings')}
           >
-            <span className="text-lg font-sans">设置</span>
+            <span className={textClasses}>设置</span>
           </ListboxItem>
         </Listbox>
       </div>
