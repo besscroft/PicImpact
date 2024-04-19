@@ -34,6 +34,7 @@
     "pg": "^8.11.5",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-photo-album": "^2.3.1",
     "server-only": "^0.0.1",
     "sonner": "^1.4.41",
     "swr": "^2.2.5",

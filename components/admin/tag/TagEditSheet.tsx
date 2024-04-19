@@ -73,7 +73,7 @@ export default function TagEditSheet(props : Readonly<HandleProps>) {
               type="text"
               variant="bordered"
               label="路由"
-              placeholder="输入路由"
+              placeholder="输入路由，如：/tietie"
             />
             <Textarea
               value={tag?.detail}

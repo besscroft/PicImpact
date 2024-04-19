@@ -17,6 +17,13 @@ export type HandleListProps = {
   total: number
 }
 
+export type ImageHandleProps = {
+  handle: (pageNum: number, tag: string) => any
+  args: string
+  tag: string
+  totalHandle: (tag: string) => any
+}
+
 export type TagType = {
   id: number;
   name: string;

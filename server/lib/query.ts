@@ -91,3 +91,31 @@ export async function fetchImagesTotal() {
 
   return total > 0 ? Math.ceil(total / 8) : 0;
 }
+
+export async function fetchClientImagesListByTag(pageNum: number, tag: string) {
+  if (pageNum < 1) {
+    pageNum = 1
+  }
+  const findAll = await db.images.findMany({
+    skip: (pageNum - 1) * 12,
+    take: 12,
+    where: {
+      del: 0,
+      tag: tag,
+      show: 0
+    }
+  })
+
+  return findAll;
+}
+
+export async function fetchClientImagesPageTotalByTag(tag: string) {
+  const pageTotal = await db.images.count({
+    where: {
+      del: 0,
+      tag: tag,
+      show: 0
+    }
+  })
+  return pageTotal > 0 ? Math.ceil(pageTotal / 12) : 0
+}

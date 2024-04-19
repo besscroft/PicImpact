@@ -3,7 +3,7 @@
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from '~/components/ui/Sheet'
 import { useButtonStore } from '~/app/providers/button-store-Providers'
 import { Button, Input, Switch, cn, Textarea } from '@nextui-org/react'
-import {HandleProps, TagType} from '~/types'
+import { HandleProps, TagType } from '~/types'
 import { useState } from 'react'
 import { toast } from 'sonner'
 import { useSWRHydrated } from '~/hooks/useSWRHydrated'
@@ -69,7 +69,7 @@ export default function TagAddSheet(props : Readonly<HandleProps>) {
               type="text"
               variant="bordered"
               label="路由"
-              placeholder="输入路由"
+              placeholder="输入路由，如：/tietie"
             />
             <Textarea
               value={data.detail}

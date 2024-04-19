@@ -1,17 +1,26 @@
-'use client'
+import Masonry from '~/components/Masonry'
+import { fetchClientImagesListByTag, fetchClientImagesPageTotalByTag } from '~/server/lib/query'
+import { ImageHandleProps } from '~/types'
 
-import React from 'react'
-import Image from "next/image"
-import fufu from '~/public/112962239_p0.jpg'
+export default async function Home() {
+  const getData = async (pageNum: number, tag: string) => {
+    'use server'
+    return await fetchClientImagesListByTag(pageNum, tag)
+  }
 
-export default function Home() {
+  const getPageTotal = async (tag: string) => {
+    'use server'
+    return await fetchClientImagesPageTotalByTag(tag)
+  }
+
+  const props: ImageHandleProps = {
+    handle: getData,
+    args: 'getImages-client',
+    tag: '/',
+    totalHandle: getPageTotal
+  }
+
   return (
-    <main className="flex flex-col items-center justify-between">
-      <Image
-        width={360}
-        src={fufu}
-        alt="芙芙"
-      />
-    </main>
-  );
+    <Masonry {...props} />
+  )
 }
