@@ -71,8 +71,7 @@ export async function fetchServerImagesListByTag(pageNum: number, tag: string) {
       del: 0,
       tag: tag && tag !== '' ? tag : {
         not: ''
-      },
-      show: 0
+      }
     },
     orderBy: {
       sort: 'desc'
@@ -91,8 +90,7 @@ export async function fetchServerImagesPageTotalByTag(tag: string) {
       del: 0,
       tag: tag && tag !== '' ? tag : {
         not: ''
-      },
-      show: 0
+      }
     }
   })
   return pageTotal > 0 ? Math.ceil(pageTotal / 8) : 0
