@@ -9,11 +9,11 @@ import useSWRInfinite from 'swr/infinite'
 
 export default function Masonry(props : Readonly<ImageHandleProps>) {
   const { data: pageTotal } = useSWRPageTotalHook(props)
-  const { data, error, isLoading, isValidating, size, setSize } = useSWRInfinite((index, previousPageData) => {
+  const { data, error, isLoading, isValidating, size, setSize } = useSWRInfinite((index) => {
     return [`client--${index}-${props.tag}`, index]
     },
-    (index: any[]) => {
-      return props.handle(index[1] + 1, props.tag)
+    ([_, index]) => {
+      return props.handle(index + 1, props.tag)
     }, {
       revalidateOnFocus: false,
       revalidateIfStale: false,
