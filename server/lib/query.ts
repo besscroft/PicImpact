@@ -74,7 +74,9 @@ export async function fetchServerImagesListByTag(pageNum: number, tag: string) {
       }
     },
     orderBy: {
-      sort: 'desc'
+      sort: 'desc',
+      create_time: 'desc',
+      update_time: 'desc'
     }
   })
 
@@ -119,7 +121,9 @@ export async function fetchClientImagesListByTag(pageNum: number, tag: string) {
       show: 0
     },
     orderBy: {
-      sort: 'desc'
+      sort: 'desc',
+      create_time: 'desc',
+      update_time: 'desc'
     }
   })
 
@@ -149,4 +153,35 @@ export async function fetchTagsShow() {
   })
 
   return findAll;
+}
+
+export async function fetchImagesAnalysis() {
+  const total = await db.images.count({
+    where: {
+      del: 0
+    },
+  });
+
+  const showTotal = await db.images.count({
+    where: {
+      del: 0,
+      show: 0
+    },
+  })
+
+  const result = await db.images.groupBy({
+    by: ['tag'],
+    _count: {
+      tag: true
+    },
+    where: {
+      del: 0
+    }
+  });
+
+  return {
+    total,
+    showTotal,
+    result
+  }
 }
