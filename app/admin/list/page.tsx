@@ -1,28 +1,25 @@
-import { fetchImagesList, fetchImagesTotal } from '~/server/lib/query'
-import { HandleListProps } from '~/types'
+import {
+  fetchServerImagesListByTag,
+  fetchServerImagesPageTotalByTag
+} from '~/server/lib/query'
+import { ImageServerHandleProps } from '~/types'
 import ListProps from '~/components/admin/list/ListProps'
 
 export default async function List() {
-  const getData = async (pageNum: number) => {
+  const getData = async (pageNum: number, tag: string) => {
     'use server'
-    return await fetchImagesList(pageNum)
+    return await fetchServerImagesListByTag(pageNum, tag)
   }
 
-  const data = await getData(1)
-
-  const getTotal = async () => {
+  const getTotal = async (tag: string) => {
     'use server'
-    return await fetchImagesTotal()
+    return await fetchServerImagesPageTotalByTag(tag)
   }
 
-  const total = await getTotal()
-
-  const props: HandleListProps = {
+  const props: ImageServerHandleProps = {
     handle: getData,
-    args: 'getImages',
+    args: 'getImages-server',
     totalHandle: getTotal,
-    data: data,
-    total: total
   }
 
   return (

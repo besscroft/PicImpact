@@ -57,7 +57,10 @@ export async function fetchTagsList() {
   return findAll;
 }
 
-export async function fetchImagesList(pageNum: number) {
+export async function fetchServerImagesListByTag(pageNum: number, tag: string) {
+  if (tag === 'all') {
+    tag = ''
+  }
   if (pageNum < 1) {
     pageNum = 1
   }
@@ -65,11 +68,31 @@ export async function fetchImagesList(pageNum: number) {
     skip: (pageNum - 1) * 8,
     take: 8,
     where: {
-      del: 0
+      del: 0,
+      tag: tag && tag !== '' ? tag : {
+        not: ''
+      },
+      show: 0
     }
   })
 
   return findAll;
+}
+
+export async function fetchServerImagesPageTotalByTag(tag: string) {
+  if (tag === 'all') {
+    tag = ''
+  }
+  const pageTotal = await db.images.count({
+    where: {
+      del: 0,
+      tag: tag && tag !== '' ? tag : {
+        not: ''
+      },
+      show: 0
+    }
+  })
+  return pageTotal > 0 ? Math.ceil(pageTotal / 8) : 0
 }
 
 export async function fetchTags() {
@@ -80,16 +103,6 @@ export async function fetchTags() {
   })
 
   return findAll;
-}
-
-export async function fetchImagesTotal() {
-  const total = await db.images.count({
-    where: {
-      del: 0
-    }
-  })
-
-  return total > 0 ? Math.ceil(total / 8) : 0;
 }
 
 export async function fetchClientImagesListByTag(pageNum: number, tag: string) {

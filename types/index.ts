@@ -1,20 +1,12 @@
-import { SVGProps } from 'react'
-
-export type IconSvgProps = SVGProps<SVGSVGElement> & {
-  size?: number;
-};
-
 export type HandleProps = {
   handle: () => any
   args: string
 }
 
-export type HandleListProps = {
-  handle: (pageNum: number) => any
+export type ImageServerHandleProps = {
+  handle: (pageNum: number, tag: string) => any
   args: string
-  totalHandle: () => any
-  data: any
-  total: number
+  totalHandle: (tag: string) => any
 }
 
 export type ImageHandleProps = {

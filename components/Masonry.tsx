@@ -5,11 +5,11 @@ import { ImageHandleProps, ImageType } from '~/types'
 import PhotoAlbum from 'react-photo-album'
 import { Button } from '@nextui-org/react'
 import { useSWRInfiniteHook } from '~/hooks/useSWRInfiniteHook'
-import { useSWRPageTotalHooks } from '~/hooks/useSWRPageTotalHooks'
+import { useSWRPageTotalHook } from '~/hooks/useSWRPageTotalHook'
 
 export default function Masonry(props : Readonly<ImageHandleProps>) {
   const [pageNum, setPageNum] = useState(1)
-  const { data: pageTotal } = useSWRPageTotalHooks(props)
+  const { data: pageTotal } = useSWRPageTotalHook(props)
   const { data, isLoading, mutate } = useSWRInfiniteHook(props, pageNum)
 
   const [dataList, setDataList] = useState<ImageType[]>([])

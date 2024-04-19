@@ -1,9 +1,9 @@
 'use client'
 
 import React, { useState } from 'react'
-import { HandleListProps, ImageType } from '~/types'
-import { usePageSWRHydrated } from '~/hooks/usePageSWRHydrated'
-import { useTotalSWRHydrated } from '~/hooks/useTotalSWRHydrated'
+import { ImageServerHandleProps, ImageType, TagType } from '~/types'
+import { useSWRInfiniteServerHook } from '~/hooks/useSWRInfiniteServerHook'
+import { useSWRPageTotalServerHook } from '~/hooks/useSWRPageTotalServerHook'
 import {
   Card,
   CardBody,
@@ -20,6 +20,8 @@ import {
   ModalFooter,
   Button,
   Pagination,
+  Select,
+  SelectItem,
 } from '@nextui-org/react'
 import { ArrowDown10 } from 'lucide-react'
 import {
@@ -32,17 +34,22 @@ import { toast } from 'sonner'
 import { useButtonStore } from '~/app/providers/button-store-Providers'
 import ImageEditSheet from '~/components/admin/list/ImageEditSheet'
 import ImageView from '~/components/admin/list/ImageView'
+import { fetcher } from '~/utils/fetcher'
+import useSWR from 'swr'
 
-export default function ListProps(props : Readonly<HandleListProps>) {
+export default function ListProps(props : Readonly<ImageServerHandleProps>) {
   const [pageNum, setPageNum] = useState(1)
-  const { data, isLoading, error, mutate } = usePageSWRHydrated(props, pageNum)
-  const { data: total, isLoading: totalLoading, error: totalError, mutate: totalMutate } = useTotalSWRHydrated(props)
+  const [tagArray, setTagArray] = useState(new Set([] as string[]))
+  const [tag, setTag] = useState('')
+  const { data, isLoading, error, mutate } = useSWRInfiniteServerHook(props, pageNum, tag)
+  const { data: total, mutate: totalMutate } = useSWRPageTotalServerHook(props, tag)
   const [isOpen, setIsOpen] = useState(false)
   const [image, setImage] = useState({} as ImageType)
   const [deleteLoading, setDeleteLoading] = useState(false)
   const { setImageEdit, setImageEditData, setImageView, setImageViewData } = useButtonStore(
     (state) => state,
   )
+  const { data: tags, isLoading: tagsLoading } = useSWR('/api/v1/get-tags', fetcher)
 
   async function deleteImage() {
     setDeleteLoading(true)
@@ -68,11 +75,35 @@ export default function ListProps(props : Readonly<HandleListProps>) {
   return (
     <div className="flex flex-col space-y-2 h-full flex-1">
       <Card shadow="sm">
-        <CardHeader className="justify-between">
-          <div className="flex gap-5">
-            <div className="flex flex-col gap-1 items-start justify-center">
-              <h4 className="text-small font-semibold leading-none text-default-600 select-none">图片维护</h4>
-            </div>
+        <CardHeader className="justify-between space-x-2">
+          <div className="flex items-center justify-center w-full sm:w-64 md:w-80">
+            <Select
+              label="标签"
+              placeholder="请选择标签"
+              className="min-w-xs"
+              isLoading={tagsLoading}
+              selectedKeys={tagArray}
+              onSelectionChange={async (keys: any) => {
+                const updatedSet = new Set([] as string[]);
+                updatedSet.add(keys?.currentKey);
+                setTagArray(updatedSet)
+                setTag(keys?.currentKey)
+                await totalMutate()
+                await mutate()
+              }}
+            >
+              <SelectItem key="all" value="all">
+                全部
+              </SelectItem>
+              <SelectItem key="/" value="/">
+                首页
+              </SelectItem>
+              {tags?.map((tag: TagType) => (
+                <SelectItem key={tag.tag_value} value={tag.tag_value}>
+                  {tag.name}
+                </SelectItem>
+              ))}
+            </Select>
           </div>
           <div className="flex items-center space-x-1">
             <Button
@@ -82,6 +113,7 @@ export default function ListProps(props : Readonly<HandleListProps>) {
               variant="shadow"
               isLoading={isLoading}
               onClick={async () => {
+                await totalMutate()
                 await mutate()
               }}
             >
@@ -166,6 +198,7 @@ export default function ListProps(props : Readonly<HandleListProps>) {
         color="primary"
         size="sm"
         page={pageNum}
+        isDisabled={!total || total === 0}
         onChange={async (page) => {
           setPageNum(page)
           await mutate()
@@ -202,7 +235,7 @@ export default function ListProps(props : Readonly<HandleListProps>) {
           </ModalFooter>
         </ModalContent>
       </Modal>
-      <ImageEditSheet {...{...props, pageNum}} />
+      <ImageEditSheet {...{...props, pageNum, tag}} />
       <ImageView />
     </div>
   )

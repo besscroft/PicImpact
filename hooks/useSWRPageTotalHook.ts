@@ -1,7 +1,7 @@
 import useSWR from 'swr'
 import { ImageHandleProps } from '~/types'
 
-export const useSWRPageTotalHooks = ({ args, totalHandle, tag }: ImageHandleProps)   => {
+export const useSWRPageTotalHook = ({ args, totalHandle, tag }: ImageHandleProps)   => {
   const { data, error, isLoading, isValidating, mutate } = useSWR([args, tag],
     () => {
       return totalHandle(tag)

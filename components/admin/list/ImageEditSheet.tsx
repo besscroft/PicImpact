@@ -2,15 +2,15 @@
 
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from '~/components/ui/Sheet'
 import { useButtonStore } from '~/app/providers/button-store-Providers'
-import { HandleListProps, ImageType } from '~/types'
-import { usePageSWRHydrated } from '~/hooks/usePageSWRHydrated'
+import { ImageServerHandleProps, ImageType } from '~/types'
+import { useSWRInfiniteServerHook } from '~/hooks/useSWRInfiniteServerHook'
 import { Button, cn, Input, Switch, Textarea } from '@nextui-org/react'
 import React, { useState } from 'react'
 import { toast } from 'sonner'
 
-export default function ImageEditSheet(props : Readonly<HandleListProps & { pageNum: number }>) {
-  const { pageNum, ...restProps } = props
-  const { mutate } = usePageSWRHydrated(restProps, pageNum)
+export default function ImageEditSheet(props : Readonly<ImageServerHandleProps & { pageNum: number } & { tag: string }>) {
+  const { pageNum, tag, ...restProps } = props
+  const { mutate } = useSWRInfiniteServerHook(restProps, pageNum, tag)
   const { imageEdit, image, setImageEdit, setImageEditData } = useButtonStore(
     (state) => state,
   )
