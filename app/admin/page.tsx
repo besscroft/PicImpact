@@ -29,7 +29,7 @@ export default async function Admin() {
       <Card isBlurred shadow="sm" className="h-48">
         <CardBody className="grid grid-cols-2 gap-4">
           {data.result ? data.result.map((item: any) => (
-              <div className="flex flex-col space-y-4">
+              <div key={item?.tag} className="flex flex-col space-y-4">
                 <span className="font-light">{item?.tag}</span>
                 <span className="text-xl font-semibold">{item?._count.tag} 张</span>
               </div>
