@@ -73,11 +73,17 @@ export async function fetchServerImagesListByTag(pageNum: number, tag: string) {
         not: ''
       }
     },
-    orderBy: {
-      sort: 'desc',
-      create_time: 'desc',
-      update_time: 'desc'
-    }
+    orderBy: [
+      {
+        sort: 'desc',
+      },
+      {
+        create_time: 'desc',
+      },
+      {
+        update_time: 'desc'
+      }
+    ]
   })
 
   return findAll;
@@ -120,11 +126,17 @@ export async function fetchClientImagesListByTag(pageNum: number, tag: string) {
       tag: tag,
       show: 0
     },
-    orderBy: {
-      sort: 'desc',
-      create_time: 'desc',
-      update_time: 'desc'
-    }
+    orderBy: [
+      {
+        sort: 'desc',
+      },
+      {
+        create_time: 'desc',
+      },
+      {
+        update_time: 'desc'
+      }
+    ]
   })
 
   return findAll;
@@ -147,9 +159,11 @@ export async function fetchTagsShow() {
       del: 0,
       show: 0
     },
-    orderBy: {
-      sort: 'desc'
-    }
+    orderBy: [
+      {
+        sort: 'desc'
+      }
+    ]
   })
 
   return findAll;
