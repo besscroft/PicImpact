@@ -1,9 +1,9 @@
 import { Card, CardBody } from '@nextui-org/card'
-import {Button, Chip} from '@nextui-org/react'
+import { Button, Chip } from '@nextui-org/react'
 import Link from 'next/link'
 import { Star, MessageSquareHeart } from 'lucide-react'
 import { fetchImagesAnalysis } from '~/server/lib/query'
-import {ScrollArea} from "~/components/ui/ScrollArea";
+import { ScrollArea } from '~/components/ui/ScrollArea'
 
 export default async function Admin() {
   const getData = async () => {
