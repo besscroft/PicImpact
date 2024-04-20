@@ -73,7 +73,7 @@ export const BaseSide = () => {
             )}
             key="settings"
             startContent={<Settings size={20} className={iconClasses}/>}
-            onClick={() => router.push('/admin/settings')}
+            onClick={() => router.push('/admin/settings/preferences')}
           >
             <span className={textClasses}>设置</span>
           </ListboxItem>

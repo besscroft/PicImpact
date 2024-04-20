@@ -1,8 +1,9 @@
 import { Card, CardBody } from '@nextui-org/card'
-import { Button } from '@nextui-org/react'
+import {Button, Chip} from '@nextui-org/react'
 import Link from 'next/link'
 import { Star, MessageSquareHeart } from 'lucide-react'
 import { fetchImagesAnalysis } from '~/server/lib/query'
+import {ScrollArea} from "~/components/ui/ScrollArea";
 
 export default async function Admin() {
   const getData = async () => {
@@ -27,16 +28,21 @@ export default async function Admin() {
         </CardBody>
       </Card>
       <Card isBlurred shadow="sm" className="h-48">
-        <CardBody className="grid grid-cols-2 gap-4">
-          {data.result ? data.result.map((item: any) => (
-              <div key={item?.tag} className="flex flex-col space-y-4">
-                <span className="font-light">{item?.tag}</span>
-                <span className="text-xl font-semibold">{item?._count.tag} 张</span>
-              </div>
-            ))
-            :
-            <span>暂无分类数据</span>
-          }
+        <CardBody className="flex flex-col space-y-2">
+          <span className="font-light">分类数据</span>
+          <ScrollArea className="space-y-2 p-2">
+            {data.result ? data.result.map((item: any) => (
+                <>
+                  <div key={item?.tag} className="space-x-2">
+                    <Chip radius="sm" variant="dot">{item?.tag}</Chip>
+                    <span className="text-lg font-semibold">{item?._count.tag} 张</span>
+                  </div>
+                </>
+              ))
+              :
+              <span> 暂无分类数据 </span>
+            }
+          </ScrollArea>
         </CardBody>
       </Card>
       <Card isBlurred shadow="sm" className="h-48">

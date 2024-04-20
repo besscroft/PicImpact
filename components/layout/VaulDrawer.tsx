@@ -129,7 +129,7 @@ export default function VaulDrawer() {
                       <ListboxItem
                         key="settings"
                         startContent={<Settings size={20} className={iconClasses} />}
-                        onClick={() => router.push('/admin/settings')}
+                        onClick={() => router.push('/admin/settings/preferences')}
                         showDivider
                       >
                         <Drawer.Close className="w-full text-left">
