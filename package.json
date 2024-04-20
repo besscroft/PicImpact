@@ -9,8 +9,10 @@
     "start": "next start",
     "lint": "next lint",
     "prisma:format": "npx prisma format",
-    "prisma:dev": "npx prisma migrate dev && npx prisma generate",
-    "postinstall": "npx prisma migrate deploy && npx prisma generate"
+    "prisma:generate": "npx prisma generate",
+    "prisma:dev": "npx prisma migrate dev",
+    "prisma:deploy": "npx prisma migrate deploy",
+    "postinstall": "npx prisma generate"
   },
   "dependencies": {
     "@ant-design/nextjs-registry": "^1.0.0",
