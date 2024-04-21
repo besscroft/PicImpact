@@ -199,3 +199,22 @@ export async function fetchImagesAnalysis() {
     result
   }
 }
+
+export async function fetchAllImages() {
+  const findAll = await db.images.findMany({
+    where: {
+      del: 0
+    }
+  })
+
+  return findAll
+}
+
+export async function fetchUserById(userId: string) {
+  const findUser = await db.user.findUnique({
+    where: {
+      id: userId
+    }
+  })
+  return findUser
+}

@@ -1,6 +1,6 @@
 import { createStore } from 'zustand/vanilla'
 import { persist, createJSONStorage } from 'zustand/middleware'
-import { TagType, ImageType } from '~/types'
+import { TagType, ImageType, Config } from '~/types'
 
 export type ButtonState = {
   tagAdd: boolean
@@ -10,6 +10,10 @@ export type ButtonState = {
   imageEdit: boolean
   imageViewData: ImageType
   imageView: boolean
+  s3Edit: boolean
+  s3Data: Config[]
+  aListEdit: boolean
+  aListData: Config[]
 }
 
 export type ButtonActions = {
@@ -20,6 +24,10 @@ export type ButtonActions = {
   setImageEditData: (image: ImageType) => void
   setImageView: (imageView: boolean) => void
   setImageViewData: (imageViewData: ImageType) => void
+  setS3Edit: (s3Edit: boolean) => void
+  setS3EditData: (s3Data: Config[]) => void
+  setAListEdit: (aListEdit: boolean) => void
+  setAListEditData: (aListData: Config[]) => void
 }
 
 export type ButtonStore = ButtonState & ButtonActions
@@ -32,7 +40,11 @@ export const initButtonStore = (): ButtonState => {
     imageEdit: false,
     image: {} as ImageType,
     imageView: false,
-    imageViewData: {} as ImageType
+    imageViewData: {} as ImageType,
+    s3Edit: false,
+    s3Data: [] as Config[],
+    aListEdit: false,
+    aListData: [] as Config[],
   }
 }
 
@@ -43,7 +55,11 @@ export const defaultInitState: ButtonState = {
   imageEdit: false,
   image: {} as ImageType,
   imageView: false,
-  imageViewData: {} as ImageType
+  imageViewData: {} as ImageType,
+  s3Edit: false,
+  s3Data: [] as Config[],
+  aListEdit: false,
+  aListData: [] as Config[],
 }
 
 export const createButtonStore = (
@@ -73,6 +89,18 @@ export const createButtonStore = (
         })),
         setImageViewData: (imageViewDataValue) => set(() => ({
           imageViewData: imageViewDataValue,
+        })),
+        setS3Edit: (s3EditValue) => set(() => ({
+          s3Edit: s3EditValue,
+        })),
+        setS3EditData: (s3DataValue) => set(() => ({
+          s3Data: s3DataValue,
+        })),
+        setAListEdit: (aListEditValue) => set(() => ({
+          aListEdit: aListEditValue,
+        })),
+        setAListEditData: (aListDataValue) => set(() => ({
+          aListData: aListDataValue,
         })),
       }),
       {

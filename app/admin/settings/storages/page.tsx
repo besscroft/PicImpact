@@ -1,8 +1,10 @@
 'use client'
 
 import { Tabs, Tab } from '@nextui-org/react'
-import AListTabs from '~/components/admin/settings/AListTabs'
-import S3Tabs from '~/components/admin/settings/S3Tabs'
+import AListTabs from '~/components/admin/settings/storages/AListTabs'
+import S3Tabs from '~/components/admin/settings/storages/S3Tabs'
+import S3EditSheet from '~/components/admin/settings/storages/S3EditSheet'
+import AListEditSheet from '~/components/admin/settings/storages/AListEditSheet'
 
 export default function Storages() {
   return (
@@ -15,6 +17,8 @@ export default function Storages() {
           <AListTabs/>
         </Tab>
       </Tabs>
+      <S3EditSheet />
+      <AListEditSheet />
     </div>
   )
 }

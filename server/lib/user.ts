@@ -1,7 +1,7 @@
 import { auth } from '~/server/auth'
 
 export async function getCurrentUser() {
-  const session = await auth()
+  const { user } = await auth()
 
-  return session?.user
+  return user
 }

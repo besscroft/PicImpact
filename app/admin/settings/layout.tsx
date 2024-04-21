@@ -26,6 +26,14 @@ export default function AdminLayout({
           <Button
             size="sm"
             color="primary"
+            variant={pathname === '/admin/settings/password' ? 'bordered': 'light'}
+            onClick={() => router.push('/admin/settings/password')}
+          >
+            密码修改
+          </Button>
+          <Button
+            size="sm"
+            color="primary"
             variant={pathname === '/admin/settings/storages' ? 'bordered': 'light'}
             onClick={() => router.push('/admin/settings/storages')}
           >

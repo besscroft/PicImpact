@@ -115,3 +115,53 @@ export async function updateImage(image: ImageType) {
   )
   return resultRow
 }
+
+export async function insertImages(images: ImageType[]) {
+  const resultRow = await db.images.createMany({
+    data: images,
+    skipDuplicates: true,
+  })
+  return resultRow
+}
+
+export async function updatePassword(userId: string, newPassword: string) {
+  const resultRow = await db.user.update({
+    where: {
+      id: userId
+    },
+    data: {
+      password: newPassword
+    }
+  })
+  return resultRow
+}
+
+export async function updateS3Config(configs: any) {
+  const resultRow = await db.$executeRaw`
+    UPDATE "public"."Configs"
+    SET config_value = CASE
+       WHEN config_key = 'accesskey_id' THEN ${configs.accesskeyId}
+       WHEN config_key = 'accesskey_secret' THEN ${configs.accesskeySecret}
+       WHEN config_key = 'region' THEN ${configs.region}
+       WHEN config_key = 'endpoint' THEN ${configs.endpoint}
+       WHEN config_key = 'bucket' THEN ${configs.bucket}
+       WHEN config_key = 'storage_folder' THEN ${configs.storageFolder}
+       ELSE 'N&A'
+    END
+    WHERE config_key IN ('accesskey_id', 'accesskey_secret', 'region', 'endpoint', 'bucket', 'storage_folder');
+  `
+  return resultRow
+}
+
+export async function updateAListConfig(configs: any) {
+  const resultRow = await db.$executeRaw`
+    UPDATE "public"."Configs"
+    SET config_value = CASE
+       WHEN config_key = 'alist_url' THEN ${configs.alistUrl}
+       WHEN config_key = 'alist_token' THEN ${configs.alistToken}
+       ELSE 'N&A'
+    END
+    WHERE config_key IN ('alist_url', 'alist_token');
+  `
+  return resultRow
+}

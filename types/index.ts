@@ -60,3 +60,9 @@ export type ImageType = {
   sort: number;
   rating: number;
 }
+
+export type Config = {
+  id: number;
+  config_key: string;
+  config_value: string;
+}

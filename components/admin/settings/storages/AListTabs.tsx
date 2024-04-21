@@ -4,9 +4,14 @@ import { Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Skelet
 import useSWR from 'swr'
 import { fetcher } from '~/utils/fetcher'
 import { toast } from 'sonner'
+import { useButtonStore } from '~/app/providers/button-store-Providers'
 
-export default function S3Tabs() {
-  const { data, error, isLoading } = useSWR('/api/v1/s3-info', fetcher)
+export default function AListTabs() {
+  const { data, error, isLoading, isValidating, mutate } = useSWR('/api/v1/alist-info', fetcher
+    , { revalidateOnFocus: false })
+  const { setAListEdit, setAListEditData } = useButtonStore(
+    (state) => state,
+  )
 
   if (error) {
     toast.error('请求失败！')
@@ -18,21 +23,35 @@ export default function S3Tabs() {
         <CardHeader className="justify-between">
           <div className="flex gap-5">
             <div className="flex flex-col gap-1 items-start justify-center">
-              <h4 className="text-small font-semibold leading-none text-default-600">S3 配置信息</h4>
+              <h4 className="text-small font-semibold leading-none text-default-600">AList 配置信息</h4>
             </div>
           </div>
-          <Button
-            color="primary"
-            variant="light"
-            radius="full"
-            onClick={() => toast.info('还没写')}
-          >
-            编辑
-          </Button>
+          <div className="flex items-center space-x-2">
+            <Button
+              color="primary"
+              variant="bordered"
+              radius="full"
+              isLoading={isValidating}
+              onClick={() => mutate()}
+            >
+              刷新
+            </Button>
+            <Button
+              color="primary"
+              variant="bordered"
+              radius="full"
+              onClick={() => {
+                setAListEdit(true)
+                setAListEditData(JSON.parse(JSON.stringify(data)))
+              }}
+            >
+              编辑
+            </Button>
+          </div>
         </CardHeader>
       </ Card>
       {
-        !isLoading && data ?
+        !isValidating && data ?
           <Table aria-label="S3 设置">
             <TableHeader>
               <TableColumn>Key</TableColumn>
@@ -43,7 +62,7 @@ export default function S3Tabs() {
                 data.map((item: any) => (
                   <TableRow key={item.id}>
                     <TableCell>{item.config_key}</TableCell>
-                    <TableCell>{item.config_value || 'N&A'}</TableCell>
+                    <TableCell className="truncate max-w-60">{item.config_value || 'N&A'}</TableCell>
                   </TableRow>
                 ))
               }

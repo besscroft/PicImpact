@@ -103,7 +103,7 @@ export default function TagEditSheet(props : Readonly<HandleProps>) {
               }}
               classNames={{
                 base: cn(
-                  "inline-flex flex-row-reverse w-full max-w-md bg-content1 hover:bg-content2 items-center",
+                  "inline-flex flex-row-reverse w-full max-w-full bg-content1 hover:bg-content2 items-center",
                   "justify-between cursor-pointer rounded-lg gap-2 p-4 border-2 border-transparent",
                   "data-[selected=true]:border-primary",
                 ),
