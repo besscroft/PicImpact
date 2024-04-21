@@ -41,7 +41,7 @@ export default function ImageEditSheet(props : Readonly<ImageServerHandleProps &
     <Sheet
       defaultOpen={false}
       open={imageEdit}
-      onOpenChange={(open) => {
+      onOpenChange={(open: boolean) => {
         if (!open) {
           setImageEdit(false)
           setImageEditData({} as ImageType)

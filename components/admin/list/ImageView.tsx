@@ -15,7 +15,7 @@ export default function ImageView() {
     <Sheet
       defaultOpen={false}
       open={imageView}
-      onOpenChange={(open) => {
+      onOpenChange={(open: boolean) => {
         if (!open) {
           setImageView(false)
           setImageViewData({} as ImageType)

@@ -44,7 +44,7 @@ export default function TagEditSheet(props : Readonly<HandleProps>) {
     <Sheet
       defaultOpen={false}
       open={tagEdit}
-      onOpenChange={(open) => {
+      onOpenChange={(open: boolean) => {
         if (!open) {
           setTagEdit(false)
           setTagEditData({} as TagType)
