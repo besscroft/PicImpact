@@ -8,8 +8,7 @@ import { toast } from 'sonner'
 import useSWR from 'swr'
 import { fetcher } from '~/utils/fetcher'
 import { ExifType, TagType, ImageType } from '~/types'
-import { Button, Select, SelectItem, Input, Divider } from '@nextui-org/react'
-import { Card, CardBody, CardHeader, CardFooter } from '@nextui-org/card'
+import { Button, Select, SelectItem, Input, Divider, Card, CardBody, CardHeader, CardFooter } from '@nextui-org/react'
 import ExifReader from 'exifreader'
 
 export default function FileUpload() {

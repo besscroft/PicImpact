@@ -1,7 +1,6 @@
 'use client'
 
-import { Card, CardHeader } from '@nextui-org/card'
-import { Link, Button } from '@nextui-org/react'
+import { Card, CardHeader, Button } from '@nextui-org/react'
 import { useRouter } from 'next-nprogress-bar'
 import { usePathname } from 'next/navigation'
 
