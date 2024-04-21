@@ -12,8 +12,8 @@ export async function POST(request: Request) {
     return Response.json({ url: '' })
   } else {
     const findConfig = await fetchAListInfo()
-    const alistToken = findConfig.find((item) => item.config_key === 'alist_token')?.config_value || '';
-    const alistUrl = findConfig.find((item) => item.config_key === 'alist_url')?.config_value || '';
+    const alistToken = findConfig.find((item: any) => item.config_key === 'alist_token')?.config_value || '';
+    const alistUrl = findConfig.find((item: any) => item.config_key === 'alist_url')?.config_value || '';
 
     // @ts-ignore
     const filePath = encodeURIComponent(`${mountPath.toString() === '/' ? '' : mountPath}/${type}/${file?.name}`)
