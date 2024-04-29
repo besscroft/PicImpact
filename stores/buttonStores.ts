@@ -14,6 +14,8 @@ export type ButtonState = {
   s3Data: Config[]
   aListEdit: boolean
   aListData: Config[]
+  MasonryView: boolean
+  MasonryViewData: ImageType
 }
 
 export type ButtonActions = {
@@ -28,6 +30,8 @@ export type ButtonActions = {
   setS3EditData: (s3Data: Config[]) => void
   setAListEdit: (aListEdit: boolean) => void
   setAListEditData: (aListData: Config[]) => void
+  setMasonryView: (masonryView: boolean) => void
+  setMasonryViewData: (masonryViewData: ImageType) => void
 }
 
 export type ButtonStore = ButtonState & ButtonActions
@@ -45,6 +49,8 @@ export const initButtonStore = (): ButtonState => {
     s3Data: [] as Config[],
     aListEdit: false,
     aListData: [] as Config[],
+    MasonryView: false,
+    MasonryViewData: {} as ImageType,
   }
 }
 
@@ -60,6 +66,8 @@ export const defaultInitState: ButtonState = {
   s3Data: [] as Config[],
   aListEdit: false,
   aListData: [] as Config[],
+  MasonryView: false,
+  MasonryViewData: {} as ImageType,
 }
 
 export const createButtonStore = (
@@ -101,6 +109,12 @@ export const createButtonStore = (
         })),
         setAListEditData: (aListDataValue) => set(() => ({
           aListData: aListDataValue,
+        })),
+        setMasonryView: (masonryViewValue) => set(() => ({
+          MasonryView: masonryViewValue,
+        })),
+        setMasonryViewData: (masonryViewDataValue) => set(() => ({
+          MasonryViewData: masonryViewDataValue,
         })),
       }),
       {

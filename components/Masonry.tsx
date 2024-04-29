@@ -6,7 +6,8 @@ import PhotoAlbum from 'react-photo-album'
 import { Button } from '@nextui-org/react'
 import { useSWRPageTotalHook } from '~/hooks/useSWRPageTotalHook'
 import useSWRInfinite from 'swr/infinite'
-import { useSpring, animated } from '@react-spring/web'
+import { useButtonStore } from '~/app/providers/button-store-Providers'
+import MasonryItem from '~/components/MasonryItem'
 
 export default function Masonry(props : Readonly<ImageHandleProps>) {
   const { data: pageTotal } = useSWRPageTotalHook(props)
@@ -22,11 +23,9 @@ export default function Masonry(props : Readonly<ImageHandleProps>) {
     })
   const dataList = data ? [].concat(...data) : [];
 
-  const zoomInAnimation = useSpring({
-    from: { opacity: 0, transform: 'scale(0.5)' },
-    to: { opacity: 1, transform: 'scale(1)' },
-    config: { duration: 800 }
-  });
+  const { setMasonryView, setMasonryViewData } = useButtonStore(
+    (state) => state,
+  )
 
   return (
     <div className="w-full sm:w-4/5 mx-auto p-2">
@@ -41,20 +40,21 @@ export default function Masonry(props : Readonly<ImageHandleProps>) {
         photos={
           dataList?.map((item: ImageType) => ({
             src: item.url,
-            width: item.width,
-            height: item.height,
-            alt: item.detail
+            alt: item.detail,
+            ...item
           })) || []
         }
-        renderPhoto={({ imageProps: { src, alt, style, ...restImageProps } }) => (
-          <animated.div style={zoomInAnimation} className="will-change-transform">
-            <img
-              className="cursor-pointer transition-all will-change-transform hover:scale-[1.05]"
-              style={style}
-              src={src}
-              alt={alt}
-            />
-          </animated.div>
+        renderPhoto={({ photo, wrapperStyle, renderDefaultPhoto }) => (
+          <img
+            className="cursor-pointer transition-all will-change-transform hover:scale-[1.05]"
+            style={wrapperStyle}
+            src={photo.src}
+            alt={photo.alt}
+            onClick={() => {
+              setMasonryView(true)
+              setMasonryViewData(photo)
+            }}
+          />
         )}
       />
       <div className="flex items-center justify-center my-4">
@@ -74,6 +74,7 @@ export default function Masonry(props : Readonly<ImageHandleProps>) {
             <></>
         }
       </div>
+      <MasonryItem />
     </div>
   )
 }
