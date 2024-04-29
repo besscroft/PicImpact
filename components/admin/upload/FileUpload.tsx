@@ -246,6 +246,7 @@ export default function FileUpload() {
           <div className="flex w-full justify-between space-x-1">
             <Select
               isRequired
+              size="sm"
               variant="bordered"
               label="存储"
               placeholder="请选择存储"
@@ -269,6 +270,7 @@ export default function FileUpload() {
             </Select>
             <Select
               isRequired
+              size="sm"
               variant="bordered"
               label="标签"
               placeholder="请选择标签"
@@ -296,6 +298,7 @@ export default function FileUpload() {
                 ?
                 <Select
                   isRequired
+                  size="sm"
                   variant="bordered"
                   label="目录"
                   placeholder="请选择Alist目录"
@@ -342,6 +345,7 @@ export default function FileUpload() {
             ?
             <div className="w-full mt-2 space-y-2">
               <Input
+                size="sm"
                 isReadOnly
                 type="text"
                 label="图片地址"
@@ -350,6 +354,7 @@ export default function FileUpload() {
               />
               <div className="flex items-center space-x-1 w-full">
                 <Input
+                  size="sm"
                   isRequired
                   value={String(width)}
                   onValueChange={(value) => setWidth(Number(value))}
@@ -359,6 +364,7 @@ export default function FileUpload() {
                   placeholder="0"
                 />
                 <Input
+                  size="sm"
                   isRequired
                   value={String(height)}
                   onValueChange={(value) => setHeight(Number(value))}
@@ -369,6 +375,7 @@ export default function FileUpload() {
                 />
               </div>
               <Input
+                size="sm"
                 type="text"
                 label="描述"
                 placeholder="请输入描述"
