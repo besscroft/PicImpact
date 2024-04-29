@@ -9,7 +9,6 @@ import { toast } from 'sonner'
 import dayjs from 'dayjs'
 
 export default function Backup() {
-  const [data, setData] = useState<any[]>([])
   const [restoreKameraLoading, setRestoreKameraLoading] = useState(false)
   const [restorePicImpactLoading, setRestorePicImpactLoading] = useState(false)
   const [backupLoading, setBackupLoading] = useState(false)
@@ -43,14 +42,29 @@ export default function Backup() {
     }
   }
 
+  async function restore(data: any[]) {
+    try {
+      const res = await fetch('/api/v1/restore-images-json', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      }).then(res => res.json())
+      toast.success(`还原 ${res.count} 条数据！`)
+    } catch (e) {
+      toast.error('还原失败！')
+    }
+  }
+
   function readKameraJSONFile(file: File) {
     try {
       let reader = new FileReader();
       reader.readAsText(file);
 
-      reader.onload = function() {
+      reader.onload = async () => {
         if (typeof reader.result === 'string') {
-          setData(JSON.parse(reader.result)
+          const data = JSON.parse(reader.result)
             .map((obj: any) => {
               obj.tag = `/${obj.type}`
               obj.show = 1
@@ -58,50 +72,45 @@ export default function Backup() {
             })
             .map(({ id, del, ...obj }: any) => obj)
             .map(({ type, ...obj }: any) => obj)
-          )
+          toast.success('备份文件解析成功，开始还原至数据库！')
+          await restore(data)
         }
       };
-      toast.success('备份文件解析成功，开始还原至数据库！')
     } catch (error) {
       toast.error('备份文件解析失败！')
     }
   }
 
-  function readPicImpactJSONFile(file: File) {
+  async function readPicImpactJSONFile(file: File) {
     try {
       let reader = new FileReader();
       reader.readAsText(file);
 
-      reader.onload = function() {
+      reader.onload = async () => {
         if (typeof reader.result === 'string') {
-          setData(JSON.parse(reader.result)
+          const data = JSON.parse(reader.result)
             .map((obj: any) => {
               obj.show = 1
               return obj;
             })
             .map(({ id, del, ...obj }: any) => obj)
-          )
+          toast.success('备份文件解析成功，开始还原至数据库！')
+          await restore(data)
         }
       };
-      toast.success('备份文件解析成功，开始还原至数据库！')
     } catch (error) {
       toast.error('备份文件解析失败！')
     }
   }
 
-  async function restore() {
+  async function onKameraRequestUpload(option: any) {
+    setRestoreKameraLoading(true)
     try {
-      await fetch('/api/v1/restore-images-json', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(data),
-      })
-      toast.success('还原成功！')
-    } catch (e) {
-      toast.error('还原失败！')
+      readKameraJSONFile(option.file)
+    } finally {
+      setRestoreKameraLoading(false)
     }
+    option.onSuccess(option.file)
   }
 
   const kameraProps: UploadProps = {
@@ -109,31 +118,25 @@ export default function Backup() {
     maxCount: 1,
     multiple: false,
     showUploadList: false,
-    async onChange(info: any) {
-      setRestoreKameraLoading(true)
-      try {
-        readKameraJSONFile(info.file.originFileObj)
-        await restore()
-      } finally {
-        setRestoreKameraLoading(false)
-      }
-    },
+    customRequest: async (file) => await onKameraRequestUpload(file),
   };
+
+  async function onPicImpactRequestUpload(option: any) {
+    setRestorePicImpactLoading(true)
+    try {
+      await readPicImpactJSONFile(option.file)
+    } finally {
+      setRestorePicImpactLoading(false)
+    }
+    option.onSuccess(option.file)
+  }
 
   const picimpactProps: UploadProps = {
     name: 'file',
     maxCount: 1,
     multiple: false,
     showUploadList: false,
-    async onChange(info: any) {
-      setRestorePicImpactLoading(true)
-      try {
-        readPicImpactJSONFile(info.file.originFileObj)
-        await restore()
-      } finally {
-        setRestorePicImpactLoading(false)
-      }
-    },
+    customRequest: async (file) => await onPicImpactRequestUpload(file),
   };
 
   return (
