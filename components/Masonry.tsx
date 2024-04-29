@@ -6,7 +6,7 @@ import PhotoAlbum from 'react-photo-album'
 import { Button } from '@nextui-org/react'
 import { useSWRPageTotalHook } from '~/hooks/useSWRPageTotalHook'
 import useSWRInfinite from 'swr/infinite'
-import { motion } from 'framer-motion'
+import { useSpring, animated } from '@react-spring/web'
 
 export default function Masonry(props : Readonly<ImageHandleProps>) {
   const { data: pageTotal } = useSWRPageTotalHook(props)
@@ -21,6 +21,13 @@ export default function Masonry(props : Readonly<ImageHandleProps>) {
       revalidateOnReconnect: false,
     })
   const dataList = data ? [].concat(...data) : [];
+
+  const zoomInAnimation = useSpring({
+    from: { opacity: 0, transform: 'scale(0.5)' },
+    to: { opacity: 1, transform: 'scale(1)' },
+    config: { duration: 800 }
+  });
+
   return (
     <div className="w-full sm:w-4/5 mx-auto p-2">
       <PhotoAlbum
@@ -40,24 +47,14 @@ export default function Masonry(props : Readonly<ImageHandleProps>) {
           })) || []
         }
         renderPhoto={({ imageProps: { src, alt, style, ...restImageProps } }) => (
-          <motion.div
-            style={style}
-            initial={{ opacity: 0, scale: 0.5 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{
-              duration: 0.8,
-              delay: 0.5,
-              ease: [0, 0.71, 0.2, 1.01]
-            }}
-          >
-            <motion.img
-              className="cursor-pointer"
+          <animated.div style={zoomInAnimation} className="will-change-transform">
+            <img
+              className="cursor-pointer transition-all will-change-transform hover:scale-[1.05]"
+              style={style}
               src={src}
               alt={alt}
-              whileHover={{scale: 1.05}}
-              whileTap={{scale: 0.95}}
             />
-          </motion.div>
+          </animated.div>
         )}
       />
       <div className="flex items-center justify-center my-4">
