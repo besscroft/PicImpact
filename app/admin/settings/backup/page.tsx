@@ -137,24 +137,22 @@ export default function Backup() {
   };
 
   return (
-    <Card className="flex-1">
+    <Card className="flex-1" shadow="sm">
       <CardBody className="space-y-2">
         <Upload {...kameraProps}>
           <Button
-            className="w-full sm:w-64"
             icon={<CloudUploadOutlined />}
             loading={restoreKameraLoading}
           >选择备份文件（从 Kamera 迁移）</Button>
         </Upload>
         <Button
-          className="w-full sm:w-64"
+          className="w-64"
           icon={<CloudDownloadOutlined />}
           loading={backupLoading}
           onClick={() => backup()}
         >备份</Button>
         <Upload {...picimpactProps}>
           <Button
-            className="w-full sm:w-64"
             icon={<CloudUploadOutlined />}
             loading={restorePicImpactLoading}
           >选择备份文件（本机迁移）</Button>

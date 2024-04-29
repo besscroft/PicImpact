@@ -24,7 +24,7 @@ export default function ImageView() {
     >
       <SheetContent side="left">
         <SheetHeader>
-          <SheetTitle>编辑标签</SheetTitle>
+          <SheetTitle>查看图片</SheetTitle>
           <SheetDescription className="space-y-2">
             <Image
               isBlurred
@@ -42,6 +42,22 @@ export default function ImageView() {
               classNames={{
                 input: "resize-y min-h-[40px]",
               }}
+            />
+            <Input
+              isReadOnly
+              value={String(imageViewData?.width)}
+              type="number"
+              variant="bordered"
+              label="宽度 px"
+              placeholder="0"
+            />
+            <Input
+              isReadOnly
+              value={String(imageViewData?.height)}
+              type="number"
+              variant="bordered"
+              label="高度 px"
+              placeholder="0"
             />
             <Input
               isReadOnly

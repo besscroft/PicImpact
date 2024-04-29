@@ -56,7 +56,7 @@ export default function PassWord() {
   }
 
   return (
-    <Card className="flex-1">
+    <Card className="flex-1" shadow="sm">
       <CardBody className="space-y-2">
         <Input
           isRequired

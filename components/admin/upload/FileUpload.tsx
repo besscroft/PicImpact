@@ -331,6 +331,26 @@ export default function FileUpload() {
                 variant="bordered"
                 value={url}
               />
+              <div className="flex items-center space-x-1 w-full">
+                <Input
+                  isRequired
+                  value={String(width)}
+                  onValueChange={(value) => setWidth(Number(value))}
+                  type="number"
+                  variant="bordered"
+                  label="宽度 px"
+                  placeholder="0"
+                />
+                <Input
+                  isRequired
+                  value={String(height)}
+                  onValueChange={(value) => setHeight(Number(value))}
+                  type="number"
+                  variant="bordered"
+                  label="高度 px"
+                  placeholder="0"
+                />
+              </div>
               <Input
                 type="text"
                 label="描述"

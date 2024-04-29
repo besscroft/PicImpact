@@ -1,8 +1,12 @@
+import { Card, CardBody } from '@nextui-org/react'
+
 export default function Preferences() {
 
   return (
-    <div className="flex flex-col space-y-2 h-full flex-1">
-      首选项
-    </div>
+    <Card className="flex-1" shadow="sm">
+      <CardBody className="space-y-2">
+        首选项
+      </CardBody>
+    </Card>
   )
 }

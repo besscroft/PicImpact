@@ -9,7 +9,7 @@ export default function DefaultTag() {
     <Card shadow="sm">
       <CardHeader className="flex gap-3">
         <p>首页</p>
-        <Popover placement="top">
+        <Popover placement="top" shadow="sm">
           <PopoverTrigger className="cursor-pointer">
             <Chip className="select-none" color="success" variant="shadow">/</Chip>
           </PopoverTrigger>
@@ -26,7 +26,7 @@ export default function DefaultTag() {
       </CardBody>
       <CardFooter className="flex space-x-1 select-none">
         <Chip color="success" variant="shadow">显示</Chip>
-        <Popover placement="top">
+        <Popover placement="top" shadow="sm">
           <PopoverTrigger className="cursor-pointer">
             <Chip
               color="primary"

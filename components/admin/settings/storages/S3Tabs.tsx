@@ -29,7 +29,8 @@ export default function S3Tabs() {
           <div className="flex items-center space-x-2">
             <Button
               color="primary"
-              variant="bordered"
+              variant="shadow"
+              size="sm"
               radius="full"
               isLoading={isValidating}
               onClick={() => mutate()}
@@ -38,7 +39,8 @@ export default function S3Tabs() {
             </Button>
             <Button
               color="primary"
-              variant="bordered"
+              variant="shadow"
+              size="sm"
               radius="full"
               onClick={() => {
                 setS3Edit(true)

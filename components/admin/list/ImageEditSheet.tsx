@@ -50,8 +50,21 @@ export default function ImageEditSheet(props : Readonly<ImageServerHandleProps &
     >
       <SheetContent side="left">
         <SheetHeader>
-          <SheetTitle>编辑标签</SheetTitle>
+          <SheetTitle>编辑图片</SheetTitle>
           <SheetDescription className="space-y-2">
+            <Textarea
+              isRequired
+              value={image?.url}
+              onValueChange={(value) => setImageEditData({ ...image, url: value })}
+              label="链接"
+              variant="bordered"
+              placeholder="输入链接"
+              disableAnimation
+              disableAutosize
+              classNames={{
+                input: "resize-y min-h-[40px]",
+              }}
+            />
             <Textarea
               value={image?.detail}
               onValueChange={(value) => setImageEditData({ ...image, detail: value })}
@@ -63,6 +76,24 @@ export default function ImageEditSheet(props : Readonly<ImageServerHandleProps &
               classNames={{
                 input: "resize-y min-h-[40px]",
               }}
+            />
+            <Input
+              isRequired
+              value={String(image?.width)}
+              onValueChange={(value) => setImageEditData({ ...image, width: Number(value) })}
+              type="number"
+              variant="bordered"
+              label="宽度 px"
+              placeholder="0"
+            />
+            <Input
+              isRequired
+              value={String(image?.height)}
+              onValueChange={(value) => setImageEditData({ ...image, height: Number(value) })}
+              type="number"
+              variant="bordered"
+              label="高度 px"
+              placeholder="0"
             />
             <Input
               value={String(image?.sort)}

@@ -17,15 +17,10 @@ import {
   ModalHeader,
   ModalBody,
   ModalFooter,
-  Button
+  Button,
+  Switch
 } from '@nextui-org/react'
-import { ArrowDown10 } from 'lucide-react'
-import {
-  ContextMenu,
-  ContextMenuContent,
-  ContextMenuItem,
-  ContextMenuTrigger,
-} from '~/components/ui/ContextMenu'
+import { ArrowDown10, Eye, EyeOff, Pencil, Trash } from 'lucide-react'
 import { toast } from 'sonner'
 import DefaultTag from '~/components/admin/tag/DefaultTag'
 import { TagType } from '~/types'
@@ -37,6 +32,7 @@ export default function TagList(props : Readonly<HandleProps>) {
   const [isOpen, setIsOpen] = useState(false)
   const [tag, setTag] = useState({} as TagType)
   const [deleteLoading, setDeleteLoading] = useState(false)
+  const [updateTagLoading, setUpdateTagLoading] = useState(false)
   const { setTagEdit, setTagEditData } = useButtonStore(
     (state) => state,
   )
@@ -62,6 +58,32 @@ export default function TagList(props : Readonly<HandleProps>) {
     }
   }
 
+  async function updateTagShow(id: number, show: number) {
+    try {
+      setUpdateTagLoading(true)
+      const res = await fetch(`/api/v1/update-tag-show`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          id,
+          show
+        }),
+      })
+      if (res.status === 200) {
+        toast.success('更新成功！')
+        await mutate()
+      } else {
+        toast.error('更新失败！')
+      }
+    } catch (e) {
+      toast.error('更新失败！')
+    } finally {
+      setUpdateTagLoading(false)
+    }
+  }
+
   return (
     <>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
@@ -70,68 +92,81 @@ export default function TagList(props : Readonly<HandleProps>) {
             <>
               <DefaultTag/>
               {data.map((tag: TagType) => (
-                <ContextMenu key={tag.id}>
-                  <ContextMenuTrigger>
-                    <Card shadow="sm">
-                      <CardHeader className="flex gap-3">
-                        <p>{tag.name}</p>
-                        <Popover placement="top">
-                          <PopoverTrigger className="cursor-pointer">
-                            <Chip className="select-none" color="success" variant="shadow">{tag.tag_value}</Chip>
-                          </PopoverTrigger>
-                          <PopoverContent>
-                            <div className="px-1 py-2 select-none">
-                              <div className="text-small font-bold">路由</div>
-                              <div className="text-tiny">可以访问的一级路径</div>
-                            </div>
-                          </PopoverContent>
-                        </Popover>
-                      </CardHeader>
-                      <CardBody>
-                        <p>{tag.detail || '没有介绍'}</p>
-                      </CardBody>
-                      <CardFooter className="flex space-x-1 select-none">
-                        {
-                          tag.show === 0 ?
-                            <Chip color="success" variant="shadow">显示</Chip>
-                            :
-                            <Chip color="danger" variant="shadow">不显示</Chip>
+                <Card shadow="sm" key={tag.id} isFooterBlurred>
+                  <CardHeader className="flex gap-3">
+                    <p>{tag.name}</p>
+                    <Popover placement="top" shadow="sm">
+                      <PopoverTrigger className="cursor-pointer">
+                        <Chip className="select-none" color="success" variant="shadow">{tag.tag_value}</Chip>
+                      </PopoverTrigger>
+                      <PopoverContent>
+                        <div className="px-1 py-2 select-none">
+                          <div className="text-small font-bold">路由</div>
+                          <div className="text-tiny">可以访问的一级路径</div>
+                        </div>
+                      </PopoverContent>
+                    </Popover>
+                  </CardHeader>
+                  <CardBody className="h-36">
+                    <p>{tag.detail || '没有介绍'}</p>
+                  </CardBody>
+                  <CardFooter className="flex space-x-1 select-none before:bg-white/10 border-white/20 border-1 overflow-hidden py-1 absolute before:rounded-xl rounded-large bottom-1 w-[calc(100%_-_8px)] shadow-small ml-1 z-10">
+                    <div className="flex flex-1 space-x-1 items-center">
+                      <Switch
+                        defaultSelected
+                        size="sm"
+                        color="success"
+                        isSelected={tag.show === 0}
+                        isDisabled={updateTagLoading}
+                        thumbIcon={({ isSelected }) =>
+                          isSelected ? (
+                            <Eye size={20} />
+                          ) : (
+                            <EyeOff size={20} />
+                          )
                         }
-                        <Popover placement="top">
-                          <PopoverTrigger className="cursor-pointer">
-                            <Chip
-                              color="primary"
-                              variant="shadow"
-                              startContent={<ArrowDown10 size={20} />}
-                            >{tag.sort}</Chip>
-                          </PopoverTrigger>
-                          <PopoverContent>
-                            <div className="px-1 py-2 select-none">
-                              <div className="text-small font-bold">排序</div>
-                              <div className="text-tiny">规则为从高到低</div>
-                            </div>
-                          </PopoverContent>
-                        </Popover>
-                      </CardFooter>
-                    </Card>
-                  </ContextMenuTrigger>
-                  <ContextMenuContent>
-                    <ContextMenuItem
-                      className="cursor-pointer"
-                      onClick={() => {
-                        setTagEditData(tag)
-                        setTagEdit(true)
-                      }}
-                    >编辑</ContextMenuItem>
-                    <ContextMenuItem
-                      className="cursor-pointer"
-                      onClick={() => {
-                        setTag(tag)
-                        setIsOpen(true)
-                      }}
-                    >删除</ContextMenuItem>
-                  </ContextMenuContent>
-                </ContextMenu>
+                        onValueChange={(isSelected: boolean) => updateTagShow(tag.id, isSelected ? 0 : 1)}
+                      />
+                      <Popover placement="top" shadow="sm">
+                        <PopoverTrigger className="cursor-pointer">
+                          <Chip
+                            color="primary"
+                            variant="shadow"
+                            startContent={<ArrowDown10 size={20} />}
+                          >{tag.sort}</Chip>
+                        </PopoverTrigger>
+                        <PopoverContent>
+                          <div className="px-1 py-2 select-none">
+                            <div className="text-small font-bold">排序</div>
+                            <div className="text-tiny">规则为从高到低</div>
+                          </div>
+                        </PopoverContent>
+                      </Popover>
+                    </div>
+                    <div className="space-x-1">
+                      <Button
+                        isIconOnly
+                        size="sm"
+                        onClick={() => {
+                          setTagEditData(tag)
+                          setTagEdit(true)
+                        }}
+                      >
+                        <Pencil size={20} />
+                      </Button>
+                      <Button
+                        isIconOnly
+                        size="sm"
+                        onClick={() => {
+                          setTag(tag)
+                          setIsOpen(true)
+                        }}
+                      >
+                        <Trash size={20} />
+                      </Button>
+                    </div>
+                  </CardFooter>
+                </Card>
               ))}
             </>
             : error ?

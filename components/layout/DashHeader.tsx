@@ -4,7 +4,7 @@ import DynamicNavbar from '~/components/layout/DynamicNavbar'
 
 export default function DashHeader() {
   return (
-    <Navbar>
+    <Navbar isBordered>
       <NavbarBrand>
         <Logo />
       </NavbarBrand>

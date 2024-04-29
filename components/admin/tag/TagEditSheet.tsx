@@ -9,7 +9,7 @@ import { useState } from 'react'
 import { toast } from 'sonner'
 
 export default function TagEditSheet(props : Readonly<HandleProps>) {
-  const { isLoading, mutate, error } = useSWRHydrated(props)
+  const { mutate } = useSWRHydrated(props)
   const { tagEdit, tag, setTagEdit, setTagEditData } = useButtonStore(
     (state) => state,
   )

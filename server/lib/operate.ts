@@ -165,3 +165,27 @@ export async function updateAListConfig(configs: any) {
   `
   return resultRow
 }
+
+export async function updateImageShow(id: number, show: number) {
+  const resultRow = await db.images.update({
+    where: {
+      id: Number(id)
+    },
+    data: {
+      show: show
+    }
+  })
+  return resultRow
+}
+
+export async function updateTagShow(id: number, show: number) {
+  const resultRow = await db.tags.update({
+    where: {
+      id: Number(id)
+    },
+    data: {
+      show: show
+    }
+  })
+  return resultRow
+}
