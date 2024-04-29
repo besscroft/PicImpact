@@ -27,42 +27,59 @@ export default function FileUpload() {
   const { data, error, isLoading } = useSWR('/api/v1/get-tags', fetcher)
 
   async function loadExif(file: any) {
-    const tags = await ExifReader.load(file)
-    const exifObj = {
-      make: '',
-      model: '',
-      bits: '',
-      data_time: '',
-      exposure_time: '',
-      f_number: '',
-      exposure_program: '',
-      iso_speed_rating: '',
-      focal_length: '',
-      lens_specification: '',
-      lens_model: '',
-      exposure_mode: '',
-      cfa_pattern: '',
-      color_space: '',
-      white_balance: '',
-    } as ExifType
-    exifObj.make = tags?.Make?.description
-    exifObj.model = tags?.Model?.description
-    exifObj.bits = tags?.['Bits Per Sample']?.description
-    exifObj.data_time = tags?.DateTime?.description
-    exifObj.exposure_time = tags?.ExposureTime?.description
-    exifObj.f_number = tags?.FNumber?.description
-    exifObj.exposure_program = tags?.ExposureProgram?.description
-    exifObj.iso_speed_rating = tags?.ISOSpeedRatings?.description
-    exifObj.focal_length = tags?.FocalLength?.description
-    exifObj.lens_specification = tags?.LensSpecification?.description
-    exifObj.lens_model = tags?.LensModel?.description
-    exifObj.exposure_mode = tags?.ExposureMode?.description
-    exifObj.cfa_pattern = tags?.CFAPattern?.description
-    exifObj.color_space = tags?.ColorSpace?.description
-    exifObj.white_balance = tags?.WhiteBalance?.description
-    setExif(exifObj)
-    setWidth(Number(tags?.['Image Width']?.value))
-    setHeight(Number(tags?.['Image Height']?.value))
+    try {
+      const tags = await ExifReader.load(file)
+      const exifObj = {
+        make: '',
+        model: '',
+        bits: '',
+        data_time: '',
+        exposure_time: '',
+        f_number: '',
+        exposure_program: '',
+        iso_speed_rating: '',
+        focal_length: '',
+        lens_specification: '',
+        lens_model: '',
+        exposure_mode: '',
+        cfa_pattern: '',
+        color_space: '',
+        white_balance: '',
+      } as ExifType
+      exifObj.make = tags?.Make?.description
+      exifObj.model = tags?.Model?.description
+      exifObj.bits = tags?.['Bits Per Sample']?.description
+      exifObj.data_time = tags?.DateTime?.description
+      exifObj.exposure_time = tags?.ExposureTime?.description
+      exifObj.f_number = tags?.FNumber?.description
+      exifObj.exposure_program = tags?.ExposureProgram?.description
+      exifObj.iso_speed_rating = tags?.ISOSpeedRatings?.description
+      exifObj.focal_length = tags?.FocalLength?.description
+      exifObj.lens_specification = tags?.LensSpecification?.description
+      exifObj.lens_model = tags?.LensModel?.description
+      exifObj.exposure_mode = tags?.ExposureMode?.description
+      exifObj.cfa_pattern = tags?.CFAPattern?.description
+      exifObj.color_space = tags?.ColorSpace?.description
+      exifObj.white_balance = tags?.WhiteBalance?.description
+      setExif(exifObj)
+    } catch (e) {
+      console.log(e)
+    }
+    try {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const img = new Image();
+        img.onload = () => {
+          setWidth(Number(img.width))
+          setHeight(Number(img.height))
+        };
+        // @ts-ignore
+        img.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    } catch (e) {
+      console.log(e)
+    }
   }
 
   async function submit() {
