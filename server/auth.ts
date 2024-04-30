@@ -5,6 +5,7 @@ import CredentialsProvider from 'next-auth/providers/credentials'
 import { db } from '~/server/lib/db'
 import { z } from 'zod'
 import CryptoJS from 'crypto-js'
+import { fetchSecretKey } from "~/server/lib/query";
 
 const prisma = new PrismaClient()
 
@@ -39,12 +40,14 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             },
           })
 
-          const hashedPassword = CryptoJS.HmacSHA512(password, process.env.SECRET_KEY || '').toString()
+          const secretKey = await fetchSecretKey()
 
-          if (user && hashedPassword === user.password) {
-            return user;
-          } else {
-            return null
+          if (secretKey && secretKey.config_value) {
+            const hashedPassword = CryptoJS.HmacSHA512(password, secretKey?.config_value).toString()
+
+            if (user && hashedPassword === user.password) {
+              return user;
+            }
           }
         }
 

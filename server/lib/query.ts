@@ -218,3 +218,18 @@ export async function fetchUserById(userId: string) {
   })
   return findUser
 }
+
+export async function fetchSecretKey() {
+  const find = await db.configs.findFirst({
+    where: {
+      config_key: 'secret_key'
+    },
+    select: {
+      id: true,
+      config_key: true,
+      config_value: true
+    }
+  })
+
+  return find
+}
