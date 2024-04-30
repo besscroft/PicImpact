@@ -117,6 +117,7 @@ export default function Backup() {
             loading={restorePicImpactLoading}
           >选择备份文件（本机迁移）</Button>
         </Upload>
+        <p>如果您在线上环境，请确保您的数据库单次会话时长以及事务的支持，否则会还原数据失败！</p>
       </CardBody>
     </Card>
   )

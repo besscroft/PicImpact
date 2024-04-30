@@ -7,9 +7,10 @@ export async function DELETE(
   { params }: { params: { id: number } },
 ) {
   try {
-    const data = await deleteImage(params.id);
+    await deleteImage(params.id);
     return Response.json({ code: 200, msg: '删除成功！' })
   } catch (e) {
+    console.log(e)
     return Response.json({ code: 500, msg: '删除失败！' })
   }
 }

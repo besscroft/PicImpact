@@ -33,6 +33,7 @@ export async function PUT(req: NextRequest) {
       })
     }
   } catch (e) {
+    console.log(e)
     return Response.json({
       code: 500,
       message: '更新失败！'

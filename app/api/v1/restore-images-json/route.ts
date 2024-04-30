@@ -8,6 +8,7 @@ export async function POST(req: NextRequest) {
     await insertImages(json);
     return Response.json({ code: 200, message: '还原成功！' })
   } catch (e) {
+    console.log(e)
     return Response.json({ code: 500, message: '还原失败！' })
   }
 }
