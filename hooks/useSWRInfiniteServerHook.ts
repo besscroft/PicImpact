@@ -6,7 +6,8 @@ export const useSWRInfiniteServerHook = ({ handle, args }: ImageServerHandleProp
     () => {
       return handle(pageNum, tag)
     }, {
-    revalidateOnFocus: false
+    revalidateOnFocus: false,
+    keepPreviousData: true,
   })
 
   return {

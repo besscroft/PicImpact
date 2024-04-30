@@ -148,121 +148,113 @@ export default function ListProps(props : Readonly<ImageServerHandleProps>) {
         </CardHeader>
       </Card>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-        {
-          !isLoading && !error && data ?
-            <>
-              {data.map((image: ImageType) => (
-                <motion.div
-                  key={image.id}
-                  initial={{ opacity: 0, scale: 0.5 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{
-                    duration: 0.8,
-                    delay: 0.5,
-                    ease: [0, 0.71, 0.2, 1.01]
-                  }}
-                >
-                  <Card shadow="sm" className="h-72">
-                    <CardHeader className="justify-between space-x-1 select-none">
-                      <Popover placement="top" shadow="sm">
-                        <PopoverTrigger className="cursor-pointer">
-                          <Chip variant="shadow" className="flex-1">{image.tag}</Chip>
-                        </PopoverTrigger>
-                        <PopoverContent>
-                          <div className="px-1 py-2 select-none">
-                            <div className="text-small font-bold">标签</div>
-                            <div className="text-tiny">图片标签，在对应的路由上显示</div>
-                          </div>
-                        </PopoverContent>
-                      </Popover>
-                      <div className="flex items-center">
-                        <Button
-                          isIconOnly
-                          size="sm"
-                          onClick={() => {
-                            setImageViewData(image)
-                            setImageView(true)
-                          }}
-                        >
-                          <ScanSearch size={20} />
-                        </Button>
+        {data && data.map((image: ImageType) => (
+          <motion.div
+            key={image.id}
+            initial={{ opacity: 0, scale: 0.5 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{
+              duration: 0.8,
+              delay: 0.5,
+              ease: [0, 0.71, 0.2, 1.01]
+            }}
+          >
+            <Card shadow="sm" className="h-72">
+              <CardHeader className="justify-between space-x-1 select-none">
+                <Popover placement="top" shadow="sm">
+                  <PopoverTrigger className="cursor-pointer">
+                    <Chip variant="shadow" className="flex-1">{image.tag}</Chip>
+                  </PopoverTrigger>
+                  <PopoverContent>
+                    <div className="px-1 py-2 select-none">
+                      <div className="text-small font-bold">标签</div>
+                      <div className="text-tiny">图片标签，在对应的路由上显示</div>
+                    </div>
+                  </PopoverContent>
+                </Popover>
+                <div className="flex items-center">
+                  <Button
+                    isIconOnly
+                    size="sm"
+                    onClick={() => {
+                      setImageViewData(image)
+                      setImageView(true)
+                    }}
+                  >
+                    <ScanSearch size={20} />
+                  </Button>
+                </div>
+              </CardHeader>
+              <CardBody>
+                <Image
+                  className="aspect-video"
+                  isBlurred
+                  isZoomed
+                  height={140}
+                  src={image.url}
+                  alt={image.detail}
+                />
+              </CardBody>
+              <CardFooter
+                className="flex space-x-1 select-none before:bg-white/10 border-white/20 border-1 overflow-hidden py-1 absolute before:rounded-xl rounded-large bottom-1 w-[calc(100%_-_8px)] shadow-small ml-1 z-10">
+                <div className="flex flex-1 space-x-1 items-center">
+                  <Switch
+                    defaultSelected
+                    size="sm"
+                    color="success"
+                    isSelected={image.show === 0}
+                    isDisabled={updateShowLoading}
+                    thumbIcon={({ isSelected }) =>
+                      isSelected ? (
+                        <Eye size={20} />
+                      ) : (
+                        <EyeOff size={20} />
+                      )
+                    }
+                    onValueChange={(isSelected: boolean) => updateImageShow(image.id, isSelected ? 0 : 1)}
+                  />
+                  <Popover placement="top" shadow="sm">
+                    <PopoverTrigger className="cursor-pointer">
+                      <Chip
+                        color="primary"
+                        variant="shadow"
+                        startContent={<ArrowDown10 size={20} />}
+                      >{image.sort}</Chip>
+                    </PopoverTrigger>
+                    <PopoverContent>
+                      <div className="px-1 py-2 select-none">
+                        <div className="text-small font-bold">排序</div>
+                        <div className="text-tiny">规则为从高到低</div>
                       </div>
-                    </CardHeader>
-                    <CardBody>
-                      <Image
-                        className="aspect-video"
-                        isBlurred
-                        isZoomed
-                        height={140}
-                        src={image.url}
-                        alt={image.detail}
-                      />
-                    </CardBody>
-                    <CardFooter
-                      className="flex space-x-1 select-none before:bg-white/10 border-white/20 border-1 overflow-hidden py-1 absolute before:rounded-xl rounded-large bottom-1 w-[calc(100%_-_8px)] shadow-small ml-1 z-10">
-                      <div className="flex flex-1 space-x-1 items-center">
-                        <Switch
-                          defaultSelected
-                          size="sm"
-                          color="success"
-                          isSelected={image.show === 0}
-                          isDisabled={updateShowLoading}
-                          thumbIcon={({ isSelected }) =>
-                            isSelected ? (
-                              <Eye size={20} />
-                            ) : (
-                              <EyeOff size={20} />
-                            )
-                          }
-                          onValueChange={(isSelected: boolean) => updateImageShow(image.id, isSelected ? 0 : 1)}
-                        />
-                        <Popover placement="top" shadow="sm">
-                          <PopoverTrigger className="cursor-pointer">
-                            <Chip
-                              color="primary"
-                              variant="shadow"
-                              startContent={<ArrowDown10 size={20} />}
-                            >{image.sort}</Chip>
-                          </PopoverTrigger>
-                          <PopoverContent>
-                            <div className="px-1 py-2 select-none">
-                              <div className="text-small font-bold">排序</div>
-                              <div className="text-tiny">规则为从高到低</div>
-                            </div>
-                          </PopoverContent>
-                        </Popover>
-                      </div>
-                      <div className="space-x-1">
-                        <Button
-                          isIconOnly
-                          size="sm"
-                          onClick={() => {
-                            setImageEditData(image)
-                            setImageEdit(true)
-                          }}
-                        >
-                          <Pencil size={20} />
-                        </Button>
-                        <Button
-                          isIconOnly
-                          size="sm"
-                          onClick={() => {
-                            setImage(image)
-                            setIsOpen(true)
-                          }}
-                        >
-                          <Trash size={20} />
-                        </Button>
-                      </div>
-                    </CardFooter>
-                  </Card>
-                </motion.div>
-              ))}
-            </>
-            : error ?
-              <p>暂无数据</p>
-              : <p>加载中...</p>
-        }
+                    </PopoverContent>
+                  </Popover>
+                </div>
+                <div className="space-x-1">
+                  <Button
+                    isIconOnly
+                    size="sm"
+                    onClick={() => {
+                      setImageEditData(image)
+                      setImageEdit(true)
+                    }}
+                  >
+                    <Pencil size={20} />
+                  </Button>
+                  <Button
+                    isIconOnly
+                    size="sm"
+                    onClick={() => {
+                      setImage(image)
+                      setIsOpen(true)
+                    }}
+                  >
+                    <Trash size={20} />
+                  </Button>
+                </div>
+              </CardFooter>
+            </Card>
+          </motion.div>
+        ))}
       </div>
       <Pagination
         className="!m-0"
