@@ -20,6 +20,10 @@
   display: none;
 }
 
+.ant-upload-select {
+  display: block !important;
+}
+
 @layer base {
   :root {
     --background: 0 0% 100%;

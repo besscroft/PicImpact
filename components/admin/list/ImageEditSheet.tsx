@@ -47,6 +47,7 @@ export default function ImageEditSheet(props : Readonly<ImageServerHandleProps &
           setImageEditData({} as ImageType)
         }
       }}
+      modal={false}
     >
       <SheetContent side="left">
         <SheetHeader>

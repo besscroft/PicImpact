@@ -29,10 +29,14 @@ export default function TagEditSheet(props : Readonly<HandleProps>) {
         body: JSON.stringify(tag),
         method: 'PUT',
       }).then(response => response.json())
-      toast.success('更新成功！')
-      setTagEditData({} as TagType)
-      setTagEdit(false)
-      await mutate()
+      if (res.code === 200) {
+        toast.success('更新成功！')
+        setTagEditData({} as TagType)
+        setTagEdit(false)
+        await mutate()
+      } else {
+        toast.error('更新失败！')
+      }
     } catch (e) {
       toast.error('更新失败！')
     } finally {
@@ -50,6 +54,7 @@ export default function TagEditSheet(props : Readonly<HandleProps>) {
           setTagEditData({} as TagType)
         }
       }}
+      modal={false}
     >
       <SheetContent side="left">
         <SheetHeader>

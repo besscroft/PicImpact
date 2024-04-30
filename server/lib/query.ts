@@ -50,8 +50,22 @@ export async function fetchAListInfo() {
 export async function fetchTagsList() {
   const findAll = await db.tags.findMany({
     where: {
-      del: 0
-    }
+      del: 0,
+      tag_value: {
+        notIn: ['/']
+      }
+    },
+    orderBy: [
+      {
+        sort: 'desc',
+      },
+      {
+        create_time: 'desc',
+      },
+      {
+        update_time: 'desc'
+      }
+    ]
   })
 
   return findAll;
@@ -64,28 +78,49 @@ export async function fetchServerImagesListByTag(pageNum: number, tag: string) {
   if (pageNum < 1) {
     pageNum = 1
   }
-  const findAll = await db.images.findMany({
-    skip: (pageNum - 1) * 8,
-    take: 8,
-    where: {
-      del: 0,
-      tag: tag && tag !== '' ? tag : {
-        not: ''
-      }
-    },
-    orderBy: [
-      {
-        sort: 'desc',
-      },
-      {
-        create_time: 'desc',
-      },
-      {
-        update_time: 'desc'
-      }
-    ]
-  })
-
+  if (tag && tag !== '') {
+    const findAll = await db.$queryRaw`
+      SELECT 
+          image.*,
+          STRING_AGG(tags."name", ',') AS tag_names,
+          STRING_AGG(tags.tag_value, ',') AS tag_values
+      FROM 
+          "public"."Images" AS image
+      INNER JOIN "public"."ImageTagRelation" AS relation
+          ON image.id = relation."imageId"
+      INNER JOIN "public"."Tags" AS tags
+          ON relation.tag_value = tags.tag_value
+      WHERE
+          image.del = 0
+      AND
+          tags.del = 0
+      AND
+          tags.tag_value = ${tag}
+      GROUP BY image.id
+      ORDER BY image.sort DESC, image.create_time DESC, image.update_time DESC
+      LIMIT 8 OFFSET ${(pageNum - 1) * 8}
+    `
+    return findAll;
+  }
+  const findAll = await db.$queryRaw`
+    SELECT 
+        image.*,
+        STRING_AGG(tags."name", ',') AS tag_names,
+        STRING_AGG(tags.tag_value, ',') AS tag_values
+    FROM 
+        "public"."Images" AS image
+    INNER JOIN "public"."ImageTagRelation" AS relation
+        ON image.id = relation."imageId"
+    INNER JOIN "public"."Tags" AS tags
+        ON relation.tag_value = tags.tag_value
+    WHERE 
+        image.del = 0
+    AND
+        tags.del = 0
+    GROUP BY image.id
+    ORDER BY image.sort DESC, image.create_time DESC, image.update_time DESC 
+    LIMIT 8 OFFSET ${(pageNum - 1) * 8}
+  `
   return findAll;
 }
 
@@ -93,71 +128,119 @@ export async function fetchServerImagesPageTotalByTag(tag: string) {
   if (tag === 'all') {
     tag = ''
   }
-  const pageTotal = await db.images.count({
-    where: {
-      del: 0,
-      tag: tag && tag !== '' ? tag : {
-        not: ''
-      }
-    }
-  })
-  return pageTotal > 0 ? Math.ceil(pageTotal / 8) : 0
-}
-
-export async function fetchTags() {
-  const findAll = await db.tags.findMany({
-    where: {
-      del: 0
-    }
-  })
-
-  return findAll;
+  if (tag && tag !== '') {
+    const pageTotal = await db.$queryRaw`
+      SELECT COUNT(1) AS total
+      FROM (
+        SELECT DISTINCT ON (image.id)
+            image.id 
+        FROM 
+            "public"."Images" AS image
+        INNER JOIN "public"."ImageTagRelation" AS relation
+            ON image.id = relation."imageId"
+        INNER JOIN "public"."Tags" AS tags
+            ON relation.tag_value = tags.tag_value
+        WHERE 
+            image.del = 0
+        AND
+            tags.del = 0
+        AND
+            tags.tag_value = ${tag}
+      ) AS unique_images;
+    `
+    // @ts-ignore
+    return Number(pageTotal[0].total) > 0 ? Math.ceil(Number(pageTotal[0].total) / 8) : 0
+  }
+  const pageTotal = await db.$queryRaw`
+    SELECT COUNT(1) AS total
+    FROM (
+      SELECT DISTINCT ON (image.id)
+          image.id
+      FROM
+          "public"."Images" AS image
+      INNER JOIN "public"."ImageTagRelation" AS relation
+          ON image.id = relation."imageId"
+      INNER JOIN "public"."Tags" AS tags
+          ON relation.tag_value = tags.tag_value
+      WHERE
+          image.del = 0
+      AND
+          tags.del = 0
+     ) AS unique_images;
+  `
+  // @ts-ignore
+  return Number(pageTotal[0].total) > 0 ? Math.ceil(Number(pageTotal[0].total) / 8) : 0
 }
 
 export async function fetchClientImagesListByTag(pageNum: number, tag: string) {
   if (pageNum < 1) {
     pageNum = 1
   }
-  const findAll = await db.images.findMany({
-    skip: (pageNum - 1) * 12,
-    take: 12,
-    where: {
-      del: 0,
-      tag: tag,
-      show: 0
-    },
-    orderBy: [
-      {
-        sort: 'desc',
-      },
-      {
-        create_time: 'desc',
-      },
-      {
-        update_time: 'desc'
-      }
-    ]
-  })
+  const findAll = await db.$queryRaw`
+    SELECT 
+        image.*,
+        STRING_AGG(tags."name", ',') AS tag_names,
+        STRING_AGG(tags.tag_value, ',') AS tag_values
+    FROM 
+        "public"."Images" AS image
+    INNER JOIN "public"."ImageTagRelation" AS relation
+        ON image.id = relation."imageId"
+    INNER JOIN "public"."Tags" AS tags
+        ON relation.tag_value = tags.tag_value
+    WHERE
+        image.del = 0
+    AND
+        tags.del = 0
+    AND
+        image.show = 0
+    AND
+        tags.show = 0
+    AND
+        tags.tag_value = ${tag}
+    GROUP BY image.id
+    ORDER BY image.sort DESC, image.create_time DESC, image.update_time DESC
+    LIMIT 8 OFFSET ${(pageNum - 1) * 12}
+  `
 
   return findAll;
 }
 
 export async function fetchClientImagesPageTotalByTag(tag: string) {
-  const pageTotal = await db.images.count({
-    where: {
-      del: 0,
-      tag: tag,
-      show: 0
-    }
-  })
-  return pageTotal > 0 ? Math.ceil(pageTotal / 12) : 0
+  const pageTotal = await db.$queryRaw`
+    SELECT COUNT(1) AS total
+    FROM (
+        SELECT DISTINCT ON (image.id)
+           image.id
+        FROM
+           "public"."Images" AS image
+        INNER JOIN "public"."ImageTagRelation" AS relation
+            ON image.id = relation."imageId"
+        INNER JOIN "public"."Tags" AS tags
+            ON relation.tag_value = tags.tag_value
+        WHERE
+            image.del = 0
+        AND
+            tags.del = 0
+        AND
+            image.show = 0
+        AND
+            tags.show = 0
+        AND
+            tags.tag_value = ${tag}
+    ) AS unique_images;
+  `
+  // @ts-ignore
+  return Number(pageTotal[0].total) > 0 ? Math.ceil(Number(pageTotal[0].total) / 12) : 0
 }
 
 export async function fetchTagsShow() {
   const findAll = await db.tags.findMany({
     where: {
       del: 0,
-      show: 0
+      show: 0,
+      tag_value: {
+        notIn: ['/']
+      }
     },
     orderBy: [
       {
@@ -183,15 +266,24 @@ export async function fetchImagesAnalysis() {
     },
   })
 
-  const result = await db.images.groupBy({
-    by: ['tag'],
-    _count: {
-      tag: true
-    },
-    where: {
-      del: 0
-    }
-  });
+  const result = await db.$queryRaw`
+    SELECT 
+        tags.name,
+        tags.tag_value,
+        COUNT(1) AS total
+    FROM
+        "public"."Images" AS image
+    INNER JOIN "public"."ImageTagRelation" AS relation
+        ON image.id = relation."imageId"
+    INNER JOIN "public"."Tags" AS tags
+        ON relation.tag_value = tags.tag_value
+    WHERE 
+        image.del = 0
+    AND 
+        tags.del = 0
+    GROUP BY tags.name, tags.tag_value
+    ORDER BY total DESC
+  `
 
   return {
     total,
@@ -201,11 +293,24 @@ export async function fetchImagesAnalysis() {
 }
 
 export async function fetchAllImages() {
-  const findAll = await db.images.findMany({
-    where: {
-      del: 0
-    }
-  })
+  const findAll = await db.$queryRaw`
+    SELECT 
+        image.*,
+        STRING_AGG(tags."name", ',') AS tag_names,
+        STRING_AGG(tags.tag_value, ',') AS tag_values
+    FROM 
+        "public"."Images" AS image
+    INNER JOIN "public"."ImageTagRelation" AS relation
+        ON image.id = relation."imageId"
+    INNER JOIN "public"."Tags" AS tags
+        ON relation.tag_value = tags.tag_value
+    WHERE 
+        image.del = 0
+    AND
+        tags.del = 0
+    GROUP BY image.id
+    ORDER BY image.sort DESC, image.create_time DESC, image.update_time DESC 
+  `
 
   return findAll
 }

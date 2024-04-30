@@ -9,7 +9,6 @@ import { toast } from 'sonner'
 import dayjs from 'dayjs'
 
 export default function Backup() {
-  const [restoreKameraLoading, setRestoreKameraLoading] = useState(false)
   const [restorePicImpactLoading, setRestorePicImpactLoading] = useState(false)
   const [backupLoading, setBackupLoading] = useState(false)
 
@@ -51,33 +50,13 @@ export default function Backup() {
         },
         body: JSON.stringify(data),
       }).then(res => res.json())
-      toast.success(`还原 ${res.count} 条数据！`)
+      if (res?.code === 200) {
+        toast.success(res.message)
+      } else {
+        toast.error(res.message)
+      }
     } catch (e) {
       toast.error('还原失败！')
-    }
-  }
-
-  function readKameraJSONFile(file: File) {
-    try {
-      let reader = new FileReader();
-      reader.readAsText(file);
-
-      reader.onload = async () => {
-        if (typeof reader.result === 'string') {
-          const data = JSON.parse(reader.result)
-            .map((obj: any) => {
-              obj.tag = `/${obj.type}`
-              obj.show = 1
-              return obj;
-            })
-            .map(({ id, del, ...obj }: any) => obj)
-            .map(({ type, ...obj }: any) => obj)
-          toast.success('备份文件解析成功，开始还原至数据库！')
-          await restore(data)
-        }
-      };
-    } catch (error) {
-      toast.error('备份文件解析失败！')
     }
   }
 
@@ -103,24 +82,6 @@ export default function Backup() {
     }
   }
 
-  async function onKameraRequestUpload(option: any) {
-    setRestoreKameraLoading(true)
-    try {
-      readKameraJSONFile(option.file)
-    } finally {
-      setRestoreKameraLoading(false)
-    }
-    option.onSuccess(option.file)
-  }
-
-  const kameraProps: UploadProps = {
-    name: 'file',
-    maxCount: 1,
-    multiple: false,
-    showUploadList: false,
-    customRequest: async (file) => await onKameraRequestUpload(file),
-  };
-
   async function onPicImpactRequestUpload(option: any) {
     setRestorePicImpactLoading(true)
     try {
@@ -132,6 +93,7 @@ export default function Backup() {
   }
 
   const picimpactProps: UploadProps = {
+    className: '!w-full sm:!w-64',
     name: 'file',
     maxCount: 1,
     multiple: false,
@@ -142,20 +104,15 @@ export default function Backup() {
   return (
     <Card className="flex-1" shadow="sm">
       <CardBody className="space-y-2">
-        <Upload {...kameraProps}>
-          <Button
-            icon={<CloudUploadOutlined />}
-            loading={restoreKameraLoading}
-          >选择备份文件（从 Kamera 迁移）</Button>
-        </Upload>
         <Button
-          className="w-64"
+          className="!w-full sm:!w-64"
           icon={<CloudDownloadOutlined />}
           loading={backupLoading}
           onClick={() => backup()}
         >备份</Button>
         <Upload {...picimpactProps}>
           <Button
+            className="!w-full sm:!w-64  !block"
             icon={<CloudUploadOutlined />}
             loading={restorePicImpactLoading}
           >选择备份文件（本机迁移）</Button>

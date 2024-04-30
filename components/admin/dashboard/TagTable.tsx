@@ -8,6 +8,8 @@ export default function TagTable(props: Readonly<HandleProps>) {
 
   const { data } = useSWRHydrated(props)
 
+  console.log(data)
+
   return (
     <>
       <Card isBlurred shadow="sm" className="h-48">
@@ -25,9 +27,9 @@ export default function TagTable(props: Readonly<HandleProps>) {
         </TableHeader>
         <TableBody emptyContent={"No rows to display."}>
           {data?.result && data?.result.map((item: any) => (
-              <TableRow key={item?.tag}>
-                <TableCell>{item?.tag}</TableCell>
-                <TableCell>{item?._count.tag}</TableCell>
+              <TableRow key={item?.tag_value}>
+                <TableCell>{item?.name}</TableCell>
+                <TableCell>{Number(item?.total)}</TableCell>
               </TableRow>
             ))
           }

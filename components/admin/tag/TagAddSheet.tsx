@@ -46,6 +46,7 @@ export default function TagAddSheet(props : Readonly<HandleProps>) {
       defaultOpen={false}
       open={tagAdd}
       onOpenChange={() => setTagAdd(!tagAdd)}
+      modal={false}
     >
       <SheetContent side="left">
         <SheetHeader>

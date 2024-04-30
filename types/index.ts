@@ -58,7 +58,8 @@ export type ImageType = {
   detail: string;
   show: number;
   sort: number;
-  rating: number;
+  tag_names: string;
+  tag_values: string;
 }
 
 export type Config = {

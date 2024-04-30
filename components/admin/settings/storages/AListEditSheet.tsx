@@ -46,6 +46,7 @@ export default function AListEditSheet() {
           setAListEditData([] as Config[])
         }
       }}
+      modal={false}
     >
       <SheetContent side="left">
         <SheetHeader>

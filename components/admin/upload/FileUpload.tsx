@@ -24,7 +24,7 @@ export default function FileUpload() {
   const [height, setHeight] = useState(0)
   const [detail, setDetail] = useState('')
 
-  const { data, error, isLoading } = useSWR('/api/v1/get-tags', fetcher)
+  const { data, isLoading } = useSWR('/api/v1/get-tags', fetcher)
 
   async function loadExif(file: any) {
     try {
@@ -109,8 +109,8 @@ export default function FileUpload() {
         method: 'post',
         // @ts-ignore
         body: JSON.stringify(data),
-      })
-      if (res.status === 200) {
+      }).then(res => res.json())
+      if (res?.code === 200) {
         toast.success('保存成功！')
       } else {
         toast.error('保存失败！')

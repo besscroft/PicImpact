@@ -46,6 +46,7 @@ export default function S3EditSheet() {
           setS3EditData([] as Config[])
         }
       }}
+      modal={false}
     >
       <SheetContent side="left">
         <SheetHeader>

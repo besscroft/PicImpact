@@ -23,7 +23,8 @@ import {
   Select,
   SelectItem,
   Image,
-  Switch
+  Switch,
+  Badge
 } from '@nextui-org/react'
 import { ArrowDown10, Pencil, Trash, Eye, EyeOff, ScanSearch } from 'lucide-react'
 import { toast } from 'sonner'
@@ -38,7 +39,7 @@ export default function ListProps(props : Readonly<ImageServerHandleProps>) {
   const [pageNum, setPageNum] = useState(1)
   const [tagArray, setTagArray] = useState(new Set([] as string[]))
   const [tag, setTag] = useState('')
-  const { data, isLoading, error, mutate } = useSWRInfiniteServerHook(props, pageNum, tag)
+  const { data, isLoading, mutate } = useSWRInfiniteServerHook(props, pageNum, tag)
   const { data: total, mutate: totalMutate } = useSWRPageTotalServerHook(props, tag)
   const [isOpen, setIsOpen] = useState(false)
   const [image, setImage] = useState({} as ImageType)
@@ -55,8 +56,8 @@ export default function ListProps(props : Readonly<ImageServerHandleProps>) {
     try {
       const res = await fetch(`/api/v1/image-delete/${image.id}`, {
         method: 'DELETE',
-      })
-      if (res.status === 200) {
+      }).then(res => res.json())
+      if (res?.code === 200) {
         toast.success('删除成功！')
         setIsOpen(false)
         await mutate()
@@ -148,7 +149,7 @@ export default function ListProps(props : Readonly<ImageServerHandleProps>) {
         </CardHeader>
       </Card>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-        {data && data.map((image: ImageType) => (
+        {Array.isArray(data) && data?.map((image: ImageType) => (
           <motion.div
             key={image.id}
             initial={{ opacity: 0, scale: 0.5 }}
@@ -161,17 +162,34 @@ export default function ListProps(props : Readonly<ImageServerHandleProps>) {
           >
             <Card shadow="sm" className="h-72">
               <CardHeader className="justify-between space-x-1 select-none">
-                <Popover placement="top" shadow="sm">
-                  <PopoverTrigger className="cursor-pointer">
-                    <Chip variant="shadow" className="flex-1">{image.tag}</Chip>
-                  </PopoverTrigger>
-                  <PopoverContent>
-                    <div className="px-1 py-2 select-none">
-                      <div className="text-small font-bold">标签</div>
-                      <div className="text-tiny">图片标签，在对应的路由上显示</div>
-                    </div>
-                  </PopoverContent>
-                </Popover>
+                {
+                  image.tag_values.includes(',') ?
+                    <Badge content={image.tag_values.split(",").length} color="primary">
+                      <Popover placement="top" shadow="sm">
+                        <PopoverTrigger className="cursor-pointer">
+                          <Chip variant="shadow" className="flex-1">{image.tag_names.length > 8 ? image.tag_names.substring(0, 8) + '...' : image.tag_names}</Chip>
+                        </PopoverTrigger>
+                        <PopoverContent>
+                          <div className="px-1 py-2 select-none">
+                            <div className="text-small font-bold">标签</div>
+                            <div className="text-tiny">图片标签，在对应的路由上显示</div>
+                          </div>
+                        </PopoverContent>
+                      </Popover>
+                    </Badge>
+                    :
+                    <Popover placement="top" shadow="sm">
+                      <PopoverTrigger className="cursor-pointer">
+                        <Chip variant="shadow" className="flex-1">{image.tag_names}</Chip>
+                      </PopoverTrigger>
+                      <PopoverContent>
+                        <div className="px-1 py-2 select-none">
+                          <div className="text-small font-bold">标签</div>
+                          <div className="text-tiny">图片标签，在对应的路由上显示</div>
+                        </div>
+                      </PopoverContent>
+                    </Popover>
+                }
                 <div className="flex items-center">
                   <Button
                     isIconOnly

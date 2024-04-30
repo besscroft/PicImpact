@@ -4,6 +4,10 @@ import { NextRequest } from 'next/server'
 
 export async function POST(req: NextRequest) {
   const image = await req.json()
-  const data = await insertImage(image);
-  return Response.json(data)
+  try {
+    await insertImage(image);
+    return Response.json({ code: 200, msg: '保存成功！' })
+  } catch (e) {
+    return Response.json({ code: 500, msg: '保存失败！' })
+  }
 }

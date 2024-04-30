@@ -37,65 +37,93 @@ export async function updateTag(tag: TagType) {
   if (!tag.sort || tag.sort < 0) {
     tag.sort = 0
   }
-  const resultRow = await db.tags.update({
-    where: {
-      id: Number(tag.id)
-    },
-    data: {
-      name: tag.name,
-      tag_value: tag.tag_value,
-      detail: tag.detail,
-      sort: tag.sort,
-      show: tag.show,
-      update_time: new Date(),
+  await db.$transaction(async (tx) => {
+    const tagOld = await tx.tags.findFirst({
+      where: {
+        id: Number(tag.id)
+      }
+    })
+    if (!tagOld) {
+      throw new Error('标签不存在！')
     }
+    await tx.tags.update({
+      where: {
+        id: Number(tag.id)
+      },
+      data: {
+        name: tag.name,
+        tag_value: tag.tag_value,
+        detail: tag.detail,
+        sort: tag.sort,
+        show: tag.show,
+        update_time: new Date(),
+      }
+    })
+    await tx.imageTagRelation.updateMany({
+      where: {
+        tag_value: tagOld.tag_value
+      },
+      data: {
+        tag_value: tag.tag_value
+      }
+    })
   })
-  return resultRow
 }
 
 export async function insertImage(image: ImageType) {
   if (!image.sort || image.sort < 0) {
     image.sort = 0
   }
-  if (!image.rating || image.rating < 0) {
-    image.rating = 0
-  }
-  const resultRow = await db.images.create({
-    data: {
-      url: image.url,
-      exif: image.exif,
-      width: image.width,
-      height: image.height,
-      tag: image.tag,
-      detail: image.detail,
-      show: 1,
-      sort: image.sort,
-      rating: image.rating,
-      del: 0
+  await db.$transaction(async (tx) => {
+    const resultRow = await tx.images.create({
+      data: {
+        url: image.url,
+        exif: image.exif,
+        width: image.width,
+        height: image.height,
+        detail: image.detail,
+        show: 1,
+        sort: image.sort,
+        del: 0
+      }
+    })
+
+    if (resultRow) {
+      await tx.imageTagRelation.create({
+        data: {
+          imageId: resultRow.id,
+          tag_value: image.tag
+        }
+      })
+    } else {
+      throw new Error('事务处理失败！')
     }
   })
-  return resultRow
 }
 
 export async function deleteImage(id: number) {
-  const resultRow = await db.images.update({
-    where: {
-      id: Number(id)
-    },
-    data: {
-      del: 1,
-      update_time: new Date(),
-    }
+  await db.$transaction(async (tx) => {
+    await tx.imageTagRelation.deleteMany({
+      where: {
+        imageId: Number(id)
+      }
+    })
+
+    await tx.images.update({
+      where: {
+        id: Number(id)
+      },
+      data: {
+        del: 1,
+        update_time: new Date(),
+      }
+    })
   })
-  return resultRow
 }
 
 export async function updateImage(image: ImageType) {
   if (!image.sort || image.sort < 0) {
     image.sort = 0
-  }
-  if (!image.rating || image.rating < 0) {
-    image.rating = 0
   }
   const resultRow = await db.images.update({
     where: {
@@ -104,11 +132,9 @@ export async function updateImage(image: ImageType) {
     data: {
       url: image.url,
       exif: image.exif,
-      tag: image.tag,
       detail: image.detail,
       sort: image.sort,
       show: image.show,
-      rating: image.rating,
       update_time: new Date(),
     }
   }
@@ -116,12 +142,43 @@ export async function updateImage(image: ImageType) {
   return resultRow
 }
 
-export async function insertImages(images: ImageType[]) {
-  const resultRow = await db.images.createMany({
-    data: images,
-    skipDuplicates: true,
+export async function insertImages(json: any[]) {
+  await db.$transaction(async (tx) => {
+    for (const image of json) {
+      const res = await tx.images.create({
+        data: {
+          url: image.url,
+          exif: image.exif,
+          width: image.width,
+          height: image.height,
+          detail: image.detail,
+          show: 1,
+          sort: image.sort,
+          create_time: image.create_time,
+          update_time: image.update_time,
+        }
+      })
+      if (image.tag_values.includes(',')) {
+        for (const tag of image.tag_values.split(',')) {
+          if (tag) {
+            await tx.imageTagRelation.create({
+              data: {
+                imageId: res.id,
+                tag_value: tag
+              }
+            })
+          }
+        }
+      } else {
+        await tx.imageTagRelation.create({
+          data: {
+            imageId: res.id,
+            tag_value: image.tag_values
+          }
+        })
+      }
+    }
   })
-  return resultRow
 }
 
 export async function updatePassword(userId: string, newPassword: string) {

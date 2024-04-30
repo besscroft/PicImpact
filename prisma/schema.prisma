@@ -54,19 +54,18 @@ model VerificationToken {
 }
 
 model Images {
-  id          Int       @id @default(autoincrement())
-  tag         String
-  url         String?   @db.Text
-  exif        Json?     @db.Json
-  width       Int       @default(0)
-  height      Int       @default(0)
-  rating      Int?      @db.SmallInt
-  detail      String?   @db.Text
-  show        Int       @default(1) @db.SmallInt
-  sort        Int       @default(0) @db.SmallInt
-  create_time DateTime? @default(now()) @db.Timestamp()
-  update_time DateTime? @db.Timestamp()
-  del         Int       @default(0) @db.SmallInt
+  id               Int                @id @default(autoincrement())
+  url              String?            @db.Text
+  exif             Json?              @db.Json
+  width            Int                @default(0)
+  height           Int                @default(0)
+  detail           String?            @db.Text
+  show             Int                @default(1) @db.SmallInt
+  sort             Int                @default(0) @db.SmallInt
+  create_time      DateTime?          @default(now()) @db.Timestamp()
+  update_time      DateTime?          @db.Timestamp()
+  del              Int                @default(0) @db.SmallInt
+  imageTagRelation ImageTagRelation[]
 }
 
 model Configs {
@@ -79,13 +78,23 @@ model Configs {
 }
 
 model Tags {
-  id          Int       @id @default(autoincrement())
-  name        String
-  tag_value   String    @unique
-  detail      String?   @db.Text
-  show        Int       @default(1) @db.SmallInt
-  sort        Int       @default(0) @db.SmallInt
-  create_time DateTime? @default(now()) @db.Timestamp()
-  update_time DateTime? @db.Timestamp()
-  del         Int       @default(0) @db.SmallInt
+  id               Int                @id @default(autoincrement())
+  name             String
+  tag_value        String             @unique
+  detail           String?            @db.Text
+  show             Int                @default(1) @db.SmallInt
+  sort             Int                @default(0) @db.SmallInt
+  create_time      DateTime?          @default(now()) @db.Timestamp()
+  update_time      DateTime?          @db.Timestamp()
+  del              Int                @default(0) @db.SmallInt
+  imageTagRelation ImageTagRelation[]
+}
+
+model ImageTagRelation {
+  tag       Tags   @relation(fields: [tag_value], references: [tag_value])
+  tag_value String
+  image     Images @relation(fields: [imageId], references: [id])
+  imageId   Int
+
+  @@id([imageId, tag_value])
 }
