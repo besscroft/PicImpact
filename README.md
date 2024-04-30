@@ -8,18 +8,20 @@ PicImpact
   <img src="https://img.shields.io/github/repo-size/besscroft/PicImpact?style=flat-square&color=328657" alt="存储库大小">
 </p>
 
-开发中...
-
 ### 无障碍支持
 
 已经在尽力支持了，主要基于 [WAI-ARIA 规范](https://developer.mozilla.org/zh-CN/docs/Learn/Accessibility/WAI-ARIA_basics)，有爱，无障碍！
 
 ### 如何部署
 
+> 当前为预览版本，会逐步稳定下来，在设计阶段已经尽可能保证后续开发的扩展和兼容性。
+
 你可以 Fork 后点击下面的按钮来一键部署到 Vercel（自定义配置及容器部署请往下看）
 
-<a href="https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fbesscroft%2FPicImpact&env=DATABASE_URL,AUTH_SECRET,SECRET_KEY"><img src="https://vercel.com/button" alt="Deploy with Vercel"/></a>
+<a href="https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fbesscroft%2FPicImpact&env=DATABASE_URL,AUTH_SECRET"><img src="https://vercel.com/button" alt="Deploy with Vercel"/></a>
 
+> 记得修改 Build Command 为 `pnpm run prisma:deploy && pnpm run build`。
+> 
 > 当然，如果你想部署到其它平台或者自部署也是可以的。但是由于生态兼容性，暂不支持 All Edge。
 
 #### 数据库
@@ -62,63 +64,6 @@ PicImpact
 |------------------|-------------------------------------------------------------------------------------------|
 | DATABASE_URL     | Postgre 数据库 url，如：postgres://账号:密码@aws-0-ap-northeast-1.pooler.supabase.com:5432/postgres |
 | AUTH_SECRET     | 权限机密，你可以执行 npx auth secret 生成一个，反正是随机的字符串就行                                               |
-| SECRET_KEY | 密码盐，默认值：pic-impact，你最好知道是干嘛的再去改。                                                          |
-
-### 容器部署
-
-#### 直接部署
-
-如果你要运行我的镜像，你只需要执行下面的命令即可部署：
-
-```shell
-docker run -d --name PicImpact \
-  -p 3000:3000 \
-  -e DATABASE_URL="postgres://账号:密码@aws-0-ap-northeast-1.pooler.supabase.com:5432/postgres" \
-  -e AUTH_SECRET="your-secret-key" \
-  -e SECRET_KEY="pic-impact" \
-  besscroft/picimpact:latest
-```
-
-> 看到这里您应该明白，环境变量当然要换成自己的！
-
-#### 自己构建镜像
-
-如果你要 Docker Compose 执行：
-
-```yaml
-version: '3'
-services:
-  picimpact:
-    image: besscroft/picimpact:latest
-    container_name: PicImpact
-    ports:
-      - 3000:3000
-    environment:
-      - DATABASE_URL="postgres://账号:密码@aws-0-ap-northeast-1.pooler.supabase.com:5432/postgres"
-      - AUTH_SECRET="your-secret-key"
-      - SECRET_KEY="pic-impact"
-```
-
-> 一样的，参考上面的环境变量表格，配置你自己的环境变量。
-
-#### 构建镜像 Q&A
-
-Q：我 fork 仓库后，构建的镜像被人使用会有风险吗？
-
-A：原则上没有，但如果你自己要往文件里面填写机密信息，那是你自己的问题！
-别人并不知道你的环境变量的值，除非你自己泄露！
-
-#### 服务器面板
-
-对于使用宝塔面板、1Panel 之类的用户，包括使用 Nginx 来提供访问服务的用户，记得配置反向代理：
-
-```shell
-location ^~ / {
-  proxy_pass http://localhost:3000;
-}
-```
-
-> 端口和路径之类的，就看你自己部署时，设置的什么了。
 
 ### 本地开发
 
@@ -162,6 +107,7 @@ PicImpact 欢迎各种贡献，包括但不限于改进，新功能，文档和�
 - UI 框架：
   - [Next UI](https://github.com/nextui-org/nextui)
   - [Radix](https://www.radix-ui.com/)
+  - [shadcn/ui](https://ui.shadcn.com/)
 - 更多组件参见 package.json
 
 ### 感谢
