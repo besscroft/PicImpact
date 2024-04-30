@@ -1,25 +1,38 @@
-import { fetchTagsShow } from '~/server/lib/query'
-import { NavbarItem } from '@nextui-org/react'
-import Link from 'next/link'
-import { TagType } from '~/types'
+'use client'
 
-export default async function HeaderLink() {
-  const getData = async () => {
-    'use server'
-    return await fetchTagsShow()
-  }
+import { Button } from '@nextui-org/react'
+import { TagType, HandleProps } from '~/types'
+import { useSWRHydrated } from '~/hooks/useSWRHydrated'
+import { usePathname } from 'next/navigation'
+import { useRouter } from 'next-nprogress-bar'
 
-  const data = await getData() as Array<TagType>
+export default function HeaderLink(props: Readonly<HandleProps>) {
+  const { data } = useSWRHydrated(props)
+  const pathname = usePathname()
+  const router = useRouter()
 
   return (
     <>
-      <NavbarItem className="cursor-pointer">
-        <Link href="/">首页</Link>
-      </NavbarItem>
+      <Button
+        color="primary"
+        radius="none"
+        variant="light"
+        className={pathname === '/' ? 'border-b-2 border-indigo-600' : ''}
+        onClick={() => router.push('/')}
+      >
+        首页
+      </Button>
       {data?.map((tag: TagType) => (
-        <NavbarItem className="cursor-pointer" key={tag.id}>
-          <Link href={tag.tag_value}>{tag.name}</Link>
-        </NavbarItem>
+        <Button
+          key={tag.id}
+          color="primary"
+          radius="none"
+          variant="light"
+          className={pathname === tag.tag_value ? 'border-b-2 border-indigo-600' : ''}
+          onClick={() => router.push(tag.tag_value)}
+        >
+          {tag.name}
+        </Button>
       ))}
     </>
   )

@@ -3,13 +3,11 @@
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogFooter,
 } from '~/components/ui/Dialog'
 import { useButtonStore } from '~/app/providers/button-store-Providers'
 import { ImageType } from '~/types'
-import { Image } from '@nextui-org/react'
+import { Image, Tabs, Tab, Card, CardHeader, Table, TableHeader, TableColumn, TableBody, TableRow, TableCell } from '@nextui-org/react'
+import { Aperture, Camera } from 'lucide-react'
 
 export default function MasonryItem() {
   const { MasonryView, MasonryViewData, setMasonryView, setMasonryViewData } = useButtonStore(
@@ -27,16 +25,170 @@ export default function MasonryItem() {
         }
       }}
     >
-      <DialogContent>
-        <div className="mx-auto w-full sm:w-[62%] mt-4">
-          <Image
-            alt={MasonryViewData.detail}
-            src={MasonryViewData.url}
-          />
+      <DialogContent className="flex flex-col">
+        <div>
+          <p>{MasonryViewData.detail}</p>
         </div>
-        <DialogFooter>
-          {MasonryViewData.detail}
-        </DialogFooter>
+        <div className="h-full flex flex-col space-y-2 md:grid md:gap-2 md:grid-cols-3 xl:gap-4">
+          <div className="md:col-span-2 md:max-h-full md:flex md:justify-center md:h-[90vh]">
+            <Image
+              className="md:h-[88vh]"
+              alt={MasonryViewData.detail}
+              src={MasonryViewData.url}
+            />
+          </div>
+          <div className="flex w-full flex-col">
+            <Tabs aria-label="图片预览选择项" color="primary" variant="bordered">
+              <Tab
+                key="detail"
+                title={
+                  <div className="flex items-center space-x-2">
+                    <Aperture/>
+                    <span>详情</span>
+                  </div>
+                }
+              >
+                <div className="flex flex-col space-y-2">
+                  <Card className="py-4" shadow="sm">
+                    <CardHeader className="pb-0 pt-2 px-4 flex-col items-start">
+                      <p className="text-tiny uppercase font-bold">相机</p>
+                      <h4 className="font-bold text-large">{MasonryViewData?.exif?.model || 'N&A'}</h4>
+                    </CardHeader>
+                  </Card>
+                  <Card className="py-4" shadow="sm">
+                    <CardHeader className="pb-0 pt-2 px-4 flex-col items-start">
+                      <p className="text-tiny uppercase font-bold">相片描述</p>
+                      <h4 className="font-bold text-large">{MasonryViewData.detail || 'N&A'}</h4>
+                    </CardHeader>
+                  </Card>
+                </div>
+              </Tab>
+              <Tab
+                key="exif"
+                title={
+                  <div className="flex items-center space-x-2">
+                    <Camera />
+                    <span>Exif</span>
+                  </div>
+                }
+              >
+                <Table aria-label="照片 Exif 信息">
+                  <TableHeader>
+                    <TableColumn>参数</TableColumn>
+                    <TableColumn>值</TableColumn>
+                  </TableHeader>
+                  <TableBody emptyContent={"No rows to display."}>
+                    {
+                      MasonryViewData?.exif?.make &&
+                      <TableRow key="make">
+                        <TableCell>相机品牌</TableCell>
+                        <TableCell>{MasonryViewData?.exif?.make}</TableCell>
+                      </TableRow>
+                    }
+                    {
+                      MasonryViewData?.exif?.model &&
+                      <TableRow key="model">
+                        <TableCell>相机型号</TableCell>
+                        <TableCell>{MasonryViewData?.exif?.model}</TableCell>
+                      </TableRow>
+                    }
+                    {
+                      MasonryViewData?.exif?.bits &&
+                      <TableRow key="bits">
+                        <TableCell>bit 位数</TableCell>
+                        <TableCell>{MasonryViewData?.exif?.bits}</TableCell>
+                      </TableRow>
+                    }
+                    {
+                      MasonryViewData?.exif?.data_time &&
+                      <TableRow key="data_time">
+                        <TableCell>拍摄时间</TableCell>
+                        <TableCell>{MasonryViewData?.exif?.data_time}</TableCell>
+                      </TableRow>
+                    }
+                    {
+                      MasonryViewData?.exif?.exposure_time &&
+                      <TableRow key="exposure_time">
+                        <TableCell>快门时间</TableCell>
+                        <TableCell>{MasonryViewData?.exif?.exposure_time}</TableCell>
+                      </TableRow>
+                    }
+                    {
+                      MasonryViewData?.exif?.f_number &&
+                      <TableRow key="f_number">
+                        <TableCell>光圈</TableCell>
+                        <TableCell>{MasonryViewData?.exif?.f_number}</TableCell>
+                      </TableRow>
+                    }
+                    {
+                      MasonryViewData?.exif?.exposure_program &&
+                      <TableRow key="exposure_program">
+                        <TableCell>曝光程序</TableCell>
+                        <TableCell>{MasonryViewData?.exif?.exposure_program}</TableCell>
+                      </TableRow>
+                    }
+                    {
+                      MasonryViewData?.exif?.iso_speed_rating &&
+                      <TableRow key="iso_speed_rating">
+                        <TableCell>ISO</TableCell>
+                        <TableCell>{MasonryViewData?.exif?.iso_speed_rating}</TableCell>
+                      </TableRow>
+                    }
+                    {
+                      MasonryViewData?.exif?.focal_length &&
+                      <TableRow key="focal_length">
+                        <TableCell>焦距</TableCell>
+                        <TableCell>{MasonryViewData?.exif?.focal_length}</TableCell>
+                      </TableRow>
+                    }
+                    {
+                      MasonryViewData?.exif?.lens_specification &&
+                      <TableRow key="lens_specification">
+                        <TableCell>镜头规格</TableCell>
+                        <TableCell>{MasonryViewData?.exif?.lens_specification}</TableCell>
+                      </TableRow>
+                    }
+                    {
+                      MasonryViewData?.exif?.lens_model &&
+                      <TableRow key="lens_model">
+                        <TableCell>镜头型号</TableCell>
+                        <TableCell>{MasonryViewData?.exif?.lens_model}</TableCell>
+                      </TableRow>
+                    }
+                    {
+                      MasonryViewData?.exif?.exposure_mode &&
+                      <TableRow key="exposure_mode">
+                        <TableCell>曝光模式</TableCell>
+                        <TableCell>{MasonryViewData?.exif?.exposure_mode}</TableCell>
+                      </TableRow>
+                    }
+                    {
+                      MasonryViewData?.exif?.cfa_pattern &&
+                      <TableRow key="cfa_pattern">
+                        <TableCell>CFA 模式</TableCell>
+                        <TableCell>{MasonryViewData?.exif?.cfa_pattern}</TableCell>
+                      </TableRow>
+                    }
+                    {
+                      MasonryViewData?.exif?.color_space &&
+                      <TableRow key="color_space">
+                        <TableCell>色彩空间</TableCell>
+                        <TableCell>{MasonryViewData?.exif?.color_space}</TableCell>
+                      </TableRow>
+                    }
+                    {
+                      MasonryViewData?.exif?.white_balance &&
+                      <TableRow key="white_balance">
+                        <TableCell>白平衡</TableCell>
+                        <TableCell>{MasonryViewData?.exif?.white_balance}</TableCell>
+                      </TableRow>
+                    }
+                  </TableBody>
+                </Table>
+              </Tab>
+            </Tabs>
+          </div>
+        </div>
       </DialogContent>
     </Dialog>
   )

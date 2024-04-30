@@ -18,23 +18,18 @@ export default function TagTable(props: Readonly<HandleProps>) {
           <span className="text-xl font-semibold">{data?.showTotal || 0}张</span>
         </CardBody>
       </Card>
-      <Table aria-label="Example static collection table">
+      <Table aria-label="每个标签对应的数量">
         <TableHeader>
           <TableColumn>标签</TableColumn>
           <TableColumn>数量/张</TableColumn>
         </TableHeader>
-        <TableBody>
-          {data?.result ? data?.result.map((item: any) => (
+        <TableBody emptyContent={"No rows to display."}>
+          {data?.result && data?.result.map((item: any) => (
               <TableRow key={item?.tag}>
                 <TableCell>{item?.tag}</TableCell>
                 <TableCell>{item?._count.tag}</TableCell>
               </TableRow>
             ))
-            :
-            <TableRow key="1">
-              <TableCell>暂无数据</TableCell>
-              <TableCell>0</TableCell>
-            </TableRow>
           }
         </TableBody>
       </Table>

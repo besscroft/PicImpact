@@ -5,7 +5,6 @@ import { usePathname } from 'next/navigation'
 import { useRouter } from 'next-nprogress-bar'
 import { Listbox, ListboxItem } from '@nextui-org/react'
 import { useSession } from 'next-auth/react'
-import { useEffect, useState } from 'react'
 import { useTheme } from 'next-themes'
 import {
   LayoutGrid,
@@ -18,39 +17,17 @@ import {
   ImageUp,
   Milestone,
   Settings,
-  Heart,
   LogOut
 } from 'lucide-react'
-import { TagType } from '~/types'
 import { loginOut } from '~/server/lib/actions'
 
 export default function VaulDrawer() {
   const { data: session, status } = useSession()
   const router = useRouter()
   const pathname = usePathname()
-  const [mounted, setMounted] = useState(false)
   const { theme, setTheme } = useTheme()
-  const [data, setData] = useState<any>([])
 
   const iconClasses = 'text-xl text-default-500 pointer-events-none flex-shrink-0'
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await fetch('/api/get-link', {
-          method: 'GET',
-        }).then((res) => res.json());
-        setData(response);
-      } catch (error) {
-        console.error('Error fetching data:', error);
-      }
-    };
-
-    fetchData();
-    setMounted(true)
-  }, [])
-
-  if(!mounted) return null
 
   return (
     <Drawer.Root>
@@ -78,18 +55,6 @@ export default function VaulDrawer() {
                           首页
                         </Drawer.Close>
                       </ListboxItem>
-                      {data && data?.map((tag: TagType, index: any, array: TagType[]) => (
-                        <ListboxItem
-                          key={tag.id}
-                          startContent={<Heart size={20} className={iconClasses} />}
-                          onClick={() => router.push(tag.tag_value)}
-                          showDivider={index === array.length - 1}
-                        >
-                          <Drawer.Close className="w-full text-left">
-                            {tag.name}
-                          </Drawer.Close>
-                        </ListboxItem>
-                      ))}
                       <ListboxItem
                         key="admin"
                         startContent={<MonitorDot size={20} className={iconClasses} />}
