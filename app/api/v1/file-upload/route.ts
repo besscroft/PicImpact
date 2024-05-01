@@ -1,5 +1,5 @@
 import { fetchAListInfo, fetchS3Info } from '~/server/lib/query'
-import { s3 } from '~/server/lib/s3'
+import { getClient } from '~/server/lib/s3'
 import { PutObjectCommand } from '@aws-sdk/client-s3'
 
 export async function POST(request: Request) {
@@ -32,6 +32,7 @@ export async function POST(request: Request) {
       ContentLength: file?.size,
       ContentType: file?.type
     };
+    const s3 = getClient(findConfig);
     await s3.send(
       new PutObjectCommand(params)
     )
