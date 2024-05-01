@@ -3,7 +3,7 @@
 import React from 'react'
 import { ImageHandleProps, ImageType } from '~/types'
 import PhotoAlbum from 'react-photo-album'
-import { Button } from '@nextui-org/react'
+import { Button, Image } from '@nextui-org/react'
 import { useSWRPageTotalHook } from '~/hooks/useSWRPageTotalHook'
 import useSWRInfinite from 'swr/infinite'
 import { useButtonStore } from '~/app/providers/button-store-Providers'
@@ -45,16 +45,21 @@ export default function Masonry(props : Readonly<ImageHandleProps>) {
           })) || []
         }
         renderPhoto={({ photo, wrapperStyle, renderDefaultPhoto }) => (
-          <img
-            className="cursor-pointer transition-all will-change-transform hover:scale-[1.05]"
-            style={wrapperStyle}
-            src={photo.src}
-            alt={photo.alt}
-            onClick={() => {
-              setMasonryView(true)
-              setMasonryViewData(photo)
-            }}
-          />
+          <div className="my-2">
+            <Image
+              className="cursor-pointer transition-all will-change-transform hover:scale-[1.05]"
+              src={photo.src}
+              alt={photo.alt}
+              radius="none"
+              loading="lazy"
+              isBlurred
+              shadow="sm"
+              onClick={() => {
+                setMasonryView(true)
+                setMasonryViewData(photo)
+              }}
+            />
+          </div>
         )}
       />
       <div className="flex items-center justify-center my-4">
