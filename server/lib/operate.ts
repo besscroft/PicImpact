@@ -82,6 +82,8 @@ export async function insertImage(image: ImageType) {
         width: image.width,
         height: image.height,
         detail: image.detail,
+        lat: String(image.lat),
+        lon: String(image.lon),
         show: 1,
         sort: image.sort,
         del: 0
@@ -135,6 +137,10 @@ export async function updateImage(image: ImageType) {
       detail: image.detail,
       sort: image.sort,
       show: image.show,
+      width: image.width,
+      height: image.height,
+      lat: image.lat,
+      lon: image.lon,
       update_time: new Date(),
     }
   }
@@ -152,6 +158,8 @@ export async function insertImages(json: any[]) {
           width: image.width,
           height: image.height,
           detail: image.detail,
+          lat: image.lat,
+          lon: image.lon,
           show: 1,
           sort: image.sort,
           create_time: image.create_time,

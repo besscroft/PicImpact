@@ -22,6 +22,8 @@ export default function FileUpload() {
   const [loading, setLoading] = useState(false)
   const [width, setWidth] = useState(0)
   const [height, setHeight] = useState(0)
+  const [lat, setLat] = useState('')
+  const [lon, setLon] = useState('')
   const [detail, setDetail] = useState('')
 
   const { data, isLoading } = useSWR('/api/v1/get-tags', fetcher)
@@ -62,6 +64,16 @@ export default function FileUpload() {
       exifObj.color_space = tags?.ColorSpace?.description
       exifObj.white_balance = tags?.WhiteBalance?.description
       setExif(exifObj)
+      if (tags?.GPSLatitude?.description) {
+        setLat(tags?.GPSLatitude?.description)
+      } else {
+        setLat('')
+      }
+      if (tags?.GPSLongitude?.description) {
+        setLon(tags?.GPSLongitude?.description)
+      } else {
+        setLon('')
+      }
     } catch (e) {
       console.log(e)
     }
@@ -101,6 +113,8 @@ export default function FileUpload() {
         detail: detail,
         width: width,
         height: height,
+        lat: lat,
+        lon: lon,
       } as ImageType
       const res = await fetch('/api/v1/image-add', {
         headers: {
@@ -222,6 +236,10 @@ export default function FileUpload() {
       setExif({} as ExifType)
       setUrl('')
       setDetail('')
+      setWidth(0)
+      setHeight(0)
+      setLat('')
+      setLon('')
     }
   }
 
@@ -299,7 +317,7 @@ export default function FileUpload() {
           <div className="w-full">
             {
               storageSelect && alistStorage?.length > 0
-                ?
+                &&
                 <Select
                   isRequired
                   size="sm"
@@ -319,8 +337,6 @@ export default function FileUpload() {
                     </SelectItem>
                   ))}
                 </Select>
-                :
-                <></>
             }
           </div>
         </CardHeader>
@@ -345,8 +361,7 @@ export default function FileUpload() {
         </CardBody>
         <CardFooter>
           {
-            url && url !== ''
-            ?
+            url && url !== '' &&
             <div className="w-full mt-2 space-y-2">
               <Input
                 size="sm"
@@ -378,6 +393,24 @@ export default function FileUpload() {
                   placeholder="0"
                 />
               </div>
+              <div className="flex items-center space-x-1 w-full">
+                <Input
+                  size="sm"
+                  value={lon}
+                  onValueChange={(value) => setLon(value)}
+                  type="number"
+                  variant="bordered"
+                  label="经度"
+                />
+                <Input
+                  size="sm"
+                  value={lat}
+                  onValueChange={(value) => setLat(value)}
+                  type="number"
+                  variant="bordered"
+                  label="纬度"
+                />
+              </div>
               <Input
                 size="sm"
                 type="text"
@@ -389,10 +422,8 @@ export default function FileUpload() {
                   setDetail(value)
                 }}
               />
-              <Divider className="my-4" />
+              <Divider className="my-4"/>
             </div>
-            :
-            <></>
           }
         </CardFooter>
       </Card>

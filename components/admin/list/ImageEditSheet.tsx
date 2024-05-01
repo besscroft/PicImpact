@@ -97,6 +97,18 @@ export default function ImageEditSheet(props : Readonly<ImageServerHandleProps &
               placeholder="0"
             />
             <Input
+              value={String(image?.lon)}
+              onValueChange={(value) => setImageEditData({ ...image, lon: value })}
+              variant="bordered"
+              label="经度"
+            />
+            <Input
+              value={String(image?.lat)}
+              onValueChange={(value) => setImageEditData({ ...image, lat: value })}
+              variant="bordered"
+              label="纬度"
+            />
+            <Input
               value={String(image?.sort)}
               onValueChange={(value) => setImageEditData({ ...image, sort: Number(value) })}
               type="number"

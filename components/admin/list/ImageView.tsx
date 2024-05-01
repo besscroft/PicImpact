@@ -61,6 +61,20 @@ export default function ImageView() {
             />
             <Input
               isReadOnly
+              value={String(imageViewData?.lon)}
+              type="number"
+              variant="bordered"
+              label="经度"
+            />
+            <Input
+              isReadOnly
+              value={String(imageViewData?.lat)}
+              type="number"
+              variant="bordered"
+              label="纬度"
+            />
+            <Input
+              isReadOnly
               value={String(imageViewData?.sort)}
               type="number"
               variant="bordered"

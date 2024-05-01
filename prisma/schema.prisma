@@ -59,6 +59,8 @@ model Images {
   exif             Json?              @db.Json
   width            Int                @default(0)
   height           Int                @default(0)
+  lon              String?
+  lat              String?
   detail           String?            @db.Text
   show             Int                @default(1) @db.SmallInt
   sort             Int                @default(0) @db.SmallInt

@@ -19,7 +19,8 @@ export async function fetchS3Info() {
     select: {
       id: true,
       config_key: true,
-      config_value: true
+      config_value: true,
+      detail: true
     }
   })
 
@@ -43,7 +44,8 @@ export async function fetchR2Info() {
     select: {
       id: true,
       config_key: true,
-      config_value: true
+      config_value: true,
+      detail: true
     }
   })
 
@@ -63,7 +65,8 @@ export async function fetchAListInfo() {
     select: {
       id: true,
       config_key: true,
-      config_value: true
+      config_value: true,
+      detail: true
     }
   })
 
