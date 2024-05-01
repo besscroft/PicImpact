@@ -163,11 +163,15 @@ export default function FileUpload() {
 
   const storages = [
     {
-      label: 'S3',
+      label: 'S3 API',
       value: 's3',
     },
     {
-      label: 'AList',
+      label: 'Cloudflare R2',
+      value: 'r2',
+    },
+    {
+      label: 'AList API',
       value: 'alist',
     }
   ]

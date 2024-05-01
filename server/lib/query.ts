@@ -26,6 +26,30 @@ export async function fetchS3Info() {
   return findConfig;
 }
 
+export async function fetchR2Info() {
+  const findConfig = await db.configs.findMany({
+    where: {
+      config_key: {
+        in: [
+          'r2_accesskey_id',
+          'r2_accesskey_secret',
+          'r2_endpoint',
+          'r2_bucket',
+          'r2_storage_folder',
+          'r2_public_domain'
+        ]
+      }
+    },
+    select: {
+      id: true,
+      config_key: true,
+      config_value: true
+    }
+  })
+
+  return findConfig;
+}
+
 export async function fetchAListInfo() {
   const findConfig = await db.configs.findMany({
     where: {

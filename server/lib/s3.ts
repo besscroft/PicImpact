@@ -15,7 +15,7 @@ export function getClient(findConfig: any[]) {
 
   s3Client = new S3Client({
     region: region,
-    endpoint: `https://${endpoint}`,
+    endpoint: endpoint.includes('https://') ? endpoint : `https://${endpoint}`,
     credentials: {
       accessKeyId: accesskeyId,
       secretAccessKey: accesskeySecret,

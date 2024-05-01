@@ -1,13 +1,13 @@
 'use client'
 
-import { Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Skeleton, Card, CardHeader, Button } from '@nextui-org/react'
+import { Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Card, CardHeader, Button } from '@nextui-org/react'
 import useSWR from 'swr'
 import { fetcher } from '~/utils/fetcher'
 import { toast } from 'sonner'
 import { useButtonStore } from '~/app/providers/button-store-Providers'
 
 export default function S3Tabs() {
-  const { data, error, isLoading, isValidating, mutate } = useSWR('/api/v1/s3-info', fetcher
+  const { data, error, isValidating, mutate } = useSWR('/api/v1/s3-info', fetcher
     , { revalidateOnFocus: false })
   const { setS3Edit, setS3EditData } = useButtonStore(
     (state) => state,
@@ -53,7 +53,7 @@ export default function S3Tabs() {
         </CardHeader>
       </ Card>
       {
-        !isValidating && data ?
+        data &&
           <Table aria-label="S3 设置">
             <TableHeader>
               <TableColumn>Key</TableColumn>
@@ -70,18 +70,6 @@ export default function S3Tabs() {
               }
             </TableBody>
           </Table>
-          :
-          <div className="w-full p-2 space-y-4">
-            <Skeleton className="w-full rounded-md">
-              <div className="h-4 w-full rounded-md bg-white"></div>
-            </Skeleton>
-            <Skeleton className="w-full rounded-md">
-              <div className="h-4 w-full rounded-md bg-white"></div>
-            </Skeleton>
-            <Skeleton className="w-full rounded-md">
-              <div className="h-4 w-full rounded-md bg-white"></div>
-            </Skeleton>
-          </div>
       }
     </div>
   )

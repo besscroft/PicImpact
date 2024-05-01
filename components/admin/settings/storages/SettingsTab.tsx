@@ -1,6 +1,6 @@
 'use client'
 
-import { Card, CardHeader, Button } from '@nextui-org/react'
+import { Card, CardHeader } from '@nextui-org/react'
 
 export default function SettingsTab() {
   return (
