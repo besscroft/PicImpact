@@ -1,4 +1,6 @@
-import { fetchAListInfo } from '~/server/lib/query'
+import { fetchAListInfo, fetchS3Info } from '~/server/lib/query'
+import { s3 } from '~/server/lib/s3'
+import { PutObjectCommand } from '@aws-sdk/client-s3'
 
 export async function POST(request: Request) {
   const formData = await request.formData()
@@ -9,14 +11,42 @@ export async function POST(request: Request) {
   const mountPath = formData.get('mountPath') || ''
 
   if (storage && storage.toString() === 's3') {
-    return Response.json({ url: '' })
+    const findConfig = await fetchS3Info();
+    const bucket = findConfig.find((item: any) => item.config_key === 'bucket')?.config_value || '';
+    const storageFolder = findConfig.find((item: any) => item.config_key === 'storage_folder')?.config_value || '';
+    const endpoint = findConfig.find((item: any) => item.config_key === 'endpoint')?.config_value || '';
+
+    // @ts-ignore
+    const filePath = storageFolder && storageFolder !== '/'
+      ? `${storageFolder}${type}/${file?.name}`
+      : `${type}/${file?.name}`
+
+    // @ts-ignore
+    const blob = new Blob([file])
+    const arrayBuffer = await blob.arrayBuffer()
+    const buffer = Buffer.from(arrayBuffer)
+    const params = {
+      Bucket: bucket,
+      Key: filePath,
+      Body: buffer,
+      ContentLength: file?.size,
+      ContentType: file?.type
+    };
+    await s3.send(
+      new PutObjectCommand(params)
+    )
+    return Response.json({ code: 200, data: `https://${bucket}.${endpoint}/${
+      storageFolder && storageFolder !== '/'
+        ? `${storageFolder}${type}/${encodeURIComponent(file?.name)}`
+        : `${type}/${encodeURIComponent(file?.name)}`
+      }`
+    })
   } else {
     const findConfig = await fetchAListInfo()
     const alistToken = findConfig.find((item: any) => item.config_key === 'alist_token')?.config_value || '';
     const alistUrl = findConfig.find((item: any) => item.config_key === 'alist_url')?.config_value || '';
 
-    // @ts-ignore
-    const filePath = encodeURIComponent(`${mountPath.toString() === '/' ? '' : mountPath}/${type}/${file?.name}`)
+    const filePath = encodeURIComponent(`${mountPath && mountPath.toString() === '/' ? '' : mountPath}/${type}/${file?.name}`)
     const data = await fetch(`${alistUrl}/api/fs/put`, {
       method: 'PUT',
       headers: {

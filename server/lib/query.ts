@@ -12,8 +12,7 @@ export async function fetchS3Info() {
           'region',
           'endpoint',
           'bucket',
-          'storage_folder',
-          'cdn_url'
+          'storage_folder'
         ]
       }
     },
