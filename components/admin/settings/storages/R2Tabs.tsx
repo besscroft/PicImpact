@@ -6,10 +6,10 @@ import { fetcher } from '~/utils/fetcher'
 import { toast } from 'sonner'
 import { useButtonStore } from '~/app/providers/button-store-Providers'
 
-export default function AListTabs() {
-  const { data, error, isValidating, mutate } = useSWR('/api/v1/alist-info', fetcher
+export default function R2Tabs() {
+  const { data, error, isValidating, mutate } = useSWR('/api/v1/r2-info', fetcher
     , { revalidateOnFocus: false })
-  const { setAListEdit, setAListEditData } = useButtonStore(
+  const { setR2Edit, setR2EditData } = useButtonStore(
     (state) => state,
   )
 
@@ -23,7 +23,7 @@ export default function AListTabs() {
         <CardHeader className="justify-between">
           <div className="flex gap-5">
             <div className="flex flex-col gap-1 items-start justify-center">
-              <h4 className="text-small font-semibold leading-none text-default-600">AList 配置信息</h4>
+              <h4 className="text-small font-semibold leading-none text-default-600">Cloudflare R2 配置信息</h4>
             </div>
           </div>
           <div className="flex items-center space-x-2">
@@ -43,8 +43,8 @@ export default function AListTabs() {
               size="sm"
               radius="full"
               onClick={() => {
-                setAListEdit(true)
-                setAListEditData(JSON.parse(JSON.stringify(data)))
+                setR2Edit(true)
+                setR2EditData(JSON.parse(JSON.stringify(data)))
               }}
             >
               编辑
@@ -54,7 +54,7 @@ export default function AListTabs() {
       </ Card>
       {
         data &&
-          <Table aria-label="S3 设置">
+          <Table aria-label="Cloudflare R2 设置">
             <TableHeader>
               <TableColumn>Key</TableColumn>
               <TableColumn>Value</TableColumn>
@@ -64,7 +64,7 @@ export default function AListTabs() {
                 data.map((item: any) => (
                   <TableRow key={item.id}>
                     <TableCell>{item.config_key}</TableCell>
-                    <TableCell className="truncate max-w-60">{item.config_value || 'N&A'}</TableCell>
+                    <TableCell>{item.config_value || 'N&A'}</TableCell>
                   </TableRow>
                 ))
               }

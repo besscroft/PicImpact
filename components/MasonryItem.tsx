@@ -35,6 +35,8 @@ export default function MasonryItem() {
               className="md:h-[88vh]"
               alt={MasonryViewData.detail}
               src={MasonryViewData.url}
+              radius="none"
+              loading="lazy"
             />
           </div>
           <div className="flex w-full flex-col">

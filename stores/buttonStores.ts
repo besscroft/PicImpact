@@ -12,6 +12,8 @@ export type ButtonState = {
   imageView: boolean
   s3Edit: boolean
   s3Data: Config[]
+  r2Edit: boolean
+  r2Data: Config[]
   aListEdit: boolean
   aListData: Config[]
   MasonryView: boolean
@@ -28,6 +30,8 @@ export type ButtonActions = {
   setImageViewData: (imageViewData: ImageType) => void
   setS3Edit: (s3Edit: boolean) => void
   setS3EditData: (s3Data: Config[]) => void
+  setR2Edit: (r2Edit: boolean) => void
+  setR2EditData: (r2Data: Config[]) => void
   setAListEdit: (aListEdit: boolean) => void
   setAListEditData: (aListData: Config[]) => void
   setMasonryView: (masonryView: boolean) => void
@@ -47,6 +51,8 @@ export const initButtonStore = (): ButtonState => {
     imageViewData: {} as ImageType,
     s3Edit: false,
     s3Data: [] as Config[],
+    r2Edit: false,
+    r2Data: [] as Config[],
     aListEdit: false,
     aListData: [] as Config[],
     MasonryView: false,
@@ -64,6 +70,8 @@ export const defaultInitState: ButtonState = {
   imageViewData: {} as ImageType,
   s3Edit: false,
   s3Data: [] as Config[],
+  r2Edit: false,
+  r2Data: [] as Config[],
   aListEdit: false,
   aListData: [] as Config[],
   MasonryView: false,
@@ -103,6 +111,12 @@ export const createButtonStore = (
         })),
         setS3EditData: (s3DataValue) => set(() => ({
           s3Data: s3DataValue,
+        })),
+        setR2Edit: (r2EditValue) => set(() => ({
+          r2Edit: r2EditValue,
+        })),
+        setR2EditData: (r2DataValue) => set(() => ({
+          r2Data: r2DataValue,
         })),
         setAListEdit: (aListEditValue) => set(() => ({
           aListEdit: aListEditValue,

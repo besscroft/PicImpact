@@ -54,6 +54,8 @@ export type ImageType = {
   exif: ExifType;
   width: number;
   height: number;
+  lon: string;
+  lat: string;
   tag: string;
   detail: string;
   show: number;
@@ -66,4 +68,5 @@ export type Config = {
   id: number;
   config_key: string;
   config_value: string;
+  detail: string;
 }

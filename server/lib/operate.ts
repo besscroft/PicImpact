@@ -82,6 +82,8 @@ export async function insertImage(image: ImageType) {
         width: image.width,
         height: image.height,
         detail: image.detail,
+        lat: String(image.lat),
+        lon: String(image.lon),
         show: 1,
         sort: image.sort,
         del: 0
@@ -135,6 +137,10 @@ export async function updateImage(image: ImageType) {
       detail: image.detail,
       sort: image.sort,
       show: image.show,
+      width: image.width,
+      height: image.height,
+      lat: image.lat,
+      lon: image.lon,
       update_time: new Date(),
     }
   }
@@ -152,6 +158,8 @@ export async function insertImages(json: any[]) {
           width: image.width,
           height: image.height,
           detail: image.detail,
+          lat: image.lat,
+          lon: image.lon,
           show: 1,
           sort: image.sort,
           create_time: image.create_time,
@@ -206,6 +214,23 @@ export async function updateS3Config(configs: any) {
        ELSE 'N&A'
     END
     WHERE config_key IN ('accesskey_id', 'accesskey_secret', 'region', 'endpoint', 'bucket', 'storage_folder');
+  `
+  return resultRow
+}
+
+export async function updateR2Config(configs: any) {
+  const resultRow = await db.$executeRaw`
+    UPDATE "public"."Configs"
+    SET config_value = CASE
+       WHEN config_key = 'r2_accesskey_id' THEN ${configs.r2AccesskeyId}
+       WHEN config_key = 'r2_accesskey_secret' THEN ${configs.r2AccesskeySecret}
+       WHEN config_key = 'r2_endpoint' THEN ${configs.r2Endpoint}
+       WHEN config_key = 'r2_bucket' THEN ${configs.r2Bucket}
+       WHEN config_key = 'r2_storage_folder' THEN ${configs.r2StorageFolder}
+       WHEN config_key = 'r2_public_domain' THEN ${configs.r2PublicDomain}
+       ELSE 'N&A'
+    END
+    WHERE config_key IN ('r2_accesskey_id', 'r2_accesskey_secret', 'r2_endpoint', 'r2_bucket', 'r2_storage_folder', 'r2_public_domain');
   `
   return resultRow
 }
