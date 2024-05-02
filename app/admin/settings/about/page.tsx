@@ -16,12 +16,12 @@ export default function About() {
         width={64}
         height={64}
       />
-      <span>令人惊叹的在线 ⌈相片集⌋</span>
+      <span>摄影佬专用⌈相片集⌋，基于 Next.js 开发</span>
       <Divider className="my-4" />
       <div className="flex flex-col w-full">
         <Link
           className="flex items-center w-full p-2 hover:bg-slate-100"
-          href="https://picimpact.heming.dev/"
+          href="https://pic-docs.besscroft.com/"
           target="_blank"
         >
           <BookOpenCheck />
