@@ -224,9 +224,6 @@ export default function FileUpload() {
     multiple: false,
     maxCount: 1,
     customRequest: (file) => onRequestUpload(file),
-    onChange: (event) => {
-      console.log(event)
-    },
     beforeUpload: async (file) => await onBeforeUpload(file),
     onRemove: (file) => {
       setStorageSelect(false)

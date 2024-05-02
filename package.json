@@ -4,8 +4,9 @@
   "private": true,
   "author": "Bess Croft <besscroft@foxmail.com>",
   "scripts": {
-    "dev": "next dev",
+    "dev": "pnpm run prisma:generate && next dev",
     "build": "next build",
+    "build:vercel": "pnpm run prisma:deploy && next build",
     "start": "next start",
     "lint": "next lint",
     "prisma:format": "npx prisma format",

@@ -2,6 +2,7 @@
 const nextConfig = {
   experimental: {
     serverComponentsExternalPackages: ['pg'],
+    instrumentationHook: true,
   },
   eslint: {
     ignoreDuringBuilds: true,
