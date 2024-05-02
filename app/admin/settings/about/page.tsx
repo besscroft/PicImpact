@@ -21,15 +21,6 @@ export default function About() {
       <div className="flex flex-col w-full">
         <Link
           className="flex items-center w-full p-2 hover:bg-slate-100"
-          href="https://pic-docs.besscroft.com/"
-          target="_blank"
-        >
-          <BookOpenCheck />
-          <span className="flex-1 px-2">文档</span>
-          <ExternalLink />
-        </Link>
-        <Link
-          className="flex items-center w-full p-2 hover:bg-slate-100"
           href="https://github.com/besscroft/PicImpact"
           target="_blank"
         >

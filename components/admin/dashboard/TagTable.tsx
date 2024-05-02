@@ -8,8 +8,6 @@ export default function TagTable(props: Readonly<HandleProps>) {
 
   const { data } = useSWRHydrated(props)
 
-  console.log(data)
-
   return (
     <>
       <Card isBlurred shadow="sm" className="h-48">
