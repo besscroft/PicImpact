@@ -16,19 +16,53 @@ PicImpact
 
 > 当前为预览版本，会逐步稳定下来，在设计阶段已经尽可能保证后续开发的扩展和兼容性。
 
-你可以点击下面的按钮来一键部署到 Vercel，也可以 Fork 项目后手动部署到任何支持的平台。
+你可以点击下面的按钮来一键部署到 Vercel，然后将 `Build Command` 为 `pnpm run build:vercel`，也可以 Fork 项目后手动部署到任何支持的平台。
 
 <a href="https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fbesscroft%2FPicImpact&env=DATABASE_URL,AUTH_SECRET"><img src="https://vercel.com/button" alt="Deploy with Vercel"/></a>
 
-| Key              | 备注                                                                                        |
-|------------------|-------------------------------------------------------------------------------------------|
-| DATABASE_URL     | Postgre 数据库 url，如：postgres://账号:密码@aws-0-ap-northeast-1.pooler.supabase.com:5432/postgres |
-| AUTH_SECRET     | 权限机密，你可以执行 npx auth secret 生成一个，反正是随机的字符串就行                                               |
+| Key          | 备注                                                                                        |
+|--------------|-------------------------------------------------------------------------------------------|
+| DATABASE_URL | Postgre 数据库 url，如：postgres://账号:密码@aws-0-ap-northeast-1.pooler.supabase.com:5432/postgres |
+| AUTH_SECRET  | 权限机密，你可以执行 npx auth secret 生成一个，反正是随机的字符串就行                                               |
 
+> 部署就是这么简单，只需要您准备一个干净的数据库就行！
+> 
+> 不过，不支持 ALL Edge 运行时，毕竟 Vercel 就只给了 Edge 100M 内存，太小了...当然，Node.js 运行时是完美支持的~
 
-### 文档
+### 存储配置
 
-部署和使用有疑问？没关系，您可以看[文档](https://pic-docs.besscroft.com)
+暂时提供了 AWS S3 API、Cloudflare R2、AList API 支持，您在部署成功后，可以去 `设置` -> `存储` 进行管理。
+
+我比较推荐 Cloudflare R2，算是很良心的了，流量免费。
+
+- AWS S3 配置
+
+| Key              | 备注                                                           |
+|------------------|--------------------------------------------------------------|
+| accesskey_id     | 阿里 OSS / AWS S3 AccessKey_ID                                 |
+| accesskey_secret | 阿里 OSS / AWS S3 AccessKey_Secret                             |
+| region           | 阿里 OSS / AWS S3 Region 地域，如：oss-cn-hongkong                  |
+| endpoint         | 阿里 OSS / AWS S3 Endpoint 地域节点，如：oss-cn-hongkong.aliyuncs.com |
+| bucket           | 阿里 OSS / AWS S3 Bucket 存储桶名称，如：picimpact                     |
+| storage_folder   | 存储文件夹(S3)，严格格式，如：picimpact 或 picimpact/images ，填 / 或者不填表示根路径 |
+
+- Cloudflare R2 配置
+
+| Key                 | 备注                                                                       |
+|---------------------|--------------------------------------------------------------------------|
+| r2_accesskey_id     | Cloudflare AccessKey_ID                                                  |
+| r2_accesskey_secret | Cloudflare AccessKey_Secret                                              |
+| r2_endpoint         | Cloudflare Endpoint 地域节点，如：https://<ACCOUNT_ID>.r2.cloudflarestorage.com |
+| r2_bucket           | Cloudflare Bucket 存储桶名称，如：picimpact                                      |
+| r2_storage_folder   | 存储文件夹(Cloudflare R2)，严格格式，如：picimpact 或 picimpact/images ，填 / 或者不填表示根路径  |
+| r2_public_domain    | Cloudflare R2 自定义域（公开访问）                                                 |
+
+- AList API 配置
+
+| Key         | 备注                                     |
+|-------------|----------------------------------------|
+| alist_token | alist 令牌                               |
+| alist_url   | AList 地址，如：https://alist.besscroft.com |
 
 ### 本地开发
 
