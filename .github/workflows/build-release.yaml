@@ -1,4 +1,4 @@
-name: Dev Docker Multi-arch Image CI & CD
+name: Release Docker Multi-arch Image CI & CD
 
 on:
   push:
