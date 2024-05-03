@@ -364,3 +364,18 @@ export async function fetchSecretKey() {
 
   return find
 }
+
+export async function fetchCustomTitle() {
+  const find = await db.configs.findFirst({
+    where: {
+      config_key: 'custom_title'
+    },
+    select: {
+      id: true,
+      config_key: true,
+      config_value: true
+    }
+  })
+
+  return find
+}

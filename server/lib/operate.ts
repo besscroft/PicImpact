@@ -212,7 +212,8 @@ export async function updateS3Config(configs: any) {
        WHEN config_key = 'bucket' THEN ${configs.bucket}
        WHEN config_key = 'storage_folder' THEN ${configs.storageFolder}
        ELSE 'N&A'
-    END
+    END,
+        update_time = NOW()
     WHERE config_key IN ('accesskey_id', 'accesskey_secret', 'region', 'endpoint', 'bucket', 'storage_folder');
   `
   return resultRow
@@ -229,7 +230,8 @@ export async function updateR2Config(configs: any) {
        WHEN config_key = 'r2_storage_folder' THEN ${configs.r2StorageFolder}
        WHEN config_key = 'r2_public_domain' THEN ${configs.r2PublicDomain}
        ELSE 'N&A'
-    END
+    END,
+        update_time = NOW()
     WHERE config_key IN ('r2_accesskey_id', 'r2_accesskey_secret', 'r2_endpoint', 'r2_bucket', 'r2_storage_folder', 'r2_public_domain');
   `
   return resultRow
@@ -242,7 +244,8 @@ export async function updateAListConfig(configs: any) {
        WHEN config_key = 'alist_url' THEN ${configs.alistUrl}
        WHEN config_key = 'alist_token' THEN ${configs.alistToken}
        ELSE 'N&A'
-    END
+    END,
+        update_time = NOW()
     WHERE config_key IN ('alist_url', 'alist_token');
   `
   return resultRow
@@ -254,7 +257,8 @@ export async function updateImageShow(id: number, show: number) {
       id: Number(id)
     },
     data: {
-      show: show
+      show: show,
+      update_time: new Date()
     }
   })
   return resultRow
@@ -266,60 +270,22 @@ export async function updateTagShow(id: number, show: number) {
       id: Number(id)
     },
     data: {
-      show: show
+      show: show,
+      update_time: new Date()
     }
   })
   return resultRow
 }
 
-export async function initConfig() {
-  await db.$transaction(async (tx) => {
-    await tx.$executeRaw`
-      INSERT INTO "public"."Configs" (config_key, config_value, detail, create_time)
-      VALUES ('accesskey_id', '', '阿里 OSS / AWS S3 AccessKey_ID', NOW())
-          ON CONFLICT (config_key) DO NOTHING;
-      INSERT INTO "public"."Configs" (config_key, config_value, detail, create_time)
-      VALUES ('accesskey_secret', '', '阿里 OSS / AWS S3 AccessKey_Secret', NOW())
-          ON CONFLICT (config_key) DO NOTHING;
-      INSERT INTO "public"."Configs" (config_key, config_value, detail, create_time)
-      VALUES ('region', '', '阿里 OSS / AWS S3 Region 地域，如：oss-cn-hongkong', NOW())
-          ON CONFLICT (config_key) DO NOTHING;
-      INSERT INTO "public"."Configs" (config_key, config_value, detail, create_time)
-      VALUES ('endpoint', '', '阿里 OSS / AWS S3 Endpoint 地域节点，如：oss-cn-hongkong.aliyuncs.com', NOW())
-          ON CONFLICT (config_key) DO NOTHING;
-      INSERT INTO "public"."Configs" (config_key, config_value, detail, create_time)
-      VALUES ('bucket', '', '阿里 OSS / AWS S3 Bucket 存储桶名称，如：picimpact', NOW())
-          ON CONFLICT (config_key) DO NOTHING;
-      INSERT INTO "public"."Configs" (config_key, config_value, detail, create_time)
-      VALUES ('storage_folder', '', '存储文件夹(S3)，严格格式，如：picimpact 或 picimpact/images ，填 / 或者不填表示根路径', NOW())
-          ON CONFLICT (config_key) DO NOTHING;
-      INSERT INTO "public"."Configs" (config_key, config_value, detail, create_time)
-      VALUES ('alist_token', '', 'alist 令牌 ', NOW())
-          ON CONFLICT (config_key) DO NOTHING;
-      INSERT INTO "public"."Configs" (config_key, config_value, detail, create_time)
-      VALUES ('alist_url', '', 'AList 地址，如：https://alist.example.com', NOW())
-          ON CONFLICT (config_key) DO NOTHING;
-      INSERT INTO "public"."Configs" (config_key, config_value, detail, create_time)
-      VALUES ('secret_key', '', 'SECRET_KEY', NOW())
-          ON CONFLICT (config_key) DO NOTHING;
-      INSERT INTO "public"."Configs" (config_key, config_value, detail, create_time)
-      VALUES ('r2_accesskey_id', '', 'Cloudflare AccessKey_ID', NOW())
-          ON CONFLICT (config_key) DO NOTHING;
-      INSERT INTO "public"."Configs" (config_key, config_value, detail, create_time)
-      VALUES ('r2_accesskey_secret', '', 'Cloudflare AccessKey_Secret', NOW())
-          ON CONFLICT (config_key) DO NOTHING;
-      INSERT INTO "public"."Configs" (config_key, config_value, detail, create_time)
-      VALUES ('r2_endpoint', '', 'Cloudflare Endpoint 地域节点，如：https://<ACCOUNT_ID>.r2.cloudflarestorage.com', NOW())
-          ON CONFLICT (config_key) DO NOTHING;
-      INSERT INTO "public"."Configs" (config_key, config_value, detail, create_time)
-      VALUES ('r2_bucket', '', 'Cloudflare Bucket 存储桶名称，如：picimpact', NOW())
-          ON CONFLICT (config_key) DO NOTHING;
-      INSERT INTO "public"."Configs" (config_key, config_value, detail, create_time)
-      VALUES ('r2_storage_folder', '', '存储文件夹(Cloudflare R2)，严格格式，如：picimpact 或 picimpact/images ，填 / 或者不填表示根路径', NOW())
-          ON CONFLICT (config_key) DO NOTHING;
-      INSERT INTO "public"."Configs" (config_key, config_value, detail, create_time)
-      VALUES ('r2_public_domain', '', 'Cloudflare R2 自定义域（公开访问）', NOW())
-          ON CONFLICT (config_key) DO NOTHING;
-    `
+export async function updateCustomTitle(title: string) {
+  const resultRow = await db.configs.update({
+    where: {
+      config_key: 'custom_title'
+    },
+    data: {
+      config_value: title,
+      update_time: new Date()
+    }
   })
+  return resultRow
 }

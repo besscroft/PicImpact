@@ -1,7 +1,7 @@
 import 'server-only'
 import { updateAListConfig } from '~/server/lib/operate'
 import { NextRequest } from 'next/server'
-import {Config} from "~/types";
+import { Config } from '~/types'
 
 export async function PUT(req: NextRequest) {
   const query = await req.json()
