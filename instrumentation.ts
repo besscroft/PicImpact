@@ -25,6 +25,7 @@ export async function register() {
             { config_key: 'r2_bucket', config_value: '', detail: 'Cloudflare Bucket 存储桶名称，如：picimpact' },
             { config_key: 'r2_storage_folder', config_value: '', detail: '存储文件夹(Cloudflare R2)，严格格式，如：picimpact 或 picimpact/images ，填 / 或者不填表示根路径' },
             { config_key: 'r2_public_domain', config_value: '', detail: 'Cloudflare R2 自定义域（公开访问）' },
+            { config_key: 'custom_title', config_value: 'PicImpact', detail: '网站标题' },
           ],
           skipDuplicates: true,
         })
