@@ -44,7 +44,7 @@ docker run -d --name picimpact \
 ```yaml
 version: '3'
 services:
-  kamera:
+  picimpact:
     image: besscroft/picimpact:latest
     container_name: picimpact
     ports:
