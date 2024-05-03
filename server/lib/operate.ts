@@ -212,7 +212,8 @@ export async function updateS3Config(configs: any) {
        WHEN config_key = 'bucket' THEN ${configs.bucket}
        WHEN config_key = 'storage_folder' THEN ${configs.storageFolder}
        ELSE 'N&A'
-    END
+    END,
+        update_time = NOW()
     WHERE config_key IN ('accesskey_id', 'accesskey_secret', 'region', 'endpoint', 'bucket', 'storage_folder');
   `
   return resultRow
@@ -229,7 +230,8 @@ export async function updateR2Config(configs: any) {
        WHEN config_key = 'r2_storage_folder' THEN ${configs.r2StorageFolder}
        WHEN config_key = 'r2_public_domain' THEN ${configs.r2PublicDomain}
        ELSE 'N&A'
-    END
+    END,
+        update_time = NOW()
     WHERE config_key IN ('r2_accesskey_id', 'r2_accesskey_secret', 'r2_endpoint', 'r2_bucket', 'r2_storage_folder', 'r2_public_domain');
   `
   return resultRow
@@ -242,7 +244,8 @@ export async function updateAListConfig(configs: any) {
        WHEN config_key = 'alist_url' THEN ${configs.alistUrl}
        WHEN config_key = 'alist_token' THEN ${configs.alistToken}
        ELSE 'N&A'
-    END
+    END,
+        update_time = NOW()
     WHERE config_key IN ('alist_url', 'alist_token');
   `
   return resultRow
@@ -254,7 +257,8 @@ export async function updateImageShow(id: number, show: number) {
       id: Number(id)
     },
     data: {
-      show: show
+      show: show,
+      update_time: new Date()
     }
   })
   return resultRow
@@ -266,7 +270,8 @@ export async function updateTagShow(id: number, show: number) {
       id: Number(id)
     },
     data: {
-      show: show
+      show: show,
+      update_time: new Date()
     }
   })
   return resultRow
@@ -278,7 +283,8 @@ export async function updateCustomTitle(title: string) {
       config_key: 'custom_title'
     },
     data: {
-      config_value: title
+      config_value: title,
+      update_time: new Date()
     }
   })
   return resultRow
