@@ -1,22 +1,24 @@
 'use client'
 
-import { useState } from 'react'
-import { Input } from '@nextui-org/input'
-import Link from 'next/link'
-import { Button } from '@nextui-org/react'
+import React, { useState } from 'react'
+import { Button, Input } from '@nextui-org/react'
 import { useRouter } from 'next-nprogress-bar'
 import { toast } from 'sonner'
 import { authenticate } from '~/server/lib/actions'
 import { SafeParseReturnType, z } from 'zod'
 import confetti from 'canvas-confetti'
+import { Eye, EyeOff } from 'lucide-react'
 
 export const UserFrom = () => {
   const router = useRouter()
 
   const [isLoading, setIsLoading] = useState<boolean>(false)
+  const [isVisible, setIsVisible] = useState(false)
+
+  const toggleVisibility = () => setIsVisible(!isVisible)
 
   const [email, setEmail] = useState('admin@qq.com')
-  const [password, setPassword] = useState('666666')
+  const [password, setPassword] = useState('')
   
   function zHandle(): SafeParseReturnType<string | any, string | any> {
     const parsedCredentials = z
@@ -60,20 +62,23 @@ export const UserFrom = () => {
         <div className="grid gap-2">
           <div className="flex items-center">
             <div>密码</div>
-            <Link
-              href={"/forgot-password"}
-              className="ml-auto inline-block text-sm underline"
-            >
-              忘记密码?
-            </Link>
           </div>
           <Input
             id="password"
-            type="password"
             name="password"
             value={password}
             onValueChange={(value) => setPassword(value)}
             required
+            endContent={
+              <button className="focus:outline-none" type="button" onClick={toggleVisibility}>
+                {isVisible ? (
+                  <Eye className="text-2xl text-default-400 pointer-events-none" />
+                ) : (
+                  <EyeOff className="text-2xl text-default-400 pointer-events-none" />
+                )}
+              </button>
+            }
+            type={isVisible ? 'text' : 'password'}
           />
         </div>
         <Button

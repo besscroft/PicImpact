@@ -29,7 +29,7 @@ export async function register() {
           skipDuplicates: true,
         })
       })
-      console.log('数据库初始化完毕！')
+      console.log('初始化完毕！')
       await prisma.$disconnect()
     } else {
       console.error('数据库初始化失败，请检查您的连接信息！')

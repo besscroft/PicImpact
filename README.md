@@ -29,6 +29,31 @@ PicImpact
 > 
 > 不过，不支持 ALL Edge 运行时，毕竟 Vercel 就只给了 Edge 100M 内存，太小了...当然，Node.js 运行时是完美支持的~
 
+### 容器化部署
+
+你可以使用 Docker 来部署 PicImpact，当然 containerd 和 k8s 也是可以的。
+
+```shell
+docker run -d --name picimpact \
+  -p 3000:3000 \
+  -e DATABASE_URL="postgres://账号:密码@aws-0-ap-northeast-1.pooler.supabase.com:5432/postgres" \
+  -e AUTH_SECRET="自己运行npx auth secret或一串随机的字符串都行" \
+  besscroft/picimpact:latest
+```
+
+```yaml
+version: '3'
+services:
+  kamera:
+    image: besscroft/picimpact:latest
+    container_name: picimpact
+    ports:
+      - 3000:3000
+    environment:
+      - DATABASE_URL="postgres://账号:密码@aws-0-ap-northeast-1.pooler.supabase.com:5432/postgres"
+      - AUTH_SECRET="自己运行npx auth secret或一串随机的字符串都行"
+```
+
 ### 存储配置
 
 暂时提供了 AWS S3 API、Cloudflare R2、AList API 支持，您在部署成功后，可以去 `设置` -> `存储` 进行管理。
