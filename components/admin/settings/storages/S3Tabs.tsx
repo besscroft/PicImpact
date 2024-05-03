@@ -64,7 +64,7 @@ export default function S3Tabs() {
                 data.map((item: any) => (
                   <TableRow key={item.id}>
                     <TableCell>{item.config_key}</TableCell>
-                    <TableCell>{item.config_value || 'N&A'}</TableCell>
+                    <TableCell className="truncate max-w-48">{item.config_value || 'N&A'}</TableCell>
                   </TableRow>
                 ))
               }
