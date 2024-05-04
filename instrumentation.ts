@@ -29,6 +29,12 @@ export async function register() {
           ],
           skipDuplicates: true,
         })
+        await tx.tags.createMany({
+          data: [
+            { name: '首页', tag_value: '/', detail: '首页，勿删', show: 0, sort: 0 },
+          ],
+          skipDuplicates: true,
+        })
       })
       console.log('初始化完毕！')
       await prisma.$disconnect()
