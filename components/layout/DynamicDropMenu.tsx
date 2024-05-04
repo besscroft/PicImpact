@@ -12,6 +12,8 @@ export default function DynamicDropMenu(props: Readonly<HandleProps>) {
   const pathname = usePathname()
   const { data } = useSWRHydrated(props)
 
+  console.log(data)
+
   return (
     <Dropdown shadow="sm" backdrop="blur">
       <DropdownTrigger>
@@ -27,7 +29,7 @@ export default function DynamicDropMenu(props: Readonly<HandleProps>) {
         >
           首页
         </DropdownItem>
-        {data && data?.map((tag: TagType, index: any, array: TagType[]) => (
+        {data && Array.isArray(data) && data?.map((tag: TagType, index: any, array: TagType[]) => (
           <DropdownItem
             key={tag.id}
             onClick={() => router.push(tag.tag_value)}

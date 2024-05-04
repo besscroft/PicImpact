@@ -62,10 +62,12 @@ export default function Masonry(props : Readonly<ImageHandleProps>) {
           </div>
         )}
       />
-      {isValidating && <Spinner label="Loading..." color="primary" className="mx-auto w-full my-6" />}
       <div className="flex items-center justify-center my-4">
         {
-          size < pageTotal ?
+          isValidating ?
+            <Spinner label="Loading..." color="primary" />
+            :
+          size < pageTotal &&
             <Button
               color="primary"
               variant="bordered"
@@ -76,8 +78,6 @@ export default function Masonry(props : Readonly<ImageHandleProps>) {
             >
               加载更多
             </Button>
-            :
-            <></>
         }
       </div>
       <MasonryItem />

@@ -19,6 +19,7 @@ export type ImageHandleProps = {
 export type LinkProps = {
   handle: () => any
   args: string
+  data: any
 }
 
 export type TagType = {

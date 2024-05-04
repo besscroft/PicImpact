@@ -3,17 +3,20 @@ import Logo from '~/components/layout/Logo'
 import DynamicNavbar from '~/components/layout/DynamicNavbar'
 import HeaderLink from '~/components/layout/HeaderLink'
 import { fetchTagsShow } from '~/server/lib/query'
-import { HandleProps } from '~/types'
+import {  LinkProps } from '~/types'
 
-export default function Header() {
+export default async function Header() {
   const getData = async () => {
     'use server'
     return await fetchTagsShow()
   }
 
-  const props: HandleProps = {
+  const data = await getData()
+
+  const props: LinkProps = {
     handle: getData,
     args: 'headerLink',
+    data: data
   }
 
   return (
