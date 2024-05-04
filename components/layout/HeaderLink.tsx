@@ -25,7 +25,7 @@ export default function HeaderLink(props: Readonly<LinkProps>) {
       >
         首页
       </Button>
-      {data?.map((tag: TagType) => (
+      {Array.isArray(data) && data?.map((tag: TagType) => (
         <Button
           key={tag.id}
           color="primary"
