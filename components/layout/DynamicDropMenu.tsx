@@ -12,8 +12,6 @@ export default function DynamicDropMenu(props: Readonly<HandleProps>) {
   const pathname = usePathname()
   const { data } = useSWRHydrated(props)
 
-  console.log(data)
-
   return (
     <Dropdown shadow="sm" backdrop="blur">
       <DropdownTrigger>

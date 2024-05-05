@@ -56,6 +56,7 @@ model VerificationToken {
 model Images {
   id               Int                @id @default(autoincrement())
   url              String?            @db.Text
+  preview_url      String?            @db.Text
   exif             Json?              @db.Json
   width            Int                @default(0)
   height           Int                @default(0)

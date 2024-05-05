@@ -67,6 +67,18 @@ export default function ImageEditSheet(props : Readonly<ImageServerHandleProps &
               }}
             />
             <Textarea
+              value={image?.preview_url}
+              onValueChange={(value) => setImageEditData({ ...image, preview_url: value })}
+              label="链接"
+              variant="bordered"
+              placeholder="输入预览链接"
+              disableAnimation
+              disableAutosize
+              classNames={{
+                input: "resize-y min-h-[40px]",
+              }}
+            />
+            <Textarea
               value={image?.detail}
               onValueChange={(value) => setImageEditData({ ...image, detail: value })}
               label="详情"

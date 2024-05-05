@@ -52,6 +52,7 @@ export type ExifType = {
 export type ImageType = {
   id: number;
   url: string;
+  preview_url: string;
   exif: ExifType;
   width: number;
   height: number;

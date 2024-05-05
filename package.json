@@ -29,6 +29,7 @@
     "canvas-confetti": "^1.9.3",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
+    "compressorjs": "^1.2.1",
     "crypto-js": "^4.2.0",
     "cuid": "^3.0.0",
     "dayjs": "^1.11.11",
