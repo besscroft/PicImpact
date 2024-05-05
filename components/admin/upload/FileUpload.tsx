@@ -282,6 +282,7 @@ export default function FileUpload() {
       setHeight(0)
       setLat('')
       setLon('')
+      setPreviewUrl('')
     }
   }
 
