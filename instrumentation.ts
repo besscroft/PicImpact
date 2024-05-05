@@ -1,5 +1,4 @@
 import { PrismaClient } from '@prisma/client'
-import cuid from 'cuid'
 
 export async function register() {
   try {
@@ -8,6 +7,8 @@ export async function register() {
     }
     const prisma = new PrismaClient()
     if (prisma) {
+      const cuidModule = await import('cuid')
+      const cuid = cuidModule.default
       await prisma.$transaction(async (tx) => {
         await tx.$executeRaw`
           INSERT INTO "public"."User" (id, name, email, password, image)
