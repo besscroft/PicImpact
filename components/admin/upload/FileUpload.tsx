@@ -10,6 +10,7 @@ import { fetcher } from '~/utils/fetcher'
 import { ExifType, TagType, ImageType } from '~/types'
 import { Button, Select, SelectItem, Input, Divider, Card, CardBody, CardHeader, CardFooter } from '@nextui-org/react'
 import ExifReader from 'exifreader'
+import Compressor from 'compressorjs'
 
 export default function FileUpload() {
   const [alistStorage, setAlistStorage] = useState([])
@@ -19,6 +20,7 @@ export default function FileUpload() {
   const [alistMountPath, setAlistMountPath] = useState(new Set([] as string[]))
   const [exif, setExif] = useState({} as ExifType)
   const [url, setUrl] = useState('')
+  const [previewUrl, setPreviewUrl] = useState('')
   const [loading, setLoading] = useState(false)
   const [width, setWidth] = useState(0)
   const [height, setHeight] = useState(0)
@@ -109,6 +111,7 @@ export default function FileUpload() {
       const data = {
         tag: tagArray[0],
         url: url,
+        preview_url: previewUrl,
         exif: exif,
         detail: detail,
         width: width,
@@ -192,29 +195,71 @@ export default function FileUpload() {
 
   const { Dragger } = Upload;
 
-  async function onRequestUpload(option: any) {
+  async function uploadFile(file: any, type: string) {
     const storageArray = Array.from(storage)
-    const tagArray = Array.from(tag)
     const alistMountPathArray = Array.from(alistMountPath)
-
     const formData = new FormData()
-
-    formData.append('file', option.file)
+    formData.append('file', file)
     formData.append('storage', storageArray[0])
-    formData.append('type', tagArray[0])
+    formData.append('type', type)
     formData.append('mountPath', alistMountPathArray[0])
-    const res = await fetch('/api/v1/file-upload', {
+    return await fetch('/api/v1/file-upload', {
       method: 'POST',
       body: formData
     }).then((res) => res.json())
+  }
+
+  async function uploadPreviewImage(file: any, type: string) {
+    new Compressor(file, {
+      quality: 0.3,
+      checkOrientation: false,
+      convertTypes: ['image/jpeg'],
+      async success(compressedFile) {
+        if (compressedFile instanceof File) {
+          const res = await uploadFile(compressedFile, type)
+          if (res?.code === 200) {
+            toast.success('预览图片上传成功！')
+            setPreviewUrl(res?.data)
+          } else {
+            toast.error('预览图片上传失败！')
+          }
+        } else {
+          const compressedFileFromBlob = new File([compressedFile], file.name, {
+            type: compressedFile.type,
+          });
+          const res = await uploadFile(compressedFileFromBlob, type)
+          if (res?.code === 200) {
+            toast.success('预览图片上传成功！')
+            setPreviewUrl(res?.data)
+          } else {
+            toast.error('预览图片上传失败！')
+          }
+        }
+      },
+      error(err) {
+        console.log(err.message);
+        toast.error('预览图片上传失败！')
+      },
+    })
+  }
+
+  async function onRequestUpload(option: any) {
+    const tagArray = Array.from(tag)
+    const res = await uploadFile(option.file, tagArray[0])
     if (res?.code === 200) {
       option.onSuccess(option.file)
-      toast.success('文件上传成功！')
+      toast.success('图片上传成功！')
       await loadExif(option.file)
       setUrl(res?.data)
     } else {
       option.onError(option.file)
-      toast.error('文件上传失败！')
+      toast.error('图片上传失败！')
+    }
+    try {
+      toast.info('尝试生成预览图片并上传！')
+      await uploadPreviewImage(option.file, tagArray[0] + '/preview')
+    } catch (e) {
+      console.log(e)
     }
   }
 
@@ -368,6 +413,16 @@ export default function FileUpload() {
                 variant="bordered"
                 value={url}
               />
+              {previewUrl && previewUrl !== '' &&
+                <Input
+                  size="sm"
+                  isReadOnly
+                  type="text"
+                  label="预览图片地址"
+                  variant="bordered"
+                  value={previewUrl}
+                />
+              }
               <div className="flex items-center space-x-1 w-full">
                 <Input
                   size="sm"

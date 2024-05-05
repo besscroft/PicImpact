@@ -39,7 +39,7 @@ export default function Masonry(props : Readonly<ImageHandleProps>) {
         layout="masonry"
         photos={
           dataList?.map((item: ImageType) => ({
-            src: item.url,
+            src: item.preview_url || item.url,
             alt: item.detail,
             ...item
           })) || []

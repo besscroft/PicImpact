@@ -44,6 +44,9 @@ dependencies:
   clsx:
     specifier: ^2.1.1
     version: 2.1.1
+  compressorjs:
+    specifier: ^1.2.1
+    version: 1.2.1
   crypto-js:
     specifier: ^4.2.0
     version: 4.2.0
@@ -5644,6 +5647,10 @@ packages:
     resolution: {integrity: sha512-Ceh+7ox5qe7LJuLHoY0feh3pHuUDHAcRUeyL2VYghZwfpkNIy/+8Ocg0a3UuSoYzavmylwuLWQOf3hl0jjMMIw==}
     engines: {node: '>=8'}
 
+  /blueimp-canvas-to-blob@3.29.0:
+    resolution: {integrity: sha512-0pcSSGxC0QxT+yVkivxIqW0Y4VlO2XSDPofBAqoJ1qJxgH9eiUDLv50Rixij2cDuEfx4M6DpD9UGZpRhT5Q8qg==}
+    dev: false
+
   /bowser@2.11.0:
     resolution: {integrity: sha512-AlcaJBi/pqqJBIQ8U9Mcpc9i8Aqxn88Skv5d+xBX006BY5u8N3mGLHa5Lgppa7L/HfwgwLgZ6NYs+Ag6uUmJRA==}
     dev: false
@@ -5793,6 +5800,13 @@ packages:
   /commander@4.1.1:
     resolution: {integrity: sha512-NOKm8xhkzAjzFx8B2v5OAHT+u5pRQc2UCa2Vq9jYL/31o2wi9mxBA7LIFs3sV5VSC49z6pEhfbMULvShKj26WA==}
     engines: {node: '>= 6'}
+
+  /compressorjs@1.2.1:
+    resolution: {integrity: sha512-+geIjeRnPhQ+LLvvA7wxBQE5ddeLU7pJ3FsKFWirDw6veY3s9iLxAQEw7lXGHnhCJvBujEQWuNnGzZcvCvdkLQ==}
+    dependencies:
+      blueimp-canvas-to-blob: 3.29.0
+      is-blob: 2.1.0
+    dev: false
 
   /compute-scroll-into-view@3.1.0:
     resolution: {integrity: sha512-rj8l8pD4bJ1nx+dAkMhV1xB5RuZEyVysfxJqB1pRchh1KVvwOv9b7CGB8ZfjTImVv2oF+sYMUkMZq6Na5Ftmbg==}
@@ -6768,6 +6782,11 @@ packages:
     engines: {node: '>=8'}
     dependencies:
       binary-extensions: 2.3.0
+
+  /is-blob@2.1.0:
+    resolution: {integrity: sha512-SZ/fTft5eUhQM6oF/ZaASFDEdbFVe89Imltn9uZr03wdKMcWNVYSMjQPFtg05QuNkt5l5c135ElvXEQG0rk4tw==}
+    engines: {node: '>=6'}
+    dev: false
 
   /is-boolean-object@1.1.2:
     resolution: {integrity: sha512-gDYaKHJmnj4aWxyj6YHyXVpdQawtVLHU5cb+eztPGczf6cjuTdwve5ZIEfgXqH4e57An1D1AKf8CZ3kYrQRqYA==}

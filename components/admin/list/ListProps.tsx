@@ -209,7 +209,7 @@ export default function ListProps(props : Readonly<ImageServerHandleProps>) {
                   isBlurred
                   isZoomed
                   height={140}
-                  src={image.url}
+                  src={image.preview_url || image.url}
                   alt={image.detail}
                 />
               </CardBody>

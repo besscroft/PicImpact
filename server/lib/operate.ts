@@ -78,6 +78,7 @@ export async function insertImage(image: ImageType) {
     const resultRow = await tx.images.create({
       data: {
         url: image.url,
+        preview_url: image.preview_url,
         exif: image.exif,
         width: image.width,
         height: image.height,
@@ -133,6 +134,7 @@ export async function updateImage(image: ImageType) {
     },
     data: {
       url: image.url,
+      preview_url: image.preview_url,
       exif: image.exif,
       detail: image.detail,
       sort: image.sort,
