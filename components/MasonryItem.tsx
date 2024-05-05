@@ -30,9 +30,9 @@ export default function MasonryItem() {
           <p>{MasonryViewData.detail}</p>
         </div>
         <div className="h-full flex flex-col space-y-2 md:grid md:gap-2 md:grid-cols-3 xl:gap-4">
-          <div className="md:col-span-2 md:max-h-full md:flex md:justify-center md:h-[90vh]">
+          <div className="md:col-span-2 md:flex md:justify-center md:max-h-[90vh]">
             <Image
-              className="md:h-[88vh]"
+              className="object-contain md:max-h-[90vh]"
               alt={MasonryViewData.detail}
               src={MasonryViewData.url}
               radius="none"
