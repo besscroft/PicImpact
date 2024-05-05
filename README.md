@@ -25,6 +25,8 @@ PicImpact
 | DATABASE_URL | Postgre 数据库 url，如：postgres://账号:密码@aws-0-ap-northeast-1.pooler.supabase.com:5432/postgres |
 | AUTH_SECRET  | 权限机密，你可以执行 npx auth secret 生成一个，反正是随机的字符串就行                                               |
 
+默认账号：`admin@qq.com`，默认密码：`666666`，**登录后请先去设置里面修改密码！**
+
 > 部署就是这么简单，只需要您准备一个干净的数据库就行！
 > 
 > 不过，不支持 ALL Edge 运行时，毕竟 Vercel 就只给了 Edge 100M 内存，太小了...当然，Node.js 运行时是完美支持的~
