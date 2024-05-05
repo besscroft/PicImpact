@@ -140,6 +140,7 @@ export default function FileUpload() {
   }
 
   async function onBeforeUpload(file: any) {
+    setPreviewUrl('')
     const storageArray = Array.from(storage)
     const tagArray = Array.from(tag)
     const alistMountPathArray = Array.from(alistMountPath)
