@@ -1,3 +1,7 @@
+export type DataProps = {
+  data: any
+}
+
 export type HandleProps = {
   handle: () => any
   args: string

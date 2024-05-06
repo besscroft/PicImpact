@@ -2,7 +2,7 @@ import VaulDrawer from '~/components/layout/VaulDrawer'
 import { DropMenu } from '~/components/layout/DropMenu'
 import DynamicDropMenu from '~/components/layout/DynamicDropMenu'
 import { fetchTagsShow } from '~/server/lib/query'
-import { HandleProps } from '~/types'
+import { DataProps } from '~/types'
 
 export default async function DynamicNavbar() {
   const getData = async () => {
@@ -10,9 +10,10 @@ export default async function DynamicNavbar() {
     return await fetchTagsShow()
   }
 
-  const props: HandleProps = {
-    handle: getData,
-    args: 'headerLink',
+  const data = await getData()
+
+  const props: DataProps = {
+    data: data
   }
 
   return (
