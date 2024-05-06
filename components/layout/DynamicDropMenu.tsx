@@ -20,7 +20,11 @@ export default function DynamicDropMenu(props: Readonly<DataProps>) {
     <DropdownMenu>
       <DropdownMenuTrigger><Aperture size={20} /></DropdownMenuTrigger>
       <DropdownMenuContent>
-        <DropdownMenuItem key="/" onClick={() => router.push('/')}>首页</DropdownMenuItem>
+        <DropdownMenuItem
+          key="/"
+          onClick={() => router.push('/')}
+          className={pathname === '/' ? 'bg-gray-100' : ''}
+        >首页</DropdownMenuItem>
         <DropdownMenuSeparator />
         {Array.isArray(props.data) && props.data?.map((tag: TagType, index: any, array: TagType[]) => (
           <DropdownMenuItem
