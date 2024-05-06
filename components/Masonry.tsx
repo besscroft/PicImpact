@@ -31,7 +31,6 @@ export default function Masonry(props : Readonly<ImageHandleProps>) {
     <div className="w-full sm:w-4/5 mx-auto p-2">
       <PhotoAlbum
         columns={(containerWidth) => {
-          if (containerWidth < 640) return 1;
           if (containerWidth < 768) return 2;
           if (containerWidth < 1024) return 3;
           return 4;
