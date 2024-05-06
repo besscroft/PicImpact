@@ -140,6 +140,7 @@ export default function FileUpload() {
   }
 
   async function onBeforeUpload(file: any) {
+    setPreviewUrl('')
     const storageArray = Array.from(storage)
     const tagArray = Array.from(tag)
     const alistMountPathArray = Array.from(alistMountPath)
@@ -209,8 +210,8 @@ export default function FileUpload() {
     }).then((res) => res.json())
   }
 
-  async function uploadPreviewImage(file: any, type: string) {
-    new Compressor(file, {
+  async function uploadPreviewImage(option: any, type: string) {
+    new Compressor(option.file, {
       quality: 0.3,
       checkOrientation: false,
       convertTypes: ['image/jpeg'],
@@ -219,17 +220,19 @@ export default function FileUpload() {
           const res = await uploadFile(compressedFile, type)
           if (res?.code === 200) {
             toast.success('预览图片上传成功！')
+            option.onSuccess(option.file)
             setPreviewUrl(res?.data)
           } else {
             toast.error('预览图片上传失败！')
           }
         } else {
-          const compressedFileFromBlob = new File([compressedFile], file.name, {
+          const compressedFileFromBlob = new File([compressedFile], option.file.name, {
             type: compressedFile.type,
           });
           const res = await uploadFile(compressedFileFromBlob, type)
           if (res?.code === 200) {
             toast.success('预览图片上传成功！')
+            option.onSuccess(option.file)
             setPreviewUrl(res?.data)
           } else {
             toast.error('预览图片上传失败！')
@@ -247,19 +250,18 @@ export default function FileUpload() {
     const tagArray = Array.from(tag)
     const res = await uploadFile(option.file, tagArray[0])
     if (res?.code === 200) {
-      option.onSuccess(option.file)
-      toast.success('图片上传成功！')
+      toast.success('图片上传成功，尝试生成预览图片并上传！')
+      try {
+        await uploadPreviewImage(option, tagArray[0] + '/preview')
+      } catch (e) {
+        console.log(e)
+        option.onSuccess(option.file)
+      }
       await loadExif(option.file)
       setUrl(res?.data)
     } else {
       option.onError(option.file)
       toast.error('图片上传失败！')
-    }
-    try {
-      toast.info('尝试生成预览图片并上传！')
-      await uploadPreviewImage(option.file, tagArray[0] + '/preview')
-    } catch (e) {
-      console.log(e)
     }
   }
 
@@ -282,6 +284,7 @@ export default function FileUpload() {
       setHeight(0)
       setLat('')
       setLon('')
+      setPreviewUrl('')
     }
   }
 
