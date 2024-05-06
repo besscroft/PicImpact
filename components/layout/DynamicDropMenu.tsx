@@ -1,42 +1,39 @@
 'use client'
 
-import { Dropdown, DropdownItem, DropdownMenu, DropdownTrigger } from '@nextui-org/react'
 import { useRouter } from 'next-nprogress-bar'
 import { usePathname } from 'next/navigation'
 import { Aperture } from 'lucide-react'
-import { HandleProps, TagType } from '~/types'
-import { useSWRHydrated } from '~/hooks/useSWRHydrated'
+import { DataProps, TagType } from '~/types'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger
+} from '~/components/ui/DropdownMenu'
 
-export default function DynamicDropMenu(props: Readonly<HandleProps>) {
+export default function DynamicDropMenu(props: Readonly<DataProps>) {
   const router = useRouter()
   const pathname = usePathname()
-  const { data } = useSWRHydrated(props)
 
   return (
-    <Dropdown shadow="sm" backdrop="blur">
-      <DropdownTrigger>
-        <Aperture size={20} />
-      </DropdownTrigger>
-      <DropdownMenu
-        aria-label="移动端动态路由下拉菜单"
-      >
-        <DropdownItem
+    <DropdownMenu>
+      <DropdownMenuTrigger><Aperture size={20} /></DropdownMenuTrigger>
+      <DropdownMenuContent>
+        <DropdownMenuItem
           key="/"
           onClick={() => router.push('/')}
-          className={pathname === '/' ? 'text-blue-600' : ''}
-        >
-          首页
-        </DropdownItem>
-        {data && Array.isArray(data) && data?.map((tag: TagType, index: any, array: TagType[]) => (
-          <DropdownItem
+          className={pathname === '/' ? 'bg-gray-100' : ''}
+        >首页</DropdownMenuItem>
+        <DropdownMenuSeparator />
+        {Array.isArray(props.data) && props.data?.map((tag: TagType, index: any, array: TagType[]) => (
+          <DropdownMenuItem
             key={tag.id}
             onClick={() => router.push(tag.tag_value)}
-            className={pathname === tag.tag_value ? 'text-blue-600' : ''}
-          >
-            {tag.name}
-          </DropdownItem>
+            className={pathname === tag.tag_value ? 'bg-gray-100' : ''}
+          >{tag.name}</DropdownMenuItem>
         ))}
-      </DropdownMenu>
-    </Dropdown>
+      </DropdownMenuContent>
+    </DropdownMenu>
   )
 }

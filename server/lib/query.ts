@@ -225,7 +225,7 @@ export async function fetchClientImagesListByTag(pageNum: number, tag: string) {
         tags.tag_value = ${tag}
     GROUP BY image.id
     ORDER BY image.sort DESC, image.create_time DESC, image.update_time DESC
-    LIMIT 8 OFFSET ${(pageNum - 1) * 12}
+    LIMIT 16 OFFSET ${(pageNum - 1) * 16}
   `
 
   return findAll;
@@ -256,7 +256,7 @@ export async function fetchClientImagesPageTotalByTag(tag: string) {
     ) AS unique_images;
   `
   // @ts-ignore
-  return Number(pageTotal[0].total) > 0 ? Math.ceil(Number(pageTotal[0].total) / 12) : 0
+  return Number(pageTotal[0].total) > 0 ? Math.ceil(Number(pageTotal[0].total) / 16) : 0
 }
 
 export async function fetchTagsShow() {

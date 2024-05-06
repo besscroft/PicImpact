@@ -1,19 +1,14 @@
 'use client'
 
 import { Button } from '@nextui-org/react'
-import { TagType, LinkProps } from '~/types'
+import { TagType } from '~/types'
 import { usePathname } from 'next/navigation'
 import { useRouter } from 'next-nprogress-bar'
-import useSWR from 'swr'
+import { DataProps } from '~/types'
 
-export default function HeaderLink(props: Readonly<LinkProps>) {
-  const { data } = useSWR(props.args,
-    () => {
-      return props.handle
-    }, { revalidateOnFocus: false, fallbackData: props.data })
+export default function HeaderLink(props: Readonly<DataProps>) {
   const pathname = usePathname()
   const router = useRouter()
-
   return (
     <>
       <Button
@@ -25,7 +20,7 @@ export default function HeaderLink(props: Readonly<LinkProps>) {
       >
         首页
       </Button>
-      {Array.isArray(data) && data?.map((tag: TagType) => (
+      {Array.isArray(props.data) && props.data?.map((tag: TagType) => (
         <Button
           key={tag.id}
           color="primary"
