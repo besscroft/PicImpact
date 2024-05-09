@@ -6,13 +6,16 @@ import {
 } from '~/components/ui/Dialog'
 import { useButtonStore } from '~/app/providers/button-store-Providers'
 import { ImageType } from '~/types'
-import { Image, Tabs, Tab, Card, CardHeader, Table, TableHeader, TableColumn, TableBody, TableRow, TableCell } from '@nextui-org/react'
-import { Aperture, Camera } from 'lucide-react'
+import { Image, Tabs, Tab, Card, CardHeader, Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Button } from '@nextui-org/react'
+import { Aperture, Camera, Image as ImageIcon, Languages, CalendarDays, X, SunMedium, MoonStar } from 'lucide-react'
+import * as React from 'react'
+import { useTheme } from 'next-themes'
 
 export default function MasonryItem() {
   const { MasonryView, MasonryViewData, setMasonryView, setMasonryViewData } = useButtonStore(
     (state) => state,
   )
+  const { theme, setTheme } = useTheme()
 
   return (
     <Dialog
@@ -26,8 +29,36 @@ export default function MasonryItem() {
       }}
     >
       <DialogContent className="flex flex-col">
-        <div>
-          <p>{MasonryViewData.detail}</p>
+        <div className="flex items-center">
+          <div className="flex-1">
+            <p>{MasonryViewData.detail}</p>
+          </div>
+          <div className="flex items-center space-x-4">
+            <Button
+              isIconOnly
+              variant="shadow"
+              size="sm"
+              aria-label="切换主题"
+              className="bg-white dark:bg-gray-800"
+              onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
+            >
+              {theme === 'light' ? <SunMedium size={20} /> : <MoonStar size={20} />}
+            </Button>
+            <Button
+              isIconOnly
+              variant="shadow"
+              size="sm"
+              aria-label="关闭"
+              className="bg-white dark:bg-gray-800"
+              onClick={() => {
+                setMasonryView(false)
+                setMasonryViewData({} as ImageType)
+              }}
+            >
+              <X size={20}/>
+              <span className="sr-only">Close</span>
+            </Button>
+          </div>
         </div>
         <div className="h-full flex flex-col space-y-2 md:grid md:gap-2 md:grid-cols-3 xl:gap-4">
           <div className="md:col-span-2 md:flex md:justify-center md:max-h-[90vh]">
@@ -45,7 +76,7 @@ export default function MasonryItem() {
                 key="detail"
                 title={
                   <div className="flex items-center space-x-2">
-                    <Aperture/>
+                    <ImageIcon />
                     <span>详情</span>
                   </div>
                 }
@@ -53,14 +84,29 @@ export default function MasonryItem() {
                 <div className="flex flex-col space-y-2">
                   <Card className="py-4" shadow="sm">
                     <CardHeader className="pb-0 pt-2 px-4 flex-col items-start">
-                      <p className="text-tiny uppercase font-bold">相机</p>
+                      <div className="flex items-center space-x-1">
+                        <Camera size={20}/>
+                        <p className="text-tiny uppercase font-bold">相机</p>
+                      </div>
                       <h4 className="font-bold text-large">{MasonryViewData?.exif?.model || 'N&A'}</h4>
                     </CardHeader>
                   </Card>
                   <Card className="py-4" shadow="sm">
                     <CardHeader className="pb-0 pt-2 px-4 flex-col items-start">
-                      <p className="text-tiny uppercase font-bold">相片描述</p>
+                      <div className="flex items-center space-x-1">
+                        <Languages size={20}/>
+                        <p className="text-tiny uppercase font-bold">相片描述</p>
+                      </div>
                       <h4 className="font-bold text-large">{MasonryViewData.detail || 'N&A'}</h4>
+                    </CardHeader>
+                  </Card>
+                  <Card className="py-4" shadow="sm">
+                    <CardHeader className="pb-0 pt-2 px-4 flex-col items-start">
+                      <div className="flex items-center space-x-1">
+                        <CalendarDays size={20}/>
+                        <p className="text-tiny uppercase font-bold">拍摄时间</p>
+                      </div>
+                      <h4 className="font-bold text-large">{MasonryViewData?.exif?.data_time || 'N&A'}</h4>
                     </CardHeader>
                   </Card>
                 </div>
@@ -69,7 +115,7 @@ export default function MasonryItem() {
                 key="exif"
                 title={
                   <div className="flex items-center space-x-2">
-                    <Camera />
+                    <Aperture />
                     <span>Exif</span>
                   </div>
                 }
