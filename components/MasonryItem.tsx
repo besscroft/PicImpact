@@ -75,7 +75,7 @@ export default function MasonryItem() {
               <Tab
                 key="detail"
                 title={
-                  <div className="flex items-center space-x-2">
+                  <div className="flex items-center space-x-2 select-none">
                     <ImageIcon />
                     <span>详情</span>
                   </div>
@@ -86,7 +86,7 @@ export default function MasonryItem() {
                     <CardHeader className="pb-0 pt-2 px-4 flex-col items-start">
                       <div className="flex items-center space-x-1">
                         <Camera size={20}/>
-                        <p className="text-tiny uppercase font-bold">相机</p>
+                        <p className="text-tiny uppercase font-bold select-none">相机</p>
                       </div>
                       <h4 className="font-bold text-large">{MasonryViewData?.exif?.model || 'N&A'}</h4>
                     </CardHeader>
@@ -95,7 +95,7 @@ export default function MasonryItem() {
                     <CardHeader className="pb-0 pt-2 px-4 flex-col items-start">
                       <div className="flex items-center space-x-1">
                         <Languages size={20}/>
-                        <p className="text-tiny uppercase font-bold">相片描述</p>
+                        <p className="text-tiny uppercase font-bold select-none">相片描述</p>
                       </div>
                       <h4 className="font-bold text-large">{MasonryViewData.detail || 'N&A'}</h4>
                     </CardHeader>
@@ -104,7 +104,7 @@ export default function MasonryItem() {
                     <CardHeader className="pb-0 pt-2 px-4 flex-col items-start">
                       <div className="flex items-center space-x-1">
                         <CalendarDays size={20}/>
-                        <p className="text-tiny uppercase font-bold">拍摄时间</p>
+                        <p className="text-tiny uppercase font-bold select-none">拍摄时间</p>
                       </div>
                       <h4 className="font-bold text-large">{MasonryViewData?.exif?.data_time || 'N&A'}</h4>
                     </CardHeader>
@@ -114,7 +114,7 @@ export default function MasonryItem() {
               <Tab
                 key="exif"
                 title={
-                  <div className="flex items-center space-x-2">
+                  <div className="flex items-center space-x-2 select-none">
                     <Aperture />
                     <span>Exif</span>
                   </div>
