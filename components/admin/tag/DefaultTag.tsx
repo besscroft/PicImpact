@@ -21,7 +21,7 @@ export default function DefaultTag() {
           <p>首页</p>
           <Popover placement="top" shadow="sm">
             <PopoverTrigger className="cursor-pointer">
-              <Chip className="select-none" color="success" variant="shadow">/</Chip>
+              <Chip className="select-none" color="success" variant="shadow" aria-label="路由">/</Chip>
             </PopoverTrigger>
             <PopoverContent>
               <div className="px-1 py-2 select-none">
@@ -42,6 +42,7 @@ export default function DefaultTag() {
                 color="primary"
                 variant="shadow"
                 startContent={<ArrowDown10 size={20} />}
+                aria-label="排序"
               >-1</Chip>
             </PopoverTrigger>
             <PopoverContent>

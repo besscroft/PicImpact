@@ -135,6 +135,7 @@ export default function TagEditSheet(props : Readonly<HandleProps>) {
               color="primary"
               variant="shadow"
               onClick={() => submit()}
+              aria-label="更新"
             >
               更新
             </Button>

@@ -303,6 +303,7 @@ export default function FileUpload() {
             size="sm"
             isLoading={loading}
             onClick={() => submit()}
+            aria-label="提交"
           >
             提交
           </Button>

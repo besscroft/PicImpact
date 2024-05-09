@@ -10,7 +10,7 @@ export default function Preferences() {
   const [title, setTitle] = useState('')
   const [loading, setLoading] = useState(false)
 
-  const { data } = useSWR('/api/get-custom-title', fetcher)
+  const { data } = useSWR('/api/v1/get-custom-title', fetcher)
 
   async function updateTitle() {
     try {
@@ -54,6 +54,7 @@ export default function Preferences() {
             variant="bordered"
             isLoading={loading}
             onClick={() => updateTitle()}
+            aria-label="提交"
           >
             提交
           </Button>

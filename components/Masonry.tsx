@@ -74,6 +74,7 @@ export default function Masonry(props : Readonly<ImageHandleProps>) {
               onClick={() => {
                 setSize(size + 1)
               }}
+              aria-label="加载更多"
             >
               加载更多
             </Button>

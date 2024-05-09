@@ -32,6 +32,7 @@ export const DropMenu = () => {
           size="sm"
           isBordered
           src={session?.user?.image || ''}
+          aria-label="下拉菜单"
         />
       </DropdownTrigger>
         {

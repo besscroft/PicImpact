@@ -8,9 +8,9 @@ PicImpact
   <img src="https://img.shields.io/github/repo-size/besscroft/PicImpact?style=flat-square&color=328657" alt="存储库大小">
 </p>
 
-### 无障碍支持
-
-已经在尽力支持了，主要基于 [WAI-ARIA 规范](https://developer.mozilla.org/zh-CN/docs/Learn/Accessibility/WAI-ARIA_basics)，有爱，无障碍！
+<p align="center">
+    <img src=picimpact.png width=384 />
+</p>
 
 ### 如何部署
 
@@ -125,6 +125,10 @@ PicImpact 欢迎各种贡献，包括但不限于改进，新功能，文档和�
 - Firefox ESR
 
 > 事实上不是过于老旧的浏览器，一般都是能用的。
+
+### 无障碍支持
+
+已经在尽力支持了，主要基于 [WAI-ARIA 规范](https://developer.mozilla.org/zh-CN/docs/Learn/Accessibility/WAI-ARIA_basics)，有爱，无障碍！
 
 ### 技术栈
 
