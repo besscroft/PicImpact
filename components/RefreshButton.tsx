@@ -15,6 +15,7 @@ export default function RefreshButton(props: Readonly<HandleProps>) {
       size="sm"
       variant="shadow"
       isLoading={isLoading}
+      aria-label="刷新"
       onClick={async () => {
         await mutate()
       }}

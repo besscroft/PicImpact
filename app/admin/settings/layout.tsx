@@ -20,6 +20,7 @@ export default function AdminLayout({
             color="primary"
             variant={pathname === '/admin/settings/preferences' ? 'bordered': 'light'}
             onClick={() => router.push('/admin/settings/preferences')}
+            aria-label="首选项"
           >
             首选项
           </Button>
@@ -28,6 +29,7 @@ export default function AdminLayout({
             color="primary"
             variant={pathname === '/admin/settings/password' ? 'bordered': 'light'}
             onClick={() => router.push('/admin/settings/password')}
+            aria-label="密码修改"
           >
             密码修改
           </Button>
@@ -36,6 +38,7 @@ export default function AdminLayout({
             color="primary"
             variant={pathname === '/admin/settings/storages' ? 'bordered': 'light'}
             onClick={() => router.push('/admin/settings/storages')}
+            aria-label="存储"
           >
             存储
           </Button>
@@ -44,6 +47,7 @@ export default function AdminLayout({
             color="primary"
             variant={pathname === '/admin/settings/backup' ? 'bordered': 'light'}
             onClick={() => router.push('/admin/settings/backup')}
+            aria-label="备份"
           >
             备份
           </Button>
@@ -52,6 +56,7 @@ export default function AdminLayout({
             color="primary"
             variant={pathname === '/admin/settings/about' ? 'bordered': 'light'}
             onClick={() => router.push('/admin/settings/about')}
+            aria-label="关于"
           >
             关于
           </Button>

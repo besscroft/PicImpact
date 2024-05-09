@@ -17,6 +17,7 @@ export default function HeaderLink(props: Readonly<DataProps>) {
         variant="light"
         className={pathname === '/' ? 'border-b-2 border-indigo-600' : ''}
         onClick={() => router.push('/')}
+        aria-label="首页"
       >
         首页
       </Button>
@@ -28,6 +29,7 @@ export default function HeaderLink(props: Readonly<DataProps>) {
           variant="light"
           className={pathname === tag.tag_value ? 'border-b-2 border-indigo-600' : ''}
           onClick={() => router.push(tag.tag_value)}
+          aria-label={tag.name}
         >
           {tag.name}
         </Button>

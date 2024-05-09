@@ -109,12 +109,14 @@ export default function Backup() {
           icon={<CloudDownloadOutlined />}
           loading={backupLoading}
           onClick={() => backup()}
+          aria-label="备份"
         >备份</Button>
         <Upload {...picimpactProps}>
           <Button
             className="!w-full sm:!w-64  !block"
             icon={<CloudUploadOutlined />}
             loading={restorePicImpactLoading}
+            aria-label="选择备份文件（本机迁移）"
           >选择备份文件（本机迁移）</Button>
         </Upload>
         <p>如果您在线上环境，请确保您的数据库单次会话时长以及事务的支持，否则会还原数据失败！</p>

@@ -34,6 +34,7 @@ export default function S3Tabs() {
               radius="full"
               isLoading={isValidating}
               onClick={() => mutate()}
+              aria-label="刷新"
             >
               刷新
             </Button>
@@ -46,6 +47,7 @@ export default function S3Tabs() {
                 setS3Edit(true)
                 setS3EditData(JSON.parse(JSON.stringify(data)))
               }}
+              aria-label="编辑"
             >
               编辑
             </Button>

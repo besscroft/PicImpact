@@ -54,6 +54,7 @@ export default function Preferences() {
             variant="bordered"
             isLoading={loading}
             onClick={() => updateTitle()}
+            aria-label="提交"
           >
             提交
           </Button>

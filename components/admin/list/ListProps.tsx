@@ -142,6 +142,7 @@ export default function ListProps(props : Readonly<ImageServerHandleProps>) {
                 await totalMutate()
                 await mutate()
               }}
+              aria-label="刷新"
             >
               刷新
             </Button>
@@ -167,7 +168,7 @@ export default function ListProps(props : Readonly<ImageServerHandleProps>) {
                     <Badge content={image.tag_values.split(",").length} color="primary">
                       <Popover placement="top" shadow="sm">
                         <PopoverTrigger className="cursor-pointer">
-                          <Chip variant="shadow" className="flex-1">{image.tag_names.length > 8 ? image.tag_names.substring(0, 8) + '...' : image.tag_names}</Chip>
+                          <Chip variant="shadow" className="flex-1" aria-label="标签">{image.tag_names.length > 8 ? image.tag_names.substring(0, 8) + '...' : image.tag_names}</Chip>
                         </PopoverTrigger>
                         <PopoverContent>
                           <div className="px-1 py-2 select-none">
@@ -180,7 +181,7 @@ export default function ListProps(props : Readonly<ImageServerHandleProps>) {
                     :
                     <Popover placement="top" shadow="sm">
                       <PopoverTrigger className="cursor-pointer">
-                        <Chip variant="shadow" className="flex-1">{image.tag_names}</Chip>
+                        <Chip variant="shadow" className="flex-1" aria-label="标签">{image.tag_names}</Chip>
                       </PopoverTrigger>
                       <PopoverContent>
                         <div className="px-1 py-2 select-none">
@@ -198,6 +199,7 @@ export default function ListProps(props : Readonly<ImageServerHandleProps>) {
                       setImageViewData(image)
                       setImageView(true)
                     }}
+                    aria-label="查看图片"
                   >
                     <ScanSearch size={20} />
                   </Button>
@@ -237,6 +239,7 @@ export default function ListProps(props : Readonly<ImageServerHandleProps>) {
                         color="primary"
                         variant="shadow"
                         startContent={<ArrowDown10 size={20} />}
+                        aria-label="排序"
                       >{image.sort}</Chip>
                     </PopoverTrigger>
                     <PopoverContent>
@@ -255,6 +258,7 @@ export default function ListProps(props : Readonly<ImageServerHandleProps>) {
                       setImageEditData(image)
                       setImageEdit(true)
                     }}
+                    aria-label="编辑图片"
                   >
                     <Pencil size={20} />
                   </Button>
@@ -265,6 +269,7 @@ export default function ListProps(props : Readonly<ImageServerHandleProps>) {
                       setImage(image)
                       setIsOpen(true)
                     }}
+                    aria-label="删除图片"
                   >
                     <Trash size={20} />
                   </Button>
@@ -304,6 +309,7 @@ export default function ListProps(props : Readonly<ImageServerHandleProps>) {
                 setImage({} as ImageType)
                 setIsOpen(false)
               }}
+              aria-label="不删除"
             >
               算了
             </Button>
@@ -311,6 +317,7 @@ export default function ListProps(props : Readonly<ImageServerHandleProps>) {
               color="primary"
               isLoading={deleteLoading}
               onClick={() => deleteImage()}
+              aria-label="确认删除"
             >
               是的
             </Button>

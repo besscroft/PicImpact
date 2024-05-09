@@ -79,6 +79,7 @@ export default function AListEditSheet() {
               color="primary"
               variant="shadow"
               onClick={() => submit()}
+              aria-label="更新"
             >
               更新
             </Button>

@@ -16,6 +16,7 @@ export default function TagAddButton() {
       size="sm"
       variant="shadow"
       onClick={() => setTagAdd(true)}
+      aria-label="新增"
     >
       新增
     </Button>

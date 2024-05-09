@@ -105,6 +105,7 @@ export const UserFrom = () => {
             }
             setIsLoading(false)
           }}
+          aria-label="登录"
         >
           登录
         </Button>
@@ -113,6 +114,7 @@ export const UserFrom = () => {
           className="w-full"
           variant="shadow"
           onClick={() => router.push('/')}
+          aria-label="返回首页"
         >
           返回首页
         </Button>

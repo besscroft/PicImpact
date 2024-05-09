@@ -121,6 +121,7 @@ export default function PassWord() {
               setTwoPassword('')
               setThreePassword('')
             }}
+            aria-label="重置"
           >
             重置
           </Button>
@@ -129,6 +130,7 @@ export default function PassWord() {
             variant="bordered"
             isLoading={loading}
             onClick={() => updatePassword()}
+            aria-label="提交"
           >
             提交
           </Button>

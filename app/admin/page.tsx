@@ -12,6 +12,7 @@ export default async function Admin() {
     result: any[]
   }> => {
     'use server'
+    // @ts-ignore
     return await fetchImagesAnalysis()
   }
 

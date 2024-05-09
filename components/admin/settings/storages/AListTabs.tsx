@@ -34,6 +34,7 @@ export default function AListTabs() {
               radius="full"
               isLoading={isValidating}
               onClick={() => mutate()}
+              aria-label="刷新"
             >
               刷新
             </Button>
@@ -46,6 +47,7 @@ export default function AListTabs() {
                 setAListEdit(true)
                 setAListEditData(JSON.parse(JSON.stringify(data)))
               }}
+              aria-label="编辑"
             >
               编辑
             </Button>

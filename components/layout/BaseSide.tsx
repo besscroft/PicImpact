@@ -1,6 +1,6 @@
 'use client'
 
-import { Listbox, ListboxItem} from '@nextui-org/react'
+import { Listbox, ListboxItem } from '@nextui-org/react'
 import { useSession } from 'next-auth/react'
 import { usePathname } from 'next/navigation'
 import { useRouter } from 'next-nprogress-bar'

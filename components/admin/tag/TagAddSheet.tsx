@@ -124,6 +124,7 @@ export default function TagAddSheet(props : Readonly<HandleProps>) {
               color="primary"
               variant="shadow"
               onClick={() => submit()}
+              aria-label="提交"
             >
               提交
             </Button>

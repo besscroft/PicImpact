@@ -104,7 +104,7 @@ export default function TagList(props : Readonly<HandleProps>) {
                 <p>{tag.name}</p>
                 <Popover placement="top" shadow="sm">
                   <PopoverTrigger className="cursor-pointer">
-                    <Chip className="select-none" color="success" variant="shadow">{tag.tag_value}</Chip>
+                    <Chip className="select-none" color="success" variant="shadow" aria-label="路由">{tag.tag_value}</Chip>
                   </PopoverTrigger>
                   <PopoverContent>
                     <div className="px-1 py-2 select-none">
@@ -140,6 +140,7 @@ export default function TagList(props : Readonly<HandleProps>) {
                         color="primary"
                         variant="shadow"
                         startContent={<ArrowDown10 size={20} />}
+                        aria-label="排序"
                       >{tag.sort}</Chip>
                     </PopoverTrigger>
                     <PopoverContent>
@@ -158,6 +159,7 @@ export default function TagList(props : Readonly<HandleProps>) {
                       setTagEditData(tag)
                       setTagEdit(true)
                     }}
+                    aria-label="编辑标签"
                   >
                     <Pencil size={20} />
                   </Button>
@@ -168,6 +170,7 @@ export default function TagList(props : Readonly<HandleProps>) {
                       setTag(tag)
                       setIsOpen(true)
                     }}
+                    aria-label="删除标签"
                   >
                     <Trash size={20} />
                   </Button>
@@ -195,6 +198,7 @@ export default function TagList(props : Readonly<HandleProps>) {
                 setTag({} as TagType)
                 setIsOpen(false)
               }}
+              aria-label="不删除"
             >
               算了
             </Button>
@@ -202,6 +206,7 @@ export default function TagList(props : Readonly<HandleProps>) {
               color="primary"
               isLoading={deleteLoading}
               onClick={() => deleteTag()}
+              aria-label="确认删除"
             >
               是的
             </Button>

@@ -3,7 +3,7 @@
 import favicon from '~/public/favicon.svg'
 import Image from 'next/image'
 import { Divider, Avatar } from '@nextui-org/react'
-import { BookOpenCheck, ExternalLink, Github } from 'lucide-react'
+import { ExternalLink, Github } from 'lucide-react'
 import Link from 'next/link'
 
 export default function About() {
