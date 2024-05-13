@@ -5,7 +5,7 @@ import CredentialsProvider from 'next-auth/providers/credentials'
 import { db } from '~/server/lib/db'
 import { z } from 'zod'
 import CryptoJS from 'crypto-js'
-import { fetchSecretKey } from "~/server/lib/query";
+import { fetchSecretKey } from '~/server/lib/query'
 
 const prisma = new PrismaClient()
 
