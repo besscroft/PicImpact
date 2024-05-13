@@ -3,7 +3,7 @@ import Link from 'next/link'
 import { Star, MessageSquareHeart } from 'lucide-react'
 import { fetchImagesAnalysis } from '~/server/lib/query'
 import TagTable from '~/components/admin/dashboard/TagTable'
-import { HandleProps } from '~/types'
+import { DataProps } from '~/types'
 
 export default async function Admin() {
   const getData = async (): Promise<{
@@ -16,9 +16,10 @@ export default async function Admin() {
     return await fetchImagesAnalysis()
   }
 
-  const props: HandleProps = {
-    handle: getData,
-    args: 'console',
+  const data = await getData()
+
+  const props: DataProps = {
+    data: data,
   }
 
   return (
@@ -31,14 +32,14 @@ export default async function Admin() {
           <span className="h-px flex-1 bg-black"></span>
         </span>
           <Link href="https://github.com/besscroft/PicImpact" target="_blank">
-            <Button startContent={<Star size={20} />} variant="bordered">Star</Button>
+            <Button startContent={<Star size={20} />} variant="bordered" size="sm">Star</Button>
           </Link>
           <span className="flex items-center">
           <span className="pr-6">如果您有 Bug 反馈和建议</span>
           <span className="h-px flex-1 bg-black"></span>
         </span>
           <Link href="https://github.com/besscroft/kamera/issues/new" target="_blank">
-            <Button startContent={<MessageSquareHeart size={20} />} variant="bordered">反馈 | 建议</Button>
+            <Button startContent={<MessageSquareHeart size={20} />} variant="bordered" size="sm">反馈 | 建议</Button>
           </Link>
         </CardBody>
       </Card>
