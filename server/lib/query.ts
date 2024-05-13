@@ -156,7 +156,7 @@ export async function fetchServerImagesPageTotalByTag(tag: string) {
   }
   if (tag && tag !== '') {
     const pageTotal = await db.$queryRaw`
-      SELECT COUNT(1) AS total
+      SELECT COALESCE(COUNT(1),0) AS total
       FROM (
         SELECT DISTINCT ON (image.id)
             image.id 
@@ -178,7 +178,7 @@ export async function fetchServerImagesPageTotalByTag(tag: string) {
     return Number(pageTotal[0].total) > 0 ? Math.ceil(Number(pageTotal[0].total) / 8) : 0
   }
   const pageTotal = await db.$queryRaw`
-    SELECT COUNT(1) AS total
+    SELECT COALESCE(COUNT(1),0) AS total
     FROM (
       SELECT DISTINCT ON (image.id)
           image.id
@@ -233,7 +233,7 @@ export async function fetchClientImagesListByTag(pageNum: number, tag: string) {
 
 export async function fetchClientImagesPageTotalByTag(tag: string) {
   const pageTotal = await db.$queryRaw`
-    SELECT COUNT(1) AS total
+    SELECT COALESCE(COUNT(1),0) AS total
     FROM (
         SELECT DISTINCT ON (image.id)
            image.id
@@ -296,7 +296,8 @@ export async function fetchImagesAnalysis() {
     SELECT 
         tags.name,
         tags.tag_value,
-        COUNT(1) AS total
+        COALESCE(COUNT(1), 0) AS total,
+        COALESCE(SUM(CASE WHEN image.show = 0 THEN 1 ELSE 0 END), 0) AS show_total
     FROM
         "public"."Images" AS image
     INNER JOIN "public"."ImageTagRelation" AS relation
