@@ -24,7 +24,8 @@ import {
   SelectItem,
   Image,
   Switch,
-  Badge
+  Badge,
+  Spinner
 } from '@nextui-org/react'
 import { ArrowDown10, Pencil, Trash, Eye, EyeOff, ScanSearch } from 'lucide-react'
 import { toast } from 'sonner'
@@ -45,6 +46,7 @@ export default function ListProps(props : Readonly<ImageServerHandleProps>) {
   const [image, setImage] = useState({} as ImageType)
   const [deleteLoading, setDeleteLoading] = useState(false)
   const [updateShowLoading, setUpdateShowLoading] = useState(false)
+  const [updateShowId, setUpdateShowId] = useState(0)
   const { setImageEdit, setImageEditData, setImageView, setImageViewData } = useButtonStore(
     (state) => state,
   )
@@ -74,6 +76,7 @@ export default function ListProps(props : Readonly<ImageServerHandleProps>) {
   async function updateImageShow(id: number, show: number) {
     try {
       setUpdateShowLoading(true)
+      setUpdateShowId(id)
       const res = await fetch(`/api/v1/update-image-show`, {
         method: 'PUT',
         headers: {
@@ -93,6 +96,7 @@ export default function ListProps(props : Readonly<ImageServerHandleProps>) {
     } catch (e) {
       toast.error('更新失败！')
     } finally {
+      setUpdateShowId(0)
       setUpdateShowLoading(false)
     }
   }
@@ -218,21 +222,23 @@ export default function ListProps(props : Readonly<ImageServerHandleProps>) {
               <CardFooter
                 className="flex space-x-1 select-none before:bg-white/10 border-white/20 border-1 overflow-hidden py-1 absolute before:rounded-xl rounded-large bottom-1 w-[calc(100%_-_8px)] shadow-small ml-1 z-10">
                 <div className="flex flex-1 space-x-1 items-center">
-                  <Switch
-                    defaultSelected
-                    size="sm"
-                    color="success"
-                    isSelected={image.show === 0}
-                    isDisabled={updateShowLoading}
-                    thumbIcon={({ isSelected }) =>
-                      isSelected ? (
-                        <Eye size={20} />
-                      ) : (
-                        <EyeOff size={20} />
-                      )
-                    }
-                    onValueChange={(isSelected: boolean) => updateImageShow(image.id, isSelected ? 0 : 1)}
-                  />
+                  {updateShowLoading && updateShowId === image.id ? <Spinner size="sm" /> :
+                    <Switch
+                      defaultSelected
+                      size="sm"
+                      color="success"
+                      isSelected={image.show === 0}
+                      isDisabled={updateShowLoading}
+                      thumbIcon={({ isSelected }) =>
+                        isSelected ? (
+                          <Eye size={20} />
+                        ) : (
+                          <EyeOff size={20} />
+                        )
+                      }
+                      onValueChange={(isSelected: boolean) => updateImageShow(image.id, isSelected ? 0 : 1)}
+                    />
+                  }
                   <Popover placement="top" shadow="sm">
                     <PopoverTrigger className="cursor-pointer">
                       <Chip
@@ -299,6 +305,7 @@ export default function ListProps(props : Readonly<ImageServerHandleProps>) {
         <ModalContent>
           <ModalHeader className="flex flex-col gap-1">确定要删掉？</ModalHeader>
           <ModalBody>
+            <p>图片 ID：{image.id}</p>
             <p>图片介绍：{image.detail || '没有介绍'}</p>
           </ModalBody>
           <ModalFooter>

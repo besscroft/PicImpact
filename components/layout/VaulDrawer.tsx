@@ -29,15 +29,17 @@ export default function VaulDrawer() {
 
   const iconClasses = 'text-xl text-default-500 pointer-events-none flex-shrink-0'
 
+  const activeClasses = 'bg-gray-100 text-black'
+
   return (
     <Drawer.Root>
-      <Drawer.Trigger>
+      <Drawer.Trigger className="focus-visible:outline-none">
         <LayoutGrid size={20} aria-label="菜单" className="rounded dark:text-white" />
       </Drawer.Trigger>
       <Drawer.Portal>
-        <Drawer.Overlay className="fixed inset-0 z-50 bg-black/80" />
-        <Drawer.Content className="fixed inset-x-0 bottom-0 z-50 mt-24 flex h-auto flex-col rounded-t-[10px] border bg-background">
-          <div className="p-4 rounded-t-[10px] flex-1">
+        <Drawer.Overlay className="fixed inset-0 z-50 bg-black/40" />
+        <Drawer.Content className="fixed inset-x-0 bottom-0 z-50 mt-24 flex h-auto flex-col rounded-t-[10px] border bg-background focus-visible:!outline-none">
+          <div className="p-4 bg-white dark:bg-zinc-800 rounded-t-[10px] flex-1">
             <div className="mx-auto w-12 h-1.5 flex-shrink-0 rounded-full bg-gray-300 mb-2" />
             <div className="flex flex-col gap-4">
               <div className="w-full px-1 py-2 rounded-small">
@@ -50,7 +52,7 @@ export default function VaulDrawer() {
                         key="home"
                         startContent={<Home size={20} className={iconClasses} />}
                         onClick={() => router.push('/')}
-                        className={pathname === '/' ? 'bg-gray-100' : ''}
+                        className={pathname === '/' ? activeClasses : ''}
                       >
                         <Drawer.Close className="w-full text-left">
                           首页
@@ -60,7 +62,7 @@ export default function VaulDrawer() {
                         key="admin"
                         startContent={<MonitorDot size={20} className={iconClasses} />}
                         onClick={() => router.push('/admin')}
-                        className={pathname === '/admin' ? 'bg-gray-100' : ''}
+                        className={pathname === '/admin' ? activeClasses : ''}
                       >
                         <Drawer.Close className="w-full text-left">
                           控制台
@@ -70,7 +72,7 @@ export default function VaulDrawer() {
                         key="upload"
                         startContent={<ImageUp size={20} className={iconClasses} />}
                         onClick={() => router.push('/admin/upload')}
-                        className={pathname === '/admin/upload' ? 'bg-gray-100' : ''}
+                        className={pathname === '/admin/upload' ? activeClasses : ''}
                       >
                         <Drawer.Close className="w-full text-left">
                           上传
@@ -80,7 +82,7 @@ export default function VaulDrawer() {
                         key="list"
                         startContent={<Image size={20} className={iconClasses} />}
                         onClick={() => router.push('/admin/list')}
-                        className={pathname === '/admin/list' ? 'bg-gray-100' : ''}
+                        className={pathname === '/admin/list' ? activeClasses : ''}
                       >
                         <Drawer.Close className="w-full text-left">
                           图片维护
@@ -90,7 +92,7 @@ export default function VaulDrawer() {
                         key="tag"
                         startContent={<Milestone size={20} className={iconClasses} />}
                         onClick={() => router.push('/admin/tag')}
-                        className={pathname === '/admin/tag' ? 'bg-gray-100' : ''}
+                        className={pathname === '/admin/tag' ? activeClasses : ''}
                       >
                         <Drawer.Close className="w-full text-left">
                           标签管理
@@ -100,7 +102,7 @@ export default function VaulDrawer() {
                         key="settings"
                         startContent={<Settings size={20} className={iconClasses} />}
                         onClick={() => router.push('/admin/settings/preferences')}
-                        className={pathname.startsWith('/admin/settings') ? 'bg-gray-100' : ''}
+                        className={pathname.startsWith('/admin/settings') ? activeClasses : ''}
                         showDivider
                       >
                         <Drawer.Close className="w-full text-left">
@@ -133,7 +135,7 @@ export default function VaulDrawer() {
                         key="home"
                         onClick={() => router.push('/')}
                         startContent={<Home size={20} className={iconClasses} />}
-                        className={pathname === '/' ? 'bg-gray-100' : ''}
+                        className={pathname === '/' ? activeClasses : ''}
                       >
                         <Drawer.Close className="w-full text-left">
                           首页
