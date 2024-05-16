@@ -18,7 +18,8 @@ import {
   ModalBody,
   ModalFooter,
   Button,
-  Switch
+  Switch,
+  Spinner
 } from '@nextui-org/react'
 import { ArrowDown10, Eye, EyeOff, Pencil, Trash } from 'lucide-react'
 import { toast } from 'sonner'
@@ -33,6 +34,7 @@ export default function TagList(props : Readonly<HandleProps>) {
   const [tag, setTag] = useState({} as TagType)
   const [deleteLoading, setDeleteLoading] = useState(false)
   const [updateTagLoading, setUpdateTagLoading] = useState(false)
+  const [updateTagId, setUpdateTagId] = useState(0)
   const { setTagEdit, setTagEditData } = useButtonStore(
     (state) => state,
   )
@@ -60,6 +62,7 @@ export default function TagList(props : Readonly<HandleProps>) {
 
   async function updateTagShow(id: number, show: number) {
     try {
+      setUpdateTagId(id)
       setUpdateTagLoading(true)
       const res = await fetch(`/api/v1/update-tag-show`, {
         method: 'PUT',
@@ -80,6 +83,7 @@ export default function TagList(props : Readonly<HandleProps>) {
     } catch (e) {
       toast.error('更新失败！')
     } finally {
+      setUpdateTagId(0)
       setUpdateTagLoading(false)
     }
   }
@@ -119,21 +123,23 @@ export default function TagList(props : Readonly<HandleProps>) {
               </CardBody>
               <CardFooter className="flex space-x-1 select-none before:bg-white/10 border-white/20 border-1 overflow-hidden py-1 absolute before:rounded-xl rounded-large bottom-1 w-[calc(100%_-_8px)] shadow-small ml-1 z-10">
                 <div className="flex flex-1 space-x-1 items-center">
-                  <Switch
-                    defaultSelected
-                    size="sm"
-                    color="success"
-                    isSelected={tag.show === 0}
-                    isDisabled={updateTagLoading}
-                    thumbIcon={({ isSelected }) =>
-                      isSelected ? (
-                        <Eye size={20} />
-                      ) : (
-                        <EyeOff size={20} />
-                      )
-                    }
-                    onValueChange={(isSelected: boolean) => updateTagShow(tag.id, isSelected ? 0 : 1)}
-                  />
+                  {updateTagLoading && updateTagId === tag.id ? <Spinner size="sm" /> :
+                    <Switch
+                      defaultSelected
+                      size="sm"
+                      color="success"
+                      isSelected={tag.show === 0}
+                      isDisabled={updateTagLoading}
+                      thumbIcon={({ isSelected }) =>
+                        isSelected ? (
+                          <Eye size={20} />
+                        ) : (
+                          <EyeOff size={20} />
+                        )
+                      }
+                      onValueChange={(isSelected: boolean) => updateTagShow(tag.id, isSelected ? 0 : 1)}
+                    />
+                  }
                   <Popover placement="top" shadow="sm">
                     <PopoverTrigger className="cursor-pointer">
                       <Chip
