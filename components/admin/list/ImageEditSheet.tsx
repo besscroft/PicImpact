@@ -69,7 +69,7 @@ export default function ImageEditSheet(props : Readonly<ImageServerHandleProps &
             <Textarea
               value={image?.preview_url}
               onValueChange={(value) => setImageEditData({ ...image, preview_url: value })}
-              label="链接"
+              label="预览链接"
               variant="bordered"
               placeholder="输入预览链接"
               disableAnimation
