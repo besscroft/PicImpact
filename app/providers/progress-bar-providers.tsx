@@ -7,7 +7,7 @@ export function ProgressBarProviders({children}: { children: React.ReactNode }) 
     <>
       <ProgressBar
         height="2px"
-        color="#000000"
+        color="#99f6e4"
         shallowRouting
       />
       {children}
