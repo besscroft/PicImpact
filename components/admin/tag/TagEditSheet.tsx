@@ -20,6 +20,10 @@ export default function TagEditSheet(props : Readonly<HandleProps>) {
       toast.error('请先填写必填项！')
       return
     }
+    if (tag.tag_value && tag.tag_value.charAt(0) !== '/') {
+      toast.error('路由必须以 / 开头！')
+      return
+    }
     try {
       setLoading(true)
       const res = await fetch('/api/v1/tag-update', {
@@ -35,7 +39,7 @@ export default function TagEditSheet(props : Readonly<HandleProps>) {
         setTagEdit(false)
         await mutate()
       } else {
-        toast.error('更新失败！')
+        toast.error(res.message)
       }
     } catch (e) {
       toast.error('更新失败！')

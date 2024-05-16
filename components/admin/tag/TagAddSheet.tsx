@@ -21,6 +21,10 @@ export default function TagAddSheet(props : Readonly<HandleProps>) {
       toast.error('请先填写必填项！')
       return
     }
+    if (data.tag_value && data.tag_value.charAt(0) !== '/') {
+      toast.error('路由必须以 / 开头！')
+      return
+    }
     try {
       setLoading(true)
       const res = await fetch('/api/v1/tag-add', {
@@ -30,10 +34,14 @@ export default function TagAddSheet(props : Readonly<HandleProps>) {
         body: JSON.stringify(data),
         method: 'POST',
       }).then(response => response.json())
-      toast.success('添加成功！')
-      setTagAdd(false)
-      setData({} as TagType)
-      await mutate()
+      if (res.code === 200) {
+        toast.success('添加成功！')
+        setTagAdd(false)
+        setData({} as TagType)
+        await mutate()
+      } else {
+        toast.error(res.message)
+      }
     } catch (e) {
       toast.error('添加失败！')
     } finally {
