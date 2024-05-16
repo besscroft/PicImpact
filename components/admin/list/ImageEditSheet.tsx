@@ -17,6 +17,18 @@ export default function ImageEditSheet(props : Readonly<ImageServerHandleProps &
   const [loading, setLoading] = useState(false)
 
   async function submit() {
+    if (!image.url) {
+      toast.error('图片链接不能为空！')
+      return
+    }
+    if (!image.height || image.height <= 0) {
+      toast.error('图片高度不能为空且必须大于 0！')
+      return
+    }
+    if (!image.width || image.width <= 0) {
+      toast.error('图片宽度不能为空且必须大于 0！')
+      return
+    }
     try {
       setLoading(true)
       const res = await fetch('/api/v1/image-update', {
