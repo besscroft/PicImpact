@@ -194,7 +194,9 @@ export default function TagList(props : Readonly<HandleProps>) {
         <ModalContent>
           <ModalHeader className="flex flex-col gap-1">确定要删掉？</ModalHeader>
           <ModalBody>
+            <p>标签 ID：{tag.id}</p>
             <p>标签名称：{tag.name}</p>
+            <p>标签路由：{tag.tag_value}</p>
           </ModalBody>
           <ModalFooter>
             <Button

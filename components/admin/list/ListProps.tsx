@@ -305,6 +305,7 @@ export default function ListProps(props : Readonly<ImageServerHandleProps>) {
         <ModalContent>
           <ModalHeader className="flex flex-col gap-1">确定要删掉？</ModalHeader>
           <ModalBody>
+            <p>图片 ID：{image.id}</p>
             <p>图片介绍：{image.detail || '没有介绍'}</p>
           </ModalBody>
           <ModalFooter>
