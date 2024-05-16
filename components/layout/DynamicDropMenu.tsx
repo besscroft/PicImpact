@@ -18,7 +18,7 @@ export default function DynamicDropMenu(props: Readonly<DataProps>) {
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger><Aperture size={20} /></DropdownMenuTrigger>
+      <DropdownMenuTrigger className="focus-visible:!outline-none"><Aperture size={20} /></DropdownMenuTrigger>
       <DropdownMenuContent>
         <DropdownMenuItem
           key="/"
