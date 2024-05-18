@@ -97,13 +97,17 @@ export const UserFrom = () => {
                 const { email, password } = parsedCredentials.data;
                 await authenticate(email, password)
                 toast.success('登录成功！')
+                setTimeout(() => {
+                  location.replace('/admin')
+                }, 1000);
               } else {
                 toast.error('请检查您的账号密码！')
               }
             } catch (e) {
               toast.error('登录失败！')
+            } finally {
+              setIsLoading(false)
             }
-            setIsLoading(false)
           }}
           aria-label="登录"
         >
