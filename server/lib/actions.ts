@@ -9,8 +9,7 @@ export async function authenticate(
     await signIn('Credentials', {
       email: email,
       password: password,
-      redirect: true,
-      redirectTo: '/admin'
+      redirect: false,
     });
   } catch (error) {
     throw error;
@@ -20,8 +19,7 @@ export async function authenticate(
 export async function loginOut() {
   try {
     await signOut({
-      redirect: true,
-      redirectTo: '/login'
+      redirect: false,
     });
   } catch (error) {
     throw error;

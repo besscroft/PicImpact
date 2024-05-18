@@ -33,6 +33,7 @@ export default function FileUpload() {
   async function loadExif(file: any) {
     try {
       const tags = await ExifReader.load(file)
+      console.log(tags)
       const exifObj = {
         make: '',
         model: '',

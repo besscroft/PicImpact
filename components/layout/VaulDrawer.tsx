@@ -114,7 +114,14 @@ export default function VaulDrawer() {
                         startContent={<LogOut size={20} className={iconClasses} />}
                       >
                         <div onClick={async () => {
-                          await loginOut()
+                          try {
+                            await loginOut()
+                            setTimeout(() => {
+                              location.replace('/login')
+                            }, 1000);
+                          } catch (e) {
+                            console.log(e)
+                          }
                         }}>
                           退出登录
                         </div>
