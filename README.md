@@ -14,8 +14,6 @@ PicImpact
 
 ### 如何部署
 
-> 当前为预览版本，会逐步稳定下来，在设计阶段已经尽可能保证后续开发的扩展和兼容性。
-
 你可以点击下面的按钮来一键部署到 Vercel，然后将 `Build Command` 为 `pnpm run build:vercel`，也可以 Fork 项目后手动部署到任何支持的平台。
 
 <a href="https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fbesscroft%2FPicImpact&env=DATABASE_URL,AUTH_SECRET"><img src="https://vercel.com/button" alt="Deploy with Vercel"/></a>
@@ -55,6 +53,8 @@ services:
       - DATABASE_URL="postgres://账号:密码@aws-0-ap-northeast-1.pooler.supabase.com:5432/postgres"
       - AUTH_SECRET="自己运行npx auth secret或一串随机的字符串都行"
 ```
+
+> 注意：如果您使用 `Docker Compose`，存在无法访问数据库的问题，请尝试将环境变量的双引号去掉。即 `DATABASE_URL="连接信息"` -> `DATABASE_URL=连接信息`。
 
 ### 存储配置
 
