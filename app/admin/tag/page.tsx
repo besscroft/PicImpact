@@ -7,6 +7,8 @@ import React from 'react'
 import TagAddSheet from '~/components/admin/tag/TagAddSheet'
 import TagAddButton from '~/components/admin/tag/TagAddButton'
 import TagEditSheet from '~/components/admin/tag/TagEditSheet'
+import TagHelpSheet from '~/components/admin/tag/TagHelpSheet'
+import TagHelp from '~/components/admin/tag/TagHelp'
 
 export default async function List() {
 
@@ -30,6 +32,7 @@ export default async function List() {
             </div>
           </div>
           <div className="flex items-center space-x-2">
+            <TagHelp />
             <TagAddButton />
             <RefreshButton {...props} />
           </div>
@@ -38,6 +41,7 @@ export default async function List() {
       <TagList {...props} />
       <TagAddSheet {...props} />
       <TagEditSheet {...props} />
+      <TagHelpSheet />
     </div>
   )
 }
