@@ -7,6 +7,7 @@ import { useSWRInfiniteServerHook } from '~/hooks/useSWRInfiniteServerHook'
 import { Button, cn, Input, Switch, Textarea } from '@nextui-org/react'
 import React, { useState } from 'react'
 import { toast } from 'sonner'
+import { TagInput } from '@douyinfe/semi-ui'
 
 export default function ImageEditSheet(props : Readonly<ImageServerHandleProps & { pageNum: number } & { tag: string }>) {
   const { pageNum, tag, ...restProps } = props
@@ -139,6 +140,13 @@ export default function ImageEditSheet(props : Readonly<ImageServerHandleProps &
               variant="bordered"
               label="排序"
               placeholder="0"
+            />
+            <TagInput
+              value={image.labels}
+              placeholder='请输入图片索引标签，如：原神，不要输入特殊字符。'
+              addOnBlur={true}
+              allowDuplicates={false}
+              onChange={(value) => setImageEditData({ ...image, labels: value })}
             />
             <Switch
               isSelected={image?.show === 0}

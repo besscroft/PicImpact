@@ -19,6 +19,7 @@
     "@ant-design/nextjs-registry": "^1.0.0",
     "@auth/prisma-adapter": "^2.1.0",
     "@aws-sdk/client-s3": "^3.574.0",
+    "@douyinfe/semi-ui": "^2.58.0",
     "@nextui-org/react": "^2.3.6",
     "@prisma/client": "^5.13.0",
     "@radix-ui/react-dialog": "^1.0.5",

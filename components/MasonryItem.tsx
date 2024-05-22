@@ -6,12 +6,14 @@ import {
 } from '~/components/ui/Dialog'
 import { useButtonStore } from '~/app/providers/button-store-Providers'
 import { ImageType } from '~/types'
-import { Image, Tabs, Tab, Card, CardHeader, Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Button } from '@nextui-org/react'
+import { Image, Tabs, Tab, Card, CardHeader, Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Button, Chip } from '@nextui-org/react'
 import { Aperture, Camera, Image as ImageIcon, Languages, CalendarDays, X, SunMedium, MoonStar } from 'lucide-react'
 import * as React from 'react'
 import { useTheme } from 'next-themes'
+import { useRouter } from 'next-nprogress-bar'
 
 export default function MasonryItem() {
+  const router = useRouter()
   const { MasonryView, MasonryViewData, setMasonryView, setMasonryViewData } = useButtonStore(
     (state) => state,
   )
@@ -109,6 +111,21 @@ export default function MasonryItem() {
                       <h4 className="font-bold text-large">{MasonryViewData?.exif?.data_time || 'N&A'}</h4>
                     </CardHeader>
                   </Card>
+                  {MasonryViewData?.labels &&
+                    <div className="space-x-1">
+                      {MasonryViewData?.labels.map((tag: string) => (
+                        <Chip
+                          key={tag}
+                          variant="bordered"
+                          className="cursor-pointer select-none"
+                          onClick={() => {
+                            setMasonryView(false)
+                            router.push(`/label/${tag}`)
+                          }}
+                        >{tag}</Chip>
+                      ))}
+                    </div>
+                  }
                 </div>
               </Tab>
               <Tab

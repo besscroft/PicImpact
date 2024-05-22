@@ -11,6 +11,7 @@ import { ExifType, TagType, ImageType } from '~/types'
 import { Button, Select, SelectItem, Input, Divider, Card, CardBody, CardHeader, CardFooter } from '@nextui-org/react'
 import ExifReader from 'exifreader'
 import Compressor from 'compressorjs'
+import { TagInput } from '@douyinfe/semi-ui'
 
 export default function FileUpload() {
   const [alistStorage, setAlistStorage] = useState([])
@@ -27,6 +28,7 @@ export default function FileUpload() {
   const [lat, setLat] = useState('')
   const [lon, setLon] = useState('')
   const [detail, setDetail] = useState('')
+  const [imageLabels, setImageLabels] = useState([] as string[])
 
   const { data, isLoading } = useSWR('/api/v1/get-tags', fetcher)
 
@@ -114,6 +116,7 @@ export default function FileUpload() {
         url: url,
         preview_url: previewUrl,
         exif: exif,
+        labels: imageLabels,
         detail: detail,
         width: width,
         height: height,
@@ -142,6 +145,7 @@ export default function FileUpload() {
 
   async function onBeforeUpload(file: any) {
     setPreviewUrl('')
+    setImageLabels([])
     const storageArray = Array.from(storage)
     const tagArray = Array.from(tag)
     const alistMountPathArray = Array.from(alistMountPath)
@@ -286,6 +290,7 @@ export default function FileUpload() {
       setLat('')
       setLon('')
       setPreviewUrl('')
+      setImageLabels([])
     }
   }
 
@@ -477,6 +482,15 @@ export default function FileUpload() {
                 value={detail}
                 onValueChange={(value: string) => {
                   setDetail(value)
+                }}
+              />
+              <TagInput
+                value={imageLabels}
+                placeholder='请输入图片索引标签，如：原神，不要输入特殊字符。'
+                addOnBlur={true}
+                allowDuplicates={false}
+                onChange={(value) => {
+                  setImageLabels(value)
                 }}
               />
               <Divider className="my-4"/>
