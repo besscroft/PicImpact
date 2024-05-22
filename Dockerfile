@@ -11,6 +11,14 @@ COPY package.json pnpm-lock.yaml* .npmrc ./
 
 RUN corepack enable pnpm && pnpm i --frozen-lockfile
 
+FROM base AS runner-base
+
+RUN apk add --no-cache libc6-compat
+
+WORKDIR /app
+
+RUN corepack enable pnpm && pnpm add prisma @prisma/client
+
 FROM base AS builder
 
 WORKDIR /app
@@ -29,6 +37,7 @@ ENV NODE_ENV production
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
 
+COPY --from=runner-base /app/node_modules ./node_modules
 COPY --from=builder /app/public ./public
 COPY ./prisma ./prisma
 COPY ./script.sh ./script.sh
