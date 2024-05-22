@@ -3,8 +3,8 @@
 import { Card, CardBody } from '@nextui-org/react'
 import React, { useState } from 'react'
 import { CloudUploadOutlined, CloudDownloadOutlined } from '@ant-design/icons'
-import type { UploadProps } from 'antd'
-import { Button, Upload } from 'antd'
+// import type { UploadProps } from 'antd'
+// import { Button, Upload } from 'antd'
 import { toast } from 'sonner'
 import dayjs from 'dayjs'
 
@@ -92,33 +92,33 @@ export default function Backup() {
     option.onSuccess(option.file)
   }
 
-  const picimpactProps: UploadProps = {
-    className: '!w-full sm:!w-64',
-    name: 'file',
-    maxCount: 1,
-    multiple: false,
-    showUploadList: false,
-    customRequest: async (file) => await onPicImpactRequestUpload(file),
-  };
+  // const picimpactProps: UploadProps = {
+  //   className: '!w-full sm:!w-64',
+  //   name: 'file',
+  //   maxCount: 1,
+  //   multiple: false,
+  //   showUploadList: false,
+  //   customRequest: async (file) => await onPicImpactRequestUpload(file),
+  // };
 
   return (
     <Card className="flex-1" shadow="sm">
       <CardBody className="space-y-2">
-        <Button
-          className="!w-full sm:!w-64"
-          icon={<CloudDownloadOutlined />}
-          loading={backupLoading}
-          onClick={() => backup()}
-          aria-label="备份"
-        >备份</Button>
-        <Upload {...picimpactProps}>
-          <Button
-            className="!w-full sm:!w-64  !block"
-            icon={<CloudUploadOutlined />}
-            loading={restorePicImpactLoading}
-            aria-label="选择备份文件（本机迁移）"
-          >选择备份文件（本机迁移）</Button>
-        </Upload>
+        {/*<Button*/}
+        {/*  className="!w-full sm:!w-64"*/}
+        {/*  icon={<CloudDownloadOutlined />}*/}
+        {/*  loading={backupLoading}*/}
+        {/*  onClick={() => backup()}*/}
+        {/*  aria-label="备份"*/}
+        {/*>备份</Button>*/}
+        {/*<Upload {...picimpactProps}>*/}
+        {/*  <Button*/}
+        {/*    className="!w-full sm:!w-64  !block"*/}
+        {/*    icon={<CloudUploadOutlined />}*/}
+        {/*    loading={restorePicImpactLoading}*/}
+        {/*    aria-label="选择备份文件（本机迁移）"*/}
+        {/*  >选择备份文件（本机迁移）</Button>*/}
+        {/*</Upload>*/}
         <p>如果您在线上环境，请确保您的数据库单次会话时长以及事务的支持，否则会还原数据失败！</p>
       </CardBody>
     </Card>

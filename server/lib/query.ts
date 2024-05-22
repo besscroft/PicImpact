@@ -259,6 +259,66 @@ export async function fetchClientImagesPageTotalByTag(tag: string) {
   return Number(pageTotal[0].total) > 0 ? Math.ceil(Number(pageTotal[0].total) / 16) : 0
 }
 
+export async function fetchClientImagesListByLabel(pageNum: number, label: string) {
+  if (pageNum < 1) {
+    pageNum = 1
+  }
+  const findAll = await db.$queryRaw`
+    SELECT 
+        image.*,
+        STRING_AGG(tags."name", ',') AS tag_names,
+        STRING_AGG(tags.tag_value, ',') AS tag_values
+    FROM 
+        "public"."Images" AS image
+    INNER JOIN "public"."ImageTagRelation" AS relation
+        ON image.id = relation."imageId"
+    INNER JOIN "public"."Tags" AS tags
+        ON relation.tag_value = tags.tag_value
+    WHERE
+        image.del = 0
+    AND
+        tags.del = 0
+    AND
+        image.show = 0
+    AND
+        tags.show = 0
+    AND
+        image.labels::jsonb @> ${JSON.stringify([label])}::jsonb
+    GROUP BY image.id
+    ORDER BY image.sort DESC, image.create_time DESC, image.update_time DESC
+    LIMIT 16 OFFSET ${(pageNum - 1) * 16}
+  `
+  return findAll;
+}
+
+export async function fetchClientImagesPageTotalByLabel(label: string) {
+  const pageTotal = await db.$queryRaw`
+    SELECT COALESCE(COUNT(1),0) AS total
+    FROM (
+        SELECT DISTINCT ON (image.id)
+           image.id
+        FROM
+           "public"."Images" AS image
+        INNER JOIN "public"."ImageTagRelation" AS relation
+            ON image.id = relation."imageId"
+        INNER JOIN "public"."Tags" AS tags
+            ON relation.tag_value = tags.tag_value
+        WHERE
+            image.del = 0
+        AND
+            tags.del = 0
+        AND
+            image.show = 0
+        AND
+            tags.show = 0
+        AND
+            image.labels::jsonb @> ${JSON.stringify([label])}::jsonb
+    ) AS unique_images;
+  `
+  // @ts-ignore
+  return Number(pageTotal[0].total) > 0 ? Math.ceil(Number(pageTotal[0].total) / 16) : 0
+}
+
 export async function fetchTagsShow() {
   const findAll = await db.tags.findMany({
     where: {

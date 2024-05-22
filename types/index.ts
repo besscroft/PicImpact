@@ -58,6 +58,7 @@ export type ImageType = {
   url: string;
   preview_url: string;
   exif: ExifType;
+  labels: any;
   width: number;
   height: number;
   lon: string;

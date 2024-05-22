@@ -27,7 +27,7 @@ import {
   Badge,
   Spinner
 } from '@nextui-org/react'
-import { ArrowDown10, Pencil, Trash, Eye, EyeOff, ScanSearch } from 'lucide-react'
+import { ArrowDown10, Pencil, Trash, Eye, EyeOff, ScanSearch, CircleHelp } from 'lucide-react'
 import { toast } from 'sonner'
 import { useButtonStore } from '~/app/providers/button-store-Providers'
 import ImageEditSheet from '~/components/admin/list/ImageEditSheet'
@@ -35,6 +35,7 @@ import ImageView from '~/components/admin/list/ImageView'
 import { fetcher } from '~/utils/fetcher'
 import useSWR from 'swr'
 import { motion } from 'framer-motion'
+import ImageHelpSheet from '~/components/admin/list/ImageHelpSheet'
 
 export default function ListProps(props : Readonly<ImageServerHandleProps>) {
   const [pageNum, setPageNum] = useState(1)
@@ -47,7 +48,7 @@ export default function ListProps(props : Readonly<ImageServerHandleProps>) {
   const [deleteLoading, setDeleteLoading] = useState(false)
   const [updateShowLoading, setUpdateShowLoading] = useState(false)
   const [updateShowId, setUpdateShowId] = useState(0)
-  const { setImageEdit, setImageEditData, setImageView, setImageViewData } = useButtonStore(
+  const { setImageEdit, setImageEditData, setImageView, setImageViewData, setImageHelp } = useButtonStore(
     (state) => state,
   )
   const { data: tags, isLoading: tagsLoading } = useSWR('/api/v1/get-tags', fetcher)
@@ -107,8 +108,8 @@ export default function ListProps(props : Readonly<ImageServerHandleProps>) {
         <CardHeader className="justify-between space-x-2">
           <div className="flex items-center justify-center w-full sm:w-64 md:w-80">
             <Select
-              label="标签"
-              placeholder="请选择标签"
+              label="相册"
+              placeholder="请选择相册"
               className="min-w-xs"
               size="sm"
               isLoading={tagsLoading}
@@ -136,6 +137,15 @@ export default function ListProps(props : Readonly<ImageServerHandleProps>) {
             </Select>
           </div>
           <div className="flex items-center space-x-1">
+            <Button
+              isIconOnly
+              size="sm"
+              color="warning"
+              aria-label="帮助"
+              onClick={() => setImageHelp(true)}
+            >
+              <CircleHelp />
+            </Button>
             <Button
               color="primary"
               radius="full"
@@ -172,12 +182,12 @@ export default function ListProps(props : Readonly<ImageServerHandleProps>) {
                     <Badge content={image.tag_values.split(",").length} color="primary">
                       <Popover placement="top" shadow="sm">
                         <PopoverTrigger className="cursor-pointer">
-                          <Chip variant="shadow" className="flex-1" aria-label="标签">{image.tag_names.length > 8 ? image.tag_names.substring(0, 8) + '...' : image.tag_names}</Chip>
+                          <Chip variant="shadow" className="flex-1" aria-label="相册">{image.tag_names.length > 8 ? image.tag_names.substring(0, 8) + '...' : image.tag_names}</Chip>
                         </PopoverTrigger>
                         <PopoverContent>
                           <div className="px-1 py-2 select-none">
-                            <div className="text-small font-bold">标签</div>
-                            <div className="text-tiny">图片标签，在对应的路由上显示</div>
+                            <div className="text-small font-bold">相册</div>
+                            <div className="text-tiny">图片在对应的相册上显示</div>
                           </div>
                         </PopoverContent>
                       </Popover>
@@ -185,12 +195,12 @@ export default function ListProps(props : Readonly<ImageServerHandleProps>) {
                     :
                     <Popover placement="top" shadow="sm">
                       <PopoverTrigger className="cursor-pointer">
-                        <Chip variant="shadow" className="flex-1" aria-label="标签">{image.tag_names}</Chip>
+                        <Chip variant="shadow" className="flex-1" aria-label="相册">{image.tag_names}</Chip>
                       </PopoverTrigger>
                       <PopoverContent>
                         <div className="px-1 py-2 select-none">
-                          <div className="text-small font-bold">标签</div>
-                          <div className="text-tiny">图片标签，在对应的路由上显示</div>
+                          <div className="text-small font-bold">相册</div>
+                          <div className="text-tiny">图片在对应的相册上显示</div>
                         </div>
                       </PopoverContent>
                     </Popover>
@@ -333,6 +343,7 @@ export default function ListProps(props : Readonly<ImageServerHandleProps>) {
       </Modal>
       <ImageEditSheet {...{...props, pageNum, tag}} />
       <ImageView />
+      <ImageHelpSheet />
     </div>
   )
 }

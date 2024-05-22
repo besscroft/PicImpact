@@ -3,7 +3,7 @@
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from '~/components/ui/Sheet'
 import { useButtonStore } from '~/app/providers/button-store-Providers'
 import { ImageType } from '~/types'
-import { cn, Input, Switch, Textarea, Image } from '@nextui-org/react'
+import { cn, Input, Switch, Textarea, Image, Chip } from '@nextui-org/react'
 import React from 'react'
 
 export default function ImageView() {
@@ -32,6 +32,13 @@ export default function ImageView() {
               src={imageViewData.url}
               alt={imageViewData.detail}
             />
+            {imageViewData?.labels &&
+              <div className="space-x-1">
+                {imageViewData?.labels.map((tag: string) => (
+                  <Chip key={tag} variant="bordered">{tag}</Chip>
+                ))}
+              </div>
+            }
             <Textarea
               isReadOnly
               value={imageViewData?.detail}
