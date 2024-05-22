@@ -14,9 +14,9 @@ export default function TagTable(props: Readonly<DataProps>) {
           <span className="text-xl font-semibold">{props.data?.showTotal || 0}张</span>
         </CardBody>
       </Card>
-      <Table aria-label="每个标签对应的数量">
+      <Table aria-label="每个相册对应的数量">
         <TableHeader>
-          <TableColumn>标签</TableColumn>
+          <TableColumn>相册</TableColumn>
           <TableColumn>数量/张</TableColumn>
           <TableColumn>显示/张</TableColumn>
         </TableHeader>

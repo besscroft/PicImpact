@@ -108,7 +108,7 @@ export default function FileUpload() {
         return
       }
       if (tagArray.length === 0 || tagArray[0] === '') {
-        toast.warning('请先选择标签！')
+        toast.warning('请先选择相册！')
         return
       }
       const data = {
@@ -156,7 +156,7 @@ export default function FileUpload() {
       toast.warning('请先选择挂载目录！')
       file.abort()
     } else if (tagArray.length === 0 || tagArray[0] === '') {
-      toast.warning('请先选择标签！')
+      toast.warning('请先选择相册！')
       file.abort()
     } else {
       toast.info('正在上传文件！')
@@ -346,8 +346,8 @@ export default function FileUpload() {
               isRequired
               size="sm"
               variant="bordered"
-              label="标签"
-              placeholder="请选择标签"
+              label="相册"
+              placeholder="请选择相册"
               isLoading={isLoading}
               selectedKeys={tag}
               onSelectionChange={(keys: any) => {

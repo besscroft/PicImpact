@@ -19,6 +19,7 @@ export type ButtonState = {
   MasonryView: boolean
   MasonryViewData: ImageType
   tagHelp: boolean
+  imageHelp: boolean
 }
 
 export type ButtonActions = {
@@ -38,6 +39,7 @@ export type ButtonActions = {
   setMasonryView: (masonryView: boolean) => void
   setMasonryViewData: (masonryViewData: ImageType) => void
   setTagHelp: (tagHelp: boolean) => void
+  setImageHelp: (imageHelp: boolean) => void
 }
 
 export type ButtonStore = ButtonState & ButtonActions
@@ -60,6 +62,7 @@ export const initButtonStore = (): ButtonState => {
     MasonryView: false,
     MasonryViewData: {} as ImageType,
     tagHelp: false,
+    imageHelp: false,
   }
 }
 
@@ -80,6 +83,7 @@ export const defaultInitState: ButtonState = {
   MasonryView: false,
   MasonryViewData: {} as ImageType,
   tagHelp: false,
+  imageHelp: false,
 }
 
 export const createButtonStore = (
@@ -136,6 +140,9 @@ export const createButtonStore = (
         })),
         setTagHelp: (tagHelpValue) => set(() => ({
           tagHelp: tagHelpValue,
+        })),
+        setImageHelp: (imageHelpValue) => set(() => ({
+          imageHelp: imageHelpValue,
         })),
       }),
       {

@@ -64,7 +64,7 @@ export const BaseSide = () => {
             startContent={<Milestone size={20} className={iconClasses}/>}
             onClick={() => router.push('/admin/tag')}
           >
-            <span className={textClasses}>标签管理</span>
+            <span className={textClasses}>相册管理</span>
           </ListboxItem>
           <ListboxItem
             className={cn(

@@ -95,7 +95,7 @@ export default function VaulDrawer() {
                         className={pathname === '/admin/tag' ? activeClasses : ''}
                       >
                         <Drawer.Close className="w-full text-left">
-                          标签管理
+                          相册管理
                         </Drawer.Close>
                       </ListboxItem>
                       <ListboxItem

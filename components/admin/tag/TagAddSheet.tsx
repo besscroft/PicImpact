@@ -58,7 +58,7 @@ export default function TagAddSheet(props : Readonly<HandleProps>) {
     >
       <SheetContent side="left">
         <SheetHeader>
-          <SheetTitle>新增标签</SheetTitle>
+          <SheetTitle>新增相册</SheetTitle>
           <SheetDescription className="space-y-2">
             <Input
               isRequired
@@ -67,8 +67,8 @@ export default function TagAddSheet(props : Readonly<HandleProps>) {
               isClearable
               type="text"
               variant="bordered"
-              label="标签名称"
-              placeholder="输入标签名称"
+              label="相册名称"
+              placeholder="输入相册名称"
             />
             <Input
               isRequired
