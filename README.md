@@ -14,7 +14,7 @@ PicImpact
 
 ### 如何部署
 
-你可以点击下面的按钮来一键部署到 Vercel，然后将 `Build Command` 为 `pnpm run build:vercel`，也可以 Fork 项目后手动部署到任何支持的平台。
+你可以点击下面的按钮来一键部署到 Vercel，然后将 `Build Command` 设置为 `pnpm run build:vercel`，也可以 Fork 项目后手动部署到任何支持的平台。
 
 <a href="https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fbesscroft%2FPicImpact&env=DATABASE_URL,AUTH_SECRET"><img src="https://vercel.com/button" alt="Deploy with Vercel"/></a>
 
@@ -26,6 +26,8 @@ PicImpact
 默认账号：`admin@qq.com`，默认密码：`666666`，**登录后请先去设置里面修改密码！**
 
 > 部署就是这么简单，只需要您准备一个干净的数据库就行！
+> 除了容器化部署方式外，其它的部署方式都需要执行 `pnpm run prisma:deploy` 来完成 prisma 迁移。
+> 如果是 Vercel 部署，直接将 `Build Command` 设置为 `pnpm run build:vercel` 即可。
 > 
 > 不过，不支持 ALL Edge 运行时，毕竟 Vercel 就只给了 Edge 100M 内存，太小了...当然，Node.js 运行时是完美支持的~
 
@@ -42,7 +44,7 @@ docker run -d --name picimpact \
 ```
 
 ```yaml
-version: '3'
+name: pic
 services:
   picimpact:
     image: besscroft/picimpact:latest
