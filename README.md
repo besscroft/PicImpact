@@ -18,10 +18,10 @@ PicImpact
 
 <a href="https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fbesscroft%2FPicImpact&env=DATABASE_URL,AUTH_SECRET"><img src="https://vercel.com/button" alt="Deploy with Vercel"/></a>
 
-| Key          | 备注                                                                                        |
-|--------------|-------------------------------------------------------------------------------------------|
+| Key          | 备注                                                                                       |
+|--------------|------------------------------------------------------------------------------------------|
 | DATABASE_URL | Postgre 数据库 url，如：postgres://账号:密码@aws-0-ap-northeast-1.pooler.supabase.com:5432/postgres |
-| AUTH_SECRET  | 权限机密，你可以执行 npx auth secret 生成一个，反正是随机的字符串就行                                               |
+| AUTH_SECRET  | 权限机密，你可以执行 npx auth secret 生成一个，反正是随机的字符串就行                                              |
 
 默认账号：`admin@qq.com`，默认密码：`666666`，**登录后请先去设置里面修改密码！**
 
@@ -43,19 +43,6 @@ docker run -d --name picimpact \
   besscroft/picimpact:latest
 ```
 
-```yaml
-name: pic
-services:
-  picimpact:
-    image: besscroft/picimpact:latest
-    container_name: picimpact
-    ports:
-      - 3000:3000
-    environment:
-      - DATABASE_URL="postgres://账号:密码@aws-0-ap-northeast-1.pooler.supabase.com:5432/postgres"
-      - AUTH_SECRET="自己运行npx auth secret或一串随机的字符串都行"
-```
-
 > 注意：如果您使用 `Docker Compose`，存在无法访问数据库的问题，请尝试将环境变量的双引号去掉。即 `DATABASE_URL="连接信息"` -> `DATABASE_URL=连接信息`。
 
 ### 存储配置
@@ -66,14 +53,15 @@ services:
 
 - AWS S3 配置
 
-| Key              | 备注                                                           |
-|------------------|--------------------------------------------------------------|
-| accesskey_id     | 阿里 OSS / AWS S3 AccessKey_ID                                 |
-| accesskey_secret | 阿里 OSS / AWS S3 AccessKey_Secret                             |
-| region           | 阿里 OSS / AWS S3 Region 地域，如：oss-cn-hongkong                  |
-| endpoint         | 阿里 OSS / AWS S3 Endpoint 地域节点，如：oss-cn-hongkong.aliyuncs.com |
-| bucket           | 阿里 OSS / AWS S3 Bucket 存储桶名称，如：picimpact                     |
-| storage_folder   | 存储文件夹(S3)，严格格式，如：picimpact 或 picimpact/images ，填 / 或者不填表示根路径 |
+| Key              | 备注                                                          |
+|------------------|-------------------------------------------------------------|
+| accesskey_id     | 阿里 OSS / AWS S3 AccessKey_ID                                |
+| accesskey_secret | 阿里 OSS / AWS S3 AccessKey_Secret                            |
+| region           | 阿里 OSS / AWS S3 Region 地域，如：`oss-cn-hongkong  `              |
+| endpoint         | 阿里 OSS / AWS S3 Endpoint 地域节点，如：`oss-cn-hongkong.aliyuncs.com` |
+| bucket           | 阿里 OSS / AWS S3 Bucket 存储桶名称，如：`picimpact`                    |
+| storage_folder   | 存储文件夹(S3)，严格格式，如：`picimpact` 或 `picimpact/images` ，填 `/` 或者不填表示根路径 |
+| force_path_style   | 是否强制客户端对桶使用路径式寻址，默认 `false`，如您使用 minio 作为 s3 存储，需要设置为 `true`   |
 
 - Cloudflare R2 配置
 
@@ -81,17 +69,17 @@ services:
 |---------------------|--------------------------------------------------------------------------|
 | r2_accesskey_id     | Cloudflare AccessKey_ID                                                  |
 | r2_accesskey_secret | Cloudflare AccessKey_Secret                                              |
-| r2_endpoint         | Cloudflare Endpoint 地域节点，如：https://<ACCOUNT_ID>.r2.cloudflarestorage.com |
-| r2_bucket           | Cloudflare Bucket 存储桶名称，如：picimpact                                      |
-| r2_storage_folder   | 存储文件夹(Cloudflare R2)，严格格式，如：picimpact 或 picimpact/images ，填 / 或者不填表示根路径  |
+| r2_endpoint         | Cloudflare Endpoint 地域节点，如：`https://<ACCOUNT_ID>.r2.cloudflarestorage.com` |
+| r2_bucket           | Cloudflare Bucket 存储桶名称，如：`picimpact`                                      |
+| r2_storage_folder   | 存储文件夹(Cloudflare R2)，严格格式，如：`picimpact` 或 `picimpact/images` ，填 `/` 或者不填表示根路径  |
 | r2_public_domain    | Cloudflare R2 自定义域（公开访问）                                                 |
 
 - AList API 配置
 
-| Key         | 备注                                     |
-|-------------|----------------------------------------|
-| alist_token | alist 令牌                               |
-| alist_url   | AList 地址，如：https://alist.besscroft.com |
+| Key         | 备注                                   |
+|-------------|--------------------------------------|
+| alist_token | alist 令牌                             |
+| alist_url   | AList 地址，如：https://alist.example.com |
 
 ### 本地开发
 

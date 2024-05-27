@@ -16,12 +16,13 @@ export async function POST(request: Request) {
     const bucket = findConfig.find((item: any) => item.config_key === 'bucket')?.config_value || '';
     const storageFolder = findConfig.find((item: any) => item.config_key === 'storage_folder')?.config_value || '';
     const endpoint = findConfig.find((item: any) => item.config_key === 'endpoint')?.config_value || '';
+    const forcePathStyle = findConfig.find((item: any) => item.config_key === 'force_path_style')?.config_value;
 
     // @ts-ignore
     const filePath = storageFolder && storageFolder !== '/'
       ? `${storageFolder}${type}/${file?.name}`
-      : `${type}/${file?.name}`
-
+      : type && type !== '/'
+      ? `${type}/${file?.name}` : `/${file?.name}`
     // @ts-ignore
     const blob = new Blob([file])
     const arrayBuffer = await blob.arrayBuffer()
@@ -37,12 +38,25 @@ export async function POST(request: Request) {
     await s3.send(
       new PutObjectCommand(params)
     )
+
+    if (forcePathStyle) {
+      return Response.json({ code: 200, data: `https://${
+          endpoint.includes('https://') ? endpoint.split('//')[1] : endpoint
+        }/${bucket}/${
+          storageFolder && storageFolder !== '/'
+            ? `${storageFolder}${type}/${encodeURIComponent(file?.name)}`
+            : type && type !== '/'
+            ? `${type}/${encodeURIComponent(file?.name)}` : `/${encodeURIComponent(file?.name)}`
+        }`
+      })
+    }
     return Response.json({ code: 200, data: `https://${bucket}.${
       endpoint.includes('https://') ? endpoint.split('//')[1] : endpoint
     }/${
       storageFolder && storageFolder !== '/'
         ? `${storageFolder}${type}/${encodeURIComponent(file?.name)}`
-        : `${type}/${encodeURIComponent(file?.name)}`
+        : type && type !== '/'
+          ? `${type}/${encodeURIComponent(file?.name)}` : `/${encodeURIComponent(file?.name)}`
       }`
     })
   } else if (storage && storage.toString() === 'r2') {
