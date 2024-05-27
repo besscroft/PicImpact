@@ -23,6 +23,7 @@ export async function register() {
             { config_key: 'endpoint', config_value: '', detail: '阿里 OSS / AWS S3 Endpoint 地域节点，如：oss-cn-hongkong.aliyuncs.com' },
             { config_key: 'bucket', config_value: '', detail: '阿里 OSS / AWS S3 Bucket 存储桶名称，如：picimpact' },
             { config_key: 'storage_folder', config_value: '', detail: '存储文件夹(S3)，严格格式，如：picimpact 或 picimpact/images ，填 / 或者不填表示根路径' },
+            { config_key: 'force_path_style', config_value: 'false', detail: '是否强制客户端对桶使用路径式寻址' },
             { config_key: 'alist_token', config_value: '', detail: 'alist 令牌' },
             { config_key: 'alist_url', config_value: '', detail: 'AList 地址，如：https://alist.besscroft.com' },
             { config_key: 'secret_key', config_value: 'pic-impact', detail: 'SECRET_KEY' },

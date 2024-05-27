@@ -43,19 +43,6 @@ docker run -d --name picimpact \
   besscroft/picimpact:latest
 ```
 
-```yaml
-name: pic
-services:
-  picimpact:
-    image: besscroft/picimpact:latest
-    container_name: picimpact
-    ports:
-      - 3000:3000
-    environment:
-      - DATABASE_URL="postgres://账号:密码@aws-0-ap-northeast-1.pooler.supabase.com:5432/postgres"
-      - AUTH_SECRET="自己运行npx auth secret或一串随机的字符串都行"
-```
-
 > 注意：如果您使用 `Docker Compose`，存在无法访问数据库的问题，请尝试将环境变量的双引号去掉。即 `DATABASE_URL="连接信息"` -> `DATABASE_URL=连接信息`。
 
 ### 存储配置
@@ -74,6 +61,7 @@ services:
 | endpoint         | 阿里 OSS / AWS S3 Endpoint 地域节点，如：oss-cn-hongkong.aliyuncs.com |
 | bucket           | 阿里 OSS / AWS S3 Bucket 存储桶名称，如：picimpact                     |
 | storage_folder   | 存储文件夹(S3)，严格格式，如：picimpact 或 picimpact/images ，填 / 或者不填表示根路径 |
+| force_path_style   | 是否强制客户端对桶使用路径式寻址 |
 
 - Cloudflare R2 配置
 
