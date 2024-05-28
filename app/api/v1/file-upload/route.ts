@@ -17,12 +17,10 @@ export async function POST(request: Request) {
     const storageFolder = findConfig.find((item: any) => item.config_key === 'storage_folder')?.config_value || '';
     const endpoint = findConfig.find((item: any) => item.config_key === 'endpoint')?.config_value || '';
     const forcePathStyle = findConfig.find((item: any) => item.config_key === 'force_path_style')?.config_value;
-
     // @ts-ignore
     const filePath = storageFolder && storageFolder !== '/'
-      ? `${storageFolder}${type}/${file?.name}`
-      : type && type !== '/'
-      ? `${type}/${file?.name}` : `/${file?.name}`
+      ? type && type !== '/' ? `${storageFolder}${type}/${file?.name}` : `${storageFolder}/${file?.name}`
+      : type && type !== '/' ? `${type.slice(1)}/${file?.name}` : `${file?.name}`
     // @ts-ignore
     const blob = new Blob([file])
     const arrayBuffer = await blob.arrayBuffer()
@@ -44,9 +42,8 @@ export async function POST(request: Request) {
           endpoint.includes('https://') ? endpoint.split('//')[1] : endpoint
         }/${bucket}/${
           storageFolder && storageFolder !== '/'
-            ? `${storageFolder}${type}/${encodeURIComponent(file?.name)}`
-            : type && type !== '/'
-            ? `${type}/${encodeURIComponent(file?.name)}` : `/${encodeURIComponent(file?.name)}`
+            ? type && type !== '/' ? `${storageFolder}${type}/${encodeURIComponent(file?.name)}` : `${storageFolder}/${encodeURIComponent(file?.name)}`
+            : type && type !== '/' ? `${type.slice(1)}/${encodeURIComponent(file?.name)}` : `${encodeURIComponent(file?.name)}`
         }`
       })
     }
@@ -54,9 +51,8 @@ export async function POST(request: Request) {
       endpoint.includes('https://') ? endpoint.split('//')[1] : endpoint
     }/${
       storageFolder && storageFolder !== '/'
-        ? `${storageFolder}${type}/${encodeURIComponent(file?.name)}`
-        : type && type !== '/'
-          ? `${type}/${encodeURIComponent(file?.name)}` : `/${encodeURIComponent(file?.name)}`
+        ? type && type !== '/' ? `${storageFolder}${type}/${encodeURIComponent(file?.name)}` : `${storageFolder}/${encodeURIComponent(file?.name)}`
+        : type && type !== '/' ? `${type.slice(1)}/${encodeURIComponent(file?.name)}` : `${encodeURIComponent(file?.name)}`
       }`
     })
   } else if (storage && storage.toString() === 'r2') {
@@ -68,8 +64,8 @@ export async function POST(request: Request) {
 
     // @ts-ignore
     const filePath = r2StorageFolder && r2StorageFolder !== '/'
-      ? `${r2StorageFolder}${type}/${file?.name}`
-      : `${type}/${file?.name}`
+      ? type && type !== '/' ? `${r2StorageFolder}${type}/${file?.name}` : `${r2StorageFolder}/${file?.name}`
+      : type && type !== '/' ? `${type.slice(1)}/${file?.name}` : `${file?.name}`
 
     // @ts-ignore
     const blob = new Blob([file])
@@ -92,16 +88,17 @@ export async function POST(request: Request) {
         : r2Endpoint.includes('https://') ? r2Endpoint : `https://${r2Endpoint}`
       }/${
         r2StorageFolder && r2StorageFolder !== '/'
-          ? `${r2StorageFolder}${type}/${encodeURIComponent(file?.name)}`
-          : `${type}/${encodeURIComponent(file?.name)}`
+          ? type && type !== '/' ? `${r2StorageFolder}${type}/${encodeURIComponent(file?.name)}` : `${r2StorageFolder}/${encodeURIComponent(file?.name)}`
+          : type && type !== '/' ? `${type.slice(1)}/${encodeURIComponent(file?.name)}` : `${encodeURIComponent(file?.name)}`
       }`
     })
   } else {
     const findConfig = await fetchAListInfo()
     const alistToken = findConfig.find((item: any) => item.config_key === 'alist_token')?.config_value || '';
     const alistUrl = findConfig.find((item: any) => item.config_key === 'alist_url')?.config_value || '';
-
-    const filePath = encodeURIComponent(`${mountPath && mountPath.toString() === '/' ? '' : mountPath}/${type}/${file?.name}`)
+console.log('type', type)
+    const filePath = encodeURIComponent(`${mountPath && mountPath.toString() === '/' ? '' : mountPath}${
+      type && type !== '/' ? `${type}/${file?.name}` : `/${file?.name}` }`)
     const data = await fetch(`${alistUrl}/api/fs/put`, {
       method: 'PUT',
       headers: {
