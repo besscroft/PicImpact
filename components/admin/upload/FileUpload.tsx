@@ -257,7 +257,11 @@ export default function FileUpload() {
     if (res?.code === 200) {
       toast.success('图片上传成功，尝试生成预览图片并上传！')
       try {
-        await uploadPreviewImage(option, tagArray[0] + '/preview')
+        if (tagArray[0] === '/') {
+          await uploadPreviewImage(option, '/preview')
+        } else {
+          await uploadPreviewImage(option, tagArray[0] + '/preview')
+        }
       } catch (e) {
         console.log(e)
         option.onSuccess(option.file)
