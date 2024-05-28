@@ -45,15 +45,6 @@ export default function AdminLayout({
           <Button
             size="sm"
             color="primary"
-            variant={pathname === '/admin/settings/backup' ? 'bordered': 'light'}
-            onClick={() => router.push('/admin/settings/backup')}
-            aria-label="备份"
-          >
-            备份
-          </Button>
-          <Button
-            size="sm"
-            color="primary"
             variant={pathname === '/admin/settings/about' ? 'bordered': 'light'}
             onClick={() => router.push('/admin/settings/about')}
             aria-label="关于"

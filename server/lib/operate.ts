@@ -152,47 +152,6 @@ export async function updateImage(image: ImageType) {
   return resultRow
 }
 
-export async function insertImages(json: any[]) {
-  await db.$transaction(async (tx) => {
-    for (const image of json) {
-      const res = await tx.images.create({
-        data: {
-          url: image.url,
-          exif: image.exif,
-          width: image.width,
-          height: image.height,
-          detail: image.detail,
-          lat: image.lat,
-          lon: image.lon,
-          show: 1,
-          sort: image.sort,
-          create_time: image.create_time,
-          update_time: image.update_time,
-        }
-      })
-      if (image.tag_values.includes(',')) {
-        for (const tag of image.tag_values.split(',')) {
-          if (tag) {
-            await tx.imageTagRelation.create({
-              data: {
-                imageId: res.id,
-                tag_value: tag
-              }
-            })
-          }
-        }
-      } else {
-        await tx.imageTagRelation.create({
-          data: {
-            imageId: res.id,
-            tag_value: image.tag_values
-          }
-        })
-      }
-    }
-  })
-}
-
 export async function updatePassword(userId: string, newPassword: string) {
   const resultRow = await db.user.update({
     where: {

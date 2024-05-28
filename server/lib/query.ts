@@ -380,29 +380,6 @@ export async function fetchImagesAnalysis() {
   }
 }
 
-export async function fetchAllImages() {
-  const findAll = await db.$queryRaw`
-    SELECT 
-        image.*,
-        STRING_AGG(tags."name", ',') AS tag_names,
-        STRING_AGG(tags.tag_value, ',') AS tag_values
-    FROM 
-        "public"."Images" AS image
-    INNER JOIN "public"."ImageTagRelation" AS relation
-        ON image.id = relation."imageId"
-    INNER JOIN "public"."Tags" AS tags
-        ON relation.tag_value = tags.tag_value
-    WHERE 
-        image.del = 0
-    AND
-        tags.del = 0
-    GROUP BY image.id
-    ORDER BY image.sort DESC, image.create_time DESC, image.update_time DESC 
-  `
-
-  return findAll
-}
-
 export async function fetchUserById(userId: string) {
   const findUser = await db.user.findUnique({
     where: {
