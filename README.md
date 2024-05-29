@@ -12,6 +12,21 @@ PicImpact
     <img src=picimpact.png width=384 />
 </p>
 
+PicImpact 是一个摄影师专用的摄影作品展示网站，基于 Next.js 开发。
+
+### 功能特性
+
+- 瀑布流相册展示图片，支持常见的格式。
+- 点击图片查看原图，浏览图片信息和 EXIF 信息。
+- 响应式设计，在 PC 和移动端都有不错的体验，支持暗黑模式。
+- 图片存储兼容 S3 API、Cloudflare R2、AList API。
+- 图片支持绑定标签，并且可通过标签进行交互，筛选标签下所有图片。
+- 上传图片时会生成 0.3 倍率的压缩图片，以提供加载优化。
+- 后台有图片数据统计、图片上传、图片维护、相册管理、系统设置和存储配置功能。
+- 基于 SSR 的混合渲染，采用状态机制，提供良好的使用体验。
+- 基于 prisma 的自动初始化数据库和数据迁移，简化部署流程。
+- 支持 Vercel 部署、Node.js 部署、Docker 等容器化部署，当然 k8s 也支持。
+
 ### 如何部署
 
 你可以点击下面的按钮来一键部署到 Vercel，然后将 `Build Command` 设置为 `pnpm run build:vercel`，也可以 Fork 项目后手动部署到任何支持的平台。
@@ -28,8 +43,6 @@ PicImpact
 > 部署就是这么简单，只需要您准备一个干净的数据库就行！
 > 除了容器化部署方式外，其它的部署方式都需要执行 `pnpm run prisma:deploy` 来完成 prisma 迁移。
 > 如果是 Vercel 部署，直接将 `Build Command` 设置为 `pnpm run build:vercel` 即可。
-> 
-> 不过，不支持 ALL Edge 运行时，毕竟 Vercel 就只给了 Edge 100M 内存，太小了...当然，Node.js 运行时是完美支持的~
 
 ### 容器化部署
 
