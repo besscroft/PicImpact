@@ -175,10 +175,12 @@ export async function updateS3Config(configs: any) {
        WHEN config_key = 'bucket' THEN ${configs.bucket}
        WHEN config_key = 'storage_folder' THEN ${configs.storageFolder}
        WHEN config_key = 'force_path_style' THEN ${configs.forcePathStyle}
+       WHEN config_key = 's3_cdn' THEN ${configs.s3Cdn}
+       WHEN config_key = 's3_cdn_url' THEN ${configs.s3CdnUrl}
        ELSE 'N&A'
     END,
         update_time = NOW()
-    WHERE config_key IN ('accesskey_id', 'accesskey_secret', 'region', 'endpoint', 'bucket', 'storage_folder', 'force_path_style');
+    WHERE config_key IN ('accesskey_id', 'accesskey_secret', 'region', 'endpoint', 'bucket', 'storage_folder', 'force_path_style', 's3_cdn', 's3_cdn_url');
   `
   return resultRow
 }

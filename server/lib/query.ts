@@ -13,7 +13,9 @@ export async function fetchS3Info() {
           'endpoint',
           'bucket',
           'storage_folder',
-          'force_path_style'
+          'force_path_style',
+          's3_cdn',
+          's3_cdn_url'
         ]
       }
     },

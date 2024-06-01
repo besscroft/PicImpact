@@ -17,6 +17,8 @@ export async function POST(request: Request) {
     const storageFolder = findConfig.find((item: any) => item.config_key === 'storage_folder')?.config_value || '';
     const endpoint = findConfig.find((item: any) => item.config_key === 'endpoint')?.config_value || '';
     const forcePathStyle = findConfig.find((item: any) => item.config_key === 'force_path_style')?.config_value;
+    const s3Cdn = findConfig.find((item: any) => item.config_key === 's3_cdn')?.config_value;
+    const s3CdnUrl = findConfig.find((item: any) => item.config_key === 's3_cdn_url')?.config_value || '';
     // @ts-ignore
     const filePath = storageFolder && storageFolder !== '/'
       ? type && type !== '/' ? `${storageFolder}${type}/${file?.name}` : `${storageFolder}/${file?.name}`
@@ -37,15 +39,26 @@ export async function POST(request: Request) {
       new PutObjectCommand(params)
     )
 
-    if (forcePathStyle) {
+    if (s3Cdn && s3Cdn === 'true') {
       return Response.json({ code: 200, data: `https://${
-          endpoint.includes('https://') ? endpoint.split('//')[1] : endpoint
-        }/${bucket}/${
+          s3CdnUrl.includes('https://') ? s3CdnUrl.split('//')[1] : s3CdnUrl
+        }/${
           storageFolder && storageFolder !== '/'
             ? type && type !== '/' ? `${storageFolder}${type}/${encodeURIComponent(file?.name)}` : `${storageFolder}/${encodeURIComponent(file?.name)}`
             : type && type !== '/' ? `${type.slice(1)}/${encodeURIComponent(file?.name)}` : `${encodeURIComponent(file?.name)}`
         }`
       })
+    } else {
+      if (forcePathStyle && forcePathStyle === 'true') {
+        return Response.json({ code: 200, data: `https://${
+            endpoint.includes('https://') ? endpoint.split('//')[1] : endpoint
+          }/${bucket}/${
+            storageFolder && storageFolder !== '/'
+              ? type && type !== '/' ? `${storageFolder}${type}/${encodeURIComponent(file?.name)}` : `${storageFolder}/${encodeURIComponent(file?.name)}`
+              : type && type !== '/' ? `${type.slice(1)}/${encodeURIComponent(file?.name)}` : `${encodeURIComponent(file?.name)}`
+          }`
+        })
+      }
     }
     return Response.json({ code: 200, data: `https://${bucket}.${
       endpoint.includes('https://') ? endpoint.split('//')[1] : endpoint
@@ -96,7 +109,6 @@ export async function POST(request: Request) {
     const findConfig = await fetchAListInfo()
     const alistToken = findConfig.find((item: any) => item.config_key === 'alist_token')?.config_value || '';
     const alistUrl = findConfig.find((item: any) => item.config_key === 'alist_url')?.config_value || '';
-console.log('type', type)
     const filePath = encodeURIComponent(`${mountPath && mountPath.toString() === '/' ? '' : mountPath}${
       type && type !== '/' ? `${type}/${file?.name}` : `/${file?.name}` }`)
     const data = await fetch(`${alistUrl}/api/fs/put`, {
