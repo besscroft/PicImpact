@@ -219,7 +219,7 @@ export default function FileUpload() {
     new Compressor(option.file, {
       quality: 0.3,
       checkOrientation: false,
-      convertTypes: ['image/jpeg'],
+      mimeType: 'image/webp',
       async success(compressedFile) {
         if (compressedFile instanceof File) {
           const res = await uploadFile(compressedFile, type)
