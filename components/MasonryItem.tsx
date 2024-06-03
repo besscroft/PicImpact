@@ -5,9 +5,9 @@ import {
   DialogContent,
 } from '~/components/ui/Dialog'
 import { useButtonStore } from '~/app/providers/button-store-Providers'
-import { ImageType } from '~/types'
-import { Image, Tabs, Tab, Card, CardHeader, Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Button, Chip } from '@nextui-org/react'
-import { Aperture, Camera, Image as ImageIcon, Languages, CalendarDays, X, SunMedium, MoonStar } from 'lucide-react'
+import { CopyrightType, ImageType } from '~/types'
+import { Image, Tabs, Tab, Card, CardHeader, CardBody, CardFooter, Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Button, Chip, Link, Avatar } from '@nextui-org/react'
+import { Aperture, Camera, Image as ImageIcon, Languages, CalendarDays, X, SunMedium, MoonStar, Copyright } from 'lucide-react'
 import * as React from 'react'
 import { useTheme } from 'next-themes'
 import { useRouter } from 'next-nprogress-bar'
@@ -250,6 +250,75 @@ export default function MasonryItem() {
                     }
                   </TableBody>
                 </Table>
+              </Tab>
+              <Tab
+                key="copyright"
+                title={
+                  <div className="flex items-center space-x-2 select-none">
+                    <Copyright/>
+                    <span>版权</span>
+                  </div>
+                }
+              >
+                <div className="flex flex-col space-y-2">
+                  {Array.isArray(MasonryViewData.copyrights) && MasonryViewData.copyrights.length > 0 ?
+                    <div className="flex flex-col space-y-2 mt-2">
+                      {MasonryViewData.copyrights.map((copyright: CopyrightType) => {
+                        if (copyright.type === 'social') {
+                          return <Card key={copyright.id} shadow="sm">
+                            <CardHeader className="justify-between">
+                              <div className="flex gap-5">
+                                <Avatar isBordered radius="full" size="md" src={copyright.avatar_url} />
+                                <div className="flex flex-col gap-1 items-start justify-center">
+                                  <h4 className="text-small font-semibold leading-none text-default-600">{copyright.name}</h4>
+                                  <h5 className="text-small tracking-tight text-default-400">{copyright.social_name}</h5>
+                                </div>
+                              </div>
+                              <Button
+                                href={copyright.url}
+                                color="primary"
+                                as={Link}
+                                radius="full"
+                                size="sm"
+                                isExternal
+                              >
+                                Follow
+                              </Button>
+                            </CardHeader>
+                            <CardBody className="px-3 py-0 text-small text-default-400 overflow-y-auto scrollbar-hide max-h-32">
+                              <p>
+                                {copyright.detail}
+                              </p>
+                            </CardBody>
+                            <CardFooter className="gap-3">
+                              <span className="pt-2">
+                                #社交媒体
+                                <span className="py-2" aria-label="computer" role="img">
+                                  💻
+                                </span>
+                              </span>
+                            </CardFooter>
+                          </Card>
+                        }
+                      })}
+                      {MasonryViewData.copyrights.map((copyright: CopyrightType) => {
+                        if (copyright.type === 'target') {
+                          return <Link
+                            key={copyright.id}
+                            isBlock
+                            showAnchorIcon
+                            href={copyright.url}
+                            color="primary"
+                            underline="always"
+                            isExternal
+                          >
+                            {copyright.name}
+                          </Link>
+                        }
+                      })}
+                    </div>
+                    : <p className="mt-2">暂无版权信息</p>}
+                </div>
               </Tab>
             </Tabs>
           </div>

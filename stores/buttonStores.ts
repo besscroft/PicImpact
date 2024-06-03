@@ -1,11 +1,14 @@
 import { createStore } from 'zustand/vanilla'
 import { persist, createJSONStorage } from 'zustand/middleware'
-import { TagType, ImageType, Config } from '~/types'
+import { TagType, ImageType, Config, CopyrightType } from '~/types'
 
 export type ButtonState = {
   tagAdd: boolean
   tagEdit: boolean
   tag: TagType
+  copyrightAdd: boolean
+  copyrightEdit: boolean
+  copyright: CopyrightType
   image: ImageType
   imageEdit: boolean
   imageViewData: ImageType
@@ -26,6 +29,9 @@ export type ButtonActions = {
   setTagAdd: (tagAdd: boolean) => void
   setTagEdit: (tagEdit: boolean) => void
   setTagEditData: (tag: TagType) => void
+  setCopyrightAdd: (copyrightAdd: boolean) => void
+  setCopyrightEdit: (copyrightEdit: boolean) => void
+  setCopyrightEditData: (copyright: CopyrightType) => void
   setImageEdit: (imageEdit: boolean) => void
   setImageEditData: (image: ImageType) => void
   setImageView: (imageView: boolean) => void
@@ -49,6 +55,9 @@ export const initButtonStore = (): ButtonState => {
     tagAdd: false,
     tagEdit: false,
     tag: {} as TagType,
+    copyrightAdd: false,
+    copyrightEdit: false,
+    copyright: {} as CopyrightType,
     imageEdit: false,
     image: {} as ImageType,
     imageView: false,
@@ -70,6 +79,9 @@ export const defaultInitState: ButtonState = {
   tagAdd: false,
   tagEdit: false,
   tag: {} as TagType,
+  copyrightAdd: false,
+  copyrightEdit: false,
+  copyright: {} as CopyrightType,
   imageEdit: false,
   image: {} as ImageType,
   imageView: false,
@@ -101,6 +113,15 @@ export const createButtonStore = (
         })),
         setTagEditData: (tagValue) => set(() => ({
           tag: tagValue,
+        })),
+        setCopyrightAdd: (copyrightAddValue) => set(() => ({
+          copyrightAdd: copyrightAddValue,
+        })),
+        setCopyrightEdit: (copyrightEditValue) => set(() => ({
+          copyrightEdit: copyrightEditValue,
+        })),
+        setCopyrightEditData: (copyrightValue) => set(() => ({
+          copyright: copyrightValue,
         })),
         setImageEdit: (imageEditValue) => set(() => ({
           imageEdit: imageEditValue,

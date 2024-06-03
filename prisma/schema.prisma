@@ -54,22 +54,23 @@ model VerificationToken {
 }
 
 model Images {
-  id               Int                @id @default(autoincrement())
-  url              String?            @db.Text
-  preview_url      String?            @db.Text
-  exif             Json?              @db.Json
-  labels           Json?              @db.Json
-  width            Int                @default(0)
-  height           Int                @default(0)
-  lon              String?
-  lat              String?
-  detail           String?            @db.Text
-  show             Int                @default(1) @db.SmallInt
-  sort             Int                @default(0) @db.SmallInt
-  create_time      DateTime?          @default(now()) @db.Timestamp()
-  update_time      DateTime?          @db.Timestamp()
-  del              Int                @default(0) @db.SmallInt
-  imageTagRelation ImageTagRelation[]
+  id                     Int                      @id @default(autoincrement())
+  url                    String?                  @db.Text
+  preview_url            String?                  @db.Text
+  exif                   Json?                    @db.Json
+  labels                 Json?                    @db.Json
+  width                  Int                      @default(0)
+  height                 Int                      @default(0)
+  lon                    String?
+  lat                    String?
+  detail                 String?                  @db.Text
+  show                   Int                      @default(1) @db.SmallInt
+  sort                   Int                      @default(0) @db.SmallInt
+  create_time            DateTime?                @default(now()) @db.Timestamp()
+  update_time            DateTime?                @db.Timestamp()
+  del                    Int                      @default(0) @db.SmallInt
+  imageTagRelation       ImageTagRelation[]
+  ImageCopyrightRelation ImageCopyrightRelation[]
 }
 
 model Configs {
@@ -101,4 +102,28 @@ model ImageTagRelation {
   imageId   Int
 
   @@id([imageId, tag_value])
+}
+
+model Copyright {
+  id                     Int                      @id @default(autoincrement())
+  name                   String
+  social_name            String?
+  type                   String
+  url                    String?                  @db.Text
+  avatar_url             String?                  @db.Text
+  detail                 String?                  @db.Text
+  show                   Int                      @default(1) @db.SmallInt
+  create_time            DateTime?                @default(now()) @db.Timestamp()
+  update_time            DateTime?                @db.Timestamp()
+  del                    Int                      @default(0) @db.SmallInt
+  ImageCopyrightRelation ImageCopyrightRelation[]
+}
+
+model ImageCopyrightRelation {
+  copyright   Copyright @relation(fields: [copyrightId], references: [id])
+  copyrightId Int
+  image       Images    @relation(fields: [imageId], references: [id])
+  imageId     Int
+
+  @@id([copyrightId, imageId])
 }

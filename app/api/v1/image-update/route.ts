@@ -23,8 +23,8 @@ export async function PUT(req: NextRequest) {
     })
   }
   try {
-    const data = await updateImage(image);
-    return Response.json(data)
+    await updateImage(image);
+    return Response.json({ code: 200, msg: '更新成功！' })
   } catch (e) {
     console.log(e)
     return Response.json({ code: 500, message: '更新失败！' })
