@@ -5,9 +5,12 @@ import { useButtonStore } from '~/app/providers/button-store-Providers'
 import { ImageServerHandleProps, ImageType } from '~/types'
 import { useSWRInfiniteServerHook } from '~/hooks/useSWRInfiniteServerHook'
 import { Button, cn, Input, Switch, Textarea } from '@nextui-org/react'
+import { Select } from 'antd'
 import React, { useState } from 'react'
 import { toast } from 'sonner'
 import { TagInput } from '@douyinfe/semi-ui'
+import { fetcher } from '~/utils/fetcher'
+import useSWR from 'swr'
 
 export default function ImageEditSheet(props : Readonly<ImageServerHandleProps & { pageNum: number } & { tag: string }>) {
   const { pageNum, tag, ...restProps } = props
@@ -16,8 +19,13 @@ export default function ImageEditSheet(props : Readonly<ImageServerHandleProps &
     (state) => state,
   )
   const [loading, setLoading] = useState(false)
+  const { data, isLoading } = useSWR('/api/v1/get-copyrights', fetcher)
 
   async function submit() {
+    if (!image.title) {
+      toast.error('图片标题不能为空！')
+      return
+    }
     if (!image.url) {
       toast.error('图片链接不能为空！')
       return
@@ -50,6 +58,8 @@ export default function ImageEditSheet(props : Readonly<ImageServerHandleProps &
     }
   }
 
+  const fieldNames = { label: 'name', value: 'id' }
+
   return (
     <Sheet
       defaultOpen={false}
@@ -66,6 +76,14 @@ export default function ImageEditSheet(props : Readonly<ImageServerHandleProps &
         <SheetHeader>
           <SheetTitle>编辑图片</SheetTitle>
           <SheetDescription className="space-y-2">
+            <Input
+              isRequired
+              value={image?.title}
+              onValueChange={(value) => setImageEditData({ ...image, title: value })}
+              variant="bordered"
+              label="图片标题"
+              placeholder="请输入图片标题"
+            />
             <Textarea
               isRequired
               value={image?.url}
@@ -140,6 +158,17 @@ export default function ImageEditSheet(props : Readonly<ImageServerHandleProps &
               variant="bordered"
               label="排序"
               placeholder="0"
+            />
+            <Select
+              className="!block"
+              mode="multiple"
+              placeholder="选择版权信息"
+              defaultValue={image.copyrights}
+              fieldNames={fieldNames}
+              options={data}
+              onChange={(value, option:any) => {
+                setImageEditData({ ...image, copyrights: value })
+              }}
             />
             <TagInput
               value={image.labels}

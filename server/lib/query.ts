@@ -1,6 +1,8 @@
 'use server'
 
 import { db } from '~/server/lib/db'
+import Copyright from "~/app/admin/copyright/page";
+import {ImageType} from "~/types";
 
 export async function fetchS3Info() {
   const findConfig = await db.configs.findMany({
@@ -135,7 +137,21 @@ export async function fetchServerImagesListByTag(pageNum: number, tag: string) {
     SELECT 
         image.*,
         STRING_AGG(tags."name", ',') AS tag_names,
-        STRING_AGG(tags.tag_value, ',') AS tag_values
+        STRING_AGG(tags.tag_value, ',') AS tag_values,
+        (
+            SELECT json_agg(row_to_json(t))
+            FROM (
+                SELECT copyright.id
+                FROM "public"."Copyright" AS copyright
+                INNER JOIN "public"."ImageCopyrightRelation" AS icrelation
+                    ON copyright.id = icrelation."copyrightId"
+                INNER JOIN "public"."Images" AS image_child
+                    ON icrelation."imageId" = image_child."id"
+            WHERE copyright.del = 0
+            AND image_child.del = 0
+            AND image.id = image_child.id
+            ) t
+        ) AS copyrights
     FROM 
         "public"."Images" AS image
     INNER JOIN "public"."ImageTagRelation" AS relation
@@ -150,6 +166,14 @@ export async function fetchServerImagesListByTag(pageNum: number, tag: string) {
     ORDER BY image.sort DESC, image.create_time DESC, image.update_time DESC 
     LIMIT 8 OFFSET ${(pageNum - 1) * 8}
   `
+  if (findAll) {
+    // @ts-ignore
+    findAll?.map((item: any) => {
+      if (item.copyrights) {
+        item.copyrights = item?.copyrights.map((item: any) => Number(item.id))
+      }
+    })
+  }
   return findAll;
 }
 
@@ -209,7 +233,22 @@ export async function fetchClientImagesListByTag(pageNum: number, tag: string) {
     SELECT 
         image.*,
         STRING_AGG(tags."name", ',') AS tag_names,
-        STRING_AGG(tags.tag_value, ',') AS tag_values
+        STRING_AGG(tags.tag_value, ',') AS tag_values,
+        (
+            SELECT json_agg(row_to_json(t))
+            FROM (
+                SELECT copyright.*
+                FROM "public"."Copyright" AS copyright
+                INNER JOIN "public"."ImageCopyrightRelation" AS icrelation
+                    ON copyright.id = icrelation."copyrightId"
+                INNER JOIN "public"."Images" AS image_child
+                    ON icrelation."imageId" = image_child."id"
+                WHERE copyright.del = 0
+                AND image_child.del = 0
+                AND copyright.show = 0
+                AND image.id = image_child.id
+            ) t
+        ) AS copyrights
     FROM 
         "public"."Images" AS image
     INNER JOIN "public"."ImageTagRelation" AS relation
@@ -270,7 +309,22 @@ export async function fetchClientImagesListByLabel(pageNum: number, label: strin
     SELECT 
         image.*,
         STRING_AGG(tags."name", ',') AS tag_names,
-        STRING_AGG(tags.tag_value, ',') AS tag_values
+        STRING_AGG(tags.tag_value, ',') AS tag_values,
+        (
+            SELECT json_agg(row_to_json(t))
+            FROM (
+                SELECT copyright.*
+                FROM "public"."Copyright" AS copyright
+                INNER JOIN "public"."ImageCopyrightRelation" AS icrelation
+                    ON copyright.id = icrelation."copyrightId"
+                INNER JOIN "public"."Images" AS image_child
+                    ON icrelation."imageId" = image_child."id"
+                WHERE copyright.del = 0
+                AND image_child.del = 0
+                AND copyright.show = 0
+                AND image.id = image_child.id
+            ) t
+        ) AS copyrights
     FROM 
         "public"."Images" AS image
     INNER JOIN "public"."ImageTagRelation" AS relation
@@ -419,4 +473,22 @@ export async function fetchCustomTitle() {
   })
 
   return find
+}
+
+export async function fetchCopyrightList() {
+  const findAll = await db.copyright.findMany({
+    where: {
+      del: 0,
+    },
+    orderBy: [
+      {
+        create_time: 'desc',
+      },
+      {
+        update_time: 'desc'
+      }
+    ]
+  })
+
+  return findAll;
 }

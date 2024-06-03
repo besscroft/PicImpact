@@ -1,17 +1,11 @@
 import 'server-only'
-import { insertTag } from '~/server/lib/operate'
+import { insertCopyright } from '~/server/lib/operate'
 import { NextRequest } from 'next/server'
 
 export async function POST(req: NextRequest) {
-  const tag = await req.json()
-  if (tag.tag_value && tag.tag_value.charAt(0) !== '/') {
-    return Response.json({
-      code: 500,
-      message: '路由必须以 / 开头！'
-    })
-  }
+  const copyright = await req.json()
   try {
-    await insertTag(tag);
+    await insertCopyright(copyright);
     return Response.json({ code: 200, message: '新增成功！' })
   } catch (e) {
     console.log(e)

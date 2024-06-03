@@ -52,6 +52,6 @@ export async function register() {
       console.error('数据库初始化失败，请检查您的连接信息！')
     }
   } catch (e) {
-    console.error('初始化数据失败，您可能需要准备干净的数据表，请联系管理员！', e)
+    console.error('初始化失败，请您先尝试排查问题，如无法解决请携带日志去提交反馈：https://github.com/besscroft/PicImpact/issues', e)
   }
 }

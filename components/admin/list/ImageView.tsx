@@ -5,11 +5,17 @@ import { useButtonStore } from '~/app/providers/button-store-Providers'
 import { ImageType } from '~/types'
 import { cn, Input, Switch, Textarea, Image, Chip } from '@nextui-org/react'
 import React from 'react'
+import { Select } from 'antd'
+import { fetcher } from '~/utils/fetcher'
+import useSWR from 'swr'
 
 export default function ImageView() {
   const { imageView, imageViewData, setImageView, setImageViewData } = useButtonStore(
     (state) => state,
   )
+  const { data, isLoading } = useSWR('/api/v1/get-copyrights', fetcher)
+
+  const fieldNames = { label: 'name', value: 'id' }
 
   return (
     <Sheet
@@ -24,7 +30,7 @@ export default function ImageView() {
     >
       <SheetContent side="left">
         <SheetHeader>
-          <SheetTitle>查看图片</SheetTitle>
+          <SheetTitle>{imageViewData.title}</SheetTitle>
           <SheetDescription className="space-y-2">
             <Image
               isBlurred
@@ -87,6 +93,15 @@ export default function ImageView() {
               variant="bordered"
               label="排序"
               placeholder="0"
+            />
+            <Select
+              className="!block"
+              mode="multiple"
+              placeholder="暂未选择版权信息"
+              disabled
+              defaultValue={imageViewData?.copyrights}
+              fieldNames={fieldNames}
+              options={data}
             />
             <Switch
               isDisabled
