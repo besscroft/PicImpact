@@ -20,6 +20,7 @@ export default function FileUpload() {
   const [tag, setTag] = useState(new Set([] as string[]))
   const [alistMountPath, setAlistMountPath] = useState(new Set([] as string[]))
   const [exif, setExif] = useState({} as ExifType)
+  const [title, setTitle] = useState('')
   const [url, setUrl] = useState('')
   const [previewUrl, setPreviewUrl] = useState('')
   const [loading, setLoading] = useState(false)
@@ -35,7 +36,6 @@ export default function FileUpload() {
   async function loadExif(file: any) {
     try {
       const tags = await ExifReader.load(file)
-      console.log(tags)
       const exifObj = {
         make: '',
         model: '',
@@ -107,6 +107,10 @@ export default function FileUpload() {
         toast.warning('请先上传文件！')
         return
       }
+      if (!title || title === '') {
+        toast.warning('请先填写图片标题！')
+        return
+      }
       if (tagArray.length === 0 || tagArray[0] === '') {
         toast.warning('请先选择相册！')
         return
@@ -114,6 +118,7 @@ export default function FileUpload() {
       const data = {
         tag: tagArray[0],
         url: url,
+        title: title,
         preview_url: previewUrl,
         exif: exif,
         labels: imageLabels,
@@ -144,6 +149,7 @@ export default function FileUpload() {
   }
 
   async function onBeforeUpload(file: any) {
+    setTitle('')
     setPreviewUrl('')
     setImageLabels([])
     const storageArray = Array.from(storage)
@@ -219,7 +225,7 @@ export default function FileUpload() {
     new Compressor(option.file, {
       quality: 0.3,
       checkOrientation: false,
-      convertTypes: ['image/jpeg'],
+      mimeType: 'image/webp',
       async success(compressedFile) {
         if (compressedFile instanceof File) {
           const res = await uploadFile(compressedFile, type)
@@ -288,6 +294,7 @@ export default function FileUpload() {
       setAlistMountPath(new Set([] as string[]))
       setExif({} as ExifType)
       setUrl('')
+      setTitle('')
       setDetail('')
       setWidth(0)
       setHeight(0)
@@ -405,9 +412,6 @@ export default function FileUpload() {
             }}
           >
             <Dragger {...props}>
-              <p className="ant-upload-drag-icon">
-                <InboxOutlined/>
-              </p>
               <p className="ant-upload-text">点击上传文件或拖拽文件到这里</p>
               <p className="ant-upload-hint">
                 Vercel 等平台 Free 订阅限制上传大小 6M。
@@ -419,6 +423,15 @@ export default function FileUpload() {
           {
             url && url !== '' &&
             <div className="w-full mt-2 space-y-2">
+              <Input
+                size="sm"
+                type="text"
+                label="图片标题"
+                variant="bordered"
+                isRequired
+                value={title}
+                onValueChange={(value) => setTitle(value)}
+              />
               <Input
                 size="sm"
                 isReadOnly

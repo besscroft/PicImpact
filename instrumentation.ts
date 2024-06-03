@@ -23,7 +23,9 @@ export async function register() {
             { config_key: 'endpoint', config_value: '', detail: '阿里 OSS / AWS S3 Endpoint 地域节点，如：oss-cn-hongkong.aliyuncs.com' },
             { config_key: 'bucket', config_value: '', detail: '阿里 OSS / AWS S3 Bucket 存储桶名称，如：picimpact' },
             { config_key: 'storage_folder', config_value: '', detail: '存储文件夹(S3)，严格格式，如：picimpact 或 picimpact/images ，填 / 或者不填表示根路径' },
-            { config_key: 'force_path_style', config_value: 'false', detail: '是否强制客户端对桶使用路径式寻址' },
+            { config_key: 'force_path_style', config_value: 'false', detail: '是否强制客户端对桶使用路径式寻址，默认 false。' },
+            { config_key: 's3_cdn', config_value: 'false', detail: '是否启用 S3 CDN 模式，路径将返回 cdn 地址，默认 false。' },
+            { config_key: 's3_cdn_url', config_value: '', detail: 'cdn 地址，如：https://cdn.example.com' },
             { config_key: 'alist_token', config_value: '', detail: 'alist 令牌' },
             { config_key: 'alist_url', config_value: '', detail: 'AList 地址，如：https://alist.besscroft.com' },
             { config_key: 'secret_key', config_value: 'pic-impact', detail: 'SECRET_KEY' },
@@ -50,6 +52,6 @@ export async function register() {
       console.error('数据库初始化失败，请检查您的连接信息！')
     }
   } catch (e) {
-    console.error('初始化数据失败，您可能需要准备干净的数据表，请联系管理员！', e)
+    console.error('初始化失败，请您先尝试排查问题，如无法解决请携带日志去提交反馈：https://github.com/besscroft/PicImpact/issues', e)
   }
 }

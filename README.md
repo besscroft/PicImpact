@@ -22,6 +22,7 @@ PicImpact 是一个摄影师专用的摄影作品展示网站，基于 Next.js �
 - 图片存储兼容 S3 API、Cloudflare R2、AList API。
 - 图片支持绑定标签，并且可通过标签进行交互，筛选标签下所有图片。
 - 上传图片时会生成 0.3 倍率的压缩图片，以提供加载优化。
+- 图片版权信息展示和维护功能，支持外链跳转。
 - 后台有图片数据统计、图片上传、图片维护、相册管理、系统设置和存储配置功能。
 - 基于 SSR 的混合渲染，采用状态机制，提供良好的使用体验。
 - 基于 prisma 的自动初始化数据库和数据迁移，简化部署流程。
@@ -66,15 +67,17 @@ docker run -d --name picimpact \
 
 - AWS S3 配置
 
-| Key              | 备注                                                          |
-|------------------|-------------------------------------------------------------|
-| accesskey_id     | 阿里 OSS / AWS S3 AccessKey_ID                                |
-| accesskey_secret | 阿里 OSS / AWS S3 AccessKey_Secret                            |
-| region           | 阿里 OSS / AWS S3 Region 地域，如：`oss-cn-hongkong  `              |
-| endpoint         | 阿里 OSS / AWS S3 Endpoint 地域节点，如：`oss-cn-hongkong.aliyuncs.com` |
-| bucket           | 阿里 OSS / AWS S3 Bucket 存储桶名称，如：`picimpact`                    |
+| Key              | 备注                                                               |
+|------------------|------------------------------------------------------------------|
+| accesskey_id     | 阿里 OSS / AWS S3 AccessKey_ID                                     |
+| accesskey_secret | 阿里 OSS / AWS S3 AccessKey_Secret                                 |
+| region           | 阿里 OSS / AWS S3 Region 地域，如：`oss-cn-hongkong`                    |
+| endpoint         | 阿里 OSS / AWS S3 Endpoint 地域节点，如：`oss-cn-hongkong.aliyuncs.com`   |
+| bucket           | 阿里 OSS / AWS S3 Bucket 存储桶名称，如：`picimpact`                       |
 | storage_folder   | 存储文件夹(S3)，严格格式，如：`picimpact` 或 `picimpact/images` ，填 `/` 或者不填表示根路径 |
-| force_path_style   | 是否强制客户端对桶使用路径式寻址，默认 `false`，如您使用 minio 作为 s3 存储，需要设置为 `true`   |
+| force_path_style   | 是否强制客户端对桶使用路径式寻址，默认 `false`，如您使用 minio 作为 s3 存储，需要设置为 `true`     |
+| s3_cdn   | 是否启用 S3 CDN 模式，路径将返回 cdn 地址，默认 false。                            |
+| s3_cdn_url   | cdn 地址，如：`https://cdn.example.com`                               |
 
 - Cloudflare R2 配置
 

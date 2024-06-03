@@ -4,7 +4,7 @@ import { Listbox, ListboxItem } from '@nextui-org/react'
 import { useSession } from 'next-auth/react'
 import { usePathname } from 'next/navigation'
 import { useRouter } from 'next-nprogress-bar'
-import { Settings, Milestone, Image, ImageUp, MonitorDot } from 'lucide-react'
+import { Settings, Milestone, Image, ImageUp, MonitorDot, Copyright } from 'lucide-react'
 import { cn } from '~/utils'
 
 export const BaseSide = () => {
@@ -65,6 +65,17 @@ export const BaseSide = () => {
             onClick={() => router.push('/admin/tag')}
           >
             <span className={textClasses}>相册管理</span>
+          </ListboxItem>
+          <ListboxItem
+            className={cn(
+              pathname === '/admin/copyright' ? 'text-teal-400' : '',
+              buttonClasses
+            )}
+            key="tag"
+            startContent={<Copyright size={20} className={iconClasses}/>}
+            onClick={() => router.push('/admin/copyright')}
+          >
+            <span className={textClasses}>版权管理</span>
           </ListboxItem>
           <ListboxItem
             className={cn(

@@ -1,7 +1,7 @@
 'use server'
 
 import { db } from '~/server/lib/db'
-import { TagType, ImageType } from '~/types'
+import { TagType, ImageType, CopyrightType } from '~/types'
 
 export async function insertTag(tag: TagType) {
   if (!tag.sort || tag.sort < 0) {
@@ -70,6 +70,63 @@ export async function updateTag(tag: TagType) {
   })
 }
 
+export async function insertCopyright(copyright: CopyrightType) {
+  const resultRow = await db.copyright.create({
+    data: {
+      name: copyright.name,
+      social_name: copyright.social_name,
+      type: copyright.type,
+      url: copyright.url,
+      avatar_url: copyright.avatar_url,
+      detail: copyright.detail,
+      show: copyright.show,
+      del: 0
+    }
+  })
+  return resultRow
+}
+
+export async function deleteCopyright(id: number) {
+  const resultRow = await db.copyright.update({
+    where: {
+      id: Number(id)
+    },
+    data: {
+      del: 1,
+      update_time: new Date(),
+    }
+  })
+  return resultRow
+}
+
+export async function updateCopyright(copyright: CopyrightType) {
+  await db.$transaction(async (tx) => {
+    const copyrightOld = await tx.copyright.findFirst({
+      where: {
+        id: Number(copyright.id)
+      }
+    })
+    if (!copyrightOld) {
+      throw new Error('版权信息不存在！')
+    }
+    await tx.copyright.update({
+      where: {
+        id: Number(copyright.id)
+      },
+      data: {
+        name: copyright.name,
+        social_name: copyright.social_name,
+        type: copyright.type,
+        url: copyright.url,
+        avatar_url: copyright.avatar_url,
+        detail: copyright.detail,
+        show: copyright.show,
+        update_time: new Date(),
+      }
+    })
+  })
+}
+
 export async function insertImage(image: ImageType) {
   if (!image.sort || image.sort < 0) {
     image.sort = 0
@@ -78,6 +135,7 @@ export async function insertImage(image: ImageType) {
     const resultRow = await tx.images.create({
       data: {
         url: image.url,
+        title: image.title,
         preview_url: image.preview_url,
         exif: image.exif,
         labels: image.labels,
@@ -129,27 +187,43 @@ export async function updateImage(image: ImageType) {
   if (!image.sort || image.sort < 0) {
     image.sort = 0
   }
-  const resultRow = await db.images.update({
-    where: {
-      id: Number(image.id)
-    },
-    data: {
-      url: image.url,
-      preview_url: image.preview_url,
-      exif: image.exif,
-      labels: image.labels,
-      detail: image.detail,
-      sort: image.sort,
-      show: image.show,
-      width: image.width,
-      height: image.height,
-      lat: image.lat,
-      lon: image.lon,
-      update_time: new Date(),
+  await db.$transaction(async (tx) => {
+    const resultRow = await tx.images.update({
+      where: {
+        id: Number(image.id)
+      },
+      data: {
+        url: image.url,
+        title: image.title,
+        preview_url: image.preview_url,
+        exif: image.exif,
+        labels: image.labels,
+        detail: image.detail,
+        sort: image.sort,
+        show: image.show,
+        width: image.width,
+        height: image.height,
+        lat: image.lat,
+        lon: image.lon,
+        update_time: new Date(),
+      }
+    })
+    await tx.imageCopyrightRelation.deleteMany({
+      where: {
+        imageId: image.id
+      }
+    })
+    if (Array.isArray(image.copyrights) && image.copyrights.length > 0) {
+      await tx.imageCopyrightRelation.createMany({
+        data: image.copyrights.map((item: number) => {
+          return {
+            imageId: image.id,
+            copyrightId: item
+          }
+        })
+      })
     }
-  }
-  )
-  return resultRow
+  })
 }
 
 export async function updatePassword(userId: string, newPassword: string) {
@@ -175,10 +249,12 @@ export async function updateS3Config(configs: any) {
        WHEN config_key = 'bucket' THEN ${configs.bucket}
        WHEN config_key = 'storage_folder' THEN ${configs.storageFolder}
        WHEN config_key = 'force_path_style' THEN ${configs.forcePathStyle}
+       WHEN config_key = 's3_cdn' THEN ${configs.s3Cdn}
+       WHEN config_key = 's3_cdn_url' THEN ${configs.s3CdnUrl}
        ELSE 'N&A'
     END,
         update_time = NOW()
-    WHERE config_key IN ('accesskey_id', 'accesskey_secret', 'region', 'endpoint', 'bucket', 'storage_folder', 'force_path_style');
+    WHERE config_key IN ('accesskey_id', 'accesskey_secret', 'region', 'endpoint', 'bucket', 'storage_folder', 'force_path_style', 's3_cdn', 's3_cdn_url');
   `
   return resultRow
 }
@@ -230,6 +306,19 @@ export async function updateImageShow(id: number, show: number) {
 
 export async function updateTagShow(id: number, show: number) {
   const resultRow = await db.tags.update({
+    where: {
+      id: Number(id)
+    },
+    data: {
+      show: show,
+      update_time: new Date()
+    }
+  })
+  return resultRow
+}
+
+export async function updateCopyrightShow(id: number, show: number) {
+  const resultRow = await db.copyright.update({
     where: {
       id: Number(id)
     },
