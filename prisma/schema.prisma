@@ -63,6 +63,7 @@ model Images {
   height                 Int                      @default(0)
   lon                    String?
   lat                    String?
+  title                  String?
   detail                 String?                  @db.Text
   show                   Int                      @default(1) @db.SmallInt
   sort                   Int                      @default(0) @db.SmallInt

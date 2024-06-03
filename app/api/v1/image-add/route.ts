@@ -4,6 +4,12 @@ import { NextRequest } from 'next/server'
 
 export async function POST(req: NextRequest) {
   const image = await req.json()
+  if (!image.title) {
+    return Response.json({
+      code: 500,
+      message: '图片标题不能为空！'
+    })
+  }
   if (!image.url) {
     return Response.json({
       code: 500,

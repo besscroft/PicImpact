@@ -135,6 +135,7 @@ export async function insertImage(image: ImageType) {
     const resultRow = await tx.images.create({
       data: {
         url: image.url,
+        title: image.title,
         preview_url: image.preview_url,
         exif: image.exif,
         labels: image.labels,
@@ -193,6 +194,7 @@ export async function updateImage(image: ImageType) {
       },
       data: {
         url: image.url,
+        title: image.title,
         preview_url: image.preview_url,
         exif: image.exif,
         labels: image.labels,
@@ -205,8 +207,7 @@ export async function updateImage(image: ImageType) {
         lon: image.lon,
         update_time: new Date(),
       }
-      }
-    )
+    })
     await tx.imageCopyrightRelation.deleteMany({
       where: {
         imageId: image.id

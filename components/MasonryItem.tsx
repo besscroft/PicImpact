@@ -33,7 +33,7 @@ export default function MasonryItem() {
       <DialogContent className="flex flex-col">
         <div className="flex items-center">
           <div className="flex-1">
-            <p>{MasonryViewData.detail}</p>
+            <p>{MasonryViewData.title}</p>
           </div>
           <div className="flex items-center space-x-4">
             <Button

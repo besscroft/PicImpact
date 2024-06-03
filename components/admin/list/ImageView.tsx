@@ -30,7 +30,7 @@ export default function ImageView() {
     >
       <SheetContent side="left">
         <SheetHeader>
-          <SheetTitle>查看图片</SheetTitle>
+          <SheetTitle>{imageViewData.title}</SheetTitle>
           <SheetDescription className="space-y-2">
             <Image
               isBlurred
