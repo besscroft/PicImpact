@@ -72,7 +72,7 @@ export default function ImageEditSheet(props : Readonly<ImageServerHandleProps &
       }}
       modal={false}
     >
-      <SheetContent side="left">
+      <SheetContent side="left" onInteractOutside={(event: any) => event.preventDefault()}>
         <SheetHeader>
           <SheetTitle>编辑图片</SheetTitle>
           <SheetDescription className="space-y-2">

@@ -56,7 +56,7 @@ export default function TagAddSheet(props : Readonly<HandleProps>) {
       onOpenChange={() => setTagAdd(!tagAdd)}
       modal={false}
     >
-      <SheetContent side="left">
+      <SheetContent side="left" onInteractOutside={(event: any) => event.preventDefault()}>
         <SheetHeader>
           <SheetTitle>新增相册</SheetTitle>
           <SheetDescription className="space-y-2">

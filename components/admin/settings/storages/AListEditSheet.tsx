@@ -48,7 +48,7 @@ export default function AListEditSheet() {
       }}
       modal={false}
     >
-      <SheetContent side="left">
+      <SheetContent side="left" onInteractOutside={(event: any) => event.preventDefault()}>
         <SheetHeader>
           <SheetTitle>编辑 AList</SheetTitle>
           <SheetDescription className="space-y-2">
