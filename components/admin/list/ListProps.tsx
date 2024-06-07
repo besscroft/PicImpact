@@ -25,9 +25,13 @@ import {
   Image,
   Switch,
   Badge,
-  Spinner
+  Spinner,
+  Dropdown,
+  DropdownTrigger,
+  DropdownMenu,
+  DropdownItem,
 } from '@nextui-org/react'
-import { ArrowDown10, Pencil, Trash, Eye, EyeOff, ScanSearch, CircleHelp } from 'lucide-react'
+import { ArrowDown10, Pencil, Trash, Eye, EyeOff, ScanSearch, CircleHelp, CircleEllipsis } from 'lucide-react'
 import { toast } from 'sonner'
 import { useButtonStore } from '~/app/providers/button-store-Providers'
 import ImageEditSheet from '~/components/admin/list/ImageEditSheet'
@@ -267,28 +271,39 @@ export default function ListProps(props : Readonly<ImageServerHandleProps>) {
                   </Popover>
                 </div>
                 <div className="space-x-1">
-                  <Button
-                    isIconOnly
-                    size="sm"
-                    onClick={() => {
-                      setImageEditData(image)
-                      setImageEdit(true)
-                    }}
-                    aria-label="编辑图片"
-                  >
-                    <Pencil size={20} />
-                  </Button>
-                  <Button
-                    isIconOnly
-                    size="sm"
-                    onClick={() => {
-                      setImage(image)
-                      setIsOpen(true)
-                    }}
-                    aria-label="删除图片"
-                  >
-                    <Trash size={20} />
-                  </Button>
+                  <Dropdown>
+                    <DropdownTrigger>
+                      <Button
+                        isIconOnly
+                        size="sm"
+                        aria-label="更多操作"
+                      >
+                        <CircleEllipsis size={20} />
+                      </Button>
+                    </DropdownTrigger>
+                    <DropdownMenu aria-label="Static Actions">
+                      <DropdownItem
+                        key="edit"
+                        startContent={<Pencil size={20} />}
+                        onClick={() => {
+                          setImageEditData(image)
+                          setImageEdit(true)
+                        }}
+                      >编辑图片</DropdownItem>
+                      <DropdownItem
+                        key="delete"
+                        className="text-danger"
+                        color="danger"
+                        startContent={<Trash size={20} />}
+                        onClick={() => {
+                          setImage(image)
+                          setIsOpen(true)
+                        }}
+                      >
+                        删除图片
+                      </DropdownItem>
+                    </DropdownMenu>
+                  </Dropdown>
                 </div>
               </CardFooter>
             </Card>
