@@ -72,7 +72,7 @@ export default function CopyrightEditSheet(props : Readonly<HandleProps>) {
       }}
       modal={false}
     >
-      <SheetContent side="left">
+      <SheetContent side="left" onInteractOutside={(event: any) => event.preventDefault()}>
         <SheetHeader>
           <SheetTitle>编辑版权</SheetTitle>
           <SheetDescription className="space-y-2">

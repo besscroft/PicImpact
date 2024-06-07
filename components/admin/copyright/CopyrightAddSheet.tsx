@@ -68,7 +68,7 @@ export default function CopyrightAddSheet(props : Readonly<HandleProps>) {
       onOpenChange={() => setCopyrightAdd(!copyrightAdd)}
       modal={false}
     >
-      <SheetContent side="left">
+      <SheetContent side="left" onInteractOutside={(event: any) => event.preventDefault()}>
         <SheetHeader>
           <SheetTitle>新增版权</SheetTitle>
           <SheetDescription className="space-y-2">

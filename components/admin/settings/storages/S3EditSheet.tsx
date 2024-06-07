@@ -48,7 +48,7 @@ export default function S3EditSheet() {
       }}
       modal={false}
     >
-      <SheetContent side="left">
+      <SheetContent side="left" onInteractOutside={(event: any) => event.preventDefault()}>
         <SheetHeader>
           <SheetTitle>编辑 S3</SheetTitle>
           <SheetDescription className="space-y-2">
