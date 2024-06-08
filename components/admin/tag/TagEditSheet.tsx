@@ -60,7 +60,7 @@ export default function TagEditSheet(props : Readonly<HandleProps>) {
       }}
       modal={false}
     >
-      <SheetContent side="left">
+      <SheetContent side="left" onInteractOutside={(event: any) => event.preventDefault()}>
         <SheetHeader>
           <SheetTitle>编辑相册</SheetTitle>
           <SheetDescription className="space-y-2">

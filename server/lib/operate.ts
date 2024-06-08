@@ -304,6 +304,30 @@ export async function updateImageShow(id: number, show: number) {
   return resultRow
 }
 
+export async function updateImageTag(imageId: number, tagId: number) {
+  await db.$transaction(async (tx) => {
+    const resultRow = await tx.tags.findUnique({
+      where: {
+        id: Number(tagId)
+      }
+    })
+    if (!resultRow) {
+      throw new Error('相册不存在！')
+    }
+    await tx.imageTagRelation.deleteMany({
+      where: {
+        imageId: imageId,
+      }
+    })
+    await tx.imageTagRelation.create({
+      data: {
+        imageId: imageId,
+        tag_value: resultRow.tag_value
+      }
+    })
+  })
+}
+
 export async function updateTagShow(id: number, show: number) {
   const resultRow = await db.tags.update({
     where: {

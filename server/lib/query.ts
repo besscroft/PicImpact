@@ -114,7 +114,7 @@ export async function fetchServerImagesListByTag(pageNum: number, tag: string) {
       SELECT 
           image.*,
           STRING_AGG(tags."name", ',') AS tag_names,
-          STRING_AGG(tags.tag_value, ',') AS tag_values
+          STRING_AGG(tags.id::text, ',') AS tag_values
       FROM 
           "public"."Images" AS image
       INNER JOIN "public"."ImageTagRelation" AS relation
@@ -137,7 +137,7 @@ export async function fetchServerImagesListByTag(pageNum: number, tag: string) {
     SELECT 
         image.*,
         STRING_AGG(tags."name", ',') AS tag_names,
-        STRING_AGG(tags.tag_value, ',') AS tag_values,
+        STRING_AGG(tags.id::text, ',') AS tag_values,
         (
             SELECT json_agg(row_to_json(t))
             FROM (

@@ -25,9 +25,13 @@ import {
   Image,
   Switch,
   Badge,
-  Spinner
+  Spinner,
+  Dropdown,
+  DropdownTrigger,
+  DropdownMenu,
+  DropdownItem,
 } from '@nextui-org/react'
-import { ArrowDown10, Pencil, Trash, Eye, EyeOff, ScanSearch, CircleHelp } from 'lucide-react'
+import { ArrowDown10, Pencil, Trash, Eye, EyeOff, ScanSearch, CircleHelp, CircleEllipsis, Images } from 'lucide-react'
 import { toast } from 'sonner'
 import { useButtonStore } from '~/app/providers/button-store-Providers'
 import ImageEditSheet from '~/components/admin/list/ImageEditSheet'
@@ -36,17 +40,22 @@ import { fetcher } from '~/utils/fetcher'
 import useSWR from 'swr'
 import { motion } from 'framer-motion'
 import ImageHelpSheet from '~/components/admin/list/ImageHelpSheet'
+import { Select as AntdSelect } from 'antd'
 
 export default function ListProps(props : Readonly<ImageServerHandleProps>) {
   const [pageNum, setPageNum] = useState(1)
   const [tagArray, setTagArray] = useState(new Set([] as string[]))
   const [tag, setTag] = useState('')
+  const [imageTag, setImageTag] = useState('')
+  const [imageDefaultTag, setImageDefaultTag] = useState({})
   const { data, isLoading, mutate } = useSWRInfiniteServerHook(props, pageNum, tag)
   const { data: total, mutate: totalMutate } = useSWRPageTotalServerHook(props, tag)
   const [isOpen, setIsOpen] = useState(false)
+  const [isTypeOpen, setIsTypeOpen] = useState(false)
   const [image, setImage] = useState({} as ImageType)
   const [deleteLoading, setDeleteLoading] = useState(false)
   const [updateShowLoading, setUpdateShowLoading] = useState(false)
+  const [updateImageTagLoading, setUpdateImageTagLoading] = useState(false)
   const [updateShowId, setUpdateShowId] = useState(0)
   const { setImageEdit, setImageEditData, setImageView, setImageViewData, setImageHelp } = useButtonStore(
     (state) => state,
@@ -101,6 +110,42 @@ export default function ListProps(props : Readonly<ImageServerHandleProps>) {
       setUpdateShowLoading(false)
     }
   }
+
+  async function updateImageTag() {
+    if (!imageTag) {
+      toast.error('图片绑定的相册不能为空！')
+      return
+    }
+    try {
+      setUpdateImageTagLoading(true)
+      const res = await fetch(`/api/v1/update-image-tag`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          imageId: image.id,
+          tagId: Number(imageTag)
+        }),
+      })
+      if (res.status === 200) {
+        toast.success('更新成功！')
+        setImageTag('')
+        setImageDefaultTag({})
+        setImage({} as ImageType)
+        setIsTypeOpen(false)
+        await mutate()
+      } else {
+        toast.error('更新失败！')
+      }
+    } catch (e) {
+      toast.error('更新失败！')
+    } finally {
+      setUpdateImageTagLoading(false)
+    }
+  }
+
+  const fieldNames = { label: 'name', value: 'id' }
 
   return (
     <div className="flex flex-col space-y-2 h-full flex-1">
@@ -267,28 +312,50 @@ export default function ListProps(props : Readonly<ImageServerHandleProps>) {
                   </Popover>
                 </div>
                 <div className="space-x-1">
-                  <Button
-                    isIconOnly
-                    size="sm"
-                    onClick={() => {
-                      setImageEditData(image)
-                      setImageEdit(true)
-                    }}
-                    aria-label="编辑图片"
-                  >
-                    <Pencil size={20} />
-                  </Button>
-                  <Button
-                    isIconOnly
-                    size="sm"
-                    onClick={() => {
-                      setImage(image)
-                      setIsOpen(true)
-                    }}
-                    aria-label="删除图片"
-                  >
-                    <Trash size={20} />
-                  </Button>
+                  <Dropdown>
+                    <DropdownTrigger>
+                      <Button
+                        isIconOnly
+                        size="sm"
+                        aria-label="更多操作"
+                      >
+                        <CircleEllipsis size={20} />
+                      </Button>
+                    </DropdownTrigger>
+                    <DropdownMenu aria-label="Static Actions">
+                      <DropdownItem
+                        key="bind"
+                        startContent={<Images size={20} />}
+                        onClick={() => {
+                          setImage(image)
+                          setImageDefaultTag({ label: image.tag_names, value: image.tag_values })
+                          setIsTypeOpen(true)
+                        }}
+                      >
+                        绑定相册
+                      </DropdownItem>
+                      <DropdownItem
+                        key="edit"
+                        startContent={<Pencil size={20} />}
+                        onClick={() => {
+                          setImageEditData(image)
+                          setImageEdit(true)
+                        }}
+                      >编辑图片</DropdownItem>
+                      <DropdownItem
+                        key="delete"
+                        className="text-danger"
+                        color="danger"
+                        startContent={<Trash size={20} />}
+                        onClick={() => {
+                          setImage(image)
+                          setIsOpen(true)
+                        }}
+                      >
+                        删除图片
+                      </DropdownItem>
+                    </DropdownMenu>
+                  </Dropdown>
                 </div>
               </CardFooter>
             </Card>
@@ -337,6 +404,38 @@ export default function ListProps(props : Readonly<ImageServerHandleProps>) {
               aria-label="确认删除"
             >
               是的
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+      <Modal
+        isOpen={isTypeOpen}
+        isDismissable={false}
+        placement="center"
+        onClose={() => setIsTypeOpen(false)}
+      >
+        <ModalContent>
+          <ModalHeader className="flex flex-col gap-1">相册绑定</ModalHeader>
+          <ModalBody>
+            <AntdSelect
+              defaultValue={imageDefaultTag}
+              loading={isLoading}
+              options={tags}
+              fieldNames={fieldNames}
+              onChange={(value) => {
+                // @ts-ignore
+                setImageTag(value)
+              }}
+            />
+          </ModalBody>
+          <ModalFooter>
+            <Button
+              color="primary"
+              variant="bordered"
+              isLoading={updateImageTagLoading}
+              onClick={() => updateImageTag()}
+            >
+              更新
             </Button>
           </ModalFooter>
         </ModalContent>
