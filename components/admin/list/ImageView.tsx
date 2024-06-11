@@ -2,12 +2,20 @@
 
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from '~/components/ui/Sheet'
 import { useButtonStore } from '~/app/providers/button-store-Providers'
-import { ImageType } from '~/types'
-import { cn, Input, Switch, Textarea, Image, Chip } from '@nextui-org/react'
+import { DataProps, ImageType } from '~/types'
+import {
+  cn,
+  Input,
+  Switch,
+  Textarea,
+  Image,
+  Chip
+} from '@nextui-org/react'
 import React from 'react'
 import { Select } from 'antd'
 import { fetcher } from '~/utils/fetcher'
 import useSWR from 'swr'
+import ExifView from '~/components/ExifView'
 
 export default function ImageView() {
   const { imageView, imageViewData, setImageView, setImageViewData } = useButtonStore(
@@ -16,6 +24,10 @@ export default function ImageView() {
   const { data, isLoading } = useSWR('/api/v1/get-copyrights', fetcher)
 
   const fieldNames = { label: 'name', value: 'id' }
+
+  const props: DataProps = {
+    data: imageViewData,
+  }
 
   return (
     <Sheet
@@ -45,6 +57,7 @@ export default function ImageView() {
                 ))}
               </div>
             }
+            <ExifView {...props} />
             <Textarea
               isReadOnly
               value={imageViewData?.detail}
