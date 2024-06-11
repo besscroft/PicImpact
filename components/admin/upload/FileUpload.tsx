@@ -1,7 +1,6 @@
 'use client'
 
 import React, { useState } from 'react'
-import { InboxOutlined } from '@ant-design/icons'
 import type { UploadProps } from 'antd'
 import { Upload, ConfigProvider } from 'antd'
 import { toast } from 'sonner'
@@ -105,10 +104,6 @@ export default function FileUpload() {
       const tagArray = Array.from(tag)
       if (!url || url === '') {
         toast.warning('请先上传文件！')
-        return
-      }
-      if (!title || title === '') {
-        toast.warning('请先填写图片标题！')
         return
       }
       if (tagArray.length === 0 || tagArray[0] === '') {
@@ -428,7 +423,6 @@ export default function FileUpload() {
                 type="text"
                 label="图片标题"
                 variant="bordered"
-                isRequired
                 value={title}
                 onValueChange={(value) => setTitle(value)}
               />
