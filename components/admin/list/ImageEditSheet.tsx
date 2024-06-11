@@ -22,10 +22,6 @@ export default function ImageEditSheet(props : Readonly<ImageServerHandleProps &
   const { data, isLoading } = useSWR('/api/v1/get-copyrights', fetcher)
 
   async function submit() {
-    if (!image.title) {
-      toast.error('图片标题不能为空！')
-      return
-    }
     if (!image.url) {
       toast.error('图片链接不能为空！')
       return
@@ -40,7 +36,7 @@ export default function ImageEditSheet(props : Readonly<ImageServerHandleProps &
     }
     try {
       setLoading(true)
-      const res = await fetch('/api/v1/image-update', {
+      await fetch('/api/v1/image-update', {
         headers: {
           'Content-Type': 'application/json',
         },
@@ -77,7 +73,6 @@ export default function ImageEditSheet(props : Readonly<ImageServerHandleProps &
           <SheetTitle>编辑图片</SheetTitle>
           <SheetDescription className="space-y-2">
             <Input
-              isRequired
               value={image?.title}
               onValueChange={(value) => setImageEditData({ ...image, title: value })}
               variant="bordered"
