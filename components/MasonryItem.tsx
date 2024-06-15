@@ -6,8 +6,8 @@ import {
 } from '~/components/ui/Dialog'
 import { useButtonStore } from '~/app/providers/button-store-Providers'
 import { CopyrightType, DataProps, ImageType } from '~/types'
-import { Image, Tabs, Tab, Card, CardHeader, CardBody, CardFooter, Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Button, Chip, Link, Avatar } from '@nextui-org/react'
-import { Aperture, Camera, Image as ImageIcon, Languages, CalendarDays, X, SunMedium, MoonStar, Copyright } from 'lucide-react'
+import { Image, Tabs, Tab, Card, CardHeader, CardBody, CardFooter, Button, Chip, Link, Avatar } from '@nextui-org/react'
+import { Aperture, Camera, Image as ImageIcon, Languages, CalendarDays, X, SunMedium, MoonStar, Copyright, Crosshair, Timer, CircleGauge } from 'lucide-react'
 import * as React from 'react'
 import { useTheme } from 'next-themes'
 import { useRouter } from 'next-nprogress-bar'
@@ -89,15 +89,36 @@ export default function MasonryItem() {
                 }
               >
                 <div className="flex flex-col space-y-2">
-                  <Card className="py-4" shadow="sm">
-                    <CardHeader className="pb-0 pt-2 px-4 flex-col items-start">
-                      <div className="flex items-center space-x-1">
-                        <Camera size={20}/>
-                        <p className="text-tiny uppercase font-bold select-none">相机</p>
-                      </div>
-                      <h4 className="font-bold text-large">{MasonryViewData?.exif?.model || 'N&A'}</h4>
-                    </CardHeader>
-                  </Card>
+                  {MasonryViewData?.exif?.model && MasonryViewData?.exif?.f_number
+                    && MasonryViewData?.exif?.exposure_time && MasonryViewData?.exif?.focal_length
+                    && MasonryViewData?.exif?.iso_speed_rating &&
+                    <Card className="py-2" shadow="sm">
+                      <CardHeader className="pb-0 pt-2 px-2 flex-col items-start space-y-2">
+                        <div className="flex items-center justify-center space-x-1 w-full">
+                          <Camera size={20}/>
+                          <p className="text-tiny uppercase font-bold select-none items-center justify-center">{MasonryViewData?.exif?.model}</p>
+                        </div>
+                        <div className="grid grid-cols-4 gap-4 items-center justify-center w-full">
+                          <div className="flex flex-col items-center justify-center w-full">
+                            <Aperture size={20}/>
+                            <p className="text-tiny uppercase font-bold select-none">{MasonryViewData?.exif?.f_number}</p>
+                          </div>
+                          <div className="flex flex-col items-center justify-center w-full">
+                            <Timer size={20}/>
+                            <p className="text-tiny uppercase font-bold select-none">{MasonryViewData?.exif?.exposure_time}</p>
+                          </div>
+                          <div className="flex flex-col items-center justify-center w-full">
+                            <Crosshair size={20}/>
+                            <p className="text-tiny uppercase font-bold select-none">{MasonryViewData?.exif?.focal_length}</p>
+                          </div>
+                          <div className="flex flex-col items-center justify-center w-full">
+                            <CircleGauge size={20}/>
+                            <p className="text-tiny uppercase font-bold select-none">ISO {MasonryViewData?.exif?.iso_speed_rating}</p>
+                          </div>
+                        </div>
+                      </CardHeader>
+                    </Card>
+                  }
                   <Card className="py-4" shadow="sm">
                     <CardHeader className="pb-0 pt-2 px-4 flex-col items-start">
                       <div className="flex items-center space-x-1">
