@@ -1,8 +1,8 @@
 import 'server-only'
-import { fetchCopyrightList } from '~/server/lib/query'
+import { fetchCopyrightListByNotDefault } from '~/server/lib/query'
 
 export async function GET() {
-  const data = await fetchCopyrightList()
+  const data = await fetchCopyrightListByNotDefault()
   return Response.json(data)
 }
 

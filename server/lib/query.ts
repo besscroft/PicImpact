@@ -246,7 +246,19 @@ export async function fetchClientImagesListByTag(pageNum: number, tag: string) {
                 WHERE copyright.del = 0
                 AND image_child.del = 0
                 AND copyright.show = 0
+                AND copyright.default = 1
                 AND image.id = image_child.id
+                UNION
+                SELECT copyright.*
+                FROM "public"."Copyright" AS copyright
+                INNER JOIN "public"."ImageCopyrightRelation" AS icrelation
+                    ON copyright.id = icrelation."copyrightId"
+                INNER JOIN "public"."Images" AS image_child
+                    ON icrelation."imageId" = image_child."id"
+                WHERE copyright.del = 0
+                AND image_child.del = 0
+                AND copyright.show = 0
+                AND copyright.default = 0
             ) t
         ) AS copyrights
     FROM 
@@ -473,6 +485,25 @@ export async function fetchCustomTitle() {
   })
 
   return find
+}
+
+export async function fetchCopyrightListByNotDefault() {
+  const findAll = await db.copyright.findMany({
+    where: {
+      default: 1,
+      del: 0,
+    },
+    orderBy: [
+      {
+        create_time: 'desc',
+      },
+      {
+        update_time: 'desc'
+      }
+    ]
+  })
+
+  return findAll;
 }
 
 export async function fetchCopyrightList() {

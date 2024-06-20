@@ -81,6 +81,7 @@ export type CopyrightType = {
   url: string;
   avatar_url: string;
   detail: string;
+  default: number;
   show: number;
 }
 

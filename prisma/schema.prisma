@@ -113,6 +113,7 @@ model Copyright {
   url                    String?                  @db.Text
   avatar_url             String?                  @db.Text
   detail                 String?                  @db.Text
+  default                Int                      @default(1) @db.SmallInt
   show                   Int                      @default(1) @db.SmallInt
   create_time            DateTime?                @default(now()) @db.Timestamp()
   update_time            DateTime?                @db.Timestamp()
