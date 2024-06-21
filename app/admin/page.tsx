@@ -38,7 +38,7 @@ export default async function Admin() {
           <span className="pr-6">如果您有 Bug 反馈和建议</span>
           <span className="h-px flex-1 bg-black"></span>
         </span>
-          <Link href="https://github.com/besscroft/kamera/issues/new" target="_blank">
+          <Link href="https://github.com/besscroft/PicImpact/issues/new" target="_blank">
             <Button startContent={<MessageSquareHeart size={20} />} variant="bordered" size="sm">反馈 | 建议</Button>
           </Link>
         </CardBody>
