@@ -487,25 +487,6 @@ export async function fetchCustomTitle() {
   return find
 }
 
-export async function fetchCopyrightListByNotDefault() {
-  const findAll = await db.copyright.findMany({
-    where: {
-      default: 1,
-      del: 0,
-    },
-    orderBy: [
-      {
-        create_time: 'desc',
-      },
-      {
-        update_time: 'desc'
-      }
-    ]
-  })
-
-  return findAll;
-}
-
 export async function fetchCopyrightList() {
   const findAll = await db.copyright.findMany({
     where: {
