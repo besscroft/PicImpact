@@ -20,9 +20,10 @@ import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-  Spinner, Switch
+  Spinner,
+  Switch,
 } from '@nextui-org/react'
-import { Eye, EyeOff, Pencil, Trash } from 'lucide-react'
+import { Eye, EyeOff, Pencil, Trash, BadgeCheck, BadgeX } from 'lucide-react'
 import { useButtonStore } from '~/app/providers/button-store-Providers'
 
 export default function CopyrightList(props : Readonly<HandleProps>) {
@@ -32,6 +33,8 @@ export default function CopyrightList(props : Readonly<HandleProps>) {
   const [deleteLoading, setDeleteLoading] = useState(false)
   const [updateCopyrightLoading, setUpdateCopyrightLoading] = useState(false)
   const [updateCopyrightId, setUpdateCopyrightId] = useState(0)
+  const [updateCopyrightDefaultLoading, setUpdateCopyrightDefaultLoading] = useState(false)
+  const [updateCopyrightDefaultId, setUpdateCopyrightDefaultId] = useState(0)
   const { setCopyrightEdit, setCopyrightEditData } = useButtonStore(
     (state) => state,
   )
@@ -85,6 +88,34 @@ export default function CopyrightList(props : Readonly<HandleProps>) {
     }
   }
 
+  async function updateCopyrightDefault(id: number, defaultValue: number) {
+    try {
+      setUpdateCopyrightDefaultId(id)
+      setUpdateCopyrightDefaultLoading(true)
+      const res = await fetch(`/api/v1/update-copyright-default`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          id,
+          default: defaultValue
+        }),
+      })
+      if (res.status === 200) {
+        toast.success('更新成功！')
+        await mutate()
+      } else {
+        toast.error('更新失败！')
+      }
+    } catch (e) {
+      toast.error('更新失败！')
+    } finally {
+      setUpdateCopyrightDefaultId(0)
+      setUpdateCopyrightDefaultLoading(false)
+    }
+  }
+
   return (
     <>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
@@ -134,6 +165,23 @@ export default function CopyrightList(props : Readonly<HandleProps>) {
                         )
                       }
                       onValueChange={(isSelected: boolean) => updateCopyrightShow(copyright.id, isSelected ? 0 : 1)}
+                    />
+                  }
+                  {updateCopyrightDefaultLoading && updateCopyrightDefaultId === copyright.id ? <Spinner size="sm" /> :
+                    <Switch
+                      defaultSelected
+                      size="sm"
+                      color="success"
+                      isSelected={copyright.default === 0}
+                      isDisabled={updateCopyrightDefaultLoading}
+                      thumbIcon={({ isSelected }) =>
+                        isSelected ? (
+                          <BadgeCheck size={20} />
+                        ) : (
+                          <BadgeX size={20} />
+                        )
+                      }
+                      onValueChange={(isSelected: boolean) => updateCopyrightDefault(copyright.id, isSelected ? 0 : 1)}
                     />
                   }
                 </div>

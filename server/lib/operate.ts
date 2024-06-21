@@ -121,6 +121,7 @@ export async function updateCopyright(copyright: CopyrightType) {
         avatar_url: copyright.avatar_url,
         detail: copyright.detail,
         show: copyright.show,
+        default: copyright.default,
         update_time: new Date(),
       }
     })
@@ -348,6 +349,20 @@ export async function updateCopyrightShow(id: number, show: number) {
     },
     data: {
       show: show,
+      update_time: new Date()
+    }
+  })
+  return resultRow
+}
+
+export async function updateCopyrightDefault(id: number, defaultValue: number) {
+  // @ts-ignore
+  const resultRow = await db.copyright.update({
+    where: {
+      id: Number(id)
+    },
+    data: {
+      default: defaultValue,
       update_time: new Date()
     }
   })

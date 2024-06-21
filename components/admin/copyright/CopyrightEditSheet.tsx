@@ -178,6 +178,36 @@ export default function CopyrightEditSheet(props : Readonly<HandleProps>) {
                 </p>
               </div>
             </Switch>
+            <Switch
+              isSelected={copyright?.default === 0}
+              value={copyright?.default === 0 ? 'true' : 'false'}
+              onValueChange={(value) => {
+                setCopyrightEditData({ ...copyright, default: value ? 0 : 1 })
+              }}
+              classNames={{
+                base: cn(
+                  "inline-flex flex-row-reverse w-full max-w-full bg-content1 hover:bg-content2 items-center",
+                  "justify-between cursor-pointer rounded-lg gap-2 p-4 border-2 border-transparent",
+                  "data-[selected=true]:border-primary",
+                ),
+                wrapper: "p-0 h-4 overflow-visible",
+                thumb: cn("w-6 h-6 border-2 shadow-lg",
+                  "group-data-[hover=true]:border-primary",
+                  //selected
+                  "group-data-[selected=true]:ml-6",
+                  // pressed
+                  "group-data-[pressed=true]:w-7",
+                  "group-data-[selected]:group-data-[pressed]:ml-4",
+                ),
+              }}
+            >
+              <div className="flex flex-col gap-1">
+                <p className="text-medium">默认状态</p>
+                <p className="text-tiny text-default-400">
+                  设置为默认后，所有的图片都会默认显示该版权信息。
+                </p>
+              </div>
+            </Switch>
             <Button
               isLoading={loading}
               color="primary"
