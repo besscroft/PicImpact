@@ -504,3 +504,28 @@ export async function fetchCopyrightList() {
 
   return findAll;
 }
+
+export async function fetchImageByIdAndAuth(id: number) {
+  const findAll = await db.$queryRaw`
+    SELECT
+        "Images".*
+    FROM
+        "Images"
+    INNER JOIN "ImageTagRelation"
+        ON "Images"."id" = "ImageTagRelation"."imageId"
+    INNER JOIN "Tags"
+        ON "ImageTagRelation".tag_value = "Tags".tag_value
+    WHERE
+        "Images".del = 0
+    AND
+        "Tags".del = 0
+    AND
+        "Images".show = 0
+    AND
+        "Tags".show = 0
+    AND
+        "Images".id = ${id}
+  `
+
+  return findAll;
+}
