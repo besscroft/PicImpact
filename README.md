@@ -17,7 +17,7 @@ PicImpact 是一个摄影师专用的摄影作品展示网站，基于 Next.js �
 ### 功能特性
 
 - 瀑布流相册展示图片，支持常见的格式。
-- 点击图片查看原图，浏览图片信息和 EXIF 信息。
+- 点击图片查看原图，浏览图片信息和 EXIF 信息，支持直链访问。
 - 响应式设计，在 PC 和移动端都有不错的体验，支持暗黑模式。
 - 图片存储兼容 S3 API、Cloudflare R2、AList API。
 - 图片支持绑定标签，并且可通过标签进行交互，筛选标签下所有图片。
@@ -43,7 +43,10 @@ PicImpact 是一个摄影师专用的摄影作品展示网站，基于 Next.js �
 
 > 部署就是这么简单，只需要您准备一个干净的数据库就行！
 > 除了容器化部署方式外，其它的部署方式都需要执行 `pnpm run prisma:deploy` 来完成 prisma 迁移。
+>
 > 如果是 Vercel 部署，直接将 `Build Command` 设置为 `pnpm run build:vercel` 即可。
+>
+> 如果您自行使用 node 部署，请使用 `pnpm run build:node` 命令来构建。
 
 ### 容器化部署
 
