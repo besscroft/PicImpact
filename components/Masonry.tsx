@@ -3,13 +3,14 @@
 import React, { useEffect } from 'react'
 import { ImageHandleProps, ImageType } from '~/types'
 import PhotoAlbum from 'react-photo-album'
-import { Button, Image, Spinner } from '@nextui-org/react'
+import { Button, Spinner } from '@nextui-org/react'
 import { useSWRPageTotalHook } from '~/hooks/useSWRPageTotalHook'
 import useSWRInfinite from 'swr/infinite'
-import { useButtonStore } from '~/app/providers/button-store-Providers'
 import MasonryItem from '~/components/MasonryItem'
 import { toast } from 'sonner'
 import { useSearchParams } from 'next/navigation'
+import BlurImage from '~/components/BlurImage'
+import { useButtonStore } from '~/app/providers/button-store-Providers'
 
 export default function Masonry(props : Readonly<ImageHandleProps>) {
   const { data: pageTotal } = useSWRPageTotalHook(props)
@@ -24,11 +25,11 @@ export default function Masonry(props : Readonly<ImageHandleProps>) {
       revalidateOnReconnect: false,
     })
   const dataList = data ? [].concat(...data) : [];
+  const searchParams = useSearchParams()
 
   const { setMasonryView, setMasonryViewData } = useButtonStore(
     (state) => state,
   )
-  const searchParams = useSearchParams()
 
   useEffect(() => {
     const fetchData = async (id: number) => {
@@ -40,7 +41,6 @@ export default function Masonry(props : Readonly<ImageHandleProps>) {
           method: 'GET',
         }).then(response => response.json())
         if (res.code == 200 && Array.isArray(res.data) && res.data?.length > 0) {
-          console.log(res)
           setMasonryView(true)
           setMasonryViewData(res.data[0])
         } else {
@@ -74,21 +74,7 @@ export default function Masonry(props : Readonly<ImageHandleProps>) {
           })) || []
         }
         renderPhoto={({ photo, wrapperStyle, renderDefaultPhoto }) => (
-          <div className="my-2">
-            <Image
-              className="cursor-pointer transition-all will-change-transform hover:scale-[1.01]"
-              src={photo.src}
-              alt={photo.alt}
-              radius="none"
-              loading="lazy"
-              isBlurred
-              shadow="sm"
-              onClick={() => {
-                setMasonryView(true)
-                setMasonryViewData(photo)
-              }}
-            />
-          </div>
+          <BlurImage key={photo.id} photo={photo} />
         )}
       />
       <div className="flex items-center justify-center my-4">

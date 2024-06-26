@@ -22,7 +22,6 @@ import {
   Pagination,
   Select,
   SelectItem,
-  Image,
   Switch,
   Badge,
   Spinner,
@@ -41,6 +40,7 @@ import useSWR from 'swr'
 import { motion } from 'framer-motion'
 import ImageHelpSheet from '~/components/admin/list/ImageHelpSheet'
 import { Select as AntdSelect } from 'antd'
+import ListImage from '~/components/admin/list/ListImage'
 
 export default function ListProps(props : Readonly<ImageServerHandleProps>) {
   const [pageNum, setPageNum] = useState(1)
@@ -264,15 +264,8 @@ export default function ListProps(props : Readonly<ImageServerHandleProps>) {
                   </Button>
                 </div>
               </CardHeader>
-              <CardBody>
-                <Image
-                  className="aspect-video"
-                  isBlurred
-                  isZoomed
-                  height={140}
-                  src={image.preview_url || image.url}
-                  alt={image.detail}
-                />
+              <CardBody className="scrollbar-hide">
+                <ListImage image={image} />
               </CardBody>
               <CardFooter
                 className="flex space-x-1 select-none before:bg-white/10 border-white/20 border-1 overflow-hidden py-1 absolute before:rounded-xl rounded-large bottom-1 w-[calc(100%_-_8px)] shadow-small ml-1 z-10">
