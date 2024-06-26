@@ -246,7 +246,19 @@ export async function fetchClientImagesListByTag(pageNum: number, tag: string) {
                 WHERE copyright.del = 0
                 AND image_child.del = 0
                 AND copyright.show = 0
+                AND copyright.default = 1
                 AND image.id = image_child.id
+                UNION
+                SELECT copyright.*
+                FROM "public"."Copyright" AS copyright
+                INNER JOIN "public"."ImageCopyrightRelation" AS icrelation
+                    ON copyright.id = icrelation."copyrightId"
+                INNER JOIN "public"."Images" AS image_child
+                    ON icrelation."imageId" = image_child."id"
+                WHERE copyright.del = 0
+                AND image_child.del = 0
+                AND copyright.show = 0
+                AND copyright.default = 0
             ) t
         ) AS copyrights
     FROM 
@@ -489,6 +501,31 @@ export async function fetchCopyrightList() {
       }
     ]
   })
+
+  return findAll;
+}
+
+export async function fetchImageByIdAndAuth(id: number) {
+  const findAll = await db.$queryRaw`
+    SELECT
+        "Images".*
+    FROM
+        "Images"
+    INNER JOIN "ImageTagRelation"
+        ON "Images"."id" = "ImageTagRelation"."imageId"
+    INNER JOIN "Tags"
+        ON "ImageTagRelation".tag_value = "Tags".tag_value
+    WHERE
+        "Images".del = 0
+    AND
+        "Tags".del = 0
+    AND
+        "Images".show = 0
+    AND
+        "Tags".show = 0
+    AND
+        "Images".id = ${id}
+  `
 
   return findAll;
 }

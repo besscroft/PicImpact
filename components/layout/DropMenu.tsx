@@ -84,7 +84,7 @@ export const DropMenu = () => {
               <DropdownItem
                 key="github"
                 startContent={<Github size={20} className={iconClasses} />}
-                onClick={() => router.push('https://github.com/besscroft')}
+                onClick={() => router.push('https://github.com/besscroft/PicImpact')}
               >
                 GitHub
               </DropdownItem>
@@ -109,7 +109,7 @@ export const DropMenu = () => {
               <DropdownItem
                 key="github"
                 startContent={<Github size={20} className={iconClasses} />}
-                onClick={() => router.push('https://github.com/besscroft')}
+                onClick={() => router.push('https://github.com/besscroft/PicImpact')}
               >
                 GitHub
               </DropdownItem>

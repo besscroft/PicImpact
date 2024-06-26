@@ -1,6 +1,6 @@
 'use client'
 
-import React from 'react'
+import React, { useEffect } from 'react'
 import { ImageHandleProps, ImageType } from '~/types'
 import PhotoAlbum from 'react-photo-album'
 import { Button, Image, Spinner } from '@nextui-org/react'
@@ -8,6 +8,8 @@ import { useSWRPageTotalHook } from '~/hooks/useSWRPageTotalHook'
 import useSWRInfinite from 'swr/infinite'
 import { useButtonStore } from '~/app/providers/button-store-Providers'
 import MasonryItem from '~/components/MasonryItem'
+import { toast } from 'sonner'
+import { useSearchParams } from 'next/navigation'
 
 export default function Masonry(props : Readonly<ImageHandleProps>) {
   const { data: pageTotal } = useSWRPageTotalHook(props)
@@ -26,6 +28,34 @@ export default function Masonry(props : Readonly<ImageHandleProps>) {
   const { setMasonryView, setMasonryViewData } = useButtonStore(
     (state) => state,
   )
+  const searchParams = useSearchParams()
+
+  useEffect(() => {
+    const fetchData = async (id: number) => {
+      try {
+        const res = await fetch(`/api/open/get-image-by-id?id=${id}`, {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          method: 'GET',
+        }).then(response => response.json())
+        if (res.code == 200 && Array.isArray(res.data) && res.data?.length > 0) {
+          console.log(res)
+          setMasonryView(true)
+          setMasonryViewData(res.data[0])
+        } else {
+          toast.warning(res.message)
+        }
+      } catch (error) {
+        console.log(error)
+        toast.error('图片获取错误，请重试！')
+      }
+    };
+    const id = searchParams.get('id')
+    if (Number(id) > 0) {
+      fetchData(Number(id));
+    }
+  }, []);
 
   return (
     <div className="w-full sm:w-4/5 mx-auto p-2">
