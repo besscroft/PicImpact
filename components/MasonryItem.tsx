@@ -55,9 +55,9 @@ export default function MasonryItem() {
                   const url = window.location.origin + (pathname === '/' ? '/preview/' : pathname + '/preview/') + MasonryViewData.id
                   // @ts-ignore
                   await navigator.clipboard.writeText(url);
-                  toast.success('复制直链成功！')
+                  toast.success('复制直链成功！', { duration: 500 })
                 } catch (error) {
-                  toast.error('复制直链失败！')
+                  toast.error('复制直链失败！', { duration: 500 })
                 }
               }}
             >

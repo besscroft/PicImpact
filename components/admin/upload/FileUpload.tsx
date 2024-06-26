@@ -323,7 +323,7 @@ export default function FileUpload() {
 
   async function uploadPreviewImage(option: any, type: string, url: string) {
     new Compressor(option.file, {
-      quality: 0.3,
+      quality: 0.2,
       checkOrientation: false,
       mimeType: 'image/webp',
       async success(compressedFile) {
