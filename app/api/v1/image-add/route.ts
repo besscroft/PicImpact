@@ -24,9 +24,9 @@ export async function POST(req: NextRequest) {
   }
   try {
     await insertImage(image);
-    return Response.json({ code: 200, msg: '保存成功！' })
+    return Response.json({ code: 200, message: '保存成功！' })
   } catch (e) {
     console.log(e)
-    return Response.json({ code: 500, msg: '保存失败！' })
+    return Response.json({ code: 500, message: '保存失败！' })
   }
 }

@@ -8,9 +8,9 @@ export async function DELETE(
 ) {
   try {
     await deleteImage(params.id);
-    return Response.json({ code: 200, msg: '删除成功！' })
+    return Response.json({ code: 200, message: '删除成功！' })
   } catch (e) {
     console.log(e)
-    return Response.json({ code: 500, msg: '删除失败！' })
+    return Response.json({ code: 500, message: '删除失败！' })
   }
 }
