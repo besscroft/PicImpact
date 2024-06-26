@@ -16,7 +16,7 @@ export default function About() {
         width={64}
         height={64}
       />
-      <span>摄影佬专用⌈相片集⌋，基于 Next.js 开发</span>
+      <span>PicImpact 是一个摄影师专用的摄影作品展示网站，基于 Next.js 开发。</span>
       <Divider className="my-4" />
       <div className="flex flex-col w-full">
         <Link
@@ -39,6 +39,19 @@ export default function About() {
         >
           <Avatar src="https://besscroft.com/uploads/avatar.jpg" />
           <span className="flex-1 px-2">Bess Croft</span>
+          <ExternalLink />
+        </Link>
+      </div>
+      <Divider className="my-4" />
+      <div className="flex flex-col w-full">
+        <span>支持我们</span>
+        <Link
+          className="flex items-center w-full p-2 hover:bg-slate-100"
+          href="https://afdian.net/a/besscroft"
+          target="_blank"
+        >
+          <Avatar src="https://pic1.afdiancdn.com/default/avatar/avatar-purple.png" />
+          <span className="flex-1 px-2">爱发电</span>
           <ExternalLink />
         </Link>
       </div>
