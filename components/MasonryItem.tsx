@@ -7,7 +7,7 @@ import {
 import { useButtonStore } from '~/app/providers/button-store-Providers'
 import { CopyrightType, DataProps, ImageType } from '~/types'
 import { Image, Tabs, Tab, Card, CardHeader, CardBody, CardFooter, Button, Chip, Link, Avatar } from '@nextui-org/react'
-import { Aperture, Camera, Image as ImageIcon, Languages, CalendarDays, X, SunMedium, MoonStar, Copyright, Crosshair, Timer, CircleGauge, Copy } from 'lucide-react'
+import { Aperture, Camera, Image as ImageIcon, Languages, CalendarDays, X, SunMedium, MoonStar, Copyright, Crosshair, Timer, CircleGauge, Copy, Share2 } from 'lucide-react'
 import * as React from 'react'
 import { useTheme } from 'next-themes'
 import { useRouter } from 'next-nprogress-bar'
@@ -27,6 +27,23 @@ export default function MasonryItem() {
     data: MasonryViewData,
   }
 
+  async function handleOnClick() {
+    const url = window.location.origin + (pathname === '/' ? '/preview/' : pathname + '/preview/') + MasonryViewData.id
+    if (navigator.canShare({ url })) {
+      try {
+        await navigator.share({
+          title: MasonryViewData.title,
+          text: MasonryViewData.detail,
+          url: url
+        });
+      } catch (error) {
+        toast.warning('分享发生错误！', { duration: 500 })
+      }
+    } else {
+      toast.warning('您的浏览器不支持！', { duration: 500 })
+    }
+  }
+
   return (
     <Dialog
       defaultOpen={false}
@@ -44,6 +61,16 @@ export default function MasonryItem() {
             <p>{MasonryViewData.title}</p>
           </div>
           <div className="flex items-center space-x-4">
+            <Button
+              isIconOnly
+              variant="shadow"
+              size="sm"
+              aria-label="分享"
+              className="bg-white dark:bg-gray-800"
+              onClick={() => handleOnClick()}
+            >
+              <Share2 size={20}/>
+            </Button>
             <Button
               isIconOnly
               variant="shadow"
