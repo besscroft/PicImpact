@@ -24,6 +24,10 @@
   display: none;
 }
 
+.ant-float-btn {
+  z-index: 30;
+}
+
 .ant-upload-select {
   display: block !important;
 }
