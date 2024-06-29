@@ -516,9 +516,6 @@ export default function FileUpload() {
                 setTag(updatedSet)
               }}
             >
-              <SelectItem key="/" value="/">
-                首页
-              </SelectItem>
               {data?.map((tag: TagType) => (
                 <SelectItem key={tag.tag_value} value={tag.tag_value}>
                   {tag.name}

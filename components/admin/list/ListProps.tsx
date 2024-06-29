@@ -171,9 +171,6 @@ export default function ListProps(props : Readonly<ImageServerHandleProps>) {
               <SelectItem key="all" value="all">
                 全部
               </SelectItem>
-              <SelectItem key="/" value="/">
-                首页
-              </SelectItem>
               {tags?.map((tag: TagType) => (
                 <SelectItem key={tag.tag_value} value={tag.tag_value}>
                   {tag.name}
