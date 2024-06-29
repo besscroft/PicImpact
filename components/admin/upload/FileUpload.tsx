@@ -63,7 +63,7 @@ export default function FileUpload() {
       exifObj.make = tags?.Make?.description
       exifObj.model = tags?.Model?.description
       exifObj.bits = tags?.['Bits Per Sample']?.description
-      exifObj.data_time = tags?.DateTime?.description
+      exifObj.data_time = tags?.DateTimeOriginal?.description !== '' ? tags?.DateTimeOriginal?.description : tags?.DateTime?.description;
       exifObj.exposure_time = tags?.ExposureTime?.description
       exifObj.f_number = tags?.FNumber?.description
       exifObj.exposure_program = tags?.ExposureProgram?.description
@@ -253,7 +253,7 @@ export default function FileUpload() {
         exifObj.make = tags?.Make?.description
         exifObj.model = tags?.Model?.description
         exifObj.bits = tags?.['Bits Per Sample']?.description
-        exifObj.data_time = tags?.DateTime?.description
+        exifObj.data_time = tags?.DateTimeOriginal?.description !== '' ? tags?.DateTimeOriginal?.description : tags?.DateTime?.description;
         exifObj.exposure_time = tags?.ExposureTime?.description
         exifObj.f_number = tags?.FNumber?.description
         exifObj.exposure_program = tags?.ExposureProgram?.description
