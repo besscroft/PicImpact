@@ -11,6 +11,7 @@ import { toast } from 'sonner'
 import { useSearchParams } from 'next/navigation'
 import BlurImage from '~/components/BlurImage'
 import { useButtonStore } from '~/app/providers/button-store-Providers'
+import { FloatButton } from 'antd'
 
 export default function Masonry(props : Readonly<ImageHandleProps>) {
   const { data: pageTotal } = useSWRPageTotalHook(props)
@@ -96,6 +97,7 @@ export default function Masonry(props : Readonly<ImageHandleProps>) {
             </Button>
         }
       </div>
+      <FloatButton.BackTop />
       <MasonryItem />
     </div>
   )
