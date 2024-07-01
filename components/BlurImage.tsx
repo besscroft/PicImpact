@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react'
 import { useButtonStore } from '~/app/providers/button-store-Providers'
-import Image from 'next/image'
+import { Image } from '@nextui-org/image'
 import { cn } from '~/utils'
 
 export default function BlurImage({ photo }: { photo: any }) {
@@ -19,7 +19,10 @@ export default function BlurImage({ photo }: { photo: any }) {
         width={photo.width}
         height={photo.height}
         loading="lazy"
-        quality={25}
+        removeWrapper
+        disableSkeleton
+        shadow="sm"
+        radius="none"
         onClick={() => {
           setMasonryView(true)
           setMasonryViewData(photo)
