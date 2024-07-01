@@ -14,8 +14,9 @@ export default function ListImage({ image }: { image: any }) {
       loading="lazy"
       removeWrapper
       disableSkeleton
+      radius="none"
       className={cn(
-        'duration-700 ease-in-out group-hover:opacity-75 aspect-video object-cover',
+        'duration-700 ease-in-out group-hover:opacity-75 object-cover',
         isLoading
           ? 'scale-110 blur-2xl grayscale'
           : 'scale-100 blur-0 grayscale-0'
