@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useState } from 'react'
-import Image from 'next/image'
+import { Image } from '@nextui-org/image'
 import { cn } from '~/utils'
 
 export default function ListImage({ image }: { image: any }) {
@@ -11,15 +11,11 @@ export default function ListImage({ image }: { image: any }) {
     <Image
       src={image.preview_url || image.url}
       alt={image.detail}
-      quality={25}
-      fill
-      sizes="100vw"
-      style={{
-        objectFit: 'contain',
-      }}
       loading="lazy"
+      removeWrapper
+      disableSkeleton
       className={cn(
-        'duration-700 ease-in-out group-hover:opacity-75',
+        'duration-700 ease-in-out group-hover:opacity-75 aspect-video object-cover',
         isLoading
           ? 'scale-110 blur-2xl grayscale'
           : 'scale-100 blur-0 grayscale-0'
