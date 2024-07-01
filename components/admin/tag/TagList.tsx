@@ -26,7 +26,6 @@ import { toast } from 'sonner'
 import DefaultTag from '~/components/admin/tag/DefaultTag'
 import { TagType } from '~/types'
 import { useButtonStore } from '~/app/providers/button-store-Providers'
-import { motion } from 'framer-motion'
 
 export default function TagList(props : Readonly<HandleProps>) {
   const { data, isLoading, error, mutate } = useSWRHydrated(props)
@@ -93,17 +92,7 @@ export default function TagList(props : Readonly<HandleProps>) {
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
         <DefaultTag/>
         {data && data.map((tag: TagType) => (
-          <motion.div
-            key={tag.id}
-            initial={{ opacity: 0, scale: 0.5 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{
-              duration: 0.8,
-              delay: 0.5,
-              ease: [0, 0.71, 0.2, 1.01]
-            }}
-          >
-            <Card shadow="sm" isFooterBlurred className="h-64">
+          <Card key={tag.id} shadow="sm" isFooterBlurred className="h-64 show-up-motion">
               <CardHeader className="flex gap-3">
                 <p>{tag.name}</p>
                 <Popover placement="top" shadow="sm">
@@ -183,7 +172,6 @@ export default function TagList(props : Readonly<HandleProps>) {
                 </div>
               </CardFooter>
             </Card>
-          </motion.div>
         ))}
       </div>
       <Modal
