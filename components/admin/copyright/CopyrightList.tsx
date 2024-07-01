@@ -4,7 +4,6 @@ import React, { useState } from 'react'
 import { HandleProps, CopyrightType } from '~/types'
 import { useSWRHydrated } from '~/hooks/useSWRHydrated'
 import { toast } from 'sonner'
-import { motion } from 'framer-motion'
 import {
   Button,
   Card,
@@ -120,17 +119,7 @@ export default function CopyrightList(props : Readonly<HandleProps>) {
     <>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
         {data && data.map((copyright: CopyrightType) => (
-          <motion.div
-            key={copyright.id}
-            initial={{ opacity: 0, scale: 0.5 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{
-              duration: 0.8,
-              delay: 0.5,
-              ease: [0, 0.71, 0.2, 1.01]
-            }}
-          >
-            <Card shadow="sm" isFooterBlurred className="h-64">
+          <Card key={copyright.id} shadow="sm" isFooterBlurred className="h-64 show-up-motion">
               <CardHeader className="flex gap-3">
                 <p>{copyright.name}</p>
                 <Popover placement="top" shadow="sm">
@@ -211,7 +200,6 @@ export default function CopyrightList(props : Readonly<HandleProps>) {
                 </div>
               </CardFooter>
             </Card>
-          </motion.div>
         ))}
       </div>
       <Modal

@@ -206,7 +206,7 @@ export default function ListProps(props : Readonly<ImageServerHandleProps>) {
       </Card>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
         {Array.isArray(data) && data?.map((image: ImageType) => (
-          <Card key={image.id} shadow="sm" className="h-72 image-motion">
+          <Card key={image.id} shadow="sm" className="h-72 show-up-motion">
               <CardHeader className="justify-between space-x-1 select-none">
                 {
                   image.tag_values.includes(',') ?

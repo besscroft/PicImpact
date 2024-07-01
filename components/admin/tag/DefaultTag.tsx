@@ -3,20 +3,10 @@
 import { Card, CardBody, CardFooter, CardHeader, Chip, Popover, PopoverContent, PopoverTrigger } from '@nextui-org/react'
 import React from 'react'
 import { ArrowDown10 } from 'lucide-react'
-import { motion } from 'framer-motion'
 
 export default function DefaultTag() {
   return (
-    <motion.div
-      initial={{ opacity: 0, scale: 0.5 }}
-      animate={{ opacity: 1, scale: 1 }}
-      transition={{
-        duration: 0.8,
-        delay: 0.5,
-        ease: [0, 0.71, 0.2, 1.01]
-      }}
-    >
-      <Card shadow="sm" className="h-64">
+    <Card shadow="sm" className="h-64 show-up-motion">
         <CardHeader className="flex gap-3">
           <p>首页</p>
           <Popover placement="top" shadow="sm">
@@ -54,6 +44,5 @@ export default function DefaultTag() {
           </Popover>
         </CardFooter>
       </Card>
-    </motion.div>
   )
 }
