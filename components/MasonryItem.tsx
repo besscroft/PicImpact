@@ -61,16 +61,19 @@ export default function MasonryItem() {
             <p>{MasonryViewData.title}</p>
           </div>
           <div className="flex items-center space-x-4">
-            <Button
-              isIconOnly
-              variant="shadow"
-              size="sm"
-              aria-label="分享"
-              className="bg-white dark:bg-gray-800"
-              onClick={() => handleOnClick()}
-            >
-              <Share2 size={20}/>
-            </Button>
+            {
+              navigator.canShare && typeof navigator.canShare === 'function' &&
+              <Button
+                isIconOnly
+                variant="shadow"
+                size="sm"
+                aria-label="分享"
+                className="bg-white dark:bg-gray-800"
+                onClick={() => handleOnClick()}
+              >
+                <Share2 size={20}/>
+              </Button>
+            }
             <Button
               isIconOnly
               variant="shadow"
