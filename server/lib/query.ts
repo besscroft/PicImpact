@@ -102,6 +102,27 @@ export async function fetchTagsList() {
   return findAll;
 }
 
+export async function fetchTagsListAndNotDefault() {
+  const findAll = await db.tags.findMany({
+    where: {
+      del: 0
+    },
+    orderBy: [
+      {
+        sort: 'desc',
+      },
+      {
+        create_time: 'desc',
+      },
+      {
+        update_time: 'desc'
+      }
+    ]
+  })
+
+  return findAll;
+}
+
 export async function fetchServerImagesListByTag(pageNum: number, tag: string) {
   if (tag === 'all') {
     tag = ''
