@@ -47,7 +47,7 @@ export default function ImageView() {
             <Image
               isBlurred
               isZoomed
-              src={imageViewData.url}
+              src={imageViewData.preview_url || imageViewData.url}
               alt={imageViewData.detail}
             />
             {imageViewData?.labels &&
