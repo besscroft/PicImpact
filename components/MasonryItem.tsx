@@ -14,7 +14,7 @@ import { useRouter } from 'next-nprogress-bar'
 import ExifView from '~/components/ExifView'
 import { toast } from 'sonner'
 import { usePathname } from 'next/navigation'
-import { useState } from 'react'
+import useSWR from 'swr'
 
 export default function MasonryItem() {
   const router = useRouter()
@@ -22,7 +22,7 @@ export default function MasonryItem() {
   const { MasonryView, MasonryViewData, setMasonryView, setMasonryViewData } = useButtonStore(
     (state) => state,
   )
-  const [download, setDownload] = useState(false)
+  const {data: download = false, mutate: setDownload} = useSWR(['masonry/download', MasonryViewData.url], null)
   const { theme, setTheme } = useTheme()
 
   const props: DataProps = {
@@ -49,6 +49,7 @@ export default function MasonryItem() {
   async function downloadImg() {
     setDownload(true)
     try {
+      toast.warning('开始下载，原图较大，请耐心等待！', { duration: 1500 })
       await fetch(MasonryViewData.url)
         .then((response) => response.blob())
         .then((blob) => {
