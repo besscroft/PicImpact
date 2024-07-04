@@ -50,7 +50,7 @@ export default function MasonryItem() {
     setDownload(true)
     try {
       toast.warning('开始下载，原图较大，请耐心等待！', { duration: 1500 })
-      await fetch(MasonryViewData.url)
+      await fetch(`/api/open/get-image-blob?imageUrl=${MasonryViewData.url}`)
         .then((response) => response.blob())
         .then((blob) => {
           const url = window.URL.createObjectURL(new Blob([blob]));
@@ -60,11 +60,8 @@ export default function MasonryItem() {
           const filename = parsedUrl.pathname.split('/').pop();
           link.download = filename || "downloaded-file";
           document.body.appendChild(link);
-
           link.click();
-
           document.body.removeChild(link);
-          window.URL.revokeObjectURL(url);
         })
     } catch (e) {
       toast.error('下载失败！', { duration: 500 })
