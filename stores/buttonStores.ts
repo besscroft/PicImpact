@@ -21,6 +21,7 @@ export type ButtonState = {
   aListData: Config[]
   MasonryView: boolean
   MasonryViewData: ImageType
+  MasonryViewDataList: ImageType[]
   tagHelp: boolean
   imageHelp: boolean
   uploadHelp: boolean
@@ -45,6 +46,7 @@ export type ButtonActions = {
   setAListEditData: (aListData: Config[]) => void
   setMasonryView: (masonryView: boolean) => void
   setMasonryViewData: (masonryViewData: ImageType) => void
+  setMasonryViewDataList: (masonryViewDataList: ImageType[]) => void
   setTagHelp: (tagHelp: boolean) => void
   setImageHelp: (imageHelp: boolean) => void
   setUploadHelp: (uploadHelp: boolean) => void
@@ -72,6 +74,7 @@ export const initButtonStore = (): ButtonState => {
     aListData: [] as Config[],
     MasonryView: false,
     MasonryViewData: {} as ImageType,
+    MasonryViewDataList: [] as ImageType[],
     tagHelp: false,
     imageHelp: false,
     uploadHelp: false,
@@ -97,6 +100,7 @@ export const defaultInitState: ButtonState = {
   aListData: [] as Config[],
   MasonryView: false,
   MasonryViewData: {} as ImageType,
+  MasonryViewDataList: [] as ImageType[],
   tagHelp: false,
   imageHelp: false,
   uploadHelp: false,
@@ -162,6 +166,9 @@ export const createButtonStore = (
         })),
         setMasonryViewData: (masonryViewDataValue) => set(() => ({
           MasonryViewData: masonryViewDataValue,
+        })),
+        setMasonryViewDataList: (masonryViewDataListValue) => set(() => ({
+          MasonryViewDataList: masonryViewDataListValue,
         })),
         setTagHelp: (tagHelpValue) => set(() => ({
           tagHelp: tagHelpValue,

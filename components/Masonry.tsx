@@ -75,7 +75,7 @@ export default function Masonry(props : Readonly<ImageHandleProps>) {
           })) || []
         }
         renderPhoto={({ photo, wrapperStyle, renderDefaultPhoto }) => (
-          <BlurImage key={photo.id} photo={photo} />
+          <BlurImage key={photo.id} photo={photo} dataList={dataList} />
         )}
       />
       <div className="flex items-center justify-center my-4">
