@@ -7,7 +7,7 @@ import {
 import { useButtonStore } from '~/app/providers/button-store-Providers'
 import { CopyrightType, DataProps, ImageType } from '~/types'
 import { Image, Tabs, Tab, Card, CardHeader, CardBody, CardFooter, Button, Chip, Link, Avatar, Tooltip } from '@nextui-org/react'
-import { Aperture, Camera, Image as ImageIcon, Images, Link as LinkIcon, ImageDown, Languages, CalendarDays, X, SunMedium, MoonStar, Copyright, Crosshair, Timer, CircleGauge, Share2 } from 'lucide-react'
+import { Aperture, ArrowLeft, ArrowRight, Camera, Image as ImageIcon, Images, Link as LinkIcon, ImageDown, Languages, CalendarDays, X, SunMedium, MoonStar, Copyright, Crosshair, Timer, CircleGauge, Share2 } from 'lucide-react'
 import * as React from 'react'
 import { useTheme } from 'next-themes'
 import { useRouter } from 'next-nprogress-bar'
@@ -19,7 +19,7 @@ import useSWR from 'swr'
 export default function MasonryItem() {
   const router = useRouter()
   const pathname = usePathname()
-  const { MasonryView, MasonryViewData, setMasonryView, setMasonryViewData } = useButtonStore(
+  const { MasonryView, MasonryViewData, MasonryViewDataList, setMasonryView, setMasonryViewData } = useButtonStore(
     (state) => state,
   )
   const {data: download = false, mutate: setDownload} = useSWR(['masonry/download', MasonryViewData.url], null)
@@ -27,6 +27,20 @@ export default function MasonryItem() {
 
   const props: DataProps = {
     data: MasonryViewData,
+  }
+
+  async function loadingHandle(handle: string) {
+    const idx = MasonryViewDataList.findIndex((item: ImageType) => MasonryViewData.id === item.id)
+    if (handle === 'next' && idx === MasonryViewDataList.length - 1) {
+      setMasonryViewData(MasonryViewDataList[0] || MasonryViewData)
+    } else {
+      const [prev, next] = [MasonryViewDataList.at(idx-1), MasonryViewDataList.at(idx+1)]
+      if (handle === 'prev') {
+        setMasonryViewData(prev || MasonryViewData)
+      } else {
+        setMasonryViewData(next || MasonryViewData)
+      }
+    }
   }
 
   async function downloadImg() {
@@ -109,7 +123,30 @@ export default function MasonryItem() {
             />
           </div>
           <div className="flex w-full flex-col">
-            <Tabs aria-label="图片预览选择项" color="primary" variant="bordered">
+            {
+              MasonryViewDataList.length > 0 &&
+              <div className="flex w-full space-x-2 mb-2">
+                <Button
+                  color="primary"
+                  className="w-full"
+                  variant="bordered"
+                  startContent={<ArrowLeft />}
+                  onClick={() => loadingHandle('prev')}
+                >
+                  上一张
+                </Button>
+                <Button
+                  color="primary"
+                  className="w-full"
+                  variant="bordered"
+                  startContent={<ArrowRight />}
+                  onClick={() => loadingHandle('next')}
+                >
+                  下一张
+                </Button>
+              </div>
+            }
+            <Tabs className="w-full block" aria-label="图片预览选择项" color="primary" variant="bordered">
               <Tab
                 key="detail"
                 title={
