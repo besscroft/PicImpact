@@ -14,7 +14,7 @@
     "prisma:generate": "npx prisma generate",
     "prisma:dev": "npx prisma migrate dev",
     "prisma:deploy": "npx prisma migrate deploy",
-    "postinstall": "npx prisma generate"
+    "prebuild": "npx prisma generate"
   },
   "dependencies": {
     "@ant-design/nextjs-registry": "^1.0.0",
