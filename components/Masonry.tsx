@@ -82,7 +82,7 @@ export default function Masonry(props : Readonly<ImageHandleProps>) {
         {
           isValidating ?
             <Spinner label="Loading..." color="primary" />
-            :
+            : dataList.length > 0 ?
           size < pageTotal &&
             <Button
               color="primary"
@@ -95,6 +95,7 @@ export default function Masonry(props : Readonly<ImageHandleProps>) {
             >
               加载更多
             </Button>
+            : '暂无图片'
         }
       </div>
       <FloatButton.BackTop />
