@@ -2,7 +2,7 @@
 
 import React, { useEffect } from 'react'
 import { ImageHandleProps, ImageType } from '~/types'
-import PhotoAlbum from 'react-photo-album'
+import { MasonryPhotoAlbum, RenderImageContext, RenderImageProps } from 'react-photo-album'
 import { Button, Spinner } from '@nextui-org/react'
 import { useSWRPageTotalHook } from '~/hooks/useSWRPageTotalHook'
 import useSWRInfinite from 'swr/infinite'
@@ -12,6 +12,8 @@ import { useSearchParams } from 'next/navigation'
 import BlurImage from '~/components/BlurImage'
 import { useButtonStore } from '~/app/providers/button-store-Providers'
 import { FloatButton } from 'antd'
+
+import 'react-photo-album/masonry.css'
 
 export default function Masonry(props : Readonly<ImageHandleProps>) {
   const { data: pageTotal } = useSWRPageTotalHook(props)
@@ -31,6 +33,15 @@ export default function Masonry(props : Readonly<ImageHandleProps>) {
   const { setMasonryView, setMasonryViewData } = useButtonStore(
     (state) => state,
   )
+
+  function renderNextImage(
+    { alt = '', title, sizes }: RenderImageProps,
+    { photo }: RenderImageContext,
+  ) {
+    return (
+      <BlurImage photo={photo} dataList={dataList} />
+    );
+  }
 
   useEffect(() => {
     const fetchData = async (id: number) => {
@@ -60,13 +71,12 @@ export default function Masonry(props : Readonly<ImageHandleProps>) {
 
   return (
     <div className="w-full sm:w-4/5 mx-auto p-2">
-      <PhotoAlbum
+      <MasonryPhotoAlbum
         columns={(containerWidth) => {
           if (containerWidth < 768) return 2;
           if (containerWidth < 1024) return 3;
           return 4;
         }}
-        layout="masonry"
         photos={
           dataList?.map((item: ImageType) => ({
             src: item.preview_url || item.url,
@@ -74,9 +84,7 @@ export default function Masonry(props : Readonly<ImageHandleProps>) {
             ...item
           })) || []
         }
-        renderPhoto={({ photo, wrapperStyle, renderDefaultPhoto }) => (
-          <BlurImage key={photo.id} photo={photo} dataList={dataList} />
-        )}
+        render={{ image: renderNextImage }}
       />
       <div className="flex items-center justify-center my-4">
         {
