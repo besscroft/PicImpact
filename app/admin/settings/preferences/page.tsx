@@ -10,7 +10,7 @@ export default function Preferences() {
   const [title, setTitle] = useState('')
   const [loading, setLoading] = useState(false)
 
-  const { data } = useSWR('/api/v1/get-custom-title', fetcher)
+  const { data, isValidating, isLoading } = useSWR('/api/v1/get-custom-title', fetcher)
 
   async function updateTitle() {
     try {
@@ -41,6 +41,7 @@ export default function Preferences() {
       <CardBody className="space-y-2">
         <Input
           isRequired
+          isDisabled={isValidating || isLoading}
           variant="bordered"
           value={title}
           type="text"
