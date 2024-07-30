@@ -15,6 +15,16 @@ import { FloatButton } from 'antd'
 
 import 'react-photo-album/masonry.css'
 
+function renderNextImage(
+  { alt = '', title, sizes }: RenderImageProps,
+  { photo }: RenderImageContext,
+  dataList: never[],
+) {
+  return (
+    <BlurImage photo={photo} dataList={dataList} />
+  );
+}
+
 export default function Masonry(props : Readonly<ImageHandleProps>) {
   const { data: pageTotal } = useSWRPageTotalHook(props)
   const { data, error, isLoading, isValidating, size, setSize } = useSWRInfinite((index) => {
@@ -33,15 +43,6 @@ export default function Masonry(props : Readonly<ImageHandleProps>) {
   const { setMasonryView, setMasonryViewData } = useButtonStore(
     (state) => state,
   )
-
-  function renderNextImage(
-    { alt = '', title, sizes }: RenderImageProps,
-    { photo }: RenderImageContext,
-  ) {
-    return (
-      <BlurImage photo={photo} dataList={dataList} />
-    );
-  }
 
   useEffect(() => {
     const fetchData = async (id: number) => {
@@ -84,7 +85,7 @@ export default function Masonry(props : Readonly<ImageHandleProps>) {
             ...item
           })) || []
         }
-        render={{ image: renderNextImage }}
+        render={{image: (...args) => renderNextImage(...args, dataList)}}
       />
       <div className="flex items-center justify-center my-4">
         {
