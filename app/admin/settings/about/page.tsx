@@ -47,7 +47,7 @@ export default function About() {
         <span>支持我们</span>
         <Link
           className="flex items-center w-full p-2 hover:bg-slate-100"
-          href="https://afdian.net/a/besscroft"
+          href="https://afdian.com/a/besscroft"
           target="_blank"
         >
           <Avatar src="https://pic1.afdiancdn.com/default/avatar/avatar-purple.png" />
