@@ -37,7 +37,7 @@ export default function About() {
           href="https://github.com/besscroft"
           target="_blank"
         >
-          <Avatar src="https://besscroft.com/uploads/avatar.jpg" />
+          <Avatar src="https://avatars.githubusercontent.com/u/33775809?v=4" />
           <span className="flex-1 px-2">Bess Croft</span>
           <ExternalLink />
         </Link>
