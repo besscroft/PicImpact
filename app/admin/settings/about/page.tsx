@@ -31,20 +31,29 @@ export default function About() {
       </div>
       <Divider className="my-4" />
       <div className="flex flex-col w-full">
-        <span>开发者</span>
+        <span>Contributors</span>
         <Link
           className="flex items-center w-full p-2 hover:bg-slate-100"
           href="https://github.com/besscroft"
           target="_blank"
         >
-          <Avatar src="https://besscroft.com/uploads/avatar.jpg" />
+          <Avatar src="https://avatars.githubusercontent.com/u/33775809?v=4" />
           <span className="flex-1 px-2">Bess Croft</span>
+          <ExternalLink />
+        </Link>
+        <Link
+          className="flex items-center w-full p-2 hover:bg-slate-100"
+          href="https://github.com/Zheaoli"
+          target="_blank"
+        >
+          <Avatar src="https://avatars.githubusercontent.com/u/7054676?v=4" />
+          <span className="flex-1 px-2">Nadeshiko Manju</span>
           <ExternalLink />
         </Link>
       </div>
       <Divider className="my-4" />
       <div className="flex flex-col w-full">
-        <span>支持我们</span>
+        <span>支持项目</span>
         <Link
           className="flex items-center w-full p-2 hover:bg-slate-100"
           href="https://afdian.com/a/besscroft"

@@ -21,6 +21,7 @@ import {
   PopoverTrigger,
   Spinner,
   Switch,
+  Tooltip,
 } from '@nextui-org/react'
 import { Eye, EyeOff, Pencil, Trash, BadgeCheck, BadgeX } from 'lucide-react'
 import { useButtonStore } from '~/app/providers/button-store-Providers'
@@ -175,28 +176,32 @@ export default function CopyrightList(props : Readonly<HandleProps>) {
                   }
                 </div>
                 <div className="space-x-1">
-                  <Button
-                    isIconOnly
-                    size="sm"
-                    onClick={() => {
-                      setCopyrightEditData(copyright)
-                      setCopyrightEdit(true)
-                    }}
-                    aria-label="编辑版权"
-                  >
-                    <Pencil size={20} />
-                  </Button>
-                  <Button
-                    isIconOnly
-                    size="sm"
-                    onClick={() => {
-                      setCopyright(copyright)
-                      setIsOpen(true)
-                    }}
-                    aria-label="删除版权"
-                  >
-                    <Trash size={20} />
-                  </Button>
+                  <Tooltip content="编辑版权">
+                    <Button
+                      isIconOnly
+                      size="sm"
+                      onClick={() => {
+                        setCopyrightEditData(copyright)
+                        setCopyrightEdit(true)
+                      }}
+                      aria-label="编辑版权"
+                    >
+                      <Pencil size={20} />
+                    </Button>
+                  </Tooltip>
+                  <Tooltip content="删除版权">
+                    <Button
+                      isIconOnly
+                      size="sm"
+                      onClick={() => {
+                        setCopyright(copyright)
+                        setIsOpen(true)
+                      }}
+                      aria-label="删除版权"
+                    >
+                      <Trash size={20} />
+                    </Button>
+                  </Tooltip>
                 </div>
               </CardFooter>
             </Card>

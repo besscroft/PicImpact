@@ -29,6 +29,7 @@ import {
   DropdownTrigger,
   DropdownMenu,
   DropdownItem,
+  Tooltip,
 } from '@nextui-org/react'
 import { ArrowDown10, Pencil, Trash, Eye, EyeOff, ScanSearch, CircleHelp, CircleEllipsis, Images } from 'lucide-react'
 import { toast } from 'sonner'
@@ -237,17 +238,19 @@ export default function ListProps(props : Readonly<ImageServerHandleProps>) {
                     </Popover>
                 }
                 <div className="flex items-center">
-                  <Button
-                    isIconOnly
-                    size="sm"
-                    onClick={() => {
-                      setImageViewData(image)
-                      setImageView(true)
-                    }}
-                    aria-label="查看图片"
-                  >
-                    <ScanSearch size={20} />
-                  </Button>
+                  <Tooltip content="查看图片">
+                    <Button
+                      isIconOnly
+                      size="sm"
+                      onClick={() => {
+                        setImageViewData(image)
+                        setImageView(true)
+                      }}
+                      aria-label="查看图片"
+                    >
+                      <ScanSearch size={20} />
+                    </Button>
+                  </Tooltip>
                 </div>
               </CardHeader>
               <CardBody className="scrollbar-hide">
