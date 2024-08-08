@@ -19,7 +19,8 @@ import {
   ModalFooter,
   Button,
   Switch,
-  Spinner
+  Spinner,
+  Tooltip,
 } from '@nextui-org/react'
 import { ArrowDown10, Eye, EyeOff, Pencil, Trash } from 'lucide-react'
 import { toast } from 'sonner'
@@ -147,28 +148,32 @@ export default function TagList(props : Readonly<HandleProps>) {
                   </Popover>
                 </div>
                 <div className="space-x-1">
-                  <Button
-                    isIconOnly
-                    size="sm"
-                    onClick={() => {
-                      setTagEditData(tag)
-                      setTagEdit(true)
-                    }}
-                    aria-label="编辑标签"
-                  >
-                    <Pencil size={20} />
-                  </Button>
-                  <Button
-                    isIconOnly
-                    size="sm"
-                    onClick={() => {
-                      setTag(tag)
-                      setIsOpen(true)
-                    }}
-                    aria-label="删除标签"
-                  >
-                    <Trash size={20} />
-                  </Button>
+                  <Tooltip content="编辑相册">
+                    <Button
+                      isIconOnly
+                      size="sm"
+                      onClick={() => {
+                        setTagEditData(tag)
+                        setTagEdit(true)
+                      }}
+                      aria-label="编辑相册"
+                    >
+                      <Pencil size={20} />
+                    </Button>
+                  </Tooltip>
+                  <Tooltip content="删除相册">
+                    <Button
+                      isIconOnly
+                      size="sm"
+                      onClick={() => {
+                        setTag(tag)
+                        setIsOpen(true)
+                      }}
+                      aria-label="删除相册"
+                    >
+                      <Trash size={20} />
+                    </Button>
+                  </Tooltip>
                 </div>
               </CardFooter>
             </Card>
@@ -182,9 +187,9 @@ export default function TagList(props : Readonly<HandleProps>) {
         <ModalContent>
           <ModalHeader className="flex flex-col gap-1">确定要删掉？</ModalHeader>
           <ModalBody>
-            <p>标签 ID：{tag.id}</p>
-            <p>标签名称：{tag.name}</p>
-            <p>标签路由：{tag.tag_value}</p>
+            <p>相册 ID：{tag.id}</p>
+            <p>相册名称：{tag.name}</p>
+            <p>相册路由：{tag.tag_value}</p>
           </ModalBody>
           <ModalFooter>
             <Button
