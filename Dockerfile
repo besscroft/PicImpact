@@ -17,7 +17,7 @@ RUN apk add --no-cache libc6-compat
 
 WORKDIR /app
 
-RUN corepack enable pnpm && pnpm add prisma @prisma/client
+RUN corepack enable pnpm && pnpm add prisma@5.17.0 @prisma/client@5.17.0
 
 FROM base AS builder
 
