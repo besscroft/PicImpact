@@ -15,6 +15,10 @@ import ExifView from '~/components/ExifView'
 import { toast } from 'sonner'
 import { usePathname } from 'next/navigation'
 import useSWR from 'swr'
+import dayjs from 'dayjs'
+import customParseFormat from 'dayjs/plugin/customParseFormat'
+
+dayjs.extend(customParseFormat)
 
 export default function MasonryItem() {
   const router = useRouter()
@@ -253,12 +257,16 @@ export default function MasonryItem() {
                         <CalendarDays size={20}/>
                         <p className="text-tiny uppercase font-bold select-none">拍摄时间</p>
                       </div>
-                      <h4 className="font-bold text-large">{MasonryViewData?.exif?.data_time || 'N&A'}</h4>
+                      {
+                        dayjs(MasonryViewData?.exif?.data_time, 'YYYY:MM:DD HH:mm:ss').isValid()
+                          ? <h4 className="font-bold text-large">{dayjs(MasonryViewData?.exif?.data_time, 'YYYY:MM:DD HH:mm:ss').format('YYYY-MM-DD HH:mm:ss')}</h4>
+                          : <h4 className="font-bold text-large">N&A</h4>
+                      }
                     </CardHeader>
                   </Card>
                   {MasonryViewData?.labels &&
                     <div className="space-x-1">
-                      {MasonryViewData?.labels.map((tag: string) => (
+                    {MasonryViewData?.labels.map((tag: string) => (
                         <Chip
                           key={tag}
                           variant="bordered"
