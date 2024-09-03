@@ -45,11 +45,11 @@ export default function AdminLayout({
           <Button
             size="sm"
             color="primary"
-            variant={pathname === '/admin/settings/about' ? 'bordered': 'light'}
-            onClick={() => router.push('/admin/settings/about')}
-            aria-label="关于"
+            variant={pathname === '/admin/settings/authenticator' ? 'bordered': 'light'}
+            onClick={() => router.push('/admin/settings/authenticator')}
+            aria-label="双因素验证"
           >
-            关于
+            双因素验证
           </Button>
         </CardHeader>
       </Card>
