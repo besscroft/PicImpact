@@ -8,7 +8,6 @@ import { Button, cn, Input, Switch, Textarea } from '@nextui-org/react'
 import { Select } from 'antd'
 import React, { useState } from 'react'
 import { toast } from 'sonner'
-import { TagInput } from '@douyinfe/semi-ui'
 import { fetcher } from '~/utils/fetcher'
 import useSWR from 'swr'
 
@@ -165,12 +164,13 @@ export default function ImageEditSheet(props : Readonly<ImageServerHandleProps &
                 setImageEditData({ ...image, copyrights: value })
               }}
             />
-            <TagInput
+            <Select
+              mode="tags"
               value={image.labels}
-              placeholder='请输入图片索引标签，如：原神，不要输入特殊字符。'
-              addOnBlur={true}
-              allowDuplicates={false}
-              onChange={(value) => setImageEditData({ ...image, labels: value })}
+              style={{ width: '100%' }}
+              placeholder="请输入图片索引标签，如：猫猫，不要输入特殊字符。"
+              onChange={(value: any) => setImageEditData({ ...image, labels: value })}
+              options={[]}
             />
             <Switch
               isSelected={image?.show === 0}

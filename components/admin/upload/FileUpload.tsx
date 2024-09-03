@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react'
 import type { UploadProps } from 'antd'
-import { Upload, ConfigProvider } from 'antd'
+import { Upload, ConfigProvider, Select as AntdSelect } from 'antd'
 import { toast } from 'sonner'
 import useSWR from 'swr'
 import { fetcher } from '~/utils/fetcher'
@@ -10,7 +10,6 @@ import { ExifType, TagType, ImageType } from '~/types'
 import { Button, Select, SelectItem, Input, Divider, Card, CardBody, CardHeader, CardFooter } from '@nextui-org/react'
 import ExifReader from 'exifreader'
 import Compressor from 'compressorjs'
-import { TagInput } from '@douyinfe/semi-ui'
 import { Select as ShadcnSelect, SelectContent, SelectItem as ShadcnSelectItem, SelectTrigger, SelectValue } from '~/components/ui/Select'
 import { useButtonStore } from '~/app/providers/button-store-Providers'
 import { CircleHelp } from 'lucide-react'
@@ -646,14 +645,13 @@ export default function FileUpload() {
                   setDetail(value)
                 }}
               />
-              <TagInput
+              <AntdSelect
+                mode="tags"
                 value={imageLabels}
-                placeholder='请输入图片索引标签，如：原神，不要输入特殊字符。'
-                addOnBlur={true}
-                allowDuplicates={false}
-                onChange={(value) => {
-                  setImageLabels(value)
-                }}
+                style={{ width: '100%' }}
+                placeholder="请输入图片索引标签，如：猫猫，不要输入特殊字符。"
+                onChange={(value: any) => setImageLabels(value)}
+                options={[]}
               />
               <Divider className="my-4"/>
             </div>
