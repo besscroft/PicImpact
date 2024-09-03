@@ -5,7 +5,7 @@
   "author": "Bess Croft <besscroft@foxmail.com>",
   "packageManager": "pnpm@9.7.1",
   "scripts": {
-    "dev": "pnpm run prisma:generate && next dev",
+    "dev": "pnpm run prisma:dev && pnpm run prisma:generate && next dev",
     "build": "next build",
     "build:vercel": "pnpm run prisma:deploy && npx prisma generate && next build",
     "build:netlify": "pnpm run prisma:deploy && npx prisma generate && next build",
