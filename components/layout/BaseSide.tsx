@@ -4,7 +4,7 @@ import { Listbox, ListboxItem } from '@nextui-org/react'
 import { useSession } from 'next-auth/react'
 import { usePathname } from 'next/navigation'
 import { useRouter } from 'next-nprogress-bar'
-import { Settings, Milestone, Image, ImageUp, MonitorDot, Copyright } from 'lucide-react'
+import { Settings, Milestone, Image, ImageUp, MonitorDot, Copyright, Info } from 'lucide-react'
 import { cn } from '~/utils'
 
 export const BaseSide = () => {
@@ -87,6 +87,17 @@ export const BaseSide = () => {
             onClick={() => router.push('/admin/settings/preferences')}
           >
             <span className={textClasses}>设置</span>
+          </ListboxItem>
+          <ListboxItem
+            className={cn(
+              pathname === '/admin/about' ? 'text-teal-400' : '',
+              buttonClasses
+            )}
+            key="tag"
+            startContent={<Info size={20} className={iconClasses}/>}
+            onClick={() => router.push('/admin/about')}
+          >
+            <span className={textClasses}>关于</span>
           </ListboxItem>
         </Listbox>
       </div>

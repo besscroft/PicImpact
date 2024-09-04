@@ -3,8 +3,13 @@
 import { Table, TableBody, TableCell, TableColumn, TableHeader, TableRow } from '@nextui-org/react'
 import React from 'react'
 import { DataProps } from '~/types'
+import dayjs from 'dayjs'
+import customParseFormat from 'dayjs/plugin/customParseFormat'
+
+dayjs.extend(customParseFormat)
 
 export default function ExifView(props: Readonly<DataProps>) {
+
   return (
     <Table aria-label="照片 Exif 信息">
       <TableHeader>
@@ -34,10 +39,10 @@ export default function ExifView(props: Readonly<DataProps>) {
           </TableRow>
         }
         {
-          props.data?.exif?.data_time &&
+          dayjs(props.data?.exif?.data_time, 'YYYY:MM:DD HH:mm:ss').isValid() &&
           <TableRow key="data_time">
             <TableCell>拍摄时间</TableCell>
-            <TableCell>{props.data?.exif?.data_time}</TableCell>
+            <TableCell>{dayjs(props.data?.exif?.data_time, 'YYYY:MM:DD HH:mm:ss').format('YYYY-MM-DD HH:mm:ss')}</TableCell>
           </TableRow>
         }
         {

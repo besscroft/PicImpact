@@ -36,6 +36,9 @@ export async function register() {
             { config_key: 'r2_storage_folder', config_value: '', detail: '存储文件夹(Cloudflare R2)，严格格式，如：picimpact 或 picimpact/images ，填 / 或者不填表示根路径' },
             { config_key: 'r2_public_domain', config_value: '', detail: 'Cloudflare R2 自定义域（公开访问）' },
             { config_key: 'custom_title', config_value: 'PicImpact', detail: '网站标题' },
+            { config_key: 'auth_enable', config_value: 'false', detail: '是否启用双因素验证' },
+            { config_key: 'auth_temp_secret', config_value: '', detail: '双因素验证临时种子密钥' },
+            { config_key: 'auth_secret', config_value: '', detail: '双因素验证种子密钥' },
           ],
           skipDuplicates: true,
         })

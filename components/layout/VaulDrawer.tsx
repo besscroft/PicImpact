@@ -18,7 +18,8 @@ import {
   Milestone,
   Settings,
   LogOut,
-  Copyright
+  Copyright,
+  Info
 } from 'lucide-react'
 import { loginOut } from '~/server/lib/actions'
 
@@ -114,10 +115,20 @@ export default function VaulDrawer() {
                         startContent={<Settings size={20} className={iconClasses} />}
                         onClick={() => router.push('/admin/settings/preferences')}
                         className={pathname.startsWith('/admin/settings') ? activeClasses : ''}
-                        showDivider
                       >
                         <Drawer.Close className="w-full text-left">
                           设置
+                        </Drawer.Close>
+                      </ListboxItem>
+                      <ListboxItem
+                        key="tag"
+                        startContent={<Info size={20} className={iconClasses} />}
+                        onClick={() => router.push('/admin/about')}
+                        className={pathname === '/admin/about' ? activeClasses : ''}
+                        showDivider
+                      >
+                        <Drawer.Close className="w-full text-left">
+                          关于
                         </Drawer.Close>
                       </ListboxItem>
                       <ListboxItem

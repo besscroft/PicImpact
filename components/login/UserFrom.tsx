@@ -8,6 +8,14 @@ import { authenticate } from '~/server/lib/actions'
 import { SafeParseReturnType, z } from 'zod'
 import confetti from 'canvas-confetti'
 import { Eye, EyeOff } from 'lucide-react'
+import {
+  InputOTP,
+  InputOTPGroup,
+  InputOTPSeparator,
+  InputOTPSlot,
+} from '~/components/ui/input-otp'
+import useSWR from 'swr'
+import { fetcher } from '~/utils/fetcher'
 
 export const UserFrom = () => {
   const router = useRouter()
@@ -19,6 +27,15 @@ export const UserFrom = () => {
 
   const [email, setEmail] = useState('admin@qq.com')
   const [password, setPassword] = useState('')
+  const [token, setToken] = useState('')
+
+  const { data, isValidating, mutate } = useSWR('/api/open/get-auth-status', fetcher,
+    {
+      revalidateOnFocus: false,
+      revalidateIfStale: false,
+      revalidateOnReconnect: false,
+    }
+  )
   
   function zHandle(): SafeParseReturnType<string | any, string | any> {
     const parsedCredentials = z
@@ -81,6 +98,35 @@ export const UserFrom = () => {
             type={isVisible ? 'text' : 'password'}
           />
         </div>
+        {
+          data?.data?.auth_enable === 'true' &&
+          <div className="grid gap-2">
+            <div className="flex items-center">
+              <div>双因素口令</div>
+            </div>
+            <div className="mx-auto">
+              <InputOTP
+                className="object-center"
+                maxLength={6}
+                value={token}
+                onChange={(value: string) => setToken(value)}
+                onComplete={(value: string) => setToken(value)}
+              >
+                <InputOTPGroup>
+                  <InputOTPSlot index={0}/>
+                  <InputOTPSlot index={1}/>
+                  <InputOTPSlot index={2}/>
+                </InputOTPGroup>
+                <InputOTPSeparator/>
+                <InputOTPGroup>
+                  <InputOTPSlot index={3}/>
+                  <InputOTPSlot index={4}/>
+                  <InputOTPSlot index={5}/>
+                </InputOTPGroup>
+              </InputOTP>
+            </div>
+          </div>
+        }
         <Button
           type="submit"
           className="w-full"
@@ -88,14 +134,15 @@ export const UserFrom = () => {
           variant="shadow"
           isLoading={isLoading}
           onPress={handleConfetti}
+          isDisabled={(data?.data?.auth_enable === 'true' && token.length !== 6) || email.length === 0 || password.length < 6}
           onClick={async () => {
             setIsLoading(true)
 
             try {
               const parsedCredentials = zHandle()
               if (parsedCredentials.success) {
-                const { email, password } = parsedCredentials.data;
-                await authenticate(email, password)
+                const {email, password} = parsedCredentials.data;
+                await authenticate(email, password, token)
                 toast.success('登录成功！')
                 setTimeout(() => {
                   location.replace('/admin')
@@ -104,7 +151,8 @@ export const UserFrom = () => {
                 toast.error('请检查您的账号密码！')
               }
             } catch (e) {
-              toast.error('登录失败！')
+              console.log(e)
+              toast.error(e?.message)
             } finally {
               setIsLoading(false)
             }
