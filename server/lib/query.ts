@@ -1,8 +1,6 @@
 'use server'
 
 import { db } from '~/server/lib/db'
-import Copyright from "~/app/admin/copyright/page";
-import {ImageType} from "~/types";
 
 export async function fetchS3Info() {
   const findConfig = await db.configs.findMany({
@@ -549,4 +547,49 @@ export async function fetchImageByIdAndAuth(id: number) {
   `
 
   return findAll;
+}
+
+export async function queryAuthStatus() {
+  const find = await db.configs.findFirst({
+    where: {
+      config_key: 'auth_enable'
+    },
+    select: {
+      id: true,
+      config_key: true,
+      config_value: true
+    }
+  })
+
+  return find;
+}
+
+export async function queryAuthTemplateSecret() {
+  const find = await db.configs.findFirst({
+    where: {
+      config_key: 'auth_temp_secret'
+    },
+    select: {
+      id: true,
+      config_key: true,
+      config_value: true
+    }
+  })
+
+  return find;
+}
+
+export async function queryAuthSecret() {
+  const find = await db.configs.findFirst({
+    where: {
+      config_key: 'auth_secret'
+    },
+    select: {
+      id: true,
+      config_key: true,
+      config_value: true
+    }
+  })
+
+  return find;
 }

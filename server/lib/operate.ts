@@ -2,6 +2,7 @@
 
 import { db } from '~/server/lib/db'
 import { TagType, ImageType, CopyrightType } from '~/types'
+import {queryAuthTemplateSecret} from "~/server/lib/query";
 
 export async function insertTag(tag: TagType) {
   if (!tag.sort || tag.sort < 0) {
@@ -380,4 +381,71 @@ export async function updateCustomTitle(title: string) {
     }
   })
   return resultRow
+}
+
+export async function saveAuthTemplateSecret(token: string) {
+  const resultRow = await db.configs.update({
+    where: {
+      config_key: 'auth_temp_secret'
+    },
+    data: {
+      config_value: token,
+      update_time: new Date()
+    }
+  })
+}
+
+export async function saveAuthSecret(enable: string, secret: string) {
+  await db.$transaction(async (tx) => {
+    await tx.configs.update({
+      where: {
+        config_key: 'auth_enable'
+      },
+      data: {
+        config_value: enable,
+        update_time: new Date()
+      }
+    })
+    await tx.configs.update({
+      where: {
+        config_key: 'auth_secret'
+      },
+      data: {
+        config_value: secret,
+        update_time: new Date()
+      }
+    })
+  })
+}
+
+export async function deleteAuthSecret() {
+  await db.$transaction(async (tx) => {
+    await tx.configs.update({
+      where: {
+        config_key: 'auth_enable'
+      },
+      data: {
+        config_value: 'false',
+        update_time: new Date()
+      }
+    })
+    await tx.configs.update({
+      where: {
+        config_key: 'auth_secret'
+      },
+      data: {
+        config_value: '',
+        update_time: new Date()
+      }
+    })
+    await tx.configs.update({
+      where: {
+        config_key: 'auth_temp_secret'
+      },
+      data: {
+        config_value: '',
+        update_time: new Date()
+      }
+    })
+  })
 }
