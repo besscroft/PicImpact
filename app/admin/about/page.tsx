@@ -2,7 +2,7 @@
 
 import favicon from '~/public/favicon.svg'
 import Image from 'next/image'
-import { Divider, Avatar } from '@nextui-org/react'
+import { Chip, Divider, Avatar } from '@nextui-org/react'
 import { ExternalLink, Github } from 'lucide-react'
 import Link from 'next/link'
 
@@ -16,6 +16,7 @@ export default function About() {
         width={64}
         height={64}
       />
+      <Chip color="success" variant="bordered">v0.11.0</Chip>
       <span>PicImpact 是一个摄影师专用的摄影作品展示网站，基于 Next.js 开发。</span>
       <Divider className="my-4" />
       <div className="flex flex-col w-full">
