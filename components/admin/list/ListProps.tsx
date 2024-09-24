@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useState } from 'react'
-import { ImageServerHandleProps, ImageType, TagType } from '~/types'
+import { DataProps, ImageServerHandleProps, ImageType, TagType } from '~/types'
 import { useSWRInfiniteServerHook } from '~/hooks/useSWRInfiniteServerHook'
 import { useSWRPageTotalServerHook } from '~/hooks/useSWRPageTotalServerHook'
 import {
@@ -41,6 +41,7 @@ import useSWR from 'swr'
 import ImageHelpSheet from '~/components/admin/list/ImageHelpSheet'
 import { Select as AntdSelect } from 'antd'
 import ListImage from '~/components/admin/list/ListImage'
+import ImageBatchDeleteSheet from '~/components/admin/list/ImageBatchDeleteSheet'
 
 export default function ListProps(props : Readonly<ImageServerHandleProps>) {
   const [pageNum, setPageNum] = useState(1)
@@ -57,10 +58,14 @@ export default function ListProps(props : Readonly<ImageServerHandleProps>) {
   const [updateShowLoading, setUpdateShowLoading] = useState(false)
   const [updateImageTagLoading, setUpdateImageTagLoading] = useState(false)
   const [updateShowId, setUpdateShowId] = useState(0)
-  const { setImageEdit, setImageEditData, setImageView, setImageViewData, setImageHelp } = useButtonStore(
+  const { setImageEdit, setImageEditData, setImageView, setImageViewData, setImageHelp, setImageBatchDelete } = useButtonStore(
     (state) => state,
   )
   const { data: tags, isLoading: tagsLoading } = useSWR('/api/v1/get-tags', fetcher)
+
+  const dataProps: DataProps = {
+    data: data,
+  }
 
   async function deleteImage() {
     setDeleteLoading(true)
@@ -189,6 +194,15 @@ export default function ListProps(props : Readonly<ImageServerHandleProps>) {
               <CircleHelp />
             </Button>
             <Button
+              isIconOnly
+              size="sm"
+              color="danger"
+              aria-label="批量删除"
+              onClick={() => setImageBatchDelete(true)}
+            >
+              <Trash />
+            </Button>
+            <Button
               color="primary"
               radius="full"
               size="sm"
@@ -209,12 +223,26 @@ export default function ListProps(props : Readonly<ImageServerHandleProps>) {
         {Array.isArray(data) && data?.map((image: ImageType) => (
           <Card key={image.id} shadow="sm" className="h-72 show-up-motion">
               <CardHeader className="justify-between space-x-1 select-none">
-                {
-                  image.tag_values.includes(',') ?
-                    <Badge content={image.tag_values.split(",").length} color="primary">
+                <div className="space-x-2">
+                  {
+                    image.tag_values.includes(',') ?
+                      <Badge content={image.tag_values.split(",").length} color="primary">
+                        <Popover placement="top" shadow="sm">
+                          <PopoverTrigger className="cursor-pointer">
+                            <Chip variant="shadow" className="flex-1" aria-label="相册">{image.tag_names.length > 8 ? image.tag_names.substring(0, 8) + '...' : image.tag_names}</Chip>
+                          </PopoverTrigger>
+                          <PopoverContent>
+                            <div className="px-1 py-2 select-none">
+                              <div className="text-small font-bold">相册</div>
+                              <div className="text-tiny">图片在对应的相册上显示</div>
+                            </div>
+                          </PopoverContent>
+                        </Popover>
+                      </Badge>
+                      :
                       <Popover placement="top" shadow="sm">
                         <PopoverTrigger className="cursor-pointer">
-                          <Chip variant="shadow" className="flex-1" aria-label="相册">{image.tag_names.length > 8 ? image.tag_names.substring(0, 8) + '...' : image.tag_names}</Chip>
+                          <Chip variant="shadow" className="flex-1" aria-label="相册">{image.tag_names}</Chip>
                         </PopoverTrigger>
                         <PopoverContent>
                           <div className="px-1 py-2 select-none">
@@ -223,20 +251,19 @@ export default function ListProps(props : Readonly<ImageServerHandleProps>) {
                           </div>
                         </PopoverContent>
                       </Popover>
-                    </Badge>
-                    :
-                    <Popover placement="top" shadow="sm">
-                      <PopoverTrigger className="cursor-pointer">
-                        <Chip variant="shadow" className="flex-1" aria-label="相册">{image.tag_names}</Chip>
-                      </PopoverTrigger>
-                      <PopoverContent>
-                        <div className="px-1 py-2 select-none">
-                          <div className="text-small font-bold">相册</div>
-                          <div className="text-tiny">图片在对应的相册上显示</div>
-                        </div>
-                      </PopoverContent>
-                    </Popover>
-                }
+                  }
+                  <Popover placement="top" shadow="sm">
+                    <PopoverTrigger className="cursor-pointer">
+                      <Chip variant="shadow" className="flex-1" aria-label="id">{image.id}</Chip>
+                    </PopoverTrigger>
+                    <PopoverContent>
+                      <div className="px-1 py-2 select-none">
+                        <div className="text-small font-bold">id</div>
+                        <div className="text-tiny">图片的id</div>
+                      </div>
+                    </PopoverContent>
+                  </Popover>
+                </div>
                 <div className="flex items-center">
                   <Tooltip content="查看图片">
                     <Button
@@ -424,6 +451,7 @@ export default function ListProps(props : Readonly<ImageServerHandleProps>) {
       <ImageEditSheet {...{...props, pageNum, tag}} />
       <ImageView />
       <ImageHelpSheet />
+      <ImageBatchDeleteSheet {...{...props, dataProps, pageNum, tag}} />
     </div>
   )
 }

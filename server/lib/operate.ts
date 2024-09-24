@@ -185,6 +185,29 @@ export async function deleteImage(id: number) {
   })
 }
 
+export async function deleteBatchImage(ids: number[]) {
+  await db.$transaction(async (tx) => {
+    await tx.imageTagRelation.deleteMany({
+      where: {
+        imageId: {
+          in: ids
+        }
+      }
+    })
+    await tx.images.updateMany({
+      where: {
+        id: {
+          in: ids
+        }
+      },
+      data: {
+        del: 1,
+        update_time: new Date(),
+      },
+    })
+  })
+}
+
 export async function updateImage(image: ImageType) {
   if (!image.sort || image.sort < 0) {
     image.sort = 0
