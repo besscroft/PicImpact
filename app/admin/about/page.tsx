@@ -16,7 +16,7 @@ export default function About() {
         width={64}
         height={64}
       />
-      <Chip color="success" variant="bordered">v0.11.0</Chip>
+      <Chip color="success" variant="bordered">v0.11.1</Chip>
       <span>PicImpact 是一个摄影师专用的摄影作品展示网站，基于 Next.js 开发。</span>
       <Divider className="my-4" />
       <div className="flex flex-col w-full">

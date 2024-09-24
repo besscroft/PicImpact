@@ -84,7 +84,7 @@ export default function ImageBatchDeleteSheet(props : Readonly<ImageServerHandle
                   <span role="img" aria-label={option.data.id}>
                     id: {option.data.id}
                   </span>
-                  name: {option.data.name}
+                  name: {option.data.name || '无'}
                 </Space>
               )}
             />
