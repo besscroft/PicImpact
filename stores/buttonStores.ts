@@ -25,6 +25,7 @@ export type ButtonState = {
   tagHelp: boolean
   imageHelp: boolean
   uploadHelp: boolean
+  imageBatchDelete: boolean
 }
 
 export type ButtonActions = {
@@ -50,6 +51,7 @@ export type ButtonActions = {
   setTagHelp: (tagHelp: boolean) => void
   setImageHelp: (imageHelp: boolean) => void
   setUploadHelp: (uploadHelp: boolean) => void
+  setImageBatchDelete: (imageBatchDelete: boolean) => void
 }
 
 export type ButtonStore = ButtonState & ButtonActions
@@ -78,6 +80,7 @@ export const initButtonStore = (): ButtonState => {
     tagHelp: false,
     imageHelp: false,
     uploadHelp: false,
+    imageBatchDelete: false,
   }
 }
 
@@ -104,6 +107,7 @@ export const defaultInitState: ButtonState = {
   tagHelp: false,
   imageHelp: false,
   uploadHelp: false,
+  imageBatchDelete: false,
 }
 
 export const createButtonStore = (
@@ -178,6 +182,9 @@ export const createButtonStore = (
         })),
         setUploadHelp: (uploadHelpValue) => set(() => ({
           uploadHelp: uploadHelpValue,
+        })),
+        setImageBatchDelete: (imageBatchDeleteValue) => set(() => ({
+          imageBatchDelete: imageBatchDeleteValue,
         })),
       }),
       {
