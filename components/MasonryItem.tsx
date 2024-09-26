@@ -214,12 +214,12 @@ export default function MasonryItem() {
                   </div>
                   {MasonryViewData?.exif?.model && MasonryViewData?.exif?.f_number
                     && MasonryViewData?.exif?.exposure_time && MasonryViewData?.exif?.focal_length
-                    && MasonryViewData?.exif?.iso_speed_rating &&
+                    && MasonryViewData?.exif?.iso_speed_rating && MasonryViewData?.exif?.make &&
                     <Card className="py-2" shadow="sm">
                       <CardHeader className="pb-0 pt-2 px-2 flex-col items-start space-y-2">
                         <div className="flex items-center justify-center space-x-1 w-full">
                           <Camera size={20}/>
-                          <p className="text-tiny uppercase font-bold select-none items-center justify-center">{MasonryViewData?.exif?.model}</p>
+                          <p className="text-tiny uppercase font-bold select-none items-center justify-center">{`${MasonryViewData?.exif?.make} ${MasonryViewData?.exif?.model}`}</p>
                         </div>
                         <div className="grid grid-cols-4 gap-4 items-center justify-center w-full">
                           <div className="flex flex-col items-center justify-center w-full">
