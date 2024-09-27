@@ -10,7 +10,15 @@ import { ExifType, TagType, ImageType } from '~/types'
 import { Button, Select, SelectItem, Input, Divider, Card, CardBody, CardHeader, CardFooter } from '@nextui-org/react'
 import ExifReader from 'exifreader'
 import Compressor from 'compressorjs'
-import { Select as ShadcnSelect, SelectContent, SelectItem as ShadcnSelectItem, SelectTrigger, SelectValue } from '~/components/ui/Select'
+import {
+  Select as ShadcnSelect,
+  SelectContent,
+  SelectGroup,
+  SelectItem as ShadcnSelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from '~/components/ui/Select'
 import { useButtonStore } from '~/app/providers/button-store-Providers'
 import { CircleHelp } from 'lucide-react'
 import FileUploadHelpSheet from '~/components/admin/upload/FileUploadHelpSheet'
@@ -429,12 +437,14 @@ export default function FileUpload() {
                 <SelectValue placeholder="请选择上传方式，默认单文件上传"/>
               </SelectTrigger>
               <SelectContent>
-                <ShadcnSelectItem key="singleton" value="singleton">
-                  单文件上传
-                </ShadcnSelectItem>
-                <ShadcnSelectItem key="multiple" value="multiple">
-                  多文件上传
-                </ShadcnSelectItem>
+                <SelectGroup>
+                  <ShadcnSelectItem key="singleton" value="singleton">
+                    单文件上传
+                  </ShadcnSelectItem>
+                  <ShadcnSelectItem key="multiple" value="multiple">
+                    多文件上传
+                  </ShadcnSelectItem>
+                </SelectGroup>
               </SelectContent>
             </ShadcnSelect>
           </div>
