@@ -1,9 +1,9 @@
 'use client'
 
 import {
-  Dialog,
+  CustomDialog,
   DialogContent,
-} from '~/components/ui/Dialog'
+} from '~/components/ui/CustomDialog'
 import { useButtonStore } from '~/app/providers/button-store-Providers'
 import { CopyrightType, DataProps, ImageType } from '~/types'
 import { Image, Tabs, Tab, Card, CardHeader, CardBody, CardFooter, Button, Chip, Link, Avatar, Tooltip } from '@nextui-org/react'
@@ -72,7 +72,7 @@ export default function MasonryItem() {
   }
 
   return (
-    <Dialog
+    <CustomDialog
       defaultOpen={false}
       open={MasonryView}
       onOpenChange={(open: boolean) => {
@@ -365,6 +365,6 @@ export default function MasonryItem() {
           </div>
         </div>
       </DialogContent>
-    </Dialog>
+    </CustomDialog>
   )
 }

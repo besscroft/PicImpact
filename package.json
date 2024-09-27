@@ -34,6 +34,7 @@
     "canvas-confetti": "^1.9.3",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
+    "cmdk": "1.0.0",
     "compressorjs": "^1.2.1",
     "crypto-js": "^4.2.0",
     "cuid": "^3.0.0",

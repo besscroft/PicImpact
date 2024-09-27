@@ -2,6 +2,7 @@ import DashHeader from '~/components/layout/DashHeader'
 import { BaseSide } from '~/components/layout/BaseSide'
 
 import { AntdRegistry } from '@ant-design/nextjs-registry'
+import Command from '~/components/admin/Command'
 
 export default function AdminLayout({
   children,
@@ -17,6 +18,7 @@ export default function AdminLayout({
             <BaseSide/>
           </aside>
           <main className="flex w-full h-full flex-1 flex-col p-2">
+            <Command />
             <AntdRegistry>{children}</AntdRegistry>
           </main>
         </div>
