@@ -105,6 +105,28 @@
   }
 }
 
+/* color */
+
+@layer base {
+  :root {
+    --chart-1: 12 76% 61%;
+    --chart-2: 173 58% 39%;
+    --chart-3: 197 37% 24%;
+    --chart-4: 43 74% 66%;
+    --chart-5: 27 87% 67%;
+  }
+
+  .dark {
+    --chart-1: 220 70% 50%;
+    --chart-2: 160 60% 45%;
+    --chart-3: 30 80% 55%;
+    --chart-4: 280 65% 60%;
+    --chart-5: 340 75% 55%;
+  }
+}
+
+/* motion */
+
 .show-up-motion {
   animation: showUp 0.8s 0.5s backwards;
 }
@@ -118,4 +140,12 @@
     opacity: 1;
     transform: scale(1);
   }
+}
+
+/* property */
+
+@property --angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
 }

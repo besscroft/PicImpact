@@ -440,10 +440,22 @@ export async function fetchImagesAnalysis() {
     },
   })
 
+  const crTotal = await db.copyright.count({
+    where: {
+      del: 0
+    }
+  })
+
+  const tagsTotal = await db.tags.count({
+    where: {
+      del: 0
+    },
+  })
+
   const result = await db.$queryRaw`
     SELECT 
-        tags.name,
-        tags.tag_value,
+        tags.name AS name,
+        tags.tag_value AS value,
         COALESCE(COUNT(1), 0) AS total,
         COALESCE(SUM(CASE WHEN image.show = 0 THEN 1 ELSE 0 END), 0) AS show_total
     FROM
@@ -460,9 +472,16 @@ export async function fetchImagesAnalysis() {
     ORDER BY total DESC
   `
 
+  // @ts-ignore
+  result.total = Number(result.total)
+  // @ts-ignore
+  result.show_total = Number(result.show_total)
+
   return {
     total,
     showTotal,
+    crTotal,
+    tagsTotal,
     result
   }
 }
