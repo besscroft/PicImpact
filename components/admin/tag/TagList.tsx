@@ -94,89 +94,89 @@ export default function TagList(props : Readonly<HandleProps>) {
         <DefaultTag/>
         {data && data.map((tag: TagType) => (
           <Card key={tag.id} shadow="sm" isFooterBlurred className="h-64 show-up-motion">
-              <CardHeader className="flex gap-3">
-                <p>{tag.name}</p>
+            <CardHeader className="flex gap-3">
+              <p>{tag.name}</p>
+              <Popover placement="top" shadow="sm">
+                <PopoverTrigger className="cursor-pointer">
+                  <Chip className="select-none" color="success" variant="shadow" aria-label="路由">{tag.tag_value}</Chip>
+                </PopoverTrigger>
+                <PopoverContent>
+                  <div className="px-1 py-2 select-none">
+                    <div className="text-small font-bold">路由</div>
+                    <div className="text-tiny">可以访问的一级路径</div>
+                  </div>
+                </PopoverContent>
+              </Popover>
+            </CardHeader>
+            <CardBody>
+              <p>{tag.detail || '没有介绍'}</p>
+            </CardBody>
+            <CardFooter className="flex space-x-1 select-none before:bg-white/10 border-white/20 border-1 overflow-hidden py-1 absolute before:rounded-xl rounded-large bottom-1 w-[calc(100%_-_8px)] shadow-small ml-1 z-10">
+              <div className="flex flex-1 space-x-1 items-center">
+                {updateTagLoading && updateTagId === tag.id ? <Spinner size="sm" /> :
+                  <Switch
+                    defaultSelected
+                    size="sm"
+                    color="success"
+                    isSelected={tag.show === 0}
+                    isDisabled={updateTagLoading}
+                    thumbIcon={({ isSelected }) =>
+                      isSelected ? (
+                        <Eye size={20} />
+                      ) : (
+                        <EyeOff className="dark:bg-zinc-700" size={20} />
+                      )
+                    }
+                    onValueChange={(isSelected: boolean) => updateTagShow(tag.id, isSelected ? 0 : 1)}
+                  />
+                }
                 <Popover placement="top" shadow="sm">
                   <PopoverTrigger className="cursor-pointer">
-                    <Chip className="select-none" color="success" variant="shadow" aria-label="路由">{tag.tag_value}</Chip>
+                    <Chip
+                      color="primary"
+                      variant="shadow"
+                      startContent={<ArrowDown10 size={20} />}
+                      aria-label="排序"
+                    >{tag.sort}</Chip>
                   </PopoverTrigger>
                   <PopoverContent>
                     <div className="px-1 py-2 select-none">
-                      <div className="text-small font-bold">路由</div>
-                      <div className="text-tiny">可以访问的一级路径</div>
+                      <div className="text-small font-bold">排序</div>
+                      <div className="text-tiny">规则为从高到低</div>
                     </div>
                   </PopoverContent>
                 </Popover>
-              </CardHeader>
-              <CardBody>
-                <p>{tag.detail || '没有介绍'}</p>
-              </CardBody>
-              <CardFooter className="flex space-x-1 select-none before:bg-white/10 border-white/20 border-1 overflow-hidden py-1 absolute before:rounded-xl rounded-large bottom-1 w-[calc(100%_-_8px)] shadow-small ml-1 z-10">
-                <div className="flex flex-1 space-x-1 items-center">
-                  {updateTagLoading && updateTagId === tag.id ? <Spinner size="sm" /> :
-                    <Switch
-                      defaultSelected
-                      size="sm"
-                      color="success"
-                      isSelected={tag.show === 0}
-                      isDisabled={updateTagLoading}
-                      thumbIcon={({ isSelected }) =>
-                        isSelected ? (
-                          <Eye size={20} />
-                        ) : (
-                          <EyeOff size={20} />
-                        )
-                      }
-                      onValueChange={(isSelected: boolean) => updateTagShow(tag.id, isSelected ? 0 : 1)}
-                    />
-                  }
-                  <Popover placement="top" shadow="sm">
-                    <PopoverTrigger className="cursor-pointer">
-                      <Chip
-                        color="primary"
-                        variant="shadow"
-                        startContent={<ArrowDown10 size={20} />}
-                        aria-label="排序"
-                      >{tag.sort}</Chip>
-                    </PopoverTrigger>
-                    <PopoverContent>
-                      <div className="px-1 py-2 select-none">
-                        <div className="text-small font-bold">排序</div>
-                        <div className="text-tiny">规则为从高到低</div>
-                      </div>
-                    </PopoverContent>
-                  </Popover>
-                </div>
-                <div className="space-x-1">
-                  <Tooltip content="编辑相册">
-                    <Button
-                      isIconOnly
-                      size="sm"
-                      onClick={() => {
-                        setTagEditData(tag)
-                        setTagEdit(true)
-                      }}
-                      aria-label="编辑相册"
-                    >
-                      <Pencil size={20} />
-                    </Button>
-                  </Tooltip>
-                  <Tooltip content="删除相册">
-                    <Button
-                      isIconOnly
-                      size="sm"
-                      onClick={() => {
-                        setTag(tag)
-                        setIsOpen(true)
-                      }}
-                      aria-label="删除相册"
-                    >
-                      <Trash size={20} />
-                    </Button>
-                  </Tooltip>
-                </div>
-              </CardFooter>
-            </Card>
+              </div>
+              <div className="space-x-1">
+                <Tooltip content="编辑相册">
+                  <Button
+                    isIconOnly
+                    size="sm"
+                    onClick={() => {
+                      setTagEditData(tag)
+                      setTagEdit(true)
+                    }}
+                    aria-label="编辑相册"
+                  >
+                    <Pencil size={20} />
+                  </Button>
+                </Tooltip>
+                <Tooltip content="删除相册">
+                  <Button
+                    isIconOnly
+                    size="sm"
+                    onClick={() => {
+                      setTag(tag)
+                      setIsOpen(true)
+                    }}
+                    aria-label="删除相册"
+                  >
+                    <Trash size={20} />
+                  </Button>
+                </Tooltip>
+              </div>
+            </CardFooter>
+          </Card>
         ))}
       </div>
       <Modal
@@ -193,7 +193,7 @@ export default function TagList(props : Readonly<HandleProps>) {
           </ModalBody>
           <ModalFooter>
             <Button
-              color="danger"
+              color="primary"
               variant="flat"
               onClick={() => {
                 setTag({} as TagType)
@@ -204,7 +204,7 @@ export default function TagList(props : Readonly<HandleProps>) {
               算了
             </Button>
             <Button
-              color="primary"
+              color="danger"
               isLoading={deleteLoading}
               onClick={() => deleteTag()}
               aria-label="确认删除"

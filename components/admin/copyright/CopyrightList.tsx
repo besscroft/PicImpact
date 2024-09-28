@@ -151,7 +151,7 @@ export default function CopyrightList(props : Readonly<HandleProps>) {
                         isSelected ? (
                           <Eye size={20} />
                         ) : (
-                          <EyeOff size={20} />
+                          <EyeOff className="dark:bg-zinc-700" size={20} />
                         )
                       }
                       onValueChange={(isSelected: boolean) => updateCopyrightShow(copyright.id, isSelected ? 0 : 1)}
@@ -168,7 +168,7 @@ export default function CopyrightList(props : Readonly<HandleProps>) {
                         isSelected ? (
                           <BadgeCheck size={20} />
                         ) : (
-                          <BadgeX size={20} />
+                          <BadgeX className="dark:bg-zinc-700" size={20} />
                         )
                       }
                       onValueChange={(isSelected: boolean) => updateCopyrightDefault(copyright.id, isSelected ? 0 : 1)}
@@ -220,7 +220,7 @@ export default function CopyrightList(props : Readonly<HandleProps>) {
           </ModalBody>
           <ModalFooter>
             <Button
-              color="danger"
+              color="primary"
               variant="flat"
               onClick={() => {
                 setCopyright({} as CopyrightType)
@@ -231,7 +231,7 @@ export default function CopyrightList(props : Readonly<HandleProps>) {
               算了
             </Button>
             <Button
-              color="primary"
+              color="danger"
               isLoading={deleteLoading}
               onClick={() => deleteCopyright()}
               aria-label="确认删除"
