@@ -270,12 +270,7 @@ export async function fetchClientImagesListByTag(pageNum: number, tag: string) {
                 UNION
                 SELECT copyright.*
                 FROM "public"."Copyright" AS copyright
-                INNER JOIN "public"."ImageCopyrightRelation" AS icrelation
-                    ON copyright.id = icrelation."copyrightId"
-                INNER JOIN "public"."Images" AS image_child
-                    ON icrelation."imageId" = image_child."id"
                 WHERE copyright.del = 0
-                AND image_child.del = 0
                 AND copyright.show = 0
                 AND copyright.default = 0
             ) t
@@ -440,10 +435,22 @@ export async function fetchImagesAnalysis() {
     },
   })
 
+  const crTotal = await db.copyright.count({
+    where: {
+      del: 0
+    }
+  })
+
+  const tagsTotal = await db.tags.count({
+    where: {
+      del: 0
+    },
+  })
+
   const result = await db.$queryRaw`
     SELECT 
-        tags.name,
-        tags.tag_value,
+        tags.name AS name,
+        tags.tag_value AS value,
         COALESCE(COUNT(1), 0) AS total,
         COALESCE(SUM(CASE WHEN image.show = 0 THEN 1 ELSE 0 END), 0) AS show_total
     FROM
@@ -460,9 +467,16 @@ export async function fetchImagesAnalysis() {
     ORDER BY total DESC
   `
 
+  // @ts-ignore
+  result.total = Number(result.total)
+  // @ts-ignore
+  result.show_total = Number(result.show_total)
+
   return {
     total,
     showTotal,
+    crTotal,
+    tagsTotal,
     result
   }
 }

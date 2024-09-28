@@ -74,6 +74,7 @@ export default function ImageBatchDeleteSheet(props : Readonly<ImageServerHandle
             }
             <Select
               mode="multiple"
+              allowClear
               style={{ width: '100%' }}
               placeholder="选择您要删除的图片"
               onChange={(value: any) => setData(value)}
@@ -87,11 +88,19 @@ export default function ImageBatchDeleteSheet(props : Readonly<ImageServerHandle
                   name: {option.data.name || '无'}
                 </Space>
               )}
+              onClear={() => setData([])}
             />
             <Button
               color="primary"
               variant="shadow"
-              onClick={() => setIsOpen(true)}
+              onClick={() => {
+                if (data.length === 0) {
+                  toast.warning('请选择要删除的图片')
+                  return
+                } else {
+                  setIsOpen(true)
+                }
+              }}
               aria-label="更新"
             >
               更新
@@ -111,7 +120,7 @@ export default function ImageBatchDeleteSheet(props : Readonly<ImageServerHandle
           </ModalBody>
           <ModalFooter>
             <Button
-              color="danger"
+              color="primary"
               variant="flat"
               onClick={() => {
                 setIsOpen(false)
@@ -121,7 +130,7 @@ export default function ImageBatchDeleteSheet(props : Readonly<ImageServerHandle
               算了
             </Button>
             <Button
-              color="primary"
+              color="danger"
               isLoading={loading}
               onClick={() => submit()}
               aria-label="确认删除"

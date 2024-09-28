@@ -15,16 +15,19 @@ export const BaseSide = () => {
   const iconClasses = 'text-xl text-default-500 pointer-events-none flex-shrink-0'
   const buttonClasses = 'active:scale-95 duration-200 ease-in-out'
   const textClasses = 'text-lg font-sans select-none'
+  const activeClasses = 'bg-black text-white dark:bg-white dark:text-black'
 
   return (
     <div className="w-full h-full p-2">
       <div className="w-full px-1 py-2">
         <Listbox
           aria-label="移动端菜单"
+          variant={"bordered"}
+          shouldHighlightOnFocus
         >
           <ListboxItem
             className={cn(
-              pathname === '/admin' ? 'text-teal-400' : '',
+              pathname === '/admin' ? activeClasses : '',
               buttonClasses
             )}
             key="home"
@@ -35,7 +38,7 @@ export const BaseSide = () => {
           </ListboxItem>
           <ListboxItem
             className={cn(
-              pathname === '/admin/upload' ? 'text-teal-400' : '',
+              pathname === '/admin/upload' ? activeClasses : '',
               buttonClasses
             )}
             key="upload"
@@ -46,7 +49,7 @@ export const BaseSide = () => {
           </ListboxItem>
           <ListboxItem
             className={cn(
-              pathname === '/admin/list' ? 'text-teal-400' : '',
+              pathname === '/admin/list' ? activeClasses : '',
               buttonClasses
             )}
             key="list"
@@ -57,7 +60,7 @@ export const BaseSide = () => {
           </ListboxItem>
           <ListboxItem
             className={cn(
-              pathname === '/admin/tag' ? 'text-teal-400' : '',
+              pathname === '/admin/tag' ? activeClasses : '',
               buttonClasses
             )}
             key="tag"
@@ -68,10 +71,10 @@ export const BaseSide = () => {
           </ListboxItem>
           <ListboxItem
             className={cn(
-              pathname === '/admin/copyright' ? 'text-teal-400' : '',
+              pathname === '/admin/copyright' ? activeClasses : '',
               buttonClasses
             )}
-            key="tag"
+            key="copyright"
             startContent={<Copyright size={20} className={iconClasses}/>}
             onClick={() => router.push('/admin/copyright')}
           >
@@ -79,7 +82,7 @@ export const BaseSide = () => {
           </ListboxItem>
           <ListboxItem
             className={cn(
-              pathname.startsWith('/admin/settings') ? 'text-teal-400' : '',
+              pathname.startsWith('/admin/settings') ? activeClasses : '',
               buttonClasses
             )}
             key="settings"
@@ -90,10 +93,10 @@ export const BaseSide = () => {
           </ListboxItem>
           <ListboxItem
             className={cn(
-              pathname === '/admin/about' ? 'text-teal-400' : '',
+              pathname === '/admin/about' ? activeClasses : '',
               buttonClasses
             )}
-            key="tag"
+            key="about"
             startContent={<Info size={20} className={iconClasses}/>}
             onClick={() => router.push('/admin/about')}
           >

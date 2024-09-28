@@ -7,6 +7,23 @@ import { ExternalLink, Github } from 'lucide-react'
 import Link from 'next/link'
 
 export default function About() {
+  const contributors = [
+    {
+      name: 'Bess Croft',
+      url: 'https://github.com/besscroft',
+      avatar: 'https://avatars.githubusercontent.com/u/33775809?v=4'
+    },
+    {
+      name: 'Nadeshiko Manju',
+      url: 'https://github.com/Zheaoli',
+      avatar: 'https://avatars.githubusercontent.com/u/7054676?v=4'
+    },
+    {
+      name: '仙姑本咕',
+      url: 'https://github.com/hexgu',
+      avatar: 'https://avatars.githubusercontent.com/u/85490069?v=4'
+    },
+  ]
   return (
     <div className="flex flex-col space-y-2 h-full flex-1 w-full mx-auto items-center p-2">
       <Image
@@ -16,12 +33,12 @@ export default function About() {
         width={64}
         height={64}
       />
-      <Chip color="success" variant="bordered">v0.11.1</Chip>
+      <Chip color="success" variant="bordered">v1.0.0</Chip>
       <span>PicImpact 是一个摄影师专用的摄影作品展示网站，基于 Next.js 开发。</span>
       <Divider className="my-4" />
       <div className="flex flex-col w-full">
         <Link
-          className="flex items-center w-full p-2 hover:bg-slate-100"
+          className="flex items-center w-full p-2 hover:bg-slate-100 dark:hover:text-black"
           href="https://github.com/besscroft/PicImpact"
           target="_blank"
         >
@@ -33,30 +50,28 @@ export default function About() {
       <Divider className="my-4" />
       <div className="flex flex-col w-full">
         <span>Contributors</span>
-        <Link
-          className="flex items-center w-full p-2 hover:bg-slate-100"
-          href="https://github.com/besscroft"
-          target="_blank"
-        >
-          <Avatar src="https://avatars.githubusercontent.com/u/33775809?v=4" />
-          <span className="flex-1 px-2">Bess Croft</span>
-          <ExternalLink />
-        </Link>
-        <Link
-          className="flex items-center w-full p-2 hover:bg-slate-100"
-          href="https://github.com/Zheaoli"
-          target="_blank"
-        >
-          <Avatar src="https://avatars.githubusercontent.com/u/7054676?v=4" />
-          <span className="flex-1 px-2">Nadeshiko Manju</span>
-          <ExternalLink />
-        </Link>
+        {
+          contributors.map((item: any) => {
+            return (
+              <Link
+                key={item.name}
+                className="flex items-center w-full p-2 hover:bg-slate-100 dark:hover:text-black"
+                href={item.url}
+                target="_blank"
+              >
+                <Avatar src={item.avatar} />
+                <span className="flex-1 px-2">{item.name}</span>
+                <ExternalLink />
+              </Link>
+            )
+          })
+        }
       </div>
       <Divider className="my-4" />
       <div className="flex flex-col w-full">
         <span>支持项目</span>
         <Link
-          className="flex items-center w-full p-2 hover:bg-slate-100"
+          className="flex items-center w-full p-2 hover:bg-slate-100 dark:hover:text-black"
           href="https://afdian.com/a/besscroft"
           target="_blank"
         >

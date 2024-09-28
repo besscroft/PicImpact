@@ -10,11 +10,8 @@ export function ToasterProviders() {
     <Toaster
       richColors
       closeButton
-      position="top-right"
+      position="bottom-right"
       theme={ theme === 'light' ? 'light' : 'dark' }
-      toastOptions={{
-        className: 'z-[9999]',
-      }}
     />
   )
 }

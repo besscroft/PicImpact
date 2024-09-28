@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import type { UploadProps } from 'antd'
 import { Upload, ConfigProvider, Select as AntdSelect } from 'antd'
 import { toast } from 'sonner'
@@ -10,7 +10,14 @@ import { ExifType, TagType, ImageType } from '~/types'
 import { Button, Select, SelectItem, Input, Divider, Card, CardBody, CardHeader, CardFooter } from '@nextui-org/react'
 import ExifReader from 'exifreader'
 import Compressor from 'compressorjs'
-import { Select as ShadcnSelect, SelectContent, SelectItem as ShadcnSelectItem, SelectTrigger, SelectValue } from '~/components/ui/Select'
+import {
+  Select as ShadcnSelect,
+  SelectContent,
+  SelectGroup,
+  SelectItem as ShadcnSelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '~/components/ui/Select'
 import { useButtonStore } from '~/app/providers/button-store-Providers'
 import { CircleHelp } from 'lucide-react'
 import FileUploadHelpSheet from '~/components/admin/upload/FileUploadHelpSheet'
@@ -414,6 +421,12 @@ export default function FileUpload() {
     }
   }
 
+  useEffect(() => {
+    const updatedSet = new Set([] as string[]);
+    updatedSet.add('r2');
+    setStorage(updatedSet)
+  }, []);
+
   return (
     <div className="flex flex-col space-y-2 h-full flex-1">
       <Card shadow="sm">
@@ -429,12 +442,14 @@ export default function FileUpload() {
                 <SelectValue placeholder="请选择上传方式，默认单文件上传"/>
               </SelectTrigger>
               <SelectContent>
-                <ShadcnSelectItem key="singleton" value="singleton">
-                  单文件上传
-                </ShadcnSelectItem>
-                <ShadcnSelectItem key="multiple" value="multiple">
-                  多文件上传
-                </ShadcnSelectItem>
+                <SelectGroup>
+                  <ShadcnSelectItem key="singleton" value="singleton">
+                    单文件上传
+                  </ShadcnSelectItem>
+                  <ShadcnSelectItem key="multiple" value="multiple">
+                    多文件上传
+                  </ShadcnSelectItem>
+                </SelectGroup>
               </SelectContent>
             </ShadcnSelect>
           </div>

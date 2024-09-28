@@ -222,27 +222,14 @@ export default function ListProps(props : Readonly<ImageServerHandleProps>) {
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
         {Array.isArray(data) && data?.map((image: ImageType) => (
           <Card key={image.id} shadow="sm" className="h-72 show-up-motion">
-              <CardHeader className="justify-between space-x-1 select-none">
-                <div className="space-x-2">
-                  {
-                    image.tag_values.includes(',') ?
-                      <Badge content={image.tag_values.split(",").length} color="primary">
-                        <Popover placement="top" shadow="sm">
-                          <PopoverTrigger className="cursor-pointer">
-                            <Chip variant="shadow" className="flex-1" aria-label="相册">{image.tag_names.length > 8 ? image.tag_names.substring(0, 8) + '...' : image.tag_names}</Chip>
-                          </PopoverTrigger>
-                          <PopoverContent>
-                            <div className="px-1 py-2 select-none">
-                              <div className="text-small font-bold">相册</div>
-                              <div className="text-tiny">图片在对应的相册上显示</div>
-                            </div>
-                          </PopoverContent>
-                        </Popover>
-                      </Badge>
-                      :
+            <CardHeader className="justify-between space-x-1 select-none">
+              <div className="space-x-2">
+                {
+                  image.tag_values.includes(',') ?
+                    <Badge content={image.tag_values.split(",").length} color="primary">
                       <Popover placement="top" shadow="sm">
                         <PopoverTrigger className="cursor-pointer">
-                          <Chip variant="shadow" className="flex-1" aria-label="相册">{image.tag_names}</Chip>
+                          <Chip variant="shadow" className="flex-1" aria-label="相册">{image.tag_names.length > 8 ? image.tag_names.substring(0, 8) + '...' : image.tag_names}</Chip>
                         </PopoverTrigger>
                         <PopoverContent>
                           <div className="px-1 py-2 select-none">
@@ -251,122 +238,135 @@ export default function ListProps(props : Readonly<ImageServerHandleProps>) {
                           </div>
                         </PopoverContent>
                       </Popover>
-                  }
-                  <Popover placement="top" shadow="sm">
-                    <PopoverTrigger className="cursor-pointer">
-                      <Chip variant="shadow" className="flex-1" aria-label="id">{image.id}</Chip>
-                    </PopoverTrigger>
-                    <PopoverContent>
-                      <div className="px-1 py-2 select-none">
-                        <div className="text-small font-bold">id</div>
-                        <div className="text-tiny">图片的id</div>
-                      </div>
-                    </PopoverContent>
-                  </Popover>
-                </div>
-                <div className="flex items-center">
-                  <Tooltip content="查看图片">
+                    </Badge>
+                    :
+                    <Popover placement="top" shadow="sm">
+                      <PopoverTrigger className="cursor-pointer">
+                        <Chip variant="shadow" className="flex-1" aria-label="相册">{image.tag_names}</Chip>
+                      </PopoverTrigger>
+                      <PopoverContent>
+                        <div className="px-1 py-2 select-none">
+                          <div className="text-small font-bold">相册</div>
+                          <div className="text-tiny">图片在对应的相册上显示</div>
+                        </div>
+                      </PopoverContent>
+                    </Popover>
+                }
+                <Popover placement="top" shadow="sm">
+                  <PopoverTrigger className="cursor-pointer">
+                    <Chip variant="shadow" className="flex-1" aria-label="id">{image.id}</Chip>
+                  </PopoverTrigger>
+                  <PopoverContent>
+                    <div className="px-1 py-2 select-none">
+                      <div className="text-small font-bold">id</div>
+                      <div className="text-tiny">图片的id</div>
+                    </div>
+                  </PopoverContent>
+                </Popover>
+              </div>
+              <div className="flex items-center">
+                <Tooltip content="查看图片">
+                  <Button
+                    isIconOnly
+                    size="sm"
+                    onClick={() => {
+                      setImageViewData(image)
+                      setImageView(true)
+                    }}
+                    aria-label="查看图片"
+                  >
+                    <ScanSearch size={20} />
+                  </Button>
+                </Tooltip>
+              </div>
+            </CardHeader>
+            <CardBody className="scrollbar-hide">
+              <ListImage image={image} />
+            </CardBody>
+            <CardFooter
+              className="flex space-x-1 select-none before:bg-white/10 border-white/20 border-1 overflow-hidden py-1 absolute before:rounded-xl rounded-large bottom-1 w-[calc(100%_-_8px)] shadow-small ml-1 z-10">
+              <div className="flex flex-1 space-x-1 items-center">
+                {updateShowLoading && updateShowId === image.id ? <Spinner size="sm" /> :
+                  <Switch
+                    defaultSelected
+                    size="sm"
+                    color="success"
+                    isSelected={image.show === 0}
+                    isDisabled={updateShowLoading}
+                    thumbIcon={({ isSelected }) =>
+                      isSelected ? (
+                        <Eye size={20} />
+                      ) : (
+                        <EyeOff className="dark:bg-zinc-700" size={20} />
+                      )
+                    }
+                    onValueChange={(isSelected: boolean) => updateImageShow(image.id, isSelected ? 0 : 1)}
+                  />
+                }
+                <Popover placement="top" shadow="sm">
+                  <PopoverTrigger className="cursor-pointer">
+                    <Chip
+                      color="primary"
+                      variant="shadow"
+                      startContent={<ArrowDown10 size={20} />}
+                      aria-label="排序"
+                    >{image.sort}</Chip>
+                  </PopoverTrigger>
+                  <PopoverContent>
+                    <div className="px-1 py-2 select-none">
+                      <div className="text-small font-bold">排序</div>
+                      <div className="text-tiny">规则为从高到低</div>
+                    </div>
+                  </PopoverContent>
+                </Popover>
+              </div>
+              <div className="space-x-1">
+                <Dropdown>
+                  <DropdownTrigger>
                     <Button
                       isIconOnly
                       size="sm"
-                      onClick={() => {
-                        setImageViewData(image)
-                        setImageView(true)
-                      }}
-                      aria-label="查看图片"
+                      aria-label="更多操作"
                     >
-                      <ScanSearch size={20} />
+                      <CircleEllipsis size={20} />
                     </Button>
-                  </Tooltip>
-                </div>
-              </CardHeader>
-              <CardBody className="scrollbar-hide">
-                <ListImage image={image} />
-              </CardBody>
-              <CardFooter
-                className="flex space-x-1 select-none before:bg-white/10 border-white/20 border-1 overflow-hidden py-1 absolute before:rounded-xl rounded-large bottom-1 w-[calc(100%_-_8px)] shadow-small ml-1 z-10">
-                <div className="flex flex-1 space-x-1 items-center">
-                  {updateShowLoading && updateShowId === image.id ? <Spinner size="sm" /> :
-                    <Switch
-                      defaultSelected
-                      size="sm"
-                      color="success"
-                      isSelected={image.show === 0}
-                      isDisabled={updateShowLoading}
-                      thumbIcon={({ isSelected }) =>
-                        isSelected ? (
-                          <Eye size={20} />
-                        ) : (
-                          <EyeOff size={20} />
-                        )
-                      }
-                      onValueChange={(isSelected: boolean) => updateImageShow(image.id, isSelected ? 0 : 1)}
-                    />
-                  }
-                  <Popover placement="top" shadow="sm">
-                    <PopoverTrigger className="cursor-pointer">
-                      <Chip
-                        color="primary"
-                        variant="shadow"
-                        startContent={<ArrowDown10 size={20} />}
-                        aria-label="排序"
-                      >{image.sort}</Chip>
-                    </PopoverTrigger>
-                    <PopoverContent>
-                      <div className="px-1 py-2 select-none">
-                        <div className="text-small font-bold">排序</div>
-                        <div className="text-tiny">规则为从高到低</div>
-                      </div>
-                    </PopoverContent>
-                  </Popover>
-                </div>
-                <div className="space-x-1">
-                  <Dropdown>
-                    <DropdownTrigger>
-                      <Button
-                        isIconOnly
-                        size="sm"
-                        aria-label="更多操作"
-                      >
-                        <CircleEllipsis size={20} />
-                      </Button>
-                    </DropdownTrigger>
-                    <DropdownMenu aria-label="Static Actions">
-                      <DropdownItem
-                        key="bind"
-                        startContent={<Images size={20} />}
-                        onClick={() => {
-                          setImage(image)
-                          setImageDefaultTag({ label: image.tag_names, value: image.tag_values })
-                          setIsTypeOpen(true)
-                        }}
-                      >
-                        绑定相册
-                      </DropdownItem>
-                      <DropdownItem
-                        key="edit"
-                        startContent={<Pencil size={20} />}
-                        onClick={() => {
-                          setImageEditData(image)
-                          setImageEdit(true)
-                        }}
-                      >编辑图片</DropdownItem>
-                      <DropdownItem
-                        key="delete"
-                        className="text-danger"
-                        color="danger"
-                        startContent={<Trash size={20} />}
-                        onClick={() => {
-                          setImage(image)
-                          setIsOpen(true)
-                        }}
-                      >
-                        删除图片
-                      </DropdownItem>
-                    </DropdownMenu>
-                  </Dropdown>
-                </div>
-              </CardFooter>
+                  </DropdownTrigger>
+                  <DropdownMenu aria-label="Static Actions">
+                    <DropdownItem
+                      key="bind"
+                      startContent={<Images size={20} />}
+                      onClick={() => {
+                        setImage(image)
+                        setImageDefaultTag({ label: image.tag_names, value: image.tag_values })
+                        setIsTypeOpen(true)
+                      }}
+                    >
+                      绑定相册
+                    </DropdownItem>
+                    <DropdownItem
+                      key="edit"
+                      startContent={<Pencil size={20} />}
+                      onClick={() => {
+                        setImageEditData(image)
+                        setImageEdit(true)
+                      }}
+                    >编辑图片</DropdownItem>
+                    <DropdownItem
+                      key="delete"
+                      className="text-danger"
+                      color="danger"
+                      startContent={<Trash size={20} />}
+                      onClick={() => {
+                        setImage(image)
+                        setIsOpen(true)
+                      }}
+                    >
+                      删除图片
+                    </DropdownItem>
+                  </DropdownMenu>
+                </Dropdown>
+              </div>
+            </CardFooter>
           </Card>
         ))}
       </div>
@@ -395,7 +395,7 @@ export default function ListProps(props : Readonly<ImageServerHandleProps>) {
           </ModalBody>
           <ModalFooter>
             <Button
-              color="danger"
+              color="primary"
               variant="flat"
               onClick={() => {
                 setImage({} as ImageType)
@@ -406,7 +406,7 @@ export default function ListProps(props : Readonly<ImageServerHandleProps>) {
               算了
             </Button>
             <Button
-              color="primary"
+              color="danger"
               isLoading={deleteLoading}
               onClick={() => deleteImage()}
               aria-label="确认删除"
