@@ -72,7 +72,7 @@ export const BaseSide = () => {
               pathname === '/admin/copyright' ? activeClasses : '',
               buttonClasses
             )}
-            key="tag"
+            key="copyright"
             startContent={<Copyright size={20} className={iconClasses}/>}
             onClick={() => router.push('/admin/copyright')}
           >
@@ -94,7 +94,7 @@ export const BaseSide = () => {
               pathname === '/admin/about' ? activeClasses : '',
               buttonClasses
             )}
-            key="tag"
+            key="about"
             startContent={<Info size={20} className={iconClasses}/>}
             onClick={() => router.push('/admin/about')}
           >
