@@ -38,7 +38,7 @@ export default function About() {
       <Divider className="my-4" />
       <div className="flex flex-col w-full">
         <Link
-          className="flex items-center w-full p-2 hover:bg-slate-100"
+          className="flex items-center w-full p-2 hover:bg-slate-100 dark:hover:text-black"
           href="https://github.com/besscroft/PicImpact"
           target="_blank"
         >
@@ -55,7 +55,7 @@ export default function About() {
             return (
               <Link
                 key={item.name}
-                className="flex items-center w-full p-2 hover:bg-slate-100"
+                className="flex items-center w-full p-2 hover:bg-slate-100 dark:hover:text-black"
                 href={item.url}
                 target="_blank"
               >
@@ -71,7 +71,7 @@ export default function About() {
       <div className="flex flex-col w-full">
         <span>支持项目</span>
         <Link
-          className="flex items-center w-full p-2 hover:bg-slate-100"
+          className="flex items-center w-full p-2 hover:bg-slate-100 dark:hover:text-black"
           href="https://afdian.com/a/besscroft"
           target="_blank"
         >
