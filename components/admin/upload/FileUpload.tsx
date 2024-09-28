@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import type { UploadProps } from 'antd'
 import { Upload, ConfigProvider, Select as AntdSelect } from 'antd'
 import { toast } from 'sonner'
@@ -15,7 +15,6 @@ import {
   SelectContent,
   SelectGroup,
   SelectItem as ShadcnSelectItem,
-  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from '~/components/ui/Select'
@@ -421,6 +420,12 @@ export default function FileUpload() {
       }
     }
   }
+
+  useEffect(() => {
+    const updatedSet = new Set([] as string[]);
+    updatedSet.add('r2');
+    setStorage(updatedSet)
+  }, []);
 
   return (
     <div className="flex flex-col space-y-2 h-full flex-1">
