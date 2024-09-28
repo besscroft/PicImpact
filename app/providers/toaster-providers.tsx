@@ -12,9 +12,6 @@ export function ToasterProviders() {
       closeButton
       position="bottom-right"
       theme={ theme === 'light' ? 'light' : 'dark' }
-      toastOptions={{
-        className: 'z-[9999]',
-      }}
     />
   )
 }
