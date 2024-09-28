@@ -22,6 +22,8 @@ export const BaseSide = () => {
       <div className="w-full px-1 py-2">
         <Listbox
           aria-label="移动端菜单"
+          variant={"bordered"}
+          shouldHighlightOnFocus
         >
           <ListboxItem
             className={cn(
