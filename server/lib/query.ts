@@ -270,12 +270,7 @@ export async function fetchClientImagesListByTag(pageNum: number, tag: string) {
                 UNION
                 SELECT copyright.*
                 FROM "public"."Copyright" AS copyright
-                INNER JOIN "public"."ImageCopyrightRelation" AS icrelation
-                    ON copyright.id = icrelation."copyrightId"
-                INNER JOIN "public"."Images" AS image_child
-                    ON icrelation."imageId" = image_child."id"
                 WHERE copyright.del = 0
-                AND image_child.del = 0
                 AND copyright.show = 0
                 AND copyright.default = 0
             ) t
