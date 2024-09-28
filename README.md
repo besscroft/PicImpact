@@ -9,7 +9,7 @@ PicImpact
 </p>
 
 <p align="center">
-    <img src=picimpact.png width=384 />
+    <img src=picimpact.jpg width=384 />
 </p>
 
 PicImpact 是一个摄影师专用的摄影作品展示网站，基于 Next.js 开发。
