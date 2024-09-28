@@ -297,7 +297,7 @@ export default function ListProps(props : Readonly<ImageServerHandleProps>) {
                         isSelected ? (
                           <Eye size={20} />
                         ) : (
-                          <EyeOff size={20} />
+                          <EyeOff className="dark:bg-zinc-700" size={20} />
                         )
                       }
                       onValueChange={(isSelected: boolean) => updateImageShow(image.id, isSelected ? 0 : 1)}
@@ -395,7 +395,7 @@ export default function ListProps(props : Readonly<ImageServerHandleProps>) {
           </ModalBody>
           <ModalFooter>
             <Button
-              color="danger"
+              color="primary"
               variant="flat"
               onClick={() => {
                 setImage({} as ImageType)
@@ -406,7 +406,7 @@ export default function ListProps(props : Readonly<ImageServerHandleProps>) {
               算了
             </Button>
             <Button
-              color="primary"
+              color="danger"
               isLoading={deleteLoading}
               onClick={() => deleteImage()}
               aria-label="确认删除"
