@@ -24,6 +24,7 @@ PicImpact 是一个摄影师专用的摄影作品展示网站，基于 Next.js �
 - 支持批量自动化上传，上传图片时会生成 0.3 倍率的压缩图片，以提供加载优化。
 - 图片版权信息展示和维护功能，支持外链跳转。
 - 后台有图片数据统计、图片上传、图片维护、相册管理、系统设置和存储配置功能。
+- 双因素认证功能，基于 TOTP 算法 [RFC 6238](https://www.rfc-editor.org/rfc/rfc6238)，支持 Google Authenticator、Microsoft Authenticator 和 1Password 等。
 - 基于 SSR 的混合渲染，采用状态机制，提供良好的使用体验。
 - 基于 prisma 的自动初始化数据库和数据迁移，简化部署流程。
 - 支持 Vercel 部署、Node.js 部署、Docker 等容器化部署，当然 k8s 也支持。
