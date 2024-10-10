@@ -1,5 +1,5 @@
 import 'server-only'
-import { queryAuthSecret, queryAuthTemplateSecret } from '~/server/db/query'
+import { queryAuthTemplateSecret } from '~/server/db/query'
 import * as OTPAuth from 'otpauth'
 import { deleteAuthSecret, saveAuthSecret, saveAuthTemplateSecret } from '~/server/db/operate'
 import { Hono } from 'hono'

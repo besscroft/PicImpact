@@ -1,13 +1,13 @@
 import 'server-only'
 import { Hono } from 'hono'
-import settings from '~/api/settings'
-import hello from '~/api/hello'
-import auth from '~/api/auth'
-import copyright from '~/api/copyright'
-import file from '~/api/file'
-import image from '~/api/image'
-import tags from '~/api/tags'
-import alist from '~/api/storage/alist'
+import settings from '~/hono/settings'
+import hello from '~/hono/hello'
+import auth from '~/hono/auth'
+import copyright from '~/hono/copyright'
+import file from '~/hono/file'
+import image from '~/hono/image'
+import tags from '~/hono/tags'
+import alist from '~/hono/storage/alist'
 
 const route = new Hono()
 

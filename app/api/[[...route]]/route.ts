@@ -1,8 +1,8 @@
 import 'server-only'
 import { handle } from 'hono/vercel'
 import { Hono } from 'hono'
-import route from '~/api'
-import open from '~/api/open/open'
+import route from '~/hono'
+import open from '~/hono/open/open'
 
 const app = new Hono().basePath('/api')
 
