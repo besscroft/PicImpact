@@ -7,7 +7,7 @@ import { toast } from 'sonner'
 import { useButtonStore } from '~/app/providers/button-store-Providers'
 
 export default function AListTabs() {
-  const { data, error, isValidating, mutate } = useSWR('/api/v1/alist-info', fetcher
+  const { data, error, isValidating, mutate } = useSWR('/api/v1/storage/alist/info', fetcher
     , { revalidateOnFocus: false })
   const { setAListEdit, setAListEditData } = useButtonStore(
     (state) => state,

@@ -27,7 +27,7 @@ export default function TagAddSheet(props : Readonly<HandleProps>) {
     }
     try {
       setLoading(true)
-      const res = await fetch('/api/v1/tag-add', {
+      const res = await fetch('/api/v1/tags/add', {
         headers: {
           'Content-Type': 'application/json',
         },

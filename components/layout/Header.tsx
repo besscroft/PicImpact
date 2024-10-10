@@ -2,7 +2,7 @@ import { Navbar, NavbarBrand, NavbarContent, NavbarItem } from '@nextui-org/reac
 import Logo from '~/components/layout/Logo'
 import DynamicNavbar from '~/components/layout/DynamicNavbar'
 import HeaderLink from '~/components/layout/HeaderLink'
-import { fetchTagsShow } from '~/server/lib/query'
+import { fetchTagsShow } from '~/server/db/query'
 import { DataProps } from '~/types'
 
 export default async function Header() {

@@ -7,7 +7,7 @@ import { toast } from 'sonner'
 import { useButtonStore } from '~/app/providers/button-store-Providers'
 
 export default function R2Tabs() {
-  const { data, error, isValidating, mutate } = useSWR('/api/v1/r2-info', fetcher
+  const { data, error, isValidating, mutate } = useSWR('/api/v1/settings/r2-info', fetcher
     , { revalidateOnFocus: false })
   const { setR2Edit, setR2EditData } = useButtonStore(
     (state) => state,
