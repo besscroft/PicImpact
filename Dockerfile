@@ -54,6 +54,7 @@ COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 USER nextjs
 
 ENV AUTH_TRUST_HOST true
+ENV NODEJS_HELPERS 0
 
 EXPOSE 3000
 

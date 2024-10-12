@@ -1,7 +1,7 @@
 'use client'
 
 import { Button, Card, CardBody, Input } from '@nextui-org/react'
-import React, {useEffect, useState} from 'react'
+import React, { useEffect, useState } from 'react'
 import useSWR from 'swr'
 import { fetcher } from '~/utils/fetcher'
 import { toast } from 'sonner'
@@ -10,12 +10,12 @@ export default function Preferences() {
   const [title, setTitle] = useState('')
   const [loading, setLoading] = useState(false)
 
-  const { data, isValidating, isLoading } = useSWR('/api/v1/get-custom-title', fetcher)
+  const { data, isValidating, isLoading } = useSWR('/api/v1/settings/get-custom-title', fetcher)
 
   async function updateTitle() {
     try {
       setLoading(true)
-      await fetch('/api/v1/update-custom-title', {
+      await fetch('/api/v1/settings/update-custom-title', {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

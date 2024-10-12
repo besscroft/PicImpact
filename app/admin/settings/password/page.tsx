@@ -37,7 +37,7 @@ export default function PassWord() {
     }
     try {
       setLoading(true)
-      await fetch('/api/v1/update-password', {
+      await fetch('/api/v1/settings/update-password', {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

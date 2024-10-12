@@ -1,5 +1,5 @@
 import Masonry from '~/components/Masonry'
-import { fetchClientImagesListByLabel, fetchClientImagesPageTotalByLabel } from '~/server/lib/query'
+import { fetchClientImagesListByLabel, fetchClientImagesPageTotalByLabel } from '~/server/db/query'
 import { ImageHandleProps } from '~/types'
 
 export default function Label({ params }: { params: { tag: string } }) {

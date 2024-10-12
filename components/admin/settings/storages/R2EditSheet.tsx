@@ -18,7 +18,7 @@ export default function S3EditSheet() {
   async function submit() {
     setLoading(true)
     try {
-      await fetch('/api/v1/update-r2-info', {
+      await fetch('/api/v1/settings/update-r2-info', {
         headers: {
           'Content-Type': 'application/json',
         },
@@ -26,7 +26,7 @@ export default function S3EditSheet() {
         body: JSON.stringify(r2Data),
       }).then(res => res.json())
       toast.success('更新成功！')
-      mutate('/api/v1/r2-info')
+      mutate('/api/v1/settings/r2-info')
     } catch (e) {
       toast.error('更新失败！')
     } finally {

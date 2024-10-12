@@ -3,7 +3,7 @@
 import { Dropdown, DropdownTrigger, DropdownMenu, DropdownItem, Avatar } from '@nextui-org/react'
 import { usePathname } from 'next/navigation'
 import { useRouter } from 'next-nprogress-bar'
-import { loginOut } from '~/server/lib/actions'
+import { loginOut } from '~/server/actions'
 import { useSession } from 'next-auth/react'
 import { useEffect, useState } from 'react'
 import { useTheme } from 'next-themes'

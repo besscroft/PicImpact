@@ -18,7 +18,7 @@ export default function ImageEditSheet(props : Readonly<ImageServerHandleProps &
     (state) => state,
   )
   const [loading, setLoading] = useState(false)
-  const { data, isLoading } = useSWR('/api/v1/get-copyrights', fetcher)
+  const { data, isLoading } = useSWR('/api/v1/copyright/get', fetcher)
 
   async function submit() {
     if (!image.url) {
@@ -35,7 +35,7 @@ export default function ImageEditSheet(props : Readonly<ImageServerHandleProps &
     }
     try {
       setLoading(true)
-      await fetch('/api/v1/image-update', {
+      await fetch('/api/v1/image/update', {
         headers: {
           'Content-Type': 'application/json',
         },

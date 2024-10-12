@@ -61,7 +61,7 @@ export default function ListProps(props : Readonly<ImageServerHandleProps>) {
   const { setImageEdit, setImageEditData, setImageView, setImageViewData, setImageHelp, setImageBatchDelete } = useButtonStore(
     (state) => state,
   )
-  const { data: tags, isLoading: tagsLoading } = useSWR('/api/v1/get-tags', fetcher)
+  const { data: tags, isLoading: tagsLoading } = useSWR('/api/v1/tags/get', fetcher)
 
   const dataProps: DataProps = {
     data: data,
@@ -71,7 +71,7 @@ export default function ListProps(props : Readonly<ImageServerHandleProps>) {
     setDeleteLoading(true)
     if (!image.id) return
     try {
-      const res = await fetch(`/api/v1/image-delete/${image.id}`, {
+      const res = await fetch(`/api/v1/image/delete/${image.id}`, {
         method: 'DELETE',
       }).then(res => res.json())
       if (res?.code === 200) {
@@ -92,7 +92,7 @@ export default function ListProps(props : Readonly<ImageServerHandleProps>) {
     try {
       setUpdateShowLoading(true)
       setUpdateShowId(id)
-      const res = await fetch(`/api/v1/update-image-show`, {
+      const res = await fetch(`/api/v1/image/update-show`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -123,7 +123,7 @@ export default function ListProps(props : Readonly<ImageServerHandleProps>) {
     }
     try {
       setUpdateImageTagLoading(true)
-      const res = await fetch(`/api/v1/update-image-tag`, {
+      const res = await fetch(`/api/v1/image/update-tag`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

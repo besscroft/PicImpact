@@ -43,7 +43,7 @@ export default function TagList(props : Readonly<HandleProps>) {
     setDeleteLoading(true)
     if (!tag.id) return
     try {
-      const res = await fetch(`/api/v1/tag-delete/${tag.id}`, {
+      const res = await fetch(`/api/v1/tags/delete/${tag.id}`, {
         method: 'DELETE',
       })
       if (res.status === 200) {
@@ -64,7 +64,7 @@ export default function TagList(props : Readonly<HandleProps>) {
     try {
       setUpdateTagId(id)
       setUpdateTagLoading(true)
-      const res = await fetch(`/api/v1/update-tag-show`, {
+      const res = await fetch(`/api/v1/tags/update-show`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

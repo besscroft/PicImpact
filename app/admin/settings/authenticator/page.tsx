@@ -41,7 +41,7 @@ export default function Authenticator() {
 
   async function getQRCode() {
     try {
-      const res = await fetch('/api/v1/get-seed-secret', {
+      const res = await fetch('/api/v1/auth/get-seed-secret', {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -60,7 +60,7 @@ export default function Authenticator() {
 
   async function saveAuthTemplateToken() {
     try {
-      const res = await fetch('/api/v1/auth-validate', {
+      const res = await fetch('/api/v1/auth/validate', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -82,7 +82,7 @@ export default function Authenticator() {
   async function removeAuth() {
     try {
       setDeleteLoading(true)
-      const res = await fetch('/api/v1/remove-auth', {
+      const res = await fetch('/api/v1/auth/remove', {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json'

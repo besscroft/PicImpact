@@ -1,4 +1,4 @@
-import { fetchCopyrightList } from '~/server/lib/query'
+import { fetchCopyrightList } from '~/server/db/query'
 import { HandleProps } from '~/types'
 import { Card, CardHeader } from '@nextui-org/react'
 import React from 'react'

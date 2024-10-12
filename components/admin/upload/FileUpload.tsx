@@ -44,7 +44,7 @@ export default function FileUpload() {
     (state) => state,
   )
 
-  const { data, isLoading } = useSWR('/api/v1/get-tags', fetcher)
+  const { data, isLoading } = useSWR('/api/v1/tags/get', fetcher)
 
   async function loadExif(file: any) {
     try {
@@ -137,7 +137,7 @@ export default function FileUpload() {
         lat: lat,
         lon: lon,
       } as ImageType
-      const res = await fetch('/api/v1/image-add', {
+      const res = await fetch('/api/v1/image/add', {
         headers: {
           'Content-Type': 'application/json',
         },
@@ -185,7 +185,7 @@ export default function FileUpload() {
     }
     try {
       toast.info('正在获取 AList 挂载目录！')
-      const res = await fetch('/api/v1/alist-storages', {
+      const res = await fetch('/api/v1/storage/alist/storages', {
         method: 'GET',
       }).then(res => res.json())
       if (res?.code === 200) {
@@ -224,7 +224,7 @@ export default function FileUpload() {
     formData.append('storage', storageArray[0])
     formData.append('type', type)
     formData.append('mountPath', alistMountPathArray[0])
-    return await fetch('/api/v1/file-upload', {
+    return await fetch('/api/v1/file/upload', {
       method: 'POST',
       body: formData
     }).then((res) => res.json())
@@ -299,7 +299,7 @@ export default function FileUpload() {
                 lat: '',
                 lon: '',
               } as ImageType
-              const res = await fetch('/api/v1/image-add', {
+              const res = await fetch('/api/v1/image/add', {
                 headers: {
                   'Content-Type': 'application/json',
                 },

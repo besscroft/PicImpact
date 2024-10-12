@@ -21,7 +21,7 @@ import {
   Copyright,
   Info
 } from 'lucide-react'
-import { loginOut } from '~/server/lib/actions'
+import { loginOut } from '~/server/actions'
 
 export default function VaulDrawer() {
   const { data: session, status } = useSession()
