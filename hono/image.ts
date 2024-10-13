@@ -11,7 +11,7 @@ import { Hono } from 'hono'
 
 const app = new Hono()
 
-app.post('/image-add', async (c) => {
+app.post('/add', async (c) => {
   const image = await c.req.json()
   if (!image.url) {
     return c.json({

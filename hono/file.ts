@@ -7,7 +7,7 @@ import { Hono } from 'hono'
 
 const app = new Hono()
 
-app.get('/upload', async (c) => {
+app.post('/upload', async (c) => {
   const formData = await c.req.formData()
 
   const file = formData.get('file')
