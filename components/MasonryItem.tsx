@@ -133,7 +133,7 @@ export default function MasonryItem() {
                 <Button
                   color="primary"
                   className="w-full"
-                  variant="bordered"
+                  variant="shadow"
                   startContent={<ArrowLeft />}
                   onClick={() => loadingHandle('prev')}
                 >
@@ -142,7 +142,7 @@ export default function MasonryItem() {
                 <Button
                   color="primary"
                   className="w-full"
-                  variant="bordered"
+                  variant="shadow"
                   startContent={<ArrowRight />}
                   onClick={() => loadingHandle('next')}
                 >
@@ -164,8 +164,8 @@ export default function MasonryItem() {
                   <div className="flex space-x-2">
                     <Button
                       color="primary"
-                      variant="bordered"
-                      aria-label="复制图片链接"
+                      variant="shadow"
+                      aria-label="复制"
                       size="sm"
                       startContent={<Images size={20}/>}
                       onClick={async () => {
@@ -179,12 +179,12 @@ export default function MasonryItem() {
                         }
                       }}
                     >
-                      复制图片链接
+                      复制
                     </Button>
                     <Button
                       color="primary"
-                      variant="bordered"
-                      aria-label="复制直链"
+                      variant="shadow"
+                      aria-label="分享"
                       size="sm"
                       startContent={<LinkIcon size={20}/>}
                       onClick={async () => {
@@ -192,24 +192,24 @@ export default function MasonryItem() {
                           const url = window.location.origin + (pathname === '/' ? '/preview/' : pathname + '/preview/') + MasonryViewData.id
                           // @ts-ignore
                           await navigator.clipboard.writeText(url);
-                          toast.success('复制直链成功！', { duration: 500 })
+                          toast.success('复制分享直链成功！', { duration: 500 })
                         } catch (error) {
-                          toast.error('复制直链失败！', { duration: 500 })
+                          toast.error('复制分享直链失败！', { duration: 500 })
                         }
                       }}
                     >
-                      复制直链
+                      分享
                     </Button>
                     <Button
                       color="primary"
-                      variant="bordered"
-                      aria-label="下载原图"
+                      variant="shadow"
+                      aria-label="下载"
                       size="sm"
                       startContent={<ImageDown size={20}/>}
                       onClick={() => downloadImg()}
                       isLoading={download}
                     >
-                      下载原图
+                      下载
                     </Button>
                   </div>
                   {MasonryViewData?.exif?.model && MasonryViewData?.exif?.f_number
