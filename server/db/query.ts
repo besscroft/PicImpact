@@ -133,7 +133,21 @@ export async function fetchServerImagesListByTag(pageNum: number, tag: string) {
       SELECT 
           image.*,
           STRING_AGG(tags."name", ',') AS tag_names,
-          STRING_AGG(tags.id::text, ',') AS tag_values
+          STRING_AGG(tags.id::text, ',') AS tag_values,
+          (
+              SELECT json_agg(row_to_json(t))
+              FROM (
+                  SELECT copyright.id
+                  FROM "public"."Copyright" AS copyright
+                      INNER JOIN "public"."ImageCopyrightRelation" AS icrelation
+                          ON copyright.id = icrelation."copyrightId"
+                      INNER JOIN "public"."Images" AS image_child
+                          ON icrelation."imageId" = image_child."id"
+                  WHERE copyright.del = 0
+                      AND image_child.del = 0
+                      AND image.id = image_child.id
+              ) t
+          ) AS copyrights
       FROM 
           "public"."Images" AS image
       INNER JOIN "public"."ImageTagRelation" AS relation
@@ -150,6 +164,16 @@ export async function fetchServerImagesListByTag(pageNum: number, tag: string) {
       ORDER BY image.sort DESC, image.create_time DESC, image.update_time DESC
       LIMIT 8 OFFSET ${(pageNum - 1) * 8}
     `
+
+    if (findAll) {
+      // @ts-ignore
+      findAll?.map((item: any) => {
+        if (item.copyrights) {
+          item.copyrights = item?.copyrights.map((item: any) => Number(item.id))
+        }
+      })
+    }
+
     return findAll;
   }
   const findAll = await db.$queryRaw`
@@ -173,14 +197,12 @@ export async function fetchServerImagesListByTag(pageNum: number, tag: string) {
         ) AS copyrights
     FROM 
         "public"."Images" AS image
-    INNER JOIN "public"."ImageTagRelation" AS relation
+    LEFT JOIN "public"."ImageTagRelation" AS relation
         ON image.id = relation."imageId"
-    INNER JOIN "public"."Tags" AS tags
+    LEFT JOIN "public"."Tags" AS tags
         ON relation.tag_value = tags.tag_value
     WHERE 
         image.del = 0
-    AND
-        tags.del = 0
     GROUP BY image.id
     ORDER BY image.sort DESC, image.create_time DESC, image.update_time DESC 
     LIMIT 8 OFFSET ${(pageNum - 1) * 8}
@@ -230,14 +252,12 @@ export async function fetchServerImagesPageTotalByTag(tag: string) {
           image.id
       FROM
           "public"."Images" AS image
-      INNER JOIN "public"."ImageTagRelation" AS relation
+      LEFT JOIN "public"."ImageTagRelation" AS relation
           ON image.id = relation."imageId"
-      INNER JOIN "public"."Tags" AS tags
+      LEFT JOIN "public"."Tags" AS tags
           ON relation.tag_value = tags.tag_value
       WHERE
           image.del = 0
-      AND
-          tags.del = 0
      ) AS unique_images;
   `
   // @ts-ignore
