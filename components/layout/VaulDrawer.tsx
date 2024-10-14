@@ -19,7 +19,8 @@ import {
   Settings,
   LogOut,
   Copyright,
-  Info
+  Info,
+  Orbit,
 } from 'lucide-react'
 import { loginOut } from '~/server/actions'
 
@@ -150,7 +151,7 @@ export default function VaulDrawer() {
                       </ListboxItem>
                       <ListboxItem
                         key="theme"
-                        startContent={theme === 'light' ? <SunMedium size={20} className={iconClasses} /> : <MoonStar size={20}className={iconClasses} />}
+                        startContent={theme === 'light' ? <MoonStar size={20} className={iconClasses} /> : <SunMedium size={20} className={iconClasses} />}
                         onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
                       >
                         { theme === 'light' ? '切换至⌈常夜⌋' : '切换至⌈白夜⌋' }
@@ -179,7 +180,7 @@ export default function VaulDrawer() {
                       </ListboxItem>
                       <ListboxItem
                         key="theme"
-                        startContent={theme === 'light' ? <SunMedium size={20} className={iconClasses} /> : <MoonStar size={20} className={iconClasses} />}
+                        startContent={theme === 'light' ? <MoonStar size={20} className={iconClasses} /> : <SunMedium size={20} className={iconClasses} />}
                         onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
                       >
                         { theme === 'light' ? '切换至⌈常夜⌋' : '切换至⌈白夜⌋' }

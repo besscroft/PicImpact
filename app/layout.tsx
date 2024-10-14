@@ -33,7 +33,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="overflow-y-auto scrollbar-hide">
+    <html lang="en" className="overflow-y-auto scrollbar-hide" suppressHydrationWarning>
       <body>
         <SessionProviders>
           <ButtonStoreProvider>

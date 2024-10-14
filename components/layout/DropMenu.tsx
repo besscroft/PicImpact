@@ -7,7 +7,7 @@ import { loginOut } from '~/server/actions'
 import { useSession } from 'next-auth/react'
 import { useEffect, useState } from 'react'
 import { useTheme } from 'next-themes'
-import { Home, MonitorDot, SunMedium, MoonStar, Github, LogOut, LogIn } from 'lucide-react'
+import { Home, MonitorDot, SunMedium, MoonStar, Github, LogOut, LogIn, Orbit } from 'lucide-react'
 import {
   Avatar,
   AvatarFallback,
@@ -81,7 +81,7 @@ export const DropMenu = () => {
               </DropdownItem>
               <DropdownItem
                 key="theme"
-                startContent={theme === 'light' ? <SunMedium size={20} className={iconClasses} /> : <MoonStar size={20} className={iconClasses} />}
+                startContent={theme === 'light' ? <MoonStar size={20} className={iconClasses} /> : <SunMedium size={20} className={iconClasses} />}
                 onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
               >
                 { theme === 'light' ? '切换至⌈常夜⌋' : '切换至⌈白夜⌋' }
@@ -106,7 +106,7 @@ export const DropMenu = () => {
               </DropdownItem>
               <DropdownItem
                 key="theme"
-                startContent={theme === 'light' ? <SunMedium size={20} className={iconClasses} /> : <MoonStar size={20} className={iconClasses} />}
+                startContent={theme === 'light' ? <MoonStar size={20} className={iconClasses} /> : <SunMedium size={20} className={iconClasses} />}
                 onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
               >
                 { theme === 'light' ? '切换至⌈常夜⌋' : '切换至⌈白夜⌋' }

@@ -16,6 +16,11 @@
   }
 }
 
+[data-theme='dark'] {
+  --background: black;
+  --foreground: white;
+}
+
 .semi-tagInput {
   background-color: #e5e7eb !important;
 }
