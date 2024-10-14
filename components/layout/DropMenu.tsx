@@ -1,6 +1,6 @@
 'use client'
 
-import { Dropdown, DropdownTrigger, DropdownMenu, DropdownItem, Avatar } from '@nextui-org/react'
+import { Dropdown, DropdownTrigger, DropdownMenu, DropdownItem } from '@nextui-org/react'
 import { usePathname } from 'next/navigation'
 import { useRouter } from 'next-nprogress-bar'
 import { loginOut } from '~/server/actions'
@@ -8,6 +8,11 @@ import { useSession } from 'next-auth/react'
 import { useEffect, useState } from 'react'
 import { useTheme } from 'next-themes'
 import { Home, MonitorDot, SunMedium, MoonStar, Github, LogOut, LogIn } from 'lucide-react'
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from "~/components/ui/avatar"
 
 export const DropMenu = () => {
   const router = useRouter()
@@ -27,13 +32,13 @@ export const DropMenu = () => {
   return (
     <Dropdown shadow="sm">
       <DropdownTrigger>
-        <Avatar
-          className="cursor-pointer"
-          size="sm"
-          isBordered
-          src={session?.user?.image || ''}
-          aria-label="下拉菜单"
-        />
+        <Avatar aria-label="下拉菜单" className="size-8 cursor-pointer">
+          <AvatarImage
+            src={session?.user?.image || ''}
+            alt="头像"
+          />
+          <AvatarFallback>CN</AvatarFallback>
+        </Avatar>
       </DropdownTrigger>
         {
           session ?
