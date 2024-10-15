@@ -7,7 +7,7 @@ import { toast } from 'sonner'
 import { useButtonStore } from '~/app/providers/button-store-Providers'
 
 export default function S3Tabs() {
-  const { data, error, isValidating, mutate } = useSWR('/api/v1/s3-info', fetcher
+  const { data, error, isValidating, mutate } = useSWR('/api/v1/settings/s3-info', fetcher
     , { revalidateOnFocus: false })
   const { setS3Edit, setS3EditData } = useButtonStore(
     (state) => state,

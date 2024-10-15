@@ -1,4 +1,4 @@
-import { fetchTagsList } from '~/server/lib/query'
+import { fetchTagsList } from '~/server/db/query'
 import TagList from '~/components/admin/tag/TagList'
 import { Card, CardHeader } from '@nextui-org/react'
 import RefreshButton from '~/components/RefreshButton'

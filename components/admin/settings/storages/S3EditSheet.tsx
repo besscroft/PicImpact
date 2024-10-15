@@ -18,7 +18,7 @@ export default function S3EditSheet() {
   async function submit() {
     setLoading(true)
     try {
-      const res = await fetch('/api/v1/update-s3-info', {
+      const res = await fetch('/api/v1/settings/update-s3-info', {
         headers: {
           'Content-Type': 'application/json',
         },
@@ -26,7 +26,7 @@ export default function S3EditSheet() {
         body: JSON.stringify(s3Data),
       }).then(res => res.json())
       toast.success('更新成功！')
-      mutate('/api/v1/s3-info')
+      mutate('/api/v1/settings/s3-info')
     } catch (e) {
       toast.error('更新失败！')
     } finally {

@@ -1,13 +1,18 @@
 'use client'
 
-import { Dropdown, DropdownTrigger, DropdownMenu, DropdownItem, Avatar } from '@nextui-org/react'
+import { Dropdown, DropdownTrigger, DropdownMenu, DropdownItem } from '@nextui-org/react'
 import { usePathname } from 'next/navigation'
 import { useRouter } from 'next-nprogress-bar'
-import { loginOut } from '~/server/lib/actions'
+import { loginOut } from '~/server/actions'
 import { useSession } from 'next-auth/react'
 import { useEffect, useState } from 'react'
 import { useTheme } from 'next-themes'
-import { Home, MonitorDot, SunMedium, MoonStar, Github, LogOut, LogIn } from 'lucide-react'
+import { Home, MonitorDot, SunMedium, MoonStar, Github, LogOut, LogIn, Orbit } from 'lucide-react'
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from "~/components/ui/avatar"
 
 export const DropMenu = () => {
   const router = useRouter()
@@ -27,13 +32,13 @@ export const DropMenu = () => {
   return (
     <Dropdown shadow="sm">
       <DropdownTrigger>
-        <Avatar
-          className="cursor-pointer"
-          size="sm"
-          isBordered
-          src={session?.user?.image || ''}
-          aria-label="下拉菜单"
-        />
+        <Avatar aria-label="下拉菜单" className="size-8 cursor-pointer">
+          <AvatarImage
+            src={session?.user?.image || ''}
+            alt="头像"
+          />
+          <AvatarFallback>CN</AvatarFallback>
+        </Avatar>
       </DropdownTrigger>
         {
           session ?
@@ -76,7 +81,7 @@ export const DropMenu = () => {
               </DropdownItem>
               <DropdownItem
                 key="theme"
-                startContent={theme === 'light' ? <SunMedium size={20} className={iconClasses} /> : <MoonStar size={20} className={iconClasses} />}
+                startContent={theme === 'light' ? <MoonStar size={20} className={iconClasses} /> : <SunMedium size={20} className={iconClasses} />}
                 onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
               >
                 { theme === 'light' ? '切换至⌈常夜⌋' : '切换至⌈白夜⌋' }
@@ -101,7 +106,7 @@ export const DropMenu = () => {
               </DropdownItem>
               <DropdownItem
                 key="theme"
-                startContent={theme === 'light' ? <SunMedium size={20} className={iconClasses} /> : <MoonStar size={20} className={iconClasses} />}
+                startContent={theme === 'light' ? <MoonStar size={20} className={iconClasses} /> : <SunMedium size={20} className={iconClasses} />}
                 onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
               >
                 { theme === 'light' ? '切换至⌈常夜⌋' : '切换至⌈白夜⌋' }

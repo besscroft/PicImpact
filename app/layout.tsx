@@ -7,7 +7,7 @@ import { ProgressBarProviders } from '~/app/providers/progress-bar-providers'
 import { ButtonStoreProvider } from '~/app/providers/button-store-Providers'
 
 import '~/style/globals.css'
-import { fetchCustomTitle } from '~/server/lib/query'
+import { fetchCustomTitle } from '~/server/db/query'
 
 type Props = {
   params: { id: string }
@@ -33,7 +33,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="overflow-y-auto scrollbar-hide">
+    <html lang="en" className="overflow-y-auto scrollbar-hide" suppressHydrationWarning>
       <body>
         <SessionProviders>
           <ButtonStoreProvider>

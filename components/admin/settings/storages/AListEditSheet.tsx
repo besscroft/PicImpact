@@ -18,7 +18,7 @@ export default function AListEditSheet() {
   async function submit() {
     setLoading(true)
     try {
-      const res = await fetch('/api/v1/update-alist-info', {
+      const res = await fetch('/api/v1/settings/update-alist-info', {
         headers: {
           'Content-Type': 'application/json',
         },
@@ -26,7 +26,7 @@ export default function AListEditSheet() {
         body: JSON.stringify(aListData),
       }).then(res => res.json())
       toast.success('更新成功！')
-      mutate('/api/v1/alist-info')
+      mutate('/api/v1/storage/alist/info')
     } catch (e) {
       toast.error('更新失败！')
     } finally {

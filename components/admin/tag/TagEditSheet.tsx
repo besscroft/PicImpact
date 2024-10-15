@@ -26,7 +26,7 @@ export default function TagEditSheet(props : Readonly<HandleProps>) {
     }
     try {
       setLoading(true)
-      const res = await fetch('/api/v1/tag-update', {
+      const res = await fetch('/api/v1/tags/update', {
         headers: {
           'Content-Type': 'application/json',
         },

@@ -1,4 +1,4 @@
-import { fetchImagesAnalysis } from '~/server/lib/query'
+import { fetchImagesAnalysis } from '~/server/db/query'
 import CardList from '~/components/admin/dashboard/CardList'
 import { DataProps } from '~/types'
 
