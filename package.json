@@ -1,6 +1,6 @@
 {
   "name": "picimpact",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "private": true,
   "author": "Bess Croft <besscroft@foxmail.com>",
   "packageManager": "pnpm@9.7.1",
