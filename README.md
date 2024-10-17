@@ -12,7 +12,7 @@ PicImpact
     <img src=picimpact.jpg width=384 />
 </p>
 
-PicImpact 是一个摄影师专用的摄影作品展示网站，基于 Next.js 开发。
+PicImpact 是一个摄影师专用的摄影作品展示网站，基于 Next.js + Hono.js 开发。
 
 ### 功能特性
 
@@ -31,7 +31,7 @@ PicImpact 是一个摄影师专用的摄影作品展示网站，基于 Next.js �
 
 ### 如何部署
 
-你可以点击下面的按钮来一键部署到 Vercel，然后将 `Build Command` 设置为 `pnpm run build:vercel`，也可以 Fork 项目后手动部署到任何支持的平台。
+你可以点击下面的按钮来一键部署到 Vercel，**然后将 `Build Command` 设置为 `pnpm run build:vercel`**，也可以 Fork 项目后手动部署到任何支持的平台。
 
 <a href="https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fbesscroft%2FPicImpact&env=DATABASE_URL,AUTH_SECRET"><img src="https://vercel.com/button" alt="Deploy with Vercel"/></a>
 
@@ -119,7 +119,11 @@ pnpm run dev
 
 [提出新想法 & 提交 Bug](https://github.com/besscroft/PicImpact/issues/new) | [Fork & Pull Request](https://github.com/besscroft/PicImpact/fork)
 
-PicImpact 欢迎各种贡献，包括但不限于改进，新功能，文档和代码改进，问题和错误报告。`dev` 分支接受 `PR`！
+PicImpact 欢迎各种贡献，包括但不限于改进，新功能，文档和代码改进，问题和错误报告。
+
+`v1` 分支目前仅维护和修复 bug。
+
+`v2` 分支开发下一个版本，同时接受 `PR`！
 
 > 有需求和建议都可以提，有空的话我会处理，但受限于 Next / SSR 的⌈局限性⌋，很多功能的设计上可能会有取舍。
 
@@ -143,7 +147,8 @@ PicImpact 欢迎各种贡献，包括但不限于改进，新功能，文档和�
 ### 技术栈
 
 - Web框架：
-  - [Next](https://github.com/vercel/next.js)
+  - [Next.js](https://github.com/vercel/next.js)
+  - [Hono.js](https://github.com/honojs/hono)
 - UI 框架：
   - [Next UI](https://github.com/nextui-org/nextui)
   - [Radix](https://www.radix-ui.com/)
