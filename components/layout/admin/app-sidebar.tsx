@@ -13,8 +13,6 @@ import {
   RectangleEllipsis,
   SquareTerminal,
   ShieldCheck,
-  MoonStar,
-  SunMedium,
 } from 'lucide-react'
 
 import { NavMain } from '~/components/layout/admin/nav-main'
@@ -32,7 +30,6 @@ import {
   SidebarMenuItem,
   SidebarRail,
 } from '~/components/ui/sidebar'
-import { useTheme } from 'next-themes'
 import { useRouter } from 'next-nprogress-bar'
 
 const data = {
@@ -96,7 +93,6 @@ const data = {
 }
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  const { theme, setTheme } = useTheme()
   const router = useRouter()
   const iconClasses = 'text-xl text-default-500 pointer-events-none flex-shrink-0'
 
@@ -114,12 +110,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               <SidebarMenuButton onClick={() => router.push('/')}>
                 <Earth size={20} className={iconClasses} />
                 <span>回到首页</span>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-            <SidebarMenuItem>
-              <SidebarMenuButton onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}>
-                {theme === 'light' ? <MoonStar size={20} className={iconClasses} /> : <SunMedium size={20} className={iconClasses} />}
-                <span>{ theme === 'light' ? '切换至⌈常夜⌋' : '切换至⌈白夜⌋' }</span>
               </SidebarMenuButton>
             </SidebarMenuItem>
           </SidebarMenu>

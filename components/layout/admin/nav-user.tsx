@@ -3,6 +3,8 @@
 import {
   ChevronsUpDown,
   LogOut,
+  MoonStar,
+  SunMedium,
 } from 'lucide-react'
 import {
   Avatar,
@@ -25,10 +27,14 @@ import {
 } from '~/components/ui/sidebar'
 import { useSession } from 'next-auth/react'
 import { loginOut } from '~/server/actions'
+import { useTheme } from 'next-themes'
+import * as React from 'react'
 
 export function NavUser() {
   const { isMobile } = useSidebar()
+  const { theme, setTheme } = useTheme()
   const { data: session, status } = useSession()
+  const iconClasses = 'text-xl text-default-500 pointer-events-none flex-shrink-0'
 
   return (
     <SidebarMenu>
@@ -69,6 +75,10 @@ export function NavUser() {
               </div>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
+            <DropdownMenuItem className="cursor-pointer" onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}>
+              {theme === 'light' ? <MoonStar size={20} className={iconClasses} /> : <SunMedium size={20} className={iconClasses} />}
+              <span>{ theme === 'light' ? '切换至⌈常夜⌋' : '切换至⌈白夜⌋' }</span>
+            </DropdownMenuItem>
             <DropdownMenuItem className="cursor-pointer" onClick={async () => {
               try {
                 await loginOut()
