@@ -24,6 +24,7 @@ import {
   useSidebar,
 } from '~/components/ui/sidebar'
 import { useSession } from 'next-auth/react'
+import { loginOut } from '~/server/actions'
 
 export function NavUser() {
   const { isMobile } = useSidebar()
@@ -68,7 +69,16 @@ export function NavUser() {
               </div>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>
+            <DropdownMenuItem className="cursor-pointer" onClick={async () => {
+              try {
+                await loginOut()
+                setTimeout(() => {
+                  location.replace('/login')
+                }, 1000);
+              } catch (e) {
+                console.log(e)
+              }
+            }}>
               <LogOut />
               退出登录
             </DropdownMenuItem>
