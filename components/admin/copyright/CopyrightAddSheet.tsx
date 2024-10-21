@@ -1,6 +1,6 @@
 'use client'
 
-import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from '~/components/ui/Sheet'
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from '~/components/ui/sheet'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '~/components/ui/Select'
 import { useButtonStore } from '~/app/providers/button-store-Providers'
 import { Button, Input, Switch, cn, Textarea } from '@nextui-org/react'
@@ -68,7 +68,7 @@ export default function CopyrightAddSheet(props : Readonly<HandleProps>) {
       onOpenChange={() => setCopyrightAdd(!copyrightAdd)}
       modal={false}
     >
-      <SheetContent side="left" onInteractOutside={(event: any) => event.preventDefault()}>
+      <SheetContent side="left" className="overflow-y-auto scrollbar-hide" onInteractOutside={(event: any) => event.preventDefault()}>
         <SheetHeader>
           <SheetTitle>新增版权</SheetTitle>
           <SheetDescription className="space-y-2">

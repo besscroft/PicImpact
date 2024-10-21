@@ -1,7 +1,7 @@
 'use client'
 
 import { DataProps, ImageServerHandleProps, ImageType } from '~/types'
-import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from '~/components/ui/Sheet'
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from '~/components/ui/sheet'
 import React, { useState } from 'react'
 import { useButtonStore } from '~/app/providers/button-store-Providers'
 import { Select, Space } from 'antd'
@@ -60,7 +60,7 @@ export default function ImageBatchDeleteSheet(props : Readonly<ImageServerHandle
       }}
       modal={false}
     >
-      <SheetContent side="left" onInteractOutside={(event: any) => event.preventDefault()}>
+      <SheetContent side="left" className="overflow-y-auto scrollbar-hide" onInteractOutside={(event: any) => event.preventDefault()}>
         <SheetHeader>
           <SheetTitle>批量删除</SheetTitle>
           <SheetDescription className="space-y-2">

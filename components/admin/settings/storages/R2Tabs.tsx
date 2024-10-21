@@ -2,7 +2,7 @@
 
 import { Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Card, CardHeader, Button } from '@nextui-org/react'
 import useSWR from 'swr'
-import { fetcher } from '~/utils/fetcher'
+import { fetcher } from '~/lib/utils/fetcher'
 import { toast } from 'sonner'
 import { useButtonStore } from '~/app/providers/button-store-Providers'
 

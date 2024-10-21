@@ -1,6 +1,6 @@
 'use client'
 
-import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from '~/components/ui/Sheet'
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from '~/components/ui/sheet'
 import { useButtonStore } from '~/app/providers/button-store-Providers'
 import { Button, Input, Switch, cn, Textarea } from '@nextui-org/react'
 import { HandleProps, TagType } from '~/types'
@@ -56,7 +56,7 @@ export default function TagAddSheet(props : Readonly<HandleProps>) {
       onOpenChange={() => setTagAdd(!tagAdd)}
       modal={false}
     >
-      <SheetContent side="left" onInteractOutside={(event: any) => event.preventDefault()}>
+      <SheetContent side="left" className="overflow-y-auto scrollbar-hide" onInteractOutside={(event: any) => event.preventDefault()}>
         <SheetHeader>
           <SheetTitle>新增相册</SheetTitle>
           <SheetDescription className="space-y-2">

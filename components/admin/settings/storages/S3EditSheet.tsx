@@ -1,7 +1,7 @@
 'use client'
 
 import { Config } from '~/types'
-import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from '~/components/ui/Sheet'
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from '~/components/ui/sheet'
 import { Button, Input } from '@nextui-org/react'
 import { useButtonStore } from '~/app/providers/button-store-Providers'
 import { useState } from 'react'
@@ -48,7 +48,7 @@ export default function S3EditSheet() {
       }}
       modal={false}
     >
-      <SheetContent side="left" onInteractOutside={(event: any) => event.preventDefault()}>
+      <SheetContent side="left" className="overflow-y-auto scrollbar-hide" onInteractOutside={(event: any) => event.preventDefault()}>
         <SheetHeader>
           <SheetTitle>编辑 S3</SheetTitle>
           <SheetDescription className="space-y-2">

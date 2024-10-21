@@ -15,7 +15,7 @@ import {
   InputOTPSlot,
 } from '~/components/ui/input-otp'
 import useSWR from 'swr'
-import { fetcher } from '~/utils/fetcher'
+import { fetcher } from '~/lib/utils/fetcher'
 
 export const UserFrom = () => {
   const router = useRouter()

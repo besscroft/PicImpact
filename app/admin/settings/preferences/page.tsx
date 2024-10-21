@@ -3,7 +3,7 @@
 import { Button, Card, CardBody, Input } from '@nextui-org/react'
 import React, { useEffect, useState } from 'react'
 import useSWR from 'swr'
-import { fetcher } from '~/utils/fetcher'
+import { fetcher } from '~/lib/utils/fetcher'
 import { toast } from 'sonner'
 
 export default function Preferences() {

@@ -1,6 +1,6 @@
 'use client'
 
-import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from '~/components/ui/Sheet'
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from '~/components/ui/sheet'
 import { useButtonStore } from '~/app/providers/button-store-Providers'
 
 export default function FileUploadHelpSheet() {
@@ -19,7 +19,7 @@ export default function FileUploadHelpSheet() {
       }}
       modal={false}
     >
-      <SheetContent side="left">
+      <SheetContent side="left" className="overflow-y-auto scrollbar-hide">
         <SheetHeader>
           <SheetTitle>帮助</SheetTitle>
           <SheetDescription className="space-y-2">

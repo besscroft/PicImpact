@@ -1,6 +1,6 @@
 'use client'
 
-import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from '~/components/ui/Sheet'
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from '~/components/ui/sheet'
 import { useButtonStore } from '~/app/providers/button-store-Providers'
 import { DataProps, ImageType } from '~/types'
 import {
@@ -13,7 +13,7 @@ import {
 } from '@nextui-org/react'
 import React from 'react'
 import { Select } from 'antd'
-import { fetcher } from '~/utils/fetcher'
+import { fetcher } from '~/lib/utils/fetcher'
 import useSWR from 'swr'
 import ExifView from '~/components/ExifView'
 
@@ -40,7 +40,7 @@ export default function ImageView() {
         }
       }}
     >
-      <SheetContent side="left">
+      <SheetContent side="left" className="overflow-y-auto scrollbar-hide">
         <SheetHeader>
           <SheetTitle>{imageViewData.title}</SheetTitle>
           <SheetDescription className="space-y-2">

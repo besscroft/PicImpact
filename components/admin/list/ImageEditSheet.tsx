@@ -1,6 +1,6 @@
 'use client'
 
-import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from '~/components/ui/Sheet'
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from '~/components/ui/sheet'
 import { useButtonStore } from '~/app/providers/button-store-Providers'
 import { ImageServerHandleProps, ImageType } from '~/types'
 import { useSWRInfiniteServerHook } from '~/hooks/useSWRInfiniteServerHook'
@@ -8,7 +8,7 @@ import { Button, cn, Input, Switch, Textarea } from '@nextui-org/react'
 import { Select } from 'antd'
 import React, { useState } from 'react'
 import { toast } from 'sonner'
-import { fetcher } from '~/utils/fetcher'
+import { fetcher } from '~/lib/utils/fetcher'
 import useSWR from 'swr'
 
 export default function ImageEditSheet(props : Readonly<ImageServerHandleProps & { pageNum: number } & { tag: string }>) {
@@ -67,7 +67,7 @@ export default function ImageEditSheet(props : Readonly<ImageServerHandleProps &
       }}
       modal={false}
     >
-      <SheetContent side="left" onInteractOutside={(event: any) => event.preventDefault()}>
+      <SheetContent side="left" className="overflow-y-auto scrollbar-hide" onInteractOutside={(event: any) => event.preventDefault()}>
         <SheetHeader>
           <SheetTitle>编辑图片</SheetTitle>
           <SheetDescription className="space-y-2">

@@ -21,7 +21,7 @@ import {
   InputOTPSlot,
 } from '~/components/ui/input-otp'
 import useSWR from 'swr'
-import { fetcher } from '~/utils/fetcher'
+import { fetcher } from '~/lib/utils/fetcher'
 
 export default function Authenticator() {
   const [password, setPassword] = useState('')
