@@ -12,19 +12,14 @@ import {
   MoonStar,
   LogIn,
   Home,
-  Image,
   MonitorDot,
-  ImageUp,
-  Milestone,
-  Settings,
+  GalleryHorizontalEnd,
   LogOut,
-  Copyright,
-  Info,
-  Orbit,
 } from 'lucide-react'
 import { loginOut } from '~/server/actions'
+import { DataProps, TagType } from '~/types'
 
-export default function VaulDrawer() {
+export default function VaulDrawer(props: Readonly<DataProps>) {
   const { data: session, status } = useSession()
   const router = useRouter()
   const pathname = usePathname()
@@ -61,76 +56,35 @@ export default function VaulDrawer() {
                           首页
                         </Drawer.Close>
                       </ListboxItem>
+                      {Array.isArray(props.data) && props.data?.map((tag: TagType, index: any, array: TagType[]) => (
+                        <ListboxItem
+                          key={tag.id}
+                          startContent={<GalleryHorizontalEnd size={20} className={iconClasses} />}
+                          onClick={() => router.push(tag.tag_value)}
+                          className={pathname === tag.tag_value ? activeClasses : ''}
+                        >
+                          <Drawer.Close className="w-full text-left">
+                            {tag.name}
+                          </Drawer.Close>
+                        </ListboxItem>
+                      ))}
                       <ListboxItem
                         key="admin"
                         startContent={<MonitorDot size={20} className={iconClasses} />}
                         onClick={() => router.push('/admin')}
                         className={pathname === '/admin' ? activeClasses : ''}
+                        showDivider
                       >
                         <Drawer.Close className="w-full text-left">
                           控制台
                         </Drawer.Close>
                       </ListboxItem>
                       <ListboxItem
-                        key="upload"
-                        startContent={<ImageUp size={20} className={iconClasses} />}
-                        onClick={() => router.push('/admin/upload')}
-                        className={pathname === '/admin/upload' ? activeClasses : ''}
+                        key="theme"
+                        startContent={theme === 'light' ? <MoonStar size={20} className={iconClasses} /> : <SunMedium size={20} className={iconClasses} />}
+                        onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
                       >
-                        <Drawer.Close className="w-full text-left">
-                          上传
-                        </Drawer.Close>
-                      </ListboxItem>
-                      <ListboxItem
-                        key="list"
-                        startContent={<Image size={20} className={iconClasses} />}
-                        onClick={() => router.push('/admin/list')}
-                        className={pathname === '/admin/list' ? activeClasses : ''}
-                      >
-                        <Drawer.Close className="w-full text-left">
-                          图片维护
-                        </Drawer.Close>
-                      </ListboxItem>
-                      <ListboxItem
-                        key="tag"
-                        startContent={<Milestone size={20} className={iconClasses} />}
-                        onClick={() => router.push('/admin/tag')}
-                        className={pathname === '/admin/tag' ? activeClasses : ''}
-                      >
-                        <Drawer.Close className="w-full text-left">
-                          相册管理
-                        </Drawer.Close>
-                      </ListboxItem>
-                      <ListboxItem
-                        key="tag"
-                        startContent={<Copyright size={20} className={iconClasses} />}
-                        onClick={() => router.push('/admin/copyright')}
-                        className={pathname === '/admin/copyright' ? activeClasses : ''}
-                      >
-                        <Drawer.Close className="w-full text-left">
-                          版权管理
-                        </Drawer.Close>
-                      </ListboxItem>
-                      <ListboxItem
-                        key="settings"
-                        startContent={<Settings size={20} className={iconClasses} />}
-                        onClick={() => router.push('/admin/settings/preferences')}
-                        className={pathname.startsWith('/admin/settings') ? activeClasses : ''}
-                      >
-                        <Drawer.Close className="w-full text-left">
-                          设置
-                        </Drawer.Close>
-                      </ListboxItem>
-                      <ListboxItem
-                        key="tag"
-                        startContent={<Info size={20} className={iconClasses} />}
-                        onClick={() => router.push('/admin/about')}
-                        className={pathname === '/admin/about' ? activeClasses : ''}
-                        showDivider
-                      >
-                        <Drawer.Close className="w-full text-left">
-                          关于
-                        </Drawer.Close>
+                        { theme === 'light' ? '切换至⌈常夜⌋' : '切换至⌈白夜⌋' }
                       </ListboxItem>
                       <ListboxItem
                         key="loginOut"
@@ -149,13 +103,6 @@ export default function VaulDrawer() {
                           退出登录
                         </div>
                       </ListboxItem>
-                      <ListboxItem
-                        key="theme"
-                        startContent={theme === 'light' ? <MoonStar size={20} className={iconClasses} /> : <SunMedium size={20} className={iconClasses} />}
-                        onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
-                      >
-                        { theme === 'light' ? '切换至⌈常夜⌋' : '切换至⌈白夜⌋' }
-                      </ListboxItem>
                     </Listbox>
                     :
                     <Listbox
@@ -172,18 +119,18 @@ export default function VaulDrawer() {
                         </Drawer.Close>
                       </ListboxItem>
                       <ListboxItem
-                        key="login"
-                        onClick={() => router.push('/login')}
-                        startContent={<LogIn size={20} className={iconClasses} />}
-                      >
-                        登录
-                      </ListboxItem>
-                      <ListboxItem
                         key="theme"
                         startContent={theme === 'light' ? <MoonStar size={20} className={iconClasses} /> : <SunMedium size={20} className={iconClasses} />}
                         onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
                       >
                         { theme === 'light' ? '切换至⌈常夜⌋' : '切换至⌈白夜⌋' }
+                      </ListboxItem>
+                      <ListboxItem
+                        key="login"
+                        onClick={() => router.push('/login')}
+                        startContent={<LogIn size={20} className={iconClasses} />}
+                      >
+                        登录
                       </ListboxItem>
                     </Listbox>
                 }

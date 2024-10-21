@@ -3,6 +3,7 @@
 import * as React from 'react'
 import {
   Copyright,
+  Earth,
   Image,
   ImageUp,
   Info,
@@ -32,6 +33,7 @@ import {
   SidebarRail,
 } from '~/components/ui/sidebar'
 import { useTheme } from 'next-themes'
+import { useRouter } from 'next-nprogress-bar'
 
 const data = {
   navMain: [
@@ -95,6 +97,7 @@ const data = {
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { theme, setTheme } = useTheme()
+  const router = useRouter()
   const iconClasses = 'text-xl text-default-500 pointer-events-none flex-shrink-0'
 
   return (
@@ -107,6 +110,12 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <NavProjects projects={data.projects} />
         <SidebarGroup className="mt-auto">
           <SidebarMenu>
+            <SidebarMenuItem>
+              <SidebarMenuButton onClick={() => router.push('/')}>
+                <Earth size={20} className={iconClasses} />
+                <span>回到首页</span>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
             <SidebarMenuItem>
               <SidebarMenuButton onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}>
                 {theme === 'light' ? <MoonStar size={20} className={iconClasses} /> : <SunMedium size={20} className={iconClasses} />}
