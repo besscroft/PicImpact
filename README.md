@@ -35,10 +35,10 @@ PicImpact 是一个摄影师专用的摄影作品展示网站，基于 Next.js +
 
 <a href="https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fbesscroft%2FPicImpact&env=DATABASE_URL,AUTH_SECRET"><img src="https://vercel.com/button" alt="Deploy with Vercel"/></a>
 
-| Key          | 备注                                                                                       |
-|--------------|------------------------------------------------------------------------------------------|
-| DATABASE_URL | Postgre 数据库 url，如：postgres://账号:密码@aws-0-ap-northeast-1.pooler.supabase.com:5432/postgres |
-| AUTH_SECRET  | 权限机密，你可以执行 npx auth secret 生成一个，反正是随机的字符串就行                                              |
+| Key          | 备注                                                                                           |
+|--------------|----------------------------------------------------------------------------------------------|
+| DATABASE_URL | Postgre 数据库 url，`postgresql://[用户名]:[密码]@[地址和端口]/[数据库]`，如：`postgresql://postgres:666666@aws-0-ap-northeast-1.pooler.supabase.com:6543/postgres` |
+| AUTH_SECRET  | 权限机密，你可以执行 npx auth secret 生成一个，反正是随机的字符串就行                                                  |
 
 默认账号：`admin@qq.com`，默认密码：`666666`，**登录后请先去设置里面修改密码！**
 
@@ -56,7 +56,7 @@ PicImpact 是一个摄影师专用的摄影作品展示网站，基于 Next.js +
 ```shell
 docker run -d --name picimpact \
   -p 3000:3000 \
-  -e DATABASE_URL="postgres://账号:密码@aws-0-ap-northeast-1.pooler.supabase.com:5432/postgres" \
+  -e DATABASE_URL="postgresql://[用户名]:[密码]@[地址和端口]/[数据库]" \
   -e AUTH_SECRET="自己运行npx auth secret或一串随机的字符串都行" \
   besscroft/picimpact:latest
 ```
