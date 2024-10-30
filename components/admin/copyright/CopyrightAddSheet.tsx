@@ -28,7 +28,7 @@ export default function CopyrightAddSheet(props : Readonly<HandleProps>) {
     }
     try {
       setLoading(true)
-      const res = await fetch('/api/v1/copyright/add', {
+      const res = await fetch('/api/v1/copyrights/add', {
         headers: {
           'Content-Type': 'application/json',
         },

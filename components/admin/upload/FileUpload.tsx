@@ -6,7 +6,7 @@ import { Upload, ConfigProvider, Select as AntdSelect } from 'antd'
 import { toast } from 'sonner'
 import useSWR from 'swr'
 import { fetcher } from '~/lib/utils/fetcher'
-import { ExifType, TagType, ImageType } from '~/types'
+import { ExifType, AlbumType, ImageType } from '~/types'
 import { Button, Select, SelectItem, Input, Divider, Card, CardBody, CardHeader, CardFooter } from '@nextui-org/react'
 import ExifReader from 'exifreader'
 import Compressor from 'compressorjs'
@@ -26,7 +26,7 @@ export default function FileUpload() {
   const [alistStorage, setAlistStorage] = useState([])
   const [storageSelect, setStorageSelect] = useState(false)
   const [storage, setStorage] = useState(new Set([] as string[]))
-  const [tag, setTag] = useState(new Set([] as string[]))
+  const [album, setAlbum] = useState(new Set([] as string[]))
   const [alistMountPath, setAlistMountPath] = useState(new Set([] as string[]))
   const [exif, setExif] = useState({} as ExifType)
   const [title, setTitle] = useState('')
@@ -115,17 +115,17 @@ export default function FileUpload() {
   async function submit() {
     try {
       setLoading(true)
-      const tagArray = Array.from(tag)
+      const albumArray = Array.from(album)
       if (!url || url === '') {
         toast.warning('请先上传文件！')
         return
       }
-      if (tagArray.length === 0 || tagArray[0] === '') {
+      if (albumArray.length === 0 || albumArray[0] === '') {
         toast.warning('请先选择相册！')
         return
       }
       const data = {
-        tag: tagArray[0],
+        album: albumArray[0],
         url: url,
         title: title,
         preview_url: previewUrl,
@@ -137,7 +137,7 @@ export default function FileUpload() {
         lat: lat,
         lon: lon,
       } as ImageType
-      const res = await fetch('/api/v1/image/add', {
+      const res = await fetch('/api/v1/images/add', {
         headers: {
           'Content-Type': 'application/json',
         },
@@ -162,7 +162,7 @@ export default function FileUpload() {
     setPreviewUrl('')
     setImageLabels([])
     const storageArray = Array.from(storage)
-    const tagArray = Array.from(tag)
+    const albumArray = Array.from(album)
     const alistMountPathArray = Array.from(alistMountPath)
     if (storageArray.length === 0 || storageArray[0] === '') {
       toast.warning('请先选择存储！')
@@ -170,7 +170,7 @@ export default function FileUpload() {
     } else if (storageArray[0] === 'alist' && (alistMountPathArray.length === 0 || alistMountPathArray[0] === '')) {
       toast.warning('请先选择挂载目录！')
       file.abort()
-    } else if (tagArray.length === 0 || tagArray[0] === '') {
+    } else if (albumArray.length === 0 || albumArray[0] === '') {
       toast.warning('请先选择相册！')
       file.abort()
     } else {
@@ -233,8 +233,8 @@ export default function FileUpload() {
   async function autoSubmit(file: any, url: string, previewUrl: string) {
     try {
       if (mode === 'multiple') {
-        const tagArray = Array.from(tag)
-        if (tagArray.length === 0 || tagArray[0] === '') {
+        const albumArray = Array.from(album)
+        if (albumArray.length === 0 || albumArray[0] === '') {
           toast.warning('请先选择相册！')
           return
         }
@@ -287,7 +287,7 @@ export default function FileUpload() {
             const img = new Image();
             img.onload = async () => {
               const data = {
-                tag: tagArray[0],
+                album: albumArray[0],
                 url: url,
                 title: '',
                 preview_url: previewUrl,
@@ -299,7 +299,7 @@ export default function FileUpload() {
                 lat: '',
                 lon: '',
               } as ImageType
-              const res = await fetch('/api/v1/image/add', {
+              const res = await fetch('/api/v1/images/add', {
                 headers: {
                   'Content-Type': 'application/json',
                 },
@@ -366,15 +366,15 @@ export default function FileUpload() {
   }
 
   async function onRequestUpload(option: any) {
-    const tagArray = Array.from(tag)
-    const res = await uploadFile(option.file, tagArray[0])
+    const albumArray = Array.from(album)
+    const res = await uploadFile(option.file, albumArray[0])
     if (res?.code === 200) {
       toast.success('图片上传成功，尝试生成预览图片并上传！')
       try {
-        if (tagArray[0] === '/') {
+        if (albumArray[0] === '/') {
           await uploadPreviewImage(option, '/preview', res?.data)
         } else {
-          await uploadPreviewImage(option, tagArray[0] + '/preview', res?.data)
+          await uploadPreviewImage(option, albumArray[0] + '/preview', res?.data)
         }
       } catch (e) {
         console.log(e)
@@ -393,7 +393,7 @@ export default function FileUpload() {
   async function onRemoveFile() {
     setStorageSelect(false)
     setStorage(new Set([] as string[]))
-    setTag(new Set([] as string[]))
+    setAlbum(new Set([] as string[]))
     setAlistMountPath(new Set([] as string[]))
     setExif({} as ExifType)
     setUrl('')
@@ -523,16 +523,16 @@ export default function FileUpload() {
               label="相册"
               placeholder="请选择相册"
               isLoading={isLoading}
-              selectedKeys={tag}
+              selectedKeys={album}
               onSelectionChange={(keys: any) => {
                 const updatedSet = new Set([] as string[]);
                 updatedSet.add(keys?.currentKey);
-                setTag(updatedSet)
+                setAlbum(updatedSet)
               }}
             >
-              {data?.map((tag: TagType) => (
-                <SelectItem key={tag.tag_value} value={tag.tag_value}>
-                  {tag.name}
+              {data?.map((album: AlbumType) => (
+                <SelectItem key={album.album_value} value={album.album_value}>
+                  {album.name}
                 </SelectItem>
               ))}
             </Select>

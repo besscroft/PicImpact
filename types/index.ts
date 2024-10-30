@@ -16,7 +16,7 @@ export type ImageServerHandleProps = {
 export type ImageHandleProps = {
   handle: (pageNum: number, tag: string) => any
   args: string
-  tag: string
+  album: string
   totalHandle: (tag: string) => any
 }
 
@@ -26,10 +26,10 @@ export type LinkProps = {
   data: any
 }
 
-export type TagType = {
-  id: number;
+export type AlbumType = {
+  id: string;
   name: string;
-  tag_value: string;
+  album_value: string;
   detail: string;
   show: number;
   sort: number;
@@ -54,7 +54,7 @@ export type ExifType = {
 }
 
 export type ImageType = {
-  id: number;
+  id: string;
   title: string;
   url: string;
   preview_url: string;
@@ -64,17 +64,17 @@ export type ImageType = {
   height: number;
   lon: string;
   lat: string;
-  tag: string;
+  album: string;
   detail: string;
   show: number;
   sort: number;
-  tag_names: string;
-  tag_values: string;
+  album_names: string;
+  album_values: string;
   copyrights: any[];
 }
 
 export type CopyrightType = {
-  id: number;
+  id: string;
   name: string;
   social_name: string;
   type: string;
@@ -86,7 +86,7 @@ export type CopyrightType = {
 }
 
 export type Config = {
-  id: number;
+  id: string;
   config_key: string;
   config_value: string;
   detail: string;

@@ -2,47 +2,48 @@
 
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from '~/components/ui/sheet'
 import { useButtonStore } from '~/app/providers/button-store-Providers'
-import { HandleProps, TagType } from '~/types'
-import { useSWRHydrated } from '~/hooks/useSWRHydrated'
-import { Button, cn, Input, Switch, Textarea } from '@nextui-org/react'
+import { Button, Input, Switch, cn, Textarea } from '@nextui-org/react'
+import { HandleProps, AlbumType } from '~/types'
 import { useState } from 'react'
 import { toast } from 'sonner'
+import { useSWRHydrated } from '~/hooks/useSWRHydrated'
 
-export default function TagEditSheet(props : Readonly<HandleProps>) {
-  const { mutate } = useSWRHydrated(props)
-  const { tagEdit, tag, setTagEdit, setTagEditData } = useButtonStore(
+export default function AlbumAddSheet(props : Readonly<HandleProps>) {
+  const { isLoading, mutate, error } = useSWRHydrated(props)
+  const { tagAdd, setTagAdd } = useButtonStore(
     (state) => state,
   )
+  const [data, setData] = useState({} as AlbumType)
   const [loading, setLoading] = useState(false)
 
   async function submit() {
-    if (!tag?.name || !tag?.tag_value) {
+    if (!data.name || !data.album_value) {
       toast.error('请先填写必填项！')
       return
     }
-    if (tag.tag_value && tag.tag_value.charAt(0) !== '/') {
+    if (data.album_value && data.album_value.charAt(0) !== '/') {
       toast.error('路由必须以 / 开头！')
       return
     }
     try {
       setLoading(true)
-      const res = await fetch('/api/v1/tags/update', {
+      const res = await fetch('/api/v1/tags/add', {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(tag),
-        method: 'PUT',
+        body: JSON.stringify(data),
+        method: 'POST',
       }).then(response => response.json())
       if (res.code === 200) {
-        toast.success('更新成功！')
-        setTagEditData({} as TagType)
-        setTagEdit(false)
+        toast.success('添加成功！')
+        setTagAdd(false)
+        setData({} as AlbumType)
         await mutate()
       } else {
         toast.error(res.message)
       }
     } catch (e) {
-      toast.error('更新失败！')
+      toast.error('添加失败！')
     } finally {
       setLoading(false)
     }
@@ -51,23 +52,18 @@ export default function TagEditSheet(props : Readonly<HandleProps>) {
   return (
     <Sheet
       defaultOpen={false}
-      open={tagEdit}
-      onOpenChange={(open: boolean) => {
-        if (!open) {
-          setTagEdit(false)
-          setTagEditData({} as TagType)
-        }
-      }}
+      open={tagAdd}
+      onOpenChange={() => setTagAdd(!tagAdd)}
       modal={false}
     >
-      <SheetContent side="left" onInteractOutside={(event: any) => event.preventDefault()}>
+      <SheetContent side="left" className="overflow-y-auto scrollbar-hide" onInteractOutside={(event: any) => event.preventDefault()}>
         <SheetHeader>
-          <SheetTitle>编辑相册</SheetTitle>
+          <SheetTitle>新增相册</SheetTitle>
           <SheetDescription className="space-y-2">
             <Input
               isRequired
-              value={tag?.name}
-              onValueChange={(value) => setTagEditData({ ...tag, name: value })}
+              value={data.name}
+              onValueChange={(value) => setData({ ...data, name: value })}
               isClearable
               type="text"
               variant="bordered"
@@ -76,8 +72,8 @@ export default function TagEditSheet(props : Readonly<HandleProps>) {
             />
             <Input
               isRequired
-              value={tag?.tag_value}
-              onValueChange={(value) => setTagEditData({ ...tag, tag_value: value })}
+              value={data.album_value}
+              onValueChange={(value) => setData({ ...data, album_value: value })}
               isClearable
               type="text"
               variant="bordered"
@@ -85,8 +81,8 @@ export default function TagEditSheet(props : Readonly<HandleProps>) {
               placeholder="输入路由，如：/tietie"
             />
             <Textarea
-              value={tag?.detail}
-              onValueChange={(value) => setTagEditData({ ...tag, detail: value })}
+              value={data.detail}
+              onValueChange={(value) => setData({ ...data, detail: value })}
               label="详情"
               variant="bordered"
               placeholder="输入详情"
@@ -97,19 +93,16 @@ export default function TagEditSheet(props : Readonly<HandleProps>) {
               }}
             />
             <Input
-              value={String(tag?.sort)}
-              onValueChange={(value) => setTagEditData({ ...tag, sort: Number(value) })}
+              value={String(data.sort)}
+              onValueChange={(value) => setData({ ...data, sort: Number(value) })}
               type="number"
               variant="bordered"
               label="排序"
               placeholder="0"
             />
             <Switch
-              isSelected={tag?.show === 0}
-              value={tag?.show === 0 ? 'true' : 'false'}
-              onValueChange={(value) => {
-                setTagEditData({ ...tag, show: value ? 0 : 1 })
-              }}
+              value={data.show === 0 ? 'true' : 'false'}
+              onValueChange={(value) => setData({ ...data, show: value ? 0 : 1 })}
               classNames={{
                 base: cn(
                   "inline-flex flex-row-reverse w-full max-w-full bg-content1 hover:bg-content2 items-center",
@@ -139,9 +132,9 @@ export default function TagEditSheet(props : Readonly<HandleProps>) {
               color="primary"
               variant="shadow"
               onClick={() => submit()}
-              aria-label="更新"
+              aria-label="提交"
             >
-              更新
+              提交
             </Button>
           </SheetDescription>
         </SheetHeader>

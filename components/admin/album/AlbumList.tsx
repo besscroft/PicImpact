@@ -24,26 +24,26 @@ import {
 } from '@nextui-org/react'
 import { ArrowDown10, Eye, EyeOff, Pencil, Trash } from 'lucide-react'
 import { toast } from 'sonner'
-import DefaultTag from '~/components/admin/tag/DefaultTag'
-import { TagType } from '~/types'
+import DefaultAlbum from '~/components/admin/album/DefaultAlbum'
+import { AlbumType } from '~/types'
 import { useButtonStore } from '~/app/providers/button-store-Providers'
 
-export default function TagList(props : Readonly<HandleProps>) {
+export default function AlbumList(props : Readonly<HandleProps>) {
   const { data, isLoading, error, mutate } = useSWRHydrated(props)
   const [isOpen, setIsOpen] = useState(false)
-  const [tag, setTag] = useState({} as TagType)
+  const [album, setAlbum] = useState({} as AlbumType)
   const [deleteLoading, setDeleteLoading] = useState(false)
-  const [updateTagLoading, setUpdateTagLoading] = useState(false)
-  const [updateTagId, setUpdateTagId] = useState(0)
-  const { setTagEdit, setTagEditData } = useButtonStore(
+  const [updateAlbumLoading, setUpdateAlbumLoading] = useState(false)
+  const [updateAlbumId, setUpdateAlbumId] = useState('')
+  const { setAlbumEdit, setAlbumEditData } = useButtonStore(
     (state) => state,
   )
 
-  async function deleteTag() {
+  async function deleteAlbum() {
     setDeleteLoading(true)
-    if (!tag.id) return
+    if (!album.id) return
     try {
-      const res = await fetch(`/api/v1/tags/delete/${tag.id}`, {
+      const res = await fetch(`/api/v1/albums/delete/${album.id}`, {
         method: 'DELETE',
       })
       if (res.status === 200) {
@@ -60,11 +60,11 @@ export default function TagList(props : Readonly<HandleProps>) {
     }
   }
 
-  async function updateTagShow(id: number, show: number) {
+  async function updateAlbumShow(id: string, show: number) {
     try {
-      setUpdateTagId(id)
-      setUpdateTagLoading(true)
-      const res = await fetch(`/api/v1/tags/update-show`, {
+      setUpdateAlbumId(id)
+      setUpdateAlbumLoading(true)
+      const res = await fetch(`/api/v1/albums/update-show`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -83,22 +83,22 @@ export default function TagList(props : Readonly<HandleProps>) {
     } catch (e) {
       toast.error('更新失败！')
     } finally {
-      setUpdateTagId(0)
-      setUpdateTagLoading(false)
+      setUpdateAlbumId('')
+      setUpdateAlbumLoading(false)
     }
   }
 
   return (
     <>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-        <DefaultTag/>
-        {data && data.map((tag: TagType) => (
-          <Card key={tag.id} shadow="sm" isFooterBlurred className="h-64 show-up-motion">
+        <DefaultAlbum/>
+        {data && data.map((album: AlbumType) => (
+          <Card key={album.id} shadow="sm" isFooterBlurred className="h-64 show-up-motion">
             <CardHeader className="flex gap-3">
-              <p>{tag.name}</p>
+              <p>{album.name}</p>
               <Popover placement="top" shadow="sm">
                 <PopoverTrigger className="cursor-pointer">
-                  <Chip className="select-none" color="success" variant="shadow" aria-label="路由">{tag.tag_value}</Chip>
+                  <Chip className="select-none" color="success" variant="shadow" aria-label="路由">{album.album_value}</Chip>
                 </PopoverTrigger>
                 <PopoverContent>
                   <div className="px-1 py-2 select-none">
@@ -109,17 +109,17 @@ export default function TagList(props : Readonly<HandleProps>) {
               </Popover>
             </CardHeader>
             <CardBody>
-              <p>{tag.detail || '没有介绍'}</p>
+              <p>{album.detail || '没有介绍'}</p>
             </CardBody>
             <CardFooter className="flex space-x-1 select-none before:bg-white/10 border-white/20 border-1 overflow-hidden py-1 absolute before:rounded-xl rounded-large bottom-1 w-[calc(100%_-_8px)] shadow-small ml-1 z-10">
               <div className="flex flex-1 space-x-1 items-center">
-                {updateTagLoading && updateTagId === tag.id ? <Spinner size="sm" /> :
+                {updateAlbumLoading && updateAlbumId === album.id ? <Spinner size="sm" /> :
                   <Switch
                     defaultSelected
                     size="sm"
                     color="success"
-                    isSelected={tag.show === 0}
-                    isDisabled={updateTagLoading}
+                    isSelected={album.show === 0}
+                    isDisabled={updateAlbumLoading}
                     thumbIcon={({ isSelected }) =>
                       isSelected ? (
                         <Eye size={20} />
@@ -127,7 +127,7 @@ export default function TagList(props : Readonly<HandleProps>) {
                         <EyeOff className="dark:bg-zinc-700" size={20} />
                       )
                     }
-                    onValueChange={(isSelected: boolean) => updateTagShow(tag.id, isSelected ? 0 : 1)}
+                    onValueChange={(isSelected: boolean) => updateAlbumShow(album.id, isSelected ? 0 : 1)}
                   />
                 }
                 <Popover placement="top" shadow="sm">
@@ -137,7 +137,7 @@ export default function TagList(props : Readonly<HandleProps>) {
                       variant="shadow"
                       startContent={<ArrowDown10 size={20} />}
                       aria-label="排序"
-                    >{tag.sort}</Chip>
+                    >{album.sort}</Chip>
                   </PopoverTrigger>
                   <PopoverContent>
                     <div className="px-1 py-2 select-none">
@@ -153,8 +153,8 @@ export default function TagList(props : Readonly<HandleProps>) {
                     isIconOnly
                     size="sm"
                     onClick={() => {
-                      setTagEditData(tag)
-                      setTagEdit(true)
+                      setAlbumEditData(album)
+                      setAlbumEdit(true)
                     }}
                     aria-label="编辑相册"
                   >
@@ -166,7 +166,7 @@ export default function TagList(props : Readonly<HandleProps>) {
                     isIconOnly
                     size="sm"
                     onClick={() => {
-                      setTag(tag)
+                      setAlbum(album)
                       setIsOpen(true)
                     }}
                     aria-label="删除相册"
@@ -187,16 +187,16 @@ export default function TagList(props : Readonly<HandleProps>) {
         <ModalContent>
           <ModalHeader className="flex flex-col gap-1">确定要删掉？</ModalHeader>
           <ModalBody>
-            <p>相册 ID：{tag.id}</p>
-            <p>相册名称：{tag.name}</p>
-            <p>相册路由：{tag.tag_value}</p>
+            <p>相册 ID：{album.id}</p>
+            <p>相册名称：{album.name}</p>
+            <p>相册路由：{album.album_value}</p>
           </ModalBody>
           <ModalFooter>
             <Button
               color="primary"
               variant="flat"
               onClick={() => {
-                setTag({} as TagType)
+                setAlbum({} as AlbumType)
                 setIsOpen(false)
               }}
               aria-label="不删除"
@@ -206,7 +206,7 @@ export default function TagList(props : Readonly<HandleProps>) {
             <Button
               color="danger"
               isLoading={deleteLoading}
-              onClick={() => deleteTag()}
+              onClick={() => deleteAlbum()}
               aria-label="确认删除"
             >
               是的

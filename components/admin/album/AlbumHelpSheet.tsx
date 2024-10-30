@@ -3,18 +3,18 @@
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from '~/components/ui/sheet'
 import { useButtonStore } from '~/app/providers/button-store-Providers'
 
-export default function TagHelpSheet() {
-  const { tagHelp, setTagHelp } = useButtonStore(
+export default function AlbumHelpSheet() {
+  const { albumHelp, setAlbumHelp } = useButtonStore(
     (state) => state,
   )
 
   return (
     <Sheet
       defaultOpen={false}
-      open={tagHelp}
+      open={albumHelp}
       onOpenChange={(open: boolean) => {
         if (!open) {
-          setTagHelp(false)
+          setAlbumHelp(false)
         }
       }}
       modal={false}

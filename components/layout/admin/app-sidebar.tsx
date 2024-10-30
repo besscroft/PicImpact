@@ -51,7 +51,7 @@ const data = {
     },
     {
       title: "相册管理",
-      url: "/admin/tag",
+      url: "/admin/album",
       icon: Milestone,
     },
     {

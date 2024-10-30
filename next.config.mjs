@@ -5,10 +5,7 @@ const nextConfig = {
   compiler: {
     removeConsole: process.env.NODE_ENV === "production",
   },
-  experimental: {
-    serverComponentsExternalPackages: ['pg'],
-    instrumentationHook: true,
-  },
+  serverExternalPackages: ['pg'],
   eslint: {
     ignoreDuringBuilds: true,
   },

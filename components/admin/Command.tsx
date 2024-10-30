@@ -48,7 +48,7 @@ export default function Command() {
             <span>图片维护</span>
           </CommandItem>
           <CommandItem className="cursor-pointer" onSelect={() => {
-            router.push('/admin/tag')
+            router.push('/admin/album')
             setSearchOpen(false)
           }}>
             <Milestone className="mr-2 h-4 w-4" />

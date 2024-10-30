@@ -29,7 +29,7 @@ app.post('/add', async (c) => {
 
 app.delete('/delete/:id', async (c) => {
   const { id } = c.req.param()
-  const data = await deleteCopyright(Number(id));
+  const data = await deleteCopyright(id);
   return c.json(data)
 })
 

@@ -29,7 +29,7 @@ export default function ImageBatchDeleteSheet(props : Readonly<ImageServerHandle
     }
     try {
       setLoading(true)
-      await fetch('/api/v1/image/batch-delete', {
+      await fetch('/api/v1/images/batch-delete', {
         headers: {
           'Content-Type': 'application/json',
         },

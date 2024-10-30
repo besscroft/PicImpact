@@ -1,7 +1,7 @@
 'use client'
 
 import { Button } from '@nextui-org/react'
-import { TagType } from '~/types'
+import { AlbumType } from '~/types'
 import { usePathname } from 'next/navigation'
 import { useRouter } from 'next-nprogress-bar'
 import { DataProps } from '~/types'
@@ -21,17 +21,17 @@ export default function HeaderLink(props: Readonly<DataProps>) {
       >
         首页
       </Button>
-      {Array.isArray(props.data) && props.data?.map((tag: TagType) => (
+      {Array.isArray(props.data) && props.data?.map((album: AlbumType) => (
         <Button
-          key={tag.id}
+          key={a.id}
           color="primary"
           radius="none"
           variant="light"
-          className={pathname === tag.tag_value ? 'border-b-2 border-indigo-600' : ''}
-          onClick={() => router.push(tag.tag_value)}
-          aria-label={tag.name}
+          className={pathname === album.album_value ? 'border-b-2 border-indigo-600' : ''}
+          onClick={() => router.push(album.album_value)}
+          aria-label={album.name}
         >
-          {tag.name}
+          {album.name}
         </Button>
       ))}
     </>

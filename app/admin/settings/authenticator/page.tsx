@@ -12,7 +12,7 @@ import {
   ModalFooter, Modal
 } from '@nextui-org/react'
 import { toast } from 'sonner'
-import React, {useEffect, useState} from 'react'
+import React, { useEffect, useState } from 'react'
 import { useQRCode } from 'next-qrcode'
 import {
   InputOTP,
@@ -36,8 +36,6 @@ export default function Authenticator() {
       revalidateOnReconnect: false,
     }
   )
-
-  console.log(data?.data?.auth_enable)
 
   async function getQRCode() {
     try {

@@ -5,7 +5,7 @@ import {
   insertImage,
   updateImage,
   updateImageShow,
-  updateImageTag
+  updateImageAlbum
 } from '~/server/db/operate'
 import { Hono } from 'hono'
 
@@ -54,7 +54,7 @@ app.delete('/batch-delete', async (c) => {
 app.delete('/delete/:id', async (c) => {
   try {
     const { id } = c.req.param()
-    await deleteImage(Number(id));
+    await deleteImage(id);
     return c.json({ code: 200, message: '删除成功！' })
   } catch (e) {
     console.log(e)
@@ -97,10 +97,10 @@ app.put('/update-show', async (c) => {
   return c.json(data)
 })
 
-app.put('/update-tag', async (c) => {
+app.put('/update-Album', async (c) => {
   const image = await c.req.json()
   try {
-    await updateImageTag(image.imageId, image.tagId);
+    await updateImageAlbum(image.imageId, image.albumId);
     return c.json({
       code: 200,
       message: '更新成功！'

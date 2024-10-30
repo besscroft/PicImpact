@@ -28,10 +28,10 @@ function renderNextImage(
 export default function Masonry(props : Readonly<ImageHandleProps>) {
   const { data: pageTotal } = useSWRPageTotalHook(props)
   const { data, error, isLoading, isValidating, size, setSize } = useSWRInfinite((index) => {
-    return [`client-${props.args}-${index}-${props.tag}`, index]
+    return [`client-${props.args}-${index}-${props.album}`, index]
     },
     ([_, index]) => {
-      return props.handle(index + 1, props.tag)
+      return props.handle(index + 1, props.album)
     }, {
       revalidateOnFocus: false,
       revalidateIfStale: false,

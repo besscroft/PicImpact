@@ -1,25 +1,25 @@
-import { fetchTagsList } from '~/server/db/query'
-import TagList from '~/components/admin/tag/TagList'
+import { fetchAlbumsList } from '~/server/db/query'
+import AlbumList from '~/components/admin/album/AlbumList'
 import { Card, CardHeader } from '@nextui-org/react'
 import RefreshButton from '~/components/RefreshButton'
 import { HandleProps } from '~/types'
 import React from 'react'
-import TagAddSheet from '~/components/admin/tag/TagAddSheet'
-import TagAddButton from '~/components/admin/tag/TagAddButton'
-import TagEditSheet from '~/components/admin/tag/TagEditSheet'
-import TagHelpSheet from '~/components/admin/tag/TagHelpSheet'
-import TagHelp from '~/components/admin/tag/TagHelp'
+import AlbumAddSheet from '~/components/admin/album/AlbumAddSheet'
+import AlbumAddButton from '~/components/admin/album/AlbumAddButton'
+import AlbumEditSheet from '~/components/admin/album/AlbumEditSheet'
+import AlbumHelpSheet from '~/components/admin/album/AlbumHelpSheet'
+import AlbumHelp from '~/components/admin/album/AlbumHelp'
 
 export default async function List() {
 
   const getData = async () => {
     'use server'
-    return await fetchTagsList()
+    return await fetchAlbumsList()
   }
 
   const props: HandleProps = {
     handle: getData,
-    args: 'getTags',
+    args: 'getAlbums',
   }
 
   return (
@@ -32,16 +32,16 @@ export default async function List() {
             </div>
           </div>
           <div className="flex items-center space-x-2">
-            <TagHelp />
-            <TagAddButton />
+            <AlbumHelp />
+            <AlbumAddButton />
             <RefreshButton {...props} />
           </div>
         </CardHeader>
       </Card>
-      <TagList {...props} />
-      <TagAddSheet {...props} />
-      <TagEditSheet {...props} />
-      <TagHelpSheet />
+      <AlbumList {...props} />
+      <AlbumAddSheet {...props} />
+      <AlbumEditSheet {...props} />
+      <AlbumHelpSheet />
     </div>
   )
 }

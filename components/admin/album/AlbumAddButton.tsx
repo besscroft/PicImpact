@@ -4,7 +4,7 @@ import { Button } from '@nextui-org/react'
 import React from 'react'
 import { useButtonStore } from '~/app/providers/button-store-Providers'
 
-export default function TagAddButton() {
+export default function AlbumAddButton() {
   const { setTagAdd } = useButtonStore(
     (state) => state,
   )

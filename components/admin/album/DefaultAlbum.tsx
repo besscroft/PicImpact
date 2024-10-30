@@ -4,7 +4,7 @@ import { Card, CardBody, CardFooter, CardHeader, Chip, Popover, PopoverContent, 
 import React from 'react'
 import { ArrowDown10 } from 'lucide-react'
 
-export default function DefaultTag() {
+export default function DefaultAlbum() {
   return (
     <Card shadow="sm" className="h-64 show-up-motion">
       <CardHeader className="flex gap-3">

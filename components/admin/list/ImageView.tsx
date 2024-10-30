@@ -21,7 +21,7 @@ export default function ImageView() {
   const { imageView, imageViewData, setImageView, setImageViewData } = useButtonStore(
     (state) => state,
   )
-  const { data, isLoading } = useSWR('/api/v1/copyright/get', fetcher)
+  const { data, isLoading } = useSWR('/api/v1/copyrights/get', fetcher)
 
   const fieldNames = { label: 'name', value: 'id' }
 

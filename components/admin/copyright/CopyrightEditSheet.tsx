@@ -27,7 +27,7 @@ export default function CopyrightEditSheet(props : Readonly<HandleProps>) {
     }
     try {
       setLoading(true)
-      const res = await fetch('/api/v1/copyright/update', {
+      const res = await fetch('/api/v1/copyrights/update', {
         headers: {
           'Content-Type': 'application/json',
         },

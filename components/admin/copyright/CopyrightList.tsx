@@ -43,7 +43,7 @@ export default function CopyrightList(props : Readonly<HandleProps>) {
     setDeleteLoading(true)
     if (!copyright.id) return
     try {
-      const res = await fetch(`/api/v1/copyright/delete/${copyright.id}`, {
+      const res = await fetch(`/api/v1/copyrights/delete/${copyright.id}`, {
         method: 'DELETE',
       })
       if (res.status === 200) {
@@ -64,7 +64,7 @@ export default function CopyrightList(props : Readonly<HandleProps>) {
     try {
       setUpdateCopyrightId(id)
       setUpdateCopyrightLoading(true)
-      const res = await fetch(`/api/v1/copyright/update-show`, {
+      const res = await fetch(`/api/v1/copyrights/update-show`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -92,7 +92,7 @@ export default function CopyrightList(props : Readonly<HandleProps>) {
     try {
       setUpdateCopyrightDefaultId(id)
       setUpdateCopyrightDefaultLoading(true)
-      const res = await fetch(`/api/v1/copyright/update-default`, {
+      const res = await fetch(`/api/v1/copyrights/update-default`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

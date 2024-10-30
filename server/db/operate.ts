@@ -2,70 +2,69 @@
 
 import { db } from '~/server/lib/db'
 import { TagType, ImageType, CopyrightType } from '~/types'
-import {queryAuthTemplateSecret} from "~/server/db/query";
 
-export async function insertTag(tag: TagType) {
-  if (!tag.sort || tag.sort < 0) {
-    tag.sort = 0
+export async function insertAlbums(album: TagType) {
+  if (!album.sort || album.sort < 0) {
+    album.sort = 0
   }
-  const resultRow = await db.tags.create({
+  const resultRow = await db.albums.create({
     data: {
-      name: tag.name,
-      tag_value: tag.tag_value,
-      detail: tag.detail,
-      sort: tag.sort,
-      show: tag.show,
+      name: album.name,
+      album_value: album.album_value,
+      detail: album.detail,
+      sort: album.sort,
+      show: album.show,
       del: 0
     }
   })
   return resultRow
 }
 
-export async function deleteTag(id: number) {
-  const resultRow = await db.tags.update({
+export async function deleteAlbum(id: string) {
+  const resultRow = await db.albums.update({
     where: {
-      id: Number(id)
+      id: id
     },
     data: {
       del: 1,
-      update_time: new Date(),
+      updatedAt: new Date(),
     }
   })
   return resultRow
 }
 
-export async function updateTag(tag: TagType) {
-  if (!tag.sort || tag.sort < 0) {
-    tag.sort = 0
+export async function updateAlbum(album: TagType) {
+  if (!album.sort || album.sort < 0) {
+    album.sort = 0
   }
   await db.$transaction(async (tx) => {
-    const tagOld = await tx.tags.findFirst({
+    const tagOld = await tx.albums.findFirst({
       where: {
-        id: Number(tag.id)
+        id: album.id
       }
     })
     if (!tagOld) {
       throw new Error('标签不存在！')
     }
-    await tx.tags.update({
+    await tx.albums.update({
       where: {
-        id: Number(tag.id)
+        id: album.id
       },
       data: {
-        name: tag.name,
-        tag_value: tag.tag_value,
-        detail: tag.detail,
-        sort: tag.sort,
-        show: tag.show,
-        update_time: new Date(),
+        name: album.name,
+        album_value: album.album_value,
+        detail: album.detail,
+        sort: album.sort,
+        show: album.show,
+        updatedAt: new Date(),
       }
     })
-    await tx.imageTagRelation.updateMany({
+    await tx.imagesAlbumsRelation.updateMany({
       where: {
-        tag_value: tagOld.tag_value
+        album_value: tagOld.album_value
       },
       data: {
-        tag_value: tag.tag_value
+        album_value: album.album_value
       }
     })
   })
@@ -87,14 +86,14 @@ export async function insertCopyright(copyright: CopyrightType) {
   return resultRow
 }
 
-export async function deleteCopyright(id: number) {
+export async function deleteCopyright(id: string) {
   const resultRow = await db.copyright.update({
     where: {
-      id: Number(id)
+      id: id
     },
     data: {
       del: 1,
-      update_time: new Date(),
+      updatedAt: new Date(),
     }
   })
   return resultRow
@@ -104,7 +103,7 @@ export async function updateCopyright(copyright: CopyrightType) {
   await db.$transaction(async (tx) => {
     const copyrightOld = await tx.copyright.findFirst({
       where: {
-        id: Number(copyright.id)
+        id: copyright.id
       }
     })
     if (!copyrightOld) {
@@ -112,7 +111,7 @@ export async function updateCopyright(copyright: CopyrightType) {
     }
     await tx.copyright.update({
       where: {
-        id: Number(copyright.id)
+        id: copyright.id
       },
       data: {
         name: copyright.name,
@@ -123,7 +122,7 @@ export async function updateCopyright(copyright: CopyrightType) {
         detail: copyright.detail,
         show: copyright.show,
         default: copyright.default,
-        update_time: new Date(),
+        updatedAt: new Date(),
       }
     })
   })
@@ -153,10 +152,10 @@ export async function insertImage(image: ImageType) {
     })
 
     if (resultRow) {
-      await tx.imageTagRelation.create({
+      await tx.imagesAlbumsRelation.create({
         data: {
           imageId: resultRow.id,
-          tag_value: image.tag
+          album_value: image.album
         }
       })
     } else {
@@ -165,29 +164,29 @@ export async function insertImage(image: ImageType) {
   })
 }
 
-export async function deleteImage(id: number) {
+export async function deleteImage(id: string) {
   await db.$transaction(async (tx) => {
-    await tx.imageTagRelation.deleteMany({
+    await tx.imagesAlbumsRelation.deleteMany({
       where: {
-        imageId: Number(id)
+        imageId: id
       }
     })
 
     await tx.images.update({
       where: {
-        id: Number(id)
+        id: id
       },
       data: {
         del: 1,
-        update_time: new Date(),
+        updatedAt: new Date(),
       }
     })
   })
 }
 
-export async function deleteBatchImage(ids: number[]) {
+export async function deleteBatchImage(ids: string[]) {
   await db.$transaction(async (tx) => {
-    await tx.imageTagRelation.deleteMany({
+    await tx.imagesAlbumsRelation.deleteMany({
       where: {
         imageId: {
           in: ids
@@ -202,7 +201,7 @@ export async function deleteBatchImage(ids: number[]) {
       },
       data: {
         del: 1,
-        update_time: new Date(),
+        updatedAt: new Date(),
       },
     })
   })
@@ -215,7 +214,7 @@ export async function updateImage(image: ImageType) {
   await db.$transaction(async (tx) => {
     const resultRow = await tx.images.update({
       where: {
-        id: Number(image.id)
+        id: image.id
       },
       data: {
         url: image.url,
@@ -230,17 +229,17 @@ export async function updateImage(image: ImageType) {
         height: image.height,
         lat: image.lat,
         lon: image.lon,
-        update_time: new Date(),
+        updatedAt: new Date(),
       }
     })
-    await tx.imageCopyrightRelation.deleteMany({
+    await tx.imagesCopyrightRelation.deleteMany({
       where: {
         imageId: image.id
       }
     })
     if (Array.isArray(image.copyrights) && image.copyrights.length > 0) {
-      await tx.imageCopyrightRelation.createMany({
-        data: image.copyrights.map((item: number) => {
+      await tx.imagesCopyrightRelation.createMany({
+        data: image.copyrights.map((item: string) => {
           return {
             imageId: image.id,
             copyrightId: item
@@ -316,78 +315,78 @@ export async function updateAListConfig(configs: any) {
   return resultRow
 }
 
-export async function updateImageShow(id: number, show: number) {
+export async function updateImageShow(id: string, show: number) {
   const resultRow = await db.images.update({
     where: {
-      id: Number(id)
+      id: id
     },
     data: {
       show: show,
-      update_time: new Date()
+      updatedAt: new Date()
     }
   })
   return resultRow
 }
 
-export async function updateImageTag(imageId: number, tagId: number) {
+export async function updateImageAlbum(imageId: string, albumId: string) {
   await db.$transaction(async (tx) => {
-    const resultRow = await tx.tags.findUnique({
+    const resultRow = await tx.albums.findUnique({
       where: {
-        id: Number(tagId)
+        id: albumId
       }
     })
     if (!resultRow) {
       throw new Error('相册不存在！')
     }
-    await tx.imageTagRelation.deleteMany({
+    await tx.imagesAlbumsRelation.deleteMany({
       where: {
         imageId: imageId,
       }
     })
-    await tx.imageTagRelation.create({
+    await tx.imagesAlbumsRelation.create({
       data: {
         imageId: imageId,
-        tag_value: resultRow.tag_value
+        album_value: resultRow.album_value
       }
     })
   })
 }
 
-export async function updateTagShow(id: number, show: number) {
-  const resultRow = await db.tags.update({
+export async function updateAlbumShow(id: string, show: number) {
+  const resultRow = await db.albums.update({
     where: {
-      id: Number(id)
+      id: id
     },
     data: {
       show: show,
-      update_time: new Date()
+      updatedAt: new Date()
     }
   })
   return resultRow
 }
 
-export async function updateCopyrightShow(id: number, show: number) {
+export async function updateCopyrightShow(id: string, show: number) {
   const resultRow = await db.copyright.update({
     where: {
-      id: Number(id)
+      id: id
     },
     data: {
       show: show,
-      update_time: new Date()
+      updatedAt: new Date()
     }
   })
   return resultRow
 }
 
-export async function updateCopyrightDefault(id: number, defaultValue: number) {
+export async function updateCopyrightDefault(id: string, defaultValue: number) {
   // @ts-ignore
   const resultRow = await db.copyright.update({
     where: {
-      id: Number(id)
+      id: id
     },
     data: {
       default: defaultValue,
-      update_time: new Date()
+      updatedAt: new Date()
     }
   })
   return resultRow
@@ -400,7 +399,7 @@ export async function updateCustomTitle(title: string) {
     },
     data: {
       config_value: title,
-      update_time: new Date()
+      updatedAt: new Date()
     }
   })
   return resultRow
@@ -413,7 +412,7 @@ export async function saveAuthTemplateSecret(token: string) {
     },
     data: {
       config_value: token,
-      update_time: new Date()
+      updatedAt: new Date()
     }
   })
 }
@@ -426,7 +425,7 @@ export async function saveAuthSecret(enable: string, secret: string) {
       },
       data: {
         config_value: enable,
-        update_time: new Date()
+        updatedAt: new Date()
       }
     })
     await tx.configs.update({
@@ -435,7 +434,7 @@ export async function saveAuthSecret(enable: string, secret: string) {
       },
       data: {
         config_value: secret,
-        update_time: new Date()
+        updatedAt: new Date()
       }
     })
   })
@@ -449,7 +448,7 @@ export async function deleteAuthSecret() {
       },
       data: {
         config_value: 'false',
-        update_time: new Date()
+        updatedAt: new Date()
       }
     })
     await tx.configs.update({
@@ -458,7 +457,7 @@ export async function deleteAuthSecret() {
       },
       data: {
         config_value: '',
-        update_time: new Date()
+        updatedAt: new Date()
       }
     })
     await tx.configs.update({
@@ -467,7 +466,7 @@ export async function deleteAuthSecret() {
       },
       data: {
         config_value: '',
-        update_time: new Date()
+        updatedAt: new Date()
       }
     })
   })

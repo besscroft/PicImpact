@@ -2,48 +2,47 @@
 
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from '~/components/ui/sheet'
 import { useButtonStore } from '~/app/providers/button-store-Providers'
-import { Button, Input, Switch, cn, Textarea } from '@nextui-org/react'
-import { HandleProps, TagType } from '~/types'
+import { HandleProps, AlbumType } from '~/types'
+import { useSWRHydrated } from '~/hooks/useSWRHydrated'
+import { Button, cn, Input, Switch, Textarea } from '@nextui-org/react'
 import { useState } from 'react'
 import { toast } from 'sonner'
-import { useSWRHydrated } from '~/hooks/useSWRHydrated'
 
-export default function TagAddSheet(props : Readonly<HandleProps>) {
-  const { isLoading, mutate, error } = useSWRHydrated(props)
-  const { tagAdd, setTagAdd } = useButtonStore(
+export default function AlbumEditSheet(props : Readonly<HandleProps>) {
+  const { mutate } = useSWRHydrated(props)
+  const { albumEdit, album, setAlbumEdit, setAlbumEditData } = useButtonStore(
     (state) => state,
   )
-  const [data, setData] = useState({} as TagType)
   const [loading, setLoading] = useState(false)
 
   async function submit() {
-    if (!data.name || !data.tag_value) {
+    if (!album?.name || !album?.album_value) {
       toast.error('请先填写必填项！')
       return
     }
-    if (data.tag_value && data.tag_value.charAt(0) !== '/') {
+    if (album.album_value && album.album_value.charAt(0) !== '/') {
       toast.error('路由必须以 / 开头！')
       return
     }
     try {
       setLoading(true)
-      const res = await fetch('/api/v1/tags/add', {
+      const res = await fetch('/api/v1/albums/update', {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(data),
-        method: 'POST',
+        body: JSON.stringify(album),
+        method: 'PUT',
       }).then(response => response.json())
       if (res.code === 200) {
-        toast.success('添加成功！')
-        setTagAdd(false)
-        setData({} as TagType)
+        toast.success('更新成功！')
+        setAlbumEditData({} as AlbumType)
+        setAlbumEdit(false)
         await mutate()
       } else {
         toast.error(res.message)
       }
     } catch (e) {
-      toast.error('添加失败！')
+      toast.error('更新失败！')
     } finally {
       setLoading(false)
     }
@@ -52,18 +51,23 @@ export default function TagAddSheet(props : Readonly<HandleProps>) {
   return (
     <Sheet
       defaultOpen={false}
-      open={tagAdd}
-      onOpenChange={() => setTagAdd(!tagAdd)}
+      open={albumEdit}
+      onOpenChange={(open: boolean) => {
+        if (!open) {
+          setAlbumEdit(false)
+          setAlbumEditData({} as AlbumType)
+        }
+      }}
       modal={false}
     >
-      <SheetContent side="left" className="overflow-y-auto scrollbar-hide" onInteractOutside={(event: any) => event.preventDefault()}>
+      <SheetContent side="left" onInteractOutside={(event: any) => event.preventDefault()}>
         <SheetHeader>
-          <SheetTitle>新增相册</SheetTitle>
+          <SheetTitle>编辑相册</SheetTitle>
           <SheetDescription className="space-y-2">
             <Input
               isRequired
-              value={data.name}
-              onValueChange={(value) => setData({ ...data, name: value })}
+              value={album?.name}
+              onValueChange={(value) => setAlbumEditData({ ...album, name: value })}
               isClearable
               type="text"
               variant="bordered"
@@ -72,8 +76,8 @@ export default function TagAddSheet(props : Readonly<HandleProps>) {
             />
             <Input
               isRequired
-              value={data.tag_value}
-              onValueChange={(value) => setData({ ...data, tag_value: value })}
+              value={album?.album_value}
+              onValueChange={(value) => setAlbumEditData({ ...album, album_value: value })}
               isClearable
               type="text"
               variant="bordered"
@@ -81,8 +85,8 @@ export default function TagAddSheet(props : Readonly<HandleProps>) {
               placeholder="输入路由，如：/tietie"
             />
             <Textarea
-              value={data.detail}
-              onValueChange={(value) => setData({ ...data, detail: value })}
+              value={album?.detail}
+              onValueChange={(value) => setAlbumEditData({ ...album, detail: value })}
               label="详情"
               variant="bordered"
               placeholder="输入详情"
@@ -93,16 +97,19 @@ export default function TagAddSheet(props : Readonly<HandleProps>) {
               }}
             />
             <Input
-              value={String(data.sort)}
-              onValueChange={(value) => setData({ ...data, sort: Number(value) })}
+              value={String(album?.sort)}
+              onValueChange={(value) => setAlbumEditData({ ...album, sort: Number(value) })}
               type="number"
               variant="bordered"
               label="排序"
               placeholder="0"
             />
             <Switch
-              value={data.show === 0 ? 'true' : 'false'}
-              onValueChange={(value) => setData({ ...data, show: value ? 0 : 1 })}
+              isSelected={album?.show === 0}
+              value={album?.show === 0 ? 'true' : 'false'}
+              onValueChange={(value) => {
+                setAlbumEditData({ ...album, show: value ? 0 : 1 })
+              }}
               classNames={{
                 base: cn(
                   "inline-flex flex-row-reverse w-full max-w-full bg-content1 hover:bg-content2 items-center",
@@ -132,9 +139,9 @@ export default function TagAddSheet(props : Readonly<HandleProps>) {
               color="primary"
               variant="shadow"
               onClick={() => submit()}
-              aria-label="提交"
+              aria-label="更新"
             >
-              提交
+              更新
             </Button>
           </SheetDescription>
         </SheetHeader>

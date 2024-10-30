@@ -17,7 +17,7 @@ import {
   LogOut,
 } from 'lucide-react'
 import { loginOut } from '~/server/actions'
-import { DataProps, TagType } from '~/types'
+import { DataProps, AlbumType } from '~/types'
 
 export default function VaulDrawer(props: Readonly<DataProps>) {
   const { data: session, status } = useSession()
@@ -56,15 +56,15 @@ export default function VaulDrawer(props: Readonly<DataProps>) {
                           首页
                         </Drawer.Close>
                       </ListboxItem>
-                      {Array.isArray(props.data) && props.data?.map((tag: TagType, index: any, array: TagType[]) => (
+                      {Array.isArray(props.data) && props.data?.map((album: AlbumType, index: any, array: AlbumType[]) => (
                         <ListboxItem
-                          key={tag.id}
+                          key={album.id}
                           startContent={<GalleryHorizontalEnd size={20} className={iconClasses} />}
-                          onClick={() => router.push(tag.tag_value)}
-                          className={pathname === tag.tag_value ? activeClasses : ''}
+                          onClick={() => router.push(album.album_value)}
+                          className={pathname === album.album_value ? activeClasses : ''}
                         >
                           <Drawer.Close className="w-full text-left">
-                            {tag.name}
+                            {album.name}
                           </Drawer.Close>
                         </ListboxItem>
                       ))}
