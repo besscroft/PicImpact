@@ -1,37 +1,73 @@
 'use client'
 
-import { Card, CardBody, Input, Button } from '@nextui-org/react'
 import React, { useState } from 'react'
-import { Eye, EyeOff } from 'lucide-react'
 import { toast } from 'sonner'
+import { Input } from '~/components/ui/input'
+import { useForm } from 'react-hook-form'
+import { z } from 'zod'
+import { zodResolver } from '@hookform/resolvers/zod'
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '~/components/ui/form'
+import { ReloadIcon } from '@radix-ui/react-icons'
+import { Button } from '~/components/ui/button'
 
 export default function PassWord() {
-  const [isOneVisible, setIsOneVisible] = useState(false)
-  const [isTwoVisible, setIsTwoVisible] = useState(false)
-  const [isThreeVisible, setIsThreeVisible] = useState(false)
-  const [onePassword, setOnePassword] = useState('')
-  const [twoPassword, setTwoPassword] = useState('')
-  const [threePassword, setThreePassword] = useState('')
   const [loading, setLoading] = useState(false)
 
-  const toggleOneVisibility = () => setIsOneVisible(!isOneVisible)
-  const toggleTwoVisibility = () => setIsTwoVisible(!isTwoVisible)
-  const toggleThreeVisibility = () => setIsThreeVisible(!isThreeVisible)
+  const FormSchema = z.object({
+    onePassword: z.string()
+      .min(1, {
+        message: "旧密码必填",
+      }),
+    twoPassword: z.string()
+      .min(6, {
+        message: "密码不能少于6位数",
+      })
+      .max(20, {
+        message: "密码不能超过20位数",
+      }),
+    threePassword: z.string()
+      .min(6, {
+        message: "密码不能少于6位数",
+      })
+      .max(20, {
+        message: "密码不能超过20位数",
+      }),
+  }).refine((data: any) => data.twoPassword === data.threePassword, {
+      message: "两次密码不一致",
+      path: ["threePassword"], // 错误信息指向 confirmPassword 字段
+    })
 
-  async function updatePassword() {
-    if (onePassword === '') {
+  const form = useForm<z.infer<typeof FormSchema>>({
+    resolver: zodResolver(FormSchema),
+    defaultValues: {
+      onePassword: "",
+      twoPassword: "",
+      threePassword: "",
+    },
+  })
+
+  async function updatePassword(data: z.infer<typeof FormSchema>) {
+    console.log(data)
+    if (data.onePassword === '') {
       toast.error('请输入旧密码！')
       return
     }
-    if (twoPassword === '') {
+    if (data.twoPassword === '') {
       toast.error('请输入新密码！')
       return
     }
-    if (threePassword === '') {
+    if (data.threePassword === '') {
       toast.error('请再次输入新密码！')
       return
     }
-    if (twoPassword !== threePassword) {
+    if (data.twoPassword !== data.threePassword) {
       toast.error('两次密码输入不一致！')
       return
     }
@@ -43,8 +79,8 @@ export default function PassWord() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          oldPassword: onePassword,
-          newPassword: twoPassword
+          oldPassword: data.onePassword,
+          newPassword: data.twoPassword
         }),
       }).then(res => res.json())
       toast.success('修改成功！')
@@ -56,86 +92,88 @@ export default function PassWord() {
   }
 
   return (
-    <Card className="flex-1" shadow="sm">
-      <CardBody className="space-y-2">
-        <Input
-          isRequired
-          variant="bordered"
-          label="旧密码"
-          className="w-full sm:w-64"
-          value={onePassword}
-          onValueChange={(value: string) => setOnePassword(value)}
-          endContent={
-            <button className="focus:outline-none" type="button" onClick={toggleOneVisibility}>
-              {isOneVisible ? (
-                <Eye className="text-2xl text-default-400 pointer-events-none" />
-              ) : (
-                <EyeOff className="text-2xl text-default-400 pointer-events-none" />
-              )}
-            </button>
-          }
-          type={isOneVisible ? 'text' : 'password'}
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(updatePassword)} className="w-2/3 space-y-6">
+        <FormField
+          control={form.control}
+          name="onePassword"
+          render={({ field }) => (
+            <FormItem>
+              <FormControl>
+                <label
+                  htmlFor="onePassword"
+                  className="w-full sm:w-64 block overflow-hidden rounded-md border border-gray-200 px-3 py-2 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600"
+                >
+                  <span className="text-xs font-medium text-gray-700"> 旧密码 </span>
+
+                  <input
+                    type="text"
+                    id="onePassword"
+                    placeholder="请输入旧密码。"
+                    {...field}
+                    className="mt-1 w-full border-none p-0 focus:border-transparent focus:outline-none focus:ring-0 sm:text-sm"
+                  />
+                </label>
+              </FormControl>
+              <FormMessage/>
+            </FormItem>
+          )}
         />
-        <Input
-          isRequired
-          variant="bordered"
-          label="新密码"
-          className="w-full sm:w-64"
-          value={twoPassword}
-          onValueChange={(value: string) => setTwoPassword(value)}
-          endContent={
-            <button className="focus:outline-none" type="button" onClick={toggleTwoVisibility}>
-              {isTwoVisible ? (
-                <Eye className="text-2xl text-default-400 pointer-events-none" />
-              ) : (
-                <EyeOff className="text-2xl text-default-400 pointer-events-none" />
-              )}
-            </button>
-          }
-          type={isTwoVisible ? 'text' : 'password'}
+        <FormField
+          control={form.control}
+          name="twoPassword"
+          render={({field}) => (
+            <FormItem>
+              <FormControl>
+                <label
+                  htmlFor="twoPassword"
+                  className="w-full sm:w-64 block overflow-hidden rounded-md border border-gray-200 px-3 py-2 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600"
+                >
+                  <span className="text-xs font-medium text-gray-700"> 新密码 </span>
+
+                  <input
+                    type="text"
+                    id="twoPassword"
+                    placeholder="请输入新密码。"
+                    {...field}
+                    className="mt-1 w-full border-none p-0 focus:border-transparent focus:outline-none focus:ring-0 sm:text-sm"
+                  />
+                </label>
+              </FormControl>
+              <FormMessage/>
+            </FormItem>
+          )}
         />
-        <Input
-          isRequired
-          variant="bordered"
-          label="再次确认新密码"
-          className="w-full sm:w-64"
-          value={threePassword}
-          onValueChange={(value: string) => setThreePassword(value)}
-          endContent={
-            <button className="focus:outline-none" type="button" onClick={toggleThreeVisibility}>
-              {isThreeVisible ? (
-                <Eye className="text-2xl text-default-400 pointer-events-none" />
-              ) : (
-                <EyeOff className="text-2xl text-default-400 pointer-events-none" />
-              )}
-            </button>
-          }
-          type={isThreeVisible ? 'text' : 'password'}
+        <FormField
+          control={form.control}
+          name="threePassword"
+          render={({field}) => (
+            <FormItem>
+              <FormControl>
+                <label
+                  htmlFor="threePassword"
+                  className="w-full sm:w-64 block overflow-hidden rounded-md border border-gray-200 px-3 py-2 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600"
+                >
+                  <span className="text-xs font-medium text-gray-700"> 确认密码 </span>
+
+                  <input
+                    type="text"
+                    id="threePassword"
+                    placeholder="请输入确认密码。"
+                    {...field}
+                    className="mt-1 w-full border-none p-0 focus:border-transparent focus:outline-none focus:ring-0 sm:text-sm"
+                  />
+                </label>
+              </FormControl>
+              <FormMessage/>
+            </FormItem>
+          )}
         />
-        <div className="flex w-full sm:w-64 items-center justify-center space-x-1">
-          <Button
-            color="primary"
-            variant="bordered"
-            onClick={() => {
-              setOnePassword('')
-              setTwoPassword('')
-              setThreePassword('')
-            }}
-            aria-label="重置"
-          >
-            重置
-          </Button>
-          <Button
-            color="primary"
-            variant="bordered"
-            isLoading={loading}
-            onClick={() => updatePassword()}
-            aria-label="提交"
-          >
-            提交
-          </Button>
-        </div>
-      </CardBody>
-    </Card>
+        <Button className="cursor-pointer" type="submit" disabled={loading}>
+          {loading && <ReloadIcon className="mr-2 h-4 w-4 animate-spin"/>}
+          提交
+        </Button>
+      </form>
+    </Form>
   )
 }

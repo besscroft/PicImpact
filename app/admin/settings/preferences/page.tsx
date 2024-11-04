@@ -1,10 +1,13 @@
 'use client'
 
-import { Button, Card, CardBody, Input } from '@nextui-org/react'
 import React, { useEffect, useState } from 'react'
 import useSWR from 'swr'
 import { fetcher } from '~/lib/utils/fetcher'
 import { toast } from 'sonner'
+import { Input } from '~/components/ui/input'
+import { ReloadIcon } from '@radix-ui/react-icons'
+import { Button } from '~/components/ui/button'
+import { Label } from '~/components/ui/label'
 
 export default function Preferences() {
   const [title, setTitle] = useState('')
@@ -33,34 +36,37 @@ export default function Preferences() {
   }
 
   useEffect(() => {
-    setTitle(data?.config_value)
-  }, data)
+    setTitle(data?.config_value || '')
+  }, [data])
 
   return (
-    <Card className="flex-1" shadow="sm">
-      <CardBody className="space-y-2">
-        <Input
-          isRequired
-          isDisabled={isValidating || isLoading}
-          variant="bordered"
-          value={title}
+    <div className="space-y-2">
+      <label
+        htmlFor="title"
+        className="w-full sm:w-64 block overflow-hidden rounded-md border border-gray-200 px-3 py-2 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600"
+      >
+        <span className="text-xs font-medium text-gray-700"> 网站标题 </span>
+
+        <input
           type="text"
-          label="网站标题"
-          className="w-full sm:w-64"
-          onValueChange={(value: string) => setTitle(value)}
+          id="title"
+          disabled={isValidating || isLoading}
+          value={title || ''}
+          placeholder="请输入网站标题。"
+          onChange={(e) => setTitle(e.target.value)}
+          className="mt-1 w-full border-none p-0 focus:border-transparent focus:outline-none focus:ring-0 sm:text-sm"
         />
-        <div className="flex w-full sm:w-64 items-center justify-center space-x-1">
-          <Button
-            color="primary"
-            variant="bordered"
-            isLoading={loading}
-            onClick={() => updateTitle()}
-            aria-label="提交"
-          >
-            提交
-          </Button>
-        </div>
-      </CardBody>
-    </Card>
-)
+      </label>
+      <div className="flex w-full sm:w-64 items-center justify-center space-x-1">
+        <Button
+          disabled={loading}
+          onClick={() => updateTitle()}
+          aria-label="提交"
+        >
+          {loading && <ReloadIcon className="mr-2 h-4 w-4 animate-spin"/>}
+          提交
+        </Button>
+      </div>
+    </div>
+  )
 }

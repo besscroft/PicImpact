@@ -1,12 +1,14 @@
 'use client'
 
-import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from '~/components/ui/sheet'
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from '~/components/ui/sheet'
 import { useButtonStore } from '~/app/providers/button-store-Providers'
 import { HandleProps, AlbumType } from '~/types'
 import { useSWRHydrated } from '~/hooks/useSWRHydrated'
-import { Button, cn, Input, Switch, Textarea } from '@nextui-org/react'
-import { useState } from 'react'
+import React, { useState } from 'react'
 import { toast } from 'sonner'
+import { ReloadIcon } from '@radix-ui/react-icons'
+import { Button } from '~/components/ui/button'
+import { Switch } from '~/components/ui/switch'
 
 export default function AlbumEditSheet(props : Readonly<HandleProps>) {
   const { mutate } = useSWRHydrated(props)
@@ -22,6 +24,10 @@ export default function AlbumEditSheet(props : Readonly<HandleProps>) {
     }
     if (album.album_value && album.album_value.charAt(0) !== '/') {
       toast.error('路由必须以 / 开头！')
+      return
+    }
+    if (album.album_value === '/' && album.show === 1) {
+      toast.warning('/ 路由不允许设置为不显示！')
       return
     }
     try {
@@ -63,88 +69,91 @@ export default function AlbumEditSheet(props : Readonly<HandleProps>) {
       <SheetContent side="left" onInteractOutside={(event: any) => event.preventDefault()}>
         <SheetHeader>
           <SheetTitle>编辑相册</SheetTitle>
-          <SheetDescription className="space-y-2">
-            <Input
-              isRequired
-              value={album?.name}
-              onValueChange={(value) => setAlbumEditData({ ...album, name: value })}
-              isClearable
-              type="text"
-              variant="bordered"
-              label="相册名称"
-              placeholder="输入相册名称"
-            />
-            <Input
-              isRequired
-              value={album?.album_value}
-              onValueChange={(value) => setAlbumEditData({ ...album, album_value: value })}
-              isClearable
-              type="text"
-              variant="bordered"
-              label="路由"
-              placeholder="输入路由，如：/tietie"
-            />
-            <Textarea
-              value={album?.detail}
-              onValueChange={(value) => setAlbumEditData({ ...album, detail: value })}
-              label="详情"
-              variant="bordered"
-              placeholder="输入详情"
-              disableAnimation
-              disableAutosize
-              classNames={{
-                input: "resize-y min-h-[40px]",
-              }}
-            />
-            <Input
-              value={String(album?.sort)}
-              onValueChange={(value) => setAlbumEditData({ ...album, sort: Number(value) })}
-              type="number"
-              variant="bordered"
-              label="排序"
-              placeholder="0"
-            />
-            <Switch
-              isSelected={album?.show === 0}
-              value={album?.show === 0 ? 'true' : 'false'}
-              onValueChange={(value) => {
-                setAlbumEditData({ ...album, show: value ? 0 : 1 })
-              }}
-              classNames={{
-                base: cn(
-                  "inline-flex flex-row-reverse w-full max-w-full bg-content1 hover:bg-content2 items-center",
-                  "justify-between cursor-pointer rounded-lg gap-2 p-4 border-2 border-transparent",
-                  "data-[selected=true]:border-primary",
-                ),
-                wrapper: "p-0 h-4 overflow-visible",
-                thumb: cn("w-6 h-6 border-2 shadow-lg",
-                  "group-data-[hover=true]:border-primary",
-                  //selected
-                  "group-data-[selected=true]:ml-6",
-                  // pressed
-                  "group-data-[pressed=true]:w-7",
-                  "group-data-[selected]:group-data-[pressed]:ml-4",
-                ),
-              }}
-            >
-              <div className="flex flex-col gap-1">
-                <p className="text-medium">显示状态</p>
-                <p className="text-tiny text-default-400">
-                  是否需要在首页以路由形式呈现，点击后跳转页面。
-                </p>
-              </div>
-            </Switch>
-            <Button
-              isLoading={loading}
-              color="primary"
-              variant="shadow"
-              onClick={() => submit()}
-              aria-label="更新"
-            >
-              更新
-            </Button>
-          </SheetDescription>
         </SheetHeader>
+        <div className="space-y-2">
+          <label
+            htmlFor="name"
+            className="block overflow-hidden rounded-md border border-gray-200 px-3 py-2 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600"
+          >
+            <span className="text-xs font-medium text-gray-700"> 相册名称 </span>
+
+            <input
+              type="text"
+              id="name"
+              value={album?.name}
+              placeholder="输入相册名称"
+              onChange={(e) => setAlbumEditData({...album, name: e.target.value})}
+              className="mt-1 w-full border-none p-0 focus:border-transparent focus:outline-none focus:ring-0 sm:text-sm"
+            />
+          </label>
+          <label
+            htmlFor="album_value"
+            className="block overflow-hidden rounded-md border border-gray-200 px-3 py-2 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600"
+          >
+            <span className="text-xs font-medium text-gray-700"> 路由 </span>
+
+            <input
+              type="text"
+              id="album_value"
+              value={album?.album_value}
+              placeholder="输入路由，如：/tietie"
+              onChange={(e) => setAlbumEditData({...album, album_value: e.target.value})}
+              className="mt-1 w-full border-none p-0 focus:border-transparent focus:outline-none focus:ring-0 sm:text-sm"
+            />
+          </label>
+          <label
+            htmlFor="detail"
+            className="block overflow-hidden rounded-md border border-gray-200 px-3 py-2 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600"
+          >
+            <span className="text-xs font-medium text-gray-700"> 详情 </span>
+
+            <input
+              type="text"
+              id="detail"
+              value={album?.detail}
+              placeholder="输入详情"
+              onChange={(e) => setAlbumEditData({...album, detail: e.target.value})}
+              className="mt-1 w-full border-none p-0 focus:border-transparent focus:outline-none focus:ring-0 sm:text-sm"
+            />
+          </label>
+          <label
+            htmlFor="sort"
+            className="block overflow-hidden rounded-md border border-gray-200 px-3 py-2 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600"
+          >
+            <span className="text-xs font-medium text-gray-700"> 排序 </span>
+
+            <input
+              type="number"
+              id="sort"
+              value={album?.sort}
+              placeholder="0"
+              onChange={(e) => setAlbumEditData({...album, sort: Number(e.target.value)})}
+              className="mt-1 w-full border-none p-0 focus:border-transparent focus:outline-none focus:ring-0 sm:text-sm"
+            />
+          </label>
+          <div className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
+            <div className="flex flex-col gap-1">
+              <div className="text-medium">显示状态</div>
+              <div className="text-tiny text-default-400">
+                是否需要在首页以路由形式呈现，点击后跳转页面。
+              </div>
+            </div>
+            <Switch
+              checked={album?.show === 0}
+              onCheckedChange={(value) => {
+                setAlbumEditData({...album, show: value ? 0 : 1})
+              }}
+            />
+          </div>
+          <Button
+            disabled={loading}
+            onClick={() => submit()}
+            aria-label="更新"
+          >
+            {loading && <ReloadIcon className="mr-2 h-4 w-4 animate-spin"/>}
+            更新
+          </Button>
+        </div>
       </SheetContent>
     </Sheet>
   )

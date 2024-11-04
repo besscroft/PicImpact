@@ -1,37 +1,11 @@
 'use client'
 
 import React, { useState } from 'react'
-import { DataProps, ImageServerHandleProps, ImageType, TagType } from '~/types'
+import { DataProps, ImageServerHandleProps, ImageType, AlbumType } from '~/types'
 import { useSWRInfiniteServerHook } from '~/hooks/useSWRInfiniteServerHook'
 import { useSWRPageTotalServerHook } from '~/hooks/useSWRPageTotalServerHook'
-import {
-  Card,
-  CardBody,
-  CardHeader,
-  CardFooter,
-  Chip,
-  Popover,
-  PopoverTrigger,
-  PopoverContent,
-  Modal,
-  ModalContent,
-  ModalHeader,
-  ModalBody,
-  ModalFooter,
-  Button,
-  Pagination,
-  Select,
-  SelectItem,
-  Switch,
-  Badge,
-  Spinner,
-  Dropdown,
-  DropdownTrigger,
-  DropdownMenu,
-  DropdownItem,
-  Tooltip,
-} from '@nextui-org/react'
-import { ArrowDown10, Pencil, Trash, Eye, EyeOff, ScanSearch, CircleHelp, CircleEllipsis, Images } from 'lucide-react'
+import { Pagination } from '@nextui-org/react'
+import { ArrowDown10, Trash, ScanSearch, CircleHelp, Replace, Pencil } from 'lucide-react'
 import { toast } from 'sonner'
 import { useButtonStore } from '~/app/providers/button-store-Providers'
 import ImageEditSheet from '~/components/admin/list/ImageEditSheet'
@@ -39,56 +13,57 @@ import ImageView from '~/components/admin/list/ImageView'
 import { fetcher } from '~/lib/utils/fetcher'
 import useSWR from 'swr'
 import ImageHelpSheet from '~/components/admin/list/ImageHelpSheet'
-import { Select as AntdSelect } from 'antd'
 import ListImage from '~/components/admin/list/ListImage'
 import ImageBatchDeleteSheet from '~/components/admin/list/ImageBatchDeleteSheet'
+import { Button } from '~/components/ui/button'
+import { ReloadIcon } from '@radix-ui/react-icons'
+import { Card, CardContent, CardFooter } from '~/components/ui/card'
+import { Switch } from '~/components/ui/switch'
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '~/components/ui/popover'
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '~/components/ui/alert-dialog'
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from '~/components/ui/select'
 
 export default function ListProps(props : Readonly<ImageServerHandleProps>) {
   const [pageNum, setPageNum] = useState(1)
-  const [tagArray, setTagArray] = useState(new Set([] as string[]))
-  const [tag, setTag] = useState('')
-  const [imageTag, setImageTag] = useState('')
-  const [imageDefaultTag, setImageDefaultTag] = useState({})
-  const { data, isLoading, mutate } = useSWRInfiniteServerHook(props, pageNum, tag)
-  const { data: total, mutate: totalMutate } = useSWRPageTotalServerHook(props, tag)
-  const [isOpen, setIsOpen] = useState(false)
-  const [isTypeOpen, setIsTypeOpen] = useState(false)
+  const [album, setAlbum] = useState('')
+  const [imageAlbum, setImageAlbum] = useState('')
+  const { data, isLoading, mutate } = useSWRInfiniteServerHook(props, pageNum, album)
+  const { data: total, mutate: totalMutate } = useSWRPageTotalServerHook(props, album)
   const [image, setImage] = useState({} as ImageType)
-  const [deleteLoading, setDeleteLoading] = useState(false)
   const [updateShowLoading, setUpdateShowLoading] = useState(false)
-  const [updateImageTagLoading, setUpdateImageTagLoading] = useState(false)
-  const [updateShowId, setUpdateShowId] = useState(0)
+  const [updateImageAlbumLoading, setUpdateImageAlbumLoading] = useState(false)
+  const [updateShowId, setUpdateShowId] = useState('')
   const { setImageEdit, setImageEditData, setImageView, setImageViewData, setImageHelp, setImageBatchDelete } = useButtonStore(
     (state) => state,
   )
-  const { data: tags, isLoading: tagsLoading } = useSWR('/api/v1/tags/get', fetcher)
+  const { data: albums, isLoading: albumsLoading } = useSWR('/api/v1/albums/get', fetcher)
 
   const dataProps: DataProps = {
     data: data,
   }
 
-  async function deleteImage() {
-    setDeleteLoading(true)
-    if (!image.id) return
-    try {
-      const res = await fetch(`/api/v1/images/delete/${image.id}`, {
-        method: 'DELETE',
-      }).then(res => res.json())
-      if (res?.code === 200) {
-        toast.success('删除成功！')
-        setIsOpen(false)
-        await mutate()
-      } else {
-        toast.error('删除失败！')
-      }
-    } catch (e) {
-      toast.error('删除失败！')
-    } finally {
-      setDeleteLoading(false)
-    }
-  }
-
-  async function updateImageShow(id: number, show: number) {
+  async function updateImageShow(id: string, show: number) {
     try {
       setUpdateShowLoading(true)
       setUpdateShowId(id)
@@ -111,18 +86,18 @@ export default function ListProps(props : Readonly<ImageServerHandleProps>) {
     } catch (e) {
       toast.error('更新失败！')
     } finally {
-      setUpdateShowId(0)
+      setUpdateShowId('')
       setUpdateShowLoading(false)
     }
   }
 
-  async function updateImageTag() {
-    if (!imageTag) {
+  async function updateImageAlbum() {
+    if (!imageAlbum) {
       toast.error('图片绑定的相册不能为空！')
       return
     }
     try {
-      setUpdateImageTagLoading(true)
+      setUpdateImageAlbumLoading(true)
       const res = await fetch(`/api/v1/images/update-Album`, {
         method: 'PUT',
         headers: {
@@ -130,15 +105,13 @@ export default function ListProps(props : Readonly<ImageServerHandleProps>) {
         },
         body: JSON.stringify({
           imageId: image.id,
-          tagId: Number(imageTag)
+          albumId: imageAlbum
         }),
       })
       if (res.status === 200) {
         toast.success('更新成功！')
-        setImageTag('')
-        setImageDefaultTag({})
+        setImageAlbum('')
         setImage({} as ImageType)
-        setIsTypeOpen(false)
         await mutate()
       } else {
         toast.error('更新失败！')
@@ -146,171 +119,115 @@ export default function ListProps(props : Readonly<ImageServerHandleProps>) {
     } catch (e) {
       toast.error('更新失败！')
     } finally {
-      setUpdateImageTagLoading(false)
+      setUpdateImageAlbumLoading(false)
     }
   }
 
-  const fieldNames = { label: 'name', value: 'id' }
-
   return (
     <div className="flex flex-col space-y-2 h-full flex-1">
-      <Card shadow="sm">
-        <CardHeader className="justify-between space-x-2">
-          <div className="flex items-center justify-center w-full sm:w-64 md:w-80">
-            <Select
-              label="相册"
-              placeholder="请选择相册"
-              className="min-w-xs"
-              size="sm"
-              isLoading={tagsLoading}
-              selectedKeys={tagArray}
-              onSelectionChange={async (keys: any) => {
-                const updatedSet = new Set([] as string[]);
-                updatedSet.add(keys?.currentKey);
-                setTagArray(updatedSet)
-                setTag(keys?.currentKey)
-                await totalMutate()
-                await mutate()
-              }}
-            >
-              <SelectItem key="all" value="all">
-                全部
-              </SelectItem>
-              {tags?.map((tag: TagType) => (
-                <SelectItem key={tag.tag_value} value={tag.tag_value}>
-                  {tag.name}
-                </SelectItem>
-              ))}
-            </Select>
-          </div>
-          <div className="flex items-center space-x-1">
-            <Button
-              isIconOnly
-              size="sm"
-              color="warning"
-              aria-label="帮助"
-              onClick={() => setImageHelp(true)}
-            >
-              <CircleHelp />
-            </Button>
-            <Button
-              isIconOnly
-              size="sm"
-              color="danger"
-              aria-label="批量删除"
-              onClick={() => setImageBatchDelete(true)}
-            >
-              <Trash />
-            </Button>
-            <Button
-              color="primary"
-              radius="full"
-              size="sm"
-              variant="shadow"
-              isLoading={isLoading}
-              onClick={async () => {
-                await totalMutate()
-                await mutate()
-              }}
-              aria-label="刷新"
-            >
-              刷新
-            </Button>
-          </div>
-        </CardHeader>
-      </Card>
+      <div className="flex justify-between">
+        <div className="flex items-center justify-center w-full sm:w-64 md:w-80">
+          <Select
+            disabled={albumsLoading}
+            onValueChange={async (value: string) => {
+              setAlbum(value)
+              await totalMutate()
+              await mutate()
+            }}
+          >
+            <SelectTrigger>
+              <SelectValue placeholder="请选择相册" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectGroup>
+                <SelectLabel>相册</SelectLabel>
+                <SelectItem value="all">全部</SelectItem>
+                {albums?.map((album: AlbumType) => (
+                  <SelectItem key={album.album_value} value={album.album_value}>
+                    {album.name}
+                  </SelectItem>
+                ))}
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+        </div>
+        <div className="flex items-center space-x-1">
+          <Button
+            variant="outline"
+            size="icon"
+            aria-label="帮助"
+            onClick={() => setImageHelp(true)}
+          >
+            <CircleHelp />
+          </Button>
+          <Button
+            variant="outline"
+            size="icon"
+            aria-label="批量删除"
+            onClick={() => setImageBatchDelete(true)}
+          >
+            <Trash />
+          </Button>
+          <Button
+            className="cursor-pointer"
+            disabled={isLoading}
+            onClick={async () => {
+              await totalMutate()
+              await mutate()
+            }}
+            aria-label="刷新"
+          >
+            {isLoading && <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />}
+            刷新
+          </Button>
+        </div>
+      </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
         {Array.isArray(data) && data?.map((image: ImageType) => (
-          <Card key={image.id} shadow="sm" className="h-72 show-up-motion">
-            <CardHeader className="justify-between space-x-1 select-none">
-              <div className="space-x-2">
-                {
-                  image.tag_values.includes(',') ?
-                    <Badge content={image.tag_values.split(",").length} color="primary">
-                      <Popover placement="top" shadow="sm">
-                        <PopoverTrigger className="cursor-pointer">
-                          <Chip variant="shadow" className="flex-1" aria-label="相册">{image.tag_names.length > 8 ? image.tag_names.substring(0, 8) + '...' : image.tag_names}</Chip>
-                        </PopoverTrigger>
-                        <PopoverContent>
-                          <div className="px-1 py-2 select-none">
-                            <div className="text-small font-bold">相册</div>
-                            <div className="text-tiny">图片在对应的相册上显示</div>
-                          </div>
-                        </PopoverContent>
-                      </Popover>
-                    </Badge>
-                    :
-                    <Popover placement="top" shadow="sm">
-                      <PopoverTrigger className="cursor-pointer">
-                        <Chip variant="shadow" className="flex-1" aria-label="相册">{image.tag_names}</Chip>
-                      </PopoverTrigger>
-                      <PopoverContent>
-                        <div className="px-1 py-2 select-none">
-                          <div className="text-small font-bold">相册</div>
-                          <div className="text-tiny">图片在对应的相册上显示</div>
-                        </div>
-                      </PopoverContent>
-                    </Popover>
-                }
-                <Popover placement="top" shadow="sm">
-                  <PopoverTrigger className="cursor-pointer">
-                    <Chip variant="shadow" className="flex-1" aria-label="id">{image.id}</Chip>
-                  </PopoverTrigger>
-                  <PopoverContent>
-                    <div className="px-1 py-2 select-none">
-                      <div className="text-small font-bold">id</div>
-                      <div className="text-tiny">图片的id</div>
-                    </div>
-                  </PopoverContent>
-                </Popover>
-              </div>
+          <Card key={image.id} className="flex flex-col h-72 show-up-motion items-center">
+            <div className="flex h-12 justify-between w-full p-2 space-x-2">
+              <Popover>
+                <PopoverTrigger className="cursor-pointer select-none inline-flex items-center justify-center rounded-full bg-emerald-100 px-2.5 py-0.5 text-emerald-700">
+                  <div className="flex space-x-2 items-center justify-center text-sm">{image.album_name}</div>
+                </PopoverTrigger>
+                <PopoverContent>
+                  <div className="px-1 py-2 select-none">
+                    <div className="text-small font-bold">相册</div>
+                    <div className="text-tiny">图片在对应的相册上显示</div>
+                  </div>
+                </PopoverContent>
+              </Popover>
               <div className="flex items-center">
-                <Tooltip content="查看图片">
-                  <Button
-                    isIconOnly
-                    size="sm"
-                    onClick={() => {
-                      setImageViewData(image)
-                      setImageView(true)
-                    }}
-                    aria-label="查看图片"
-                  >
-                    <ScanSearch size={20} />
-                  </Button>
-                </Tooltip>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={() => {
+                    setImageViewData(image)
+                    setImageView(true)
+                  }}
+                  aria-label="查看图片"
+                >
+                  <ScanSearch size={20} />
+                </Button>
               </div>
-            </CardHeader>
-            <CardBody className="scrollbar-hide">
+            </div>
+            <CardContent className="flex h-48 items-center justify-center w-full p-2 scrollbar-hide">
               <ListImage image={image} />
-            </CardBody>
+            </CardContent>
             <CardFooter
-              className="flex space-x-1 select-none before:bg-white/10 border-white/20 border-1 overflow-hidden py-1 absolute before:rounded-xl rounded-large bottom-1 w-[calc(100%_-_8px)] shadow-small ml-1 z-10">
+              className="flex h-12 p-2 mb-1 space-x-1 select-none before:bg-white/10 border-white/20 border-1 overflow-hidden py-1 before:rounded-xl rounded-large w-[calc(100%_-_8px)] shadow-small z-10">
               <div className="flex flex-1 space-x-1 items-center">
-                {updateShowLoading && updateShowId === image.id ? <Spinner size="sm" /> :
+                {
+                  updateShowLoading && updateShowId === image.id ? <ReloadIcon className="mr-2 h-4 w-4 animate-spin"/> :
                   <Switch
-                    defaultSelected
-                    size="sm"
-                    color="success"
-                    isSelected={image.show === 0}
-                    isDisabled={updateShowLoading}
-                    thumbIcon={({ isSelected }) =>
-                      isSelected ? (
-                        <Eye size={20} />
-                      ) : (
-                        <EyeOff className="dark:bg-zinc-700" size={20} />
-                      )
-                    }
-                    onValueChange={(isSelected: boolean) => updateImageShow(image.id, isSelected ? 0 : 1)}
+                    checked={image.show === 0}
+                    disabled={updateShowLoading}
+                    onCheckedChange={(isSelected: boolean) => updateImageShow(image.id, isSelected ? 0 : 1)}
                   />
                 }
-                <Popover placement="top" shadow="sm">
-                  <PopoverTrigger className="cursor-pointer">
-                    <Chip
-                      color="primary"
-                      variant="shadow"
-                      startContent={<ArrowDown10 size={20} />}
-                      aria-label="排序"
-                    >{image.sort}</Chip>
+                <Popover>
+                  <PopoverTrigger className="cursor-pointer select-none inline-flex items-center justify-center rounded-full bg-emerald-100 px-2.5 py-0.5 text-emerald-700">
+                    <div className="flex space-x-2 items-center justify-center text-sm"><ArrowDown10 size={20}/>{image.sort}</div>
                   </PopoverTrigger>
                   <PopoverContent>
                     <div className="px-1 py-2 select-none">
@@ -321,50 +238,76 @@ export default function ListProps(props : Readonly<ImageServerHandleProps>) {
                 </Popover>
               </div>
               <div className="space-x-1">
-                <Dropdown>
-                  <DropdownTrigger>
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
                     <Button
-                      isIconOnly
-                      size="sm"
-                      aria-label="更多操作"
+                      variant="outline"
+                      size="icon"
+                      onClick={() => {
+                        setImage(image)
+                        setImageAlbum(image.album_value)
+                      }}
+                      aria-label="绑定相册"
                     >
-                      <CircleEllipsis size={20} />
+                      <Replace size={20} />
                     </Button>
-                  </DropdownTrigger>
-                  <DropdownMenu aria-label="Static Actions">
-                    <DropdownItem
-                      key="bind"
-                      startContent={<Images size={20} />}
-                      onClick={() => {
-                        setImage(image)
-                        setImageDefaultTag({ label: image.tag_names, value: image.tag_values })
-                        setIsTypeOpen(true)
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>相册绑定</AlertDialogTitle>
+                    </AlertDialogHeader>
+                    <Select
+                      defaultValue={imageAlbum}
+                      disabled={isLoading}
+                      onValueChange={async (value: string) => {
+                        setImageAlbum(value)
+                        await totalMutate()
+                        await mutate()
                       }}
                     >
-                      绑定相册
-                    </DropdownItem>
-                    <DropdownItem
-                      key="edit"
-                      startContent={<Pencil size={20} />}
-                      onClick={() => {
-                        setImageEditData(image)
-                        setImageEdit(true)
-                      }}
-                    >编辑图片</DropdownItem>
-                    <DropdownItem
-                      key="delete"
-                      className="text-danger"
-                      color="danger"
-                      startContent={<Trash size={20} />}
-                      onClick={() => {
-                        setImage(image)
-                        setIsOpen(true)
-                      }}
-                    >
-                      删除图片
-                    </DropdownItem>
-                  </DropdownMenu>
-                </Dropdown>
+                      <SelectTrigger>
+                        <SelectValue placeholder="请选择相册" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectGroup>
+                          <SelectLabel>相册</SelectLabel>
+                          {albums?.map((album: AlbumType) => (
+                            <SelectItem key={album.id} value={album.id}>
+                              {album.name}
+                            </SelectItem>
+                          ))}
+                        </SelectGroup>
+                      </SelectContent>
+                    </Select>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel onClick={() => {
+                        setImage({} as ImageType)
+                        setImageAlbum('')
+                      }}>Cancel</AlertDialogCancel>
+                      <AlertDialogAction>
+                        <Button
+                          disabled={updateImageAlbumLoading}
+                          onClick={() => updateImageAlbum()}
+                          aria-label="更新"
+                        >
+                          {updateImageAlbumLoading && <ReloadIcon className="mr-2 h-4 w-4 animate-spin"/>}
+                          更新
+                        </Button>
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={() => {
+                    setImageEditData(image)
+                    setImageEdit(true)
+                  }}
+                  aria-label="编辑图片"
+                >
+                  <Pencil size={20} />
+                </Button>
               </div>
             </CardFooter>
           </Card>
@@ -382,76 +325,10 @@ export default function ListProps(props : Readonly<ImageServerHandleProps>) {
           await mutate()
         }}
       />
-      <Modal
-        isOpen={isOpen}
-        hideCloseButton
-        placement="center"
-      >
-        <ModalContent>
-          <ModalHeader className="flex flex-col gap-1">确定要删掉？</ModalHeader>
-          <ModalBody>
-            <p>图片 ID：{image.id}</p>
-            <p>图片介绍：{image.detail || '没有介绍'}</p>
-          </ModalBody>
-          <ModalFooter>
-            <Button
-              color="primary"
-              variant="flat"
-              onClick={() => {
-                setImage({} as ImageType)
-                setIsOpen(false)
-              }}
-              aria-label="不删除"
-            >
-              算了
-            </Button>
-            <Button
-              color="danger"
-              isLoading={deleteLoading}
-              onClick={() => deleteImage()}
-              aria-label="确认删除"
-            >
-              是的
-            </Button>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
-      <Modal
-        isOpen={isTypeOpen}
-        isDismissable={false}
-        placement="center"
-        onClose={() => setIsTypeOpen(false)}
-      >
-        <ModalContent>
-          <ModalHeader className="flex flex-col gap-1">相册绑定</ModalHeader>
-          <ModalBody>
-            <AntdSelect
-              defaultValue={imageDefaultTag}
-              loading={isLoading}
-              options={tags}
-              fieldNames={fieldNames}
-              onChange={(value) => {
-                // @ts-ignore
-                setImageTag(value)
-              }}
-            />
-          </ModalBody>
-          <ModalFooter>
-            <Button
-              color="primary"
-              variant="bordered"
-              isLoading={updateImageTagLoading}
-              onClick={() => updateImageTag()}
-            >
-              更新
-            </Button>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
-      <ImageEditSheet {...{...props, pageNum, tag}} />
+      <ImageEditSheet {...{...props, pageNum, album}} />
       <ImageView />
       <ImageHelpSheet />
-      <ImageBatchDeleteSheet {...{...props, dataProps, pageNum, tag}} />
+      <ImageBatchDeleteSheet {...{...props, dataProps, pageNum, album}} />
     </div>
   )
 }

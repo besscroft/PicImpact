@@ -1,12 +1,12 @@
 import VaulDrawer from '~/components/layout/VaulDrawer'
 import { DropMenu } from '~/components/layout/DropMenu'
-import { fetchTagsShow } from '~/server/db/query'
+import { fetchAlbumsShow } from '~/server/db/query'
 import { DataProps } from '~/types'
 
 export default async function DynamicNavbar() {
   const getData = async () => {
     'use server'
-    return await fetchTagsShow()
+    return await fetchAlbumsShow()
   }
 
   const data = await getData()

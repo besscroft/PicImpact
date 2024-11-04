@@ -1,13 +1,10 @@
 'use client'
 
 import React, { useState } from 'react'
-import { Button, Input } from '@nextui-org/react'
 import { useRouter } from 'next-nprogress-bar'
 import { toast } from 'sonner'
 import { authenticate } from '~/server/actions'
 import { SafeParseReturnType, z } from 'zod'
-import confetti from 'canvas-confetti'
-import { Eye, EyeOff } from 'lucide-react'
 import {
   InputOTP,
   InputOTPGroup,
@@ -16,6 +13,8 @@ import {
 } from '~/components/ui/input-otp'
 import useSWR from 'swr'
 import { fetcher } from '~/lib/utils/fetcher'
+import { Button } from '~/components/ui/button'
+import { ReloadIcon } from '@radix-ui/react-icons'
 
 export const UserFrom = () => {
   const router = useRouter()
@@ -45,16 +44,6 @@ export const UserFrom = () => {
     return parsedCredentials;
   }
 
-  const handleConfetti = () => {
-    confetti({
-      particleCount: 100,
-      spread: 360,
-      startVelocity: 30,
-      ticks: 60,
-      origin: { x: Math.random() - 0.1, y: Math.random() - 0.2 }
-    });
-  };
-
   return (
     <div className="mx-auto grid w-[350px] gap-6">
       <div className="grid gap-2 text-center">
@@ -65,38 +54,37 @@ export const UserFrom = () => {
       </div>
       <div className="grid gap-4">
         <div className="grid gap-2">
-          <div>邮箱</div>
-          <Input
-            id="email"
-            type="email"
-            name="email"
-            placeholder="admin@qq.com"
-            value={email}
-            onValueChange={(value) => setEmail(value)}
-            required
-          />
+          <label
+            htmlFor="email"
+            className="block overflow-hidden rounded-md border border-gray-200 px-3 py-2 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600"
+          >
+            <span className="text-xs font-medium text-gray-700"> 邮箱 </span>
+
+            <input
+              type="email"
+              id="email"
+              value={email}
+              placeholder="admin@qq.com"
+              onChange={(e) => setEmail(e.target.value)}
+              className="mt-1 w-full border-none p-0 focus:border-transparent focus:outline-none focus:ring-0 sm:text-sm"
+            />
+          </label>
         </div>
         <div className="grid gap-2">
-          <div className="flex items-center">
-            <div>密码</div>
-          </div>
-          <Input
-            id="password"
-            name="password"
-            value={password}
-            onValueChange={(value) => setPassword(value)}
-            required
-            endContent={
-              <button className="focus:outline-none" type="button" onClick={toggleVisibility}>
-                {isVisible ? (
-                  <Eye className="text-2xl text-default-400 pointer-events-none" />
-                ) : (
-                  <EyeOff className="text-2xl text-default-400 pointer-events-none" />
-                )}
-              </button>
-            }
-            type={isVisible ? 'text' : 'password'}
-          />
+          <label
+            htmlFor="password"
+            className="block overflow-hidden rounded-md border border-gray-200 px-3 py-2 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600"
+          >
+            <span className="text-xs font-medium text-gray-700"> 密码 </span>
+
+            <input
+              type="password"
+              id="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="mt-1 w-full border-none p-0 focus:border-transparent focus:outline-none focus:ring-0 sm:text-sm"
+            />
+          </label>
         </div>
         {
           data?.data?.auth_enable === 'true' &&
@@ -130,11 +118,7 @@ export const UserFrom = () => {
         <Button
           type="submit"
           className="w-full"
-          color="primary"
-          variant="shadow"
-          isLoading={isLoading}
-          onPress={handleConfetti}
-          isDisabled={(data?.data?.auth_enable === 'true' && token.length !== 6) || email.length === 0 || password.length < 6}
+          disabled={(data?.data?.auth_enable === 'true' && token.length !== 6) || email.length === 0 || password.length < 6}
           onClick={async () => {
             setIsLoading(true)
 
@@ -159,12 +143,11 @@ export const UserFrom = () => {
           }}
           aria-label="登录"
         >
+          {isLoading && <ReloadIcon className="mr-2 h-4 w-4 animate-spin"/>}
           登录
         </Button>
         <Button
-          type="submit"
           className="w-full"
-          variant="shadow"
           onClick={() => router.push('/')}
           aria-label="返回首页"
         >

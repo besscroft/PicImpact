@@ -1,6 +1,6 @@
 'use client'
 
-import { Button } from '@nextui-org/react'
+import { Button } from '~/components/ui/button'
 import React from 'react'
 import { CircleHelp } from 'lucide-react'
 import { useButtonStore } from '~/app/providers/button-store-Providers'
@@ -11,9 +11,8 @@ export default function AlbumHelp() {
   )
   return (
     <Button
-      isIconOnly
-      size="sm"
-      color="warning"
+      variant="outline"
+      size="icon"
       aria-label="帮助"
       onClick={() => setAlbumHelp(true)}
     >

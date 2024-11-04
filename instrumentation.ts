@@ -42,12 +42,11 @@ export async function register() {
           ],
           skipDuplicates: true,
         })
-        await tx.albums.createMany({
-          data: [
-            { name: '首页', album_value: '/', detail: '首页，勿删', show: 0, sort: 0 },
-          ],
-          skipDuplicates: true,
-        })
+        await tx.$executeRaw`
+          INSERT INTO "public"."albums" (id, name, album_value, detail, show, sort)
+            VALUES (${cuid()}, '首页', '/', '请保留首页的路由，名字随意~', 0, 0)
+          ON CONFLICT (album_value) DO NOTHING;
+        `
       })
       console.log('初始化完毕！')
       await prisma.$disconnect()

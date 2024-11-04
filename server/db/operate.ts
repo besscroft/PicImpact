@@ -1,9 +1,9 @@
 'use server'
 
 import { db } from '~/server/lib/db'
-import { TagType, ImageType, CopyrightType } from '~/types'
+import { AlbumType, ImageType, CopyrightType } from '~/types'
 
-export async function insertAlbums(album: TagType) {
+export async function insertAlbums(album: AlbumType) {
   if (!album.sort || album.sort < 0) {
     album.sort = 0
   }
@@ -33,7 +33,7 @@ export async function deleteAlbum(id: string) {
   return resultRow
 }
 
-export async function updateAlbum(album: TagType) {
+export async function updateAlbum(album: AlbumType) {
   if (!album.sort || album.sort < 0) {
     album.sort = 0
   }
@@ -264,7 +264,7 @@ export async function updatePassword(userId: string, newPassword: string) {
 
 export async function updateS3Config(configs: any) {
   const resultRow = await db.$executeRaw`
-    UPDATE "public"."Configs"
+    UPDATE "public"."configs"
     SET config_value = CASE
        WHEN config_key = 'accesskey_id' THEN ${configs.accesskeyId}
        WHEN config_key = 'accesskey_secret' THEN ${configs.accesskeySecret}
@@ -277,7 +277,7 @@ export async function updateS3Config(configs: any) {
        WHEN config_key = 's3_cdn_url' THEN ${configs.s3CdnUrl}
        ELSE 'N&A'
     END,
-        update_time = NOW()
+        updated_at = NOW()
     WHERE config_key IN ('accesskey_id', 'accesskey_secret', 'region', 'endpoint', 'bucket', 'storage_folder', 'force_path_style', 's3_cdn', 's3_cdn_url');
   `
   return resultRow
@@ -285,7 +285,7 @@ export async function updateS3Config(configs: any) {
 
 export async function updateR2Config(configs: any) {
   const resultRow = await db.$executeRaw`
-    UPDATE "public"."Configs"
+    UPDATE "public"."configs"
     SET config_value = CASE
        WHEN config_key = 'r2_accesskey_id' THEN ${configs.r2AccesskeyId}
        WHEN config_key = 'r2_accesskey_secret' THEN ${configs.r2AccesskeySecret}
@@ -295,7 +295,7 @@ export async function updateR2Config(configs: any) {
        WHEN config_key = 'r2_public_domain' THEN ${configs.r2PublicDomain}
        ELSE 'N&A'
     END,
-        update_time = NOW()
+        updated_at = NOW()
     WHERE config_key IN ('r2_accesskey_id', 'r2_accesskey_secret', 'r2_endpoint', 'r2_bucket', 'r2_storage_folder', 'r2_public_domain');
   `
   return resultRow
@@ -303,13 +303,13 @@ export async function updateR2Config(configs: any) {
 
 export async function updateAListConfig(configs: any) {
   const resultRow = await db.$executeRaw`
-    UPDATE "public"."Configs"
+    UPDATE "public"."configs"
     SET config_value = CASE
        WHEN config_key = 'alist_url' THEN ${configs.alistUrl}
        WHEN config_key = 'alist_token' THEN ${configs.alistToken}
        ELSE 'N&A'
     END,
-        update_time = NOW()
+        updated_at = NOW()
     WHERE config_key IN ('alist_url', 'alist_token');
   `
   return resultRow
@@ -372,20 +372,6 @@ export async function updateCopyrightShow(id: string, show: number) {
     },
     data: {
       show: show,
-      updatedAt: new Date()
-    }
-  })
-  return resultRow
-}
-
-export async function updateCopyrightDefault(id: string, defaultValue: number) {
-  // @ts-ignore
-  const resultRow = await db.copyright.update({
-    where: {
-      id: id
-    },
-    data: {
-      default: defaultValue,
       updatedAt: new Date()
     }
   })

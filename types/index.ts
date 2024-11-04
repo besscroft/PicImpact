@@ -68,8 +68,8 @@ export type ImageType = {
   detail: string;
   show: number;
   sort: number;
-  album_names: string;
-  album_values: string;
+  album_name: string;
+  album_value: string;
   copyrights: any[];
 }
 

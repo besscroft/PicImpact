@@ -14,7 +14,11 @@ export default function AdminLayout({
       <main className="flex w-full h-full flex-1 flex-col p-4">
         <SidebarTrigger/>
         <Command/>
-        <AntdRegistry>{children}</AntdRegistry>
+        <AntdRegistry>
+          <div className="w-full h-full p-2">
+            {children}
+          </div>
+        </AntdRegistry>
       </main>
     </SidebarProvider>
   );

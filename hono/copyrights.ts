@@ -3,7 +3,6 @@ import {
   deleteCopyright,
   insertCopyright,
   updateCopyright,
-  updateCopyrightDefault,
   updateCopyrightShow
 } from '~/server/db/operate'
 import { fetchCopyrightList } from '~/server/db/query'
@@ -42,12 +41,6 @@ app.put('/update', async (c) => {
     console.log(e)
     return c.json({ code: 500, message: '更新失败！' })
   }
-})
-
-app.put('/update-default', async (c) => {
-  const copyright = await c.req.json()
-  const data = await updateCopyrightDefault(copyright.id, copyright.default);
-  return c.json(data)
 })
 
 app.put('/update-show', async (c) => {

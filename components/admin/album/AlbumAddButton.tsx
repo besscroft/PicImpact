@@ -1,21 +1,18 @@
 'use client'
 
-import { Button } from '@nextui-org/react'
+import { Button } from '~/components/ui/button'
 import React from 'react'
 import { useButtonStore } from '~/app/providers/button-store-Providers'
 
 export default function AlbumAddButton() {
-  const { setTagAdd } = useButtonStore(
+  const { setAlbumAdd } = useButtonStore(
     (state) => state,
   )
 
   return (
     <Button
-      color="primary"
-      radius="full"
-      size="sm"
-      variant="shadow"
-      onClick={() => setTagAdd(true)}
+      className="cursor-pointer"
+      onClick={() => setAlbumAdd(true)}
       aria-label="新增"
     >
       新增

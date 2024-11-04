@@ -2,15 +2,17 @@
 
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from '~/components/ui/sheet'
 import { useButtonStore } from '~/app/providers/button-store-Providers'
-import { Button, Input, Switch, cn, Textarea } from '@nextui-org/react'
 import { HandleProps, AlbumType } from '~/types'
-import { useState } from 'react'
+import React, { useState } from 'react'
 import { toast } from 'sonner'
 import { useSWRHydrated } from '~/hooks/useSWRHydrated'
+import { ReloadIcon } from '@radix-ui/react-icons'
+import { Button } from '~/components/ui/button'
+import { Switch } from '~/components/ui/switch'
 
 export default function AlbumAddSheet(props : Readonly<HandleProps>) {
   const { isLoading, mutate, error } = useSWRHydrated(props)
-  const { tagAdd, setTagAdd } = useButtonStore(
+  const { albumAdd, setAlbumAdd } = useButtonStore(
     (state) => state,
   )
   const [data, setData] = useState({} as AlbumType)
@@ -27,7 +29,7 @@ export default function AlbumAddSheet(props : Readonly<HandleProps>) {
     }
     try {
       setLoading(true)
-      const res = await fetch('/api/v1/tags/add', {
+      const res = await fetch('/api/v1/albums/add', {
         headers: {
           'Content-Type': 'application/json',
         },
@@ -36,7 +38,7 @@ export default function AlbumAddSheet(props : Readonly<HandleProps>) {
       }).then(response => response.json())
       if (res.code === 200) {
         toast.success('添加成功！')
-        setTagAdd(false)
+        setAlbumAdd(false)
         setData({} as AlbumType)
         await mutate()
       } else {
@@ -52,88 +54,94 @@ export default function AlbumAddSheet(props : Readonly<HandleProps>) {
   return (
     <Sheet
       defaultOpen={false}
-      open={tagAdd}
-      onOpenChange={() => setTagAdd(!tagAdd)}
+      open={albumAdd}
+      onOpenChange={() => setAlbumAdd(!albumAdd)}
       modal={false}
     >
       <SheetContent side="left" className="overflow-y-auto scrollbar-hide" onInteractOutside={(event: any) => event.preventDefault()}>
         <SheetHeader>
           <SheetTitle>新增相册</SheetTitle>
           <SheetDescription className="space-y-2">
-            <Input
-              isRequired
-              value={data.name}
-              onValueChange={(value) => setData({ ...data, name: value })}
-              isClearable
-              type="text"
-              variant="bordered"
-              label="相册名称"
-              placeholder="输入相册名称"
-            />
-            <Input
-              isRequired
-              value={data.album_value}
-              onValueChange={(value) => setData({ ...data, album_value: value })}
-              isClearable
-              type="text"
-              variant="bordered"
-              label="路由"
-              placeholder="输入路由，如：/tietie"
-            />
-            <Textarea
-              value={data.detail}
-              onValueChange={(value) => setData({ ...data, detail: value })}
-              label="详情"
-              variant="bordered"
-              placeholder="输入详情"
-              disableAnimation
-              disableAutosize
-              classNames={{
-                input: "resize-y min-h-[40px]",
-              }}
-            />
-            <Input
-              value={String(data.sort)}
-              onValueChange={(value) => setData({ ...data, sort: Number(value) })}
-              type="number"
-              variant="bordered"
-              label="排序"
-              placeholder="0"
-            />
-            <Switch
-              value={data.show === 0 ? 'true' : 'false'}
-              onValueChange={(value) => setData({ ...data, show: value ? 0 : 1 })}
-              classNames={{
-                base: cn(
-                  "inline-flex flex-row-reverse w-full max-w-full bg-content1 hover:bg-content2 items-center",
-                  "justify-between cursor-pointer rounded-lg gap-2 p-4 border-2 border-transparent",
-                  "data-[selected=true]:border-primary",
-                ),
-                wrapper: "p-0 h-4 overflow-visible",
-                thumb: cn("w-6 h-6 border-2 shadow-lg",
-                  "group-data-[hover=true]:border-primary",
-                  //selected
-                  "group-data-[selected=true]:ml-6",
-                  // pressed
-                  "group-data-[pressed=true]:w-7",
-                  "group-data-[selected]:group-data-[pressed]:ml-4",
-                ),
-              }}
+            <label
+              htmlFor="name"
+              className="block overflow-hidden rounded-md border border-gray-200 px-3 py-2 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600"
             >
+              <span className="text-xs font-medium text-gray-700"> 相册名称 </span>
+
+              <input
+                type="text"
+                id="name"
+                value={data?.name}
+                placeholder="输入相册名称"
+                onChange={(e) => setData({...data, name: e.target.value})}
+                className="mt-1 w-full border-none p-0 focus:border-transparent focus:outline-none focus:ring-0 sm:text-sm"
+              />
+            </label>
+            <label
+              htmlFor="album_value"
+              className="block overflow-hidden rounded-md border border-gray-200 px-3 py-2 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600"
+            >
+              <span className="text-xs font-medium text-gray-700"> 路由 </span>
+
+              <input
+                type="text"
+                id="album_value"
+                value={data?.album_value}
+                placeholder="输入路由，如：/tietie"
+                onChange={(e) => setData({...data, album_value: e.target.value})}
+                className="mt-1 w-full border-none p-0 focus:border-transparent focus:outline-none focus:ring-0 sm:text-sm"
+              />
+            </label>
+            <label
+              htmlFor="detail"
+              className="block overflow-hidden rounded-md border border-gray-200 px-3 py-2 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600"
+            >
+              <span className="text-xs font-medium text-gray-700"> 详情 </span>
+
+              <input
+                type="text"
+                id="detail"
+                value={data?.detail}
+                placeholder="输入详情"
+                onChange={(e) => setData({...data, detail: e.target.value})}
+                className="mt-1 w-full border-none p-0 focus:border-transparent focus:outline-none focus:ring-0 sm:text-sm"
+              />
+            </label>
+            <label
+              htmlFor="sort"
+              className="block overflow-hidden rounded-md border border-gray-200 px-3 py-2 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600"
+            >
+              <span className="text-xs font-medium text-gray-700"> 排序 </span>
+
+              <input
+                type="number"
+                id="sort"
+                value={data?.sort}
+                placeholder="0"
+                onChange={(e) => setData({...data, sort: Number(e.target.value)})}
+                className="mt-1 w-full border-none p-0 focus:border-transparent focus:outline-none focus:ring-0 sm:text-sm"
+              />
+            </label>
+            <div className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
               <div className="flex flex-col gap-1">
-                <p className="text-medium">显示状态</p>
-                <p className="text-tiny text-default-400">
+                <div className="text-medium">显示状态</div>
+                <div className="text-tiny text-default-400">
                   是否需要在首页以路由形式呈现，点击后跳转页面。
-                </p>
+                </div>
               </div>
-            </Switch>
+              <Switch
+                checked={data?.show === 0}
+                onCheckedChange={(value) => {
+                  setData({...data, show: value ? 0 : 1})
+                }}
+              />
+            </div>
             <Button
-              isLoading={loading}
-              color="primary"
-              variant="shadow"
+              disabled={loading}
               onClick={() => submit()}
               aria-label="提交"
             >
+              {loading && <ReloadIcon className="mr-2 h-4 w-4 animate-spin"/>}
               提交
             </Button>
           </SheetDescription>
