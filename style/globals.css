@@ -196,6 +196,15 @@
   }
 }
 
+img[class*=no-js] {
+  opacity: 1;
+  transition: opacity 0.2s;
+}
+
+img[src^=data] {
+  opacity: 0;
+}
+
 /* property */
 
 @property --angle {

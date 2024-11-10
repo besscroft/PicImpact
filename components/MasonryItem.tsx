@@ -2,7 +2,6 @@
 
 import { useButtonStore } from '~/app/providers/button-store-Providers'
 import { CopyrightType, DataProps, ImageType } from '~/types'
-import { Image } from '@nextui-org/react'
 import {
   Aperture,
   ArrowLeft,
@@ -115,12 +114,12 @@ export default function MasonryItem() {
         </div>
         <div className="h-full flex flex-col space-y-2 md:grid md:gap-2 md:grid-cols-3 xl:gap-4">
           <div className="md:col-span-2 md:flex md:justify-center md:max-h-[90vh]">
-            <Image
-              className="object-contain md:max-h-[90vh]"
-              alt={MasonryViewData.detail}
-              src={MasonryViewData.preview_url || MasonryViewData.url}
-              radius="none"
+            <img
+              width={MasonryViewData.width}
               loading="lazy"
+              src={MasonryViewData.preview_url || MasonryViewData.url}
+              alt={MasonryViewData.detail}
+              className="object-contain md:max-h-[90vh]"
             />
           </div>
           <div className="flex w-full flex-col">

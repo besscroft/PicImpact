@@ -4,7 +4,7 @@ import React, { useState } from 'react'
 import { DataProps, ImageServerHandleProps, ImageType, AlbumType } from '~/types'
 import { useSWRInfiniteServerHook } from '~/hooks/useSWRInfiniteServerHook'
 import { useSWRPageTotalServerHook } from '~/hooks/useSWRPageTotalServerHook'
-import { Pagination } from '@nextui-org/react'
+import { Pagination } from 'antd'
 import { ArrowDown10, Trash, ScanSearch, CircleHelp, Replace, Pencil } from 'lucide-react'
 import { toast } from 'sonner'
 import { useButtonStore } from '~/app/providers/button-store-Providers'
@@ -314,13 +314,12 @@ export default function ListProps(props : Readonly<ImageServerHandleProps>) {
         ))}
       </div>
       <Pagination
-        className="!m-0"
+        defaultCurrent={1}
+        current={pageNum}
         total={total}
-        color="primary"
-        size="sm"
-        page={pageNum}
-        isDisabled={!total || total === 0}
-        onChange={async (page) => {
+        pageSize={8}
+        hideOnSinglePage
+        onChange={async (page, pageSize) => {
           setPageNum(page)
           await mutate()
         }}

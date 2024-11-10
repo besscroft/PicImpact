@@ -222,7 +222,7 @@ export async function fetchServerImagesPageTotalByAlbum(album: string) {
       ) AS unique_images;
     `
     // @ts-ignore
-    return Number(pageTotal[0].total) > 0 ? Math.ceil(Number(pageTotal[0].total) / 8) : 0
+    return Number(pageTotal[0].total) ?? 0
   }
   const pageTotal = await db.$queryRaw`
     SELECT COALESCE(COUNT(1),0) AS total
@@ -240,7 +240,8 @@ export async function fetchServerImagesPageTotalByAlbum(album: string) {
      ) AS unique_images;
   `
   // @ts-ignore
-  return Number(pageTotal[0].total) > 0 ? Math.ceil(Number(pageTotal[0].total) / 8) : 0
+  // return Number(pageTotal[0].total) > 0 ? Math.ceil(Number(pageTotal[0].total) / 8) : 0
+  return Number(pageTotal[0].total) ?? 0
 }
 
 export async function fetchClientImagesListByAlbum(pageNum: number, album: string) {

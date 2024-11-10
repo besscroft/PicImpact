@@ -1,12 +1,10 @@
 import type { Config } from 'tailwindcss'
-import { nextui } from '@nextui-org/react'
 
 const config = {
   darkMode: ["class"],
   content: [
     './components/**/*.{js,ts,jsx,tsx,mdx}',
     './app/**/*.{js,ts,jsx,tsx,mdx}',
-    './node_modules/@nextui-org/theme/dist/**/*.{js,ts,jsx,tsx}',
 	],
   prefix: "",
   theme: {
@@ -108,7 +106,7 @@ const config = {
   		}
   	}
   },
-  plugins: [nextui(), require('tailwindcss-animate'), require('tailwind-scrollbar-hide')],
+  plugins: [require('tailwindcss-animate'), require('tailwind-scrollbar-hide')],
 } satisfies Config
 
 export default config
