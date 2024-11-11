@@ -125,7 +125,6 @@ def migrate_images_copyright_relation_table(db_v1, db_v2, batch_size=100):
     
     print("Images copyright relation migration completed successfully!")
     
-    # 验证迁移后的记录数
     v2_count = db_v2.query('SELECT COUNT(*) as count FROM "images_copyright_relation"').next()['count']
     print(f"Records in source database: {total_count}")
     print(f"Records in target database: {v2_count}")
