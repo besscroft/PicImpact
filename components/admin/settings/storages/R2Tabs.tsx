@@ -35,7 +35,7 @@ export default function R2Tabs() {
         <div className="flex justify-between p-2">
           <div className="flex gap-5">
             <div className="flex flex-col gap-1 items-start justify-center">
-              <h4 className="text-small font-semibold leading-none text-default-600">Cloudflare R2 配置信息</h4>
+              <h4 className="text-small font-semibold leading-none text-default-600">Cloudflare R2 配置</h4>
             </div>
           </div>
           <div className="flex items-center space-x-2">
