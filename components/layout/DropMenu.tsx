@@ -53,6 +53,7 @@ export const DropMenu = () => {
                 <DropdownMenuItem
                   key="home"
                   onClick={() => router.push('/')}
+                  className="cursor-pointer"
                 >
                   <Home size={20} className={iconClasses} />首页
                 </DropdownMenuItem>
@@ -60,6 +61,7 @@ export const DropMenu = () => {
                 <DropdownMenuItem
                   key="admin"
                   onClick={() => router.push('/admin')}
+                  className="cursor-pointer"
                 >
                   <MonitorDot size={20} className={iconClasses} />控制台
                 </DropdownMenuItem>
@@ -76,12 +78,14 @@ export const DropMenu = () => {
                   console.log(e)
                 }
               }}
+              className="cursor-pointer"
             >
               <LogOut size={20} className={iconClasses} />退出登录
             </DropdownMenuItem>
             <DropdownMenuItem
               key="theme"
               onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
+              className="cursor-pointer"
             >
               {theme === 'light' ? <MoonStar size={20} className={iconClasses} /> : <SunMedium size={20} className={iconClasses} />}
               { theme === 'light' ? '切换至⌈常夜⌋' : '切换至⌈白夜⌋' }
@@ -89,6 +93,7 @@ export const DropMenu = () => {
             <DropdownMenuItem
               key="github"
               onClick={() => router.push('https://github.com/besscroft/PicImpact')}
+              className="cursor-pointer"
             >
               <Github size={20} className={iconClasses} />GitHub
             </DropdownMenuItem>
@@ -98,12 +103,14 @@ export const DropMenu = () => {
             <DropdownMenuItem
               key="login"
               onClick={() => router.push('/login')}
+              className="cursor-pointer"
             >
               <LogIn size={20} className={iconClasses} />登录
             </DropdownMenuItem>
             <DropdownMenuItem
               key="theme"
               onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
+              className="cursor-pointer"
             >
               {theme === 'light' ? <MoonStar size={20} className={iconClasses} /> : <SunMedium size={20} className={iconClasses} />}
               { theme === 'light' ? '切换至⌈常夜⌋' : '切换至⌈白夜⌋' }
@@ -111,6 +118,7 @@ export const DropMenu = () => {
             <DropdownMenuItem
               key="github"
               onClick={() => router.push('https://github.com/besscroft/PicImpact')}
+              className="cursor-pointer"
             >
               <Github size={20} className={iconClasses} />GitHub
             </DropdownMenuItem>

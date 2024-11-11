@@ -4,7 +4,6 @@ import React, { useState } from 'react'
 import { HandleProps, CopyrightType } from '~/types'
 import { useSWRHydrated } from '~/hooks/useSWRHydrated'
 import { toast } from 'sonner'
-import { Pencil, Trash } from 'lucide-react'
 import { useButtonStore } from '~/app/providers/button-store-Providers'
 import {
   Popover,
@@ -23,6 +22,8 @@ import {
 } from '~/components/ui/dialog'
 import { ReloadIcon } from '@radix-ui/react-icons'
 import { Card, CardFooter } from '~/components/ui/card'
+import { SquarePenIcon } from '~/components/icons/square-pen'
+import { DeleteIcon } from '~/components/icons/delete'
 
 export default function CopyrightList(props : Readonly<HandleProps>) {
   const { data, isLoading, error, mutate } = useSWRHydrated(props)
@@ -129,7 +130,7 @@ export default function CopyrightList(props : Readonly<HandleProps>) {
                 }}
                 aria-label="编辑版权"
               >
-                <Pencil size={20} />
+                <SquarePenIcon />
               </Button>
               <Dialog onOpenChange={(value) => {
                 if (!value) {
@@ -145,7 +146,7 @@ export default function CopyrightList(props : Readonly<HandleProps>) {
                     }}
                     aria-label="删除版权"
                   >
-                    <Trash size={20}/>
+                    <DeleteIcon />
                   </Button>
                 </DialogTrigger>
                 <DialogContent className="sm:max-w-[425px]">

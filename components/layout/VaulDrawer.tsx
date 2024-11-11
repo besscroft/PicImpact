@@ -12,7 +12,7 @@ import {
   LogIn,
   Home,
   MonitorDot,
-  GalleryHorizontalEnd,
+  BookImage,
   LogOut,
 } from 'lucide-react'
 import { loginOut } from '~/server/actions'
@@ -46,15 +46,26 @@ export default function VaulDrawer(props: Readonly<DataProps>) {
                   session ?
                     <div className="space-y-1" aria-label="移动端菜单">
                       {Array.isArray(props.data) && props.data?.map((album: AlbumType, index: any, array: AlbumType[]) => (
-                        <div
-                          key={album.id}
-                          onClick={() => router.push(album.album_value)}
-                          className={pathname === album.album_value ? activeClasses : ''}
-                        >
-                          <Drawer.Close className={closeClasses}>
-                            <GalleryHorizontalEnd size={20} className={iconClasses} /><p>{album.name}</p>
-                          </Drawer.Close>
-                        </div>
+                        album.album_value === '/' ?
+                          <div
+                            key={album.id}
+                            onClick={() => router.push(album.album_value)}
+                            className={pathname === album.album_value ? activeClasses : ''}
+                          >
+                            <Drawer.Close className={closeClasses}>
+                              <Home size={20} className={iconClasses}/><p>{album.name}</p>
+                            </Drawer.Close>
+                          </div>
+                          :
+                          <div
+                            key={album.id}
+                            onClick={() => router.push(album.album_value)}
+                            className={pathname === album.album_value ? activeClasses : ''}
+                          >
+                            <Drawer.Close className={closeClasses}>
+                              <BookImage size={20} className={iconClasses}/><p>{album.name}</p>
+                            </Drawer.Close>
+                          </div>
                       ))}
                       <div
                         key="admin"
@@ -62,7 +73,7 @@ export default function VaulDrawer(props: Readonly<DataProps>) {
                         className={pathname === '/admin' ? activeClasses : ''}
                       >
                         <Drawer.Close className={closeClasses}>
-                          <MonitorDot size={20} className={iconClasses} /><p>控制台</p>
+                          <MonitorDot size={20} className={iconClasses}/><p>控制台</p>
                         </Drawer.Close>
                       </div>
                       <div

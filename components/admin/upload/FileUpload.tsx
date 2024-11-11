@@ -10,7 +10,6 @@ import { ExifType, AlbumType, ImageType } from '~/types'
 import ExifReader from 'exifreader'
 import Compressor from 'compressorjs'
 import { useButtonStore } from '~/app/providers/button-store-Providers'
-import { CircleHelp } from 'lucide-react'
 import FileUploadHelpSheet from '~/components/admin/upload/FileUploadHelpSheet'
 import { ReloadIcon } from '@radix-ui/react-icons'
 import { Button } from '~/components/ui/button'
@@ -23,6 +22,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '~/components/ui/select'
+import { CircleHelpIcon } from '~/components/icons/circle-help'
 
 export default function FileUpload() {
   const [alistStorage, setAlistStorage] = useState([])
@@ -457,7 +457,7 @@ export default function FileUpload() {
             aria-label="帮助"
             onClick={() => setUploadHelp(true)}
           >
-            <CircleHelp/>
+            <CircleHelpIcon />
           </Button>
           {mode === 'singleton'
             ? <Button

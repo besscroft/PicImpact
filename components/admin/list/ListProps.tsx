@@ -5,7 +5,8 @@ import { DataProps, ImageServerHandleProps, ImageType, AlbumType } from '~/types
 import { useSWRInfiniteServerHook } from '~/hooks/useSWRInfiniteServerHook'
 import { useSWRPageTotalServerHook } from '~/hooks/useSWRPageTotalServerHook'
 import { Pagination } from 'antd'
-import { ArrowDown10, Trash, ScanSearch, CircleHelp, Replace, Pencil } from 'lucide-react'
+import { ArrowDown10, ScanSearch, Replace } from 'lucide-react'
+import { CircleHelpIcon } from '~/components/icons/circle-help'
 import { toast } from 'sonner'
 import { useButtonStore } from '~/app/providers/button-store-Providers'
 import ImageEditSheet from '~/components/admin/list/ImageEditSheet'
@@ -43,6 +44,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from '~/components/ui/select'
+import { SquarePenIcon } from '~/components/icons/square-pen'
+import { DeleteIcon } from '~/components/icons/delete'
 
 export default function ListProps(props : Readonly<ImageServerHandleProps>) {
   const [pageNum, setPageNum] = useState(1)
@@ -158,7 +161,7 @@ export default function ListProps(props : Readonly<ImageServerHandleProps>) {
             aria-label="帮助"
             onClick={() => setImageHelp(true)}
           >
-            <CircleHelp />
+            <CircleHelpIcon />
           </Button>
           <Button
             variant="outline"
@@ -166,7 +169,7 @@ export default function ListProps(props : Readonly<ImageServerHandleProps>) {
             aria-label="批量删除"
             onClick={() => setImageBatchDelete(true)}
           >
-            <Trash />
+            <DeleteIcon />
           </Button>
           <Button
             className="cursor-pointer"
@@ -306,7 +309,7 @@ export default function ListProps(props : Readonly<ImageServerHandleProps>) {
                   }}
                   aria-label="编辑图片"
                 >
-                  <Pencil size={20} />
+                  <SquarePenIcon />
                 </Button>
               </div>
             </CardFooter>

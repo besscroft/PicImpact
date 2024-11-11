@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react'
 import { useSWRHydrated } from '~/hooks/useSWRHydrated'
-import { ArrowDown10, Pencil, Trash } from 'lucide-react'
+import { ArrowDown10 } from 'lucide-react'
 import { toast } from 'sonner'
 import { AlbumType, HandleProps } from '~/types'
 import { useButtonStore } from '~/app/providers/button-store-Providers'
@@ -23,6 +23,8 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '~/components/ui/dialog'
+import { SquarePenIcon } from '~/components/icons/square-pen'
+import { DeleteIcon } from '~/components/icons/delete'
 
 export default function AlbumList(props : Readonly<HandleProps>) {
   const { data, isLoading, error, mutate } = useSWRHydrated(props)
@@ -140,7 +142,7 @@ export default function AlbumList(props : Readonly<HandleProps>) {
                 }}
                 aria-label="编辑相册"
               >
-                <Pencil size={20}/>
+                <SquarePenIcon />
               </Button>
               <Dialog onOpenChange={(value) => {
                 if (!value) {
@@ -156,7 +158,7 @@ export default function AlbumList(props : Readonly<HandleProps>) {
                     }}
                     aria-label="删除相册"
                   >
-                    <Trash size={20}/>
+                    <DeleteIcon />
                   </Button>
                 </DialogTrigger>
                 <DialogContent className="sm:max-w-[425px]">

@@ -2,7 +2,7 @@
 
 import { Button } from '~/components/ui/button'
 import React from 'react'
-import { CircleHelp } from 'lucide-react'
+import { CircleHelpIcon } from '~/components/icons/circle-help'
 import { useButtonStore } from '~/app/providers/button-store-Providers'
 
 export default function AlbumHelp() {
@@ -16,7 +16,7 @@ export default function AlbumHelp() {
       aria-label="帮助"
       onClick={() => setAlbumHelp(true)}
     >
-      <CircleHelp />
+      <CircleHelpIcon />
     </Button>
   )
 }

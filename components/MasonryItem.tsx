@@ -4,13 +4,8 @@ import { useButtonStore } from '~/app/providers/button-store-Providers'
 import { CopyrightType, DataProps, ImageType } from '~/types'
 import {
   Aperture,
-  ArrowLeft,
-  ArrowRight,
   Camera,
   Image as ImageIcon,
-  Images,
-  Link as LinkIcon,
-  ImageDown,
   Languages,
   CalendarDays,
   Copyright,
@@ -39,6 +34,11 @@ import {
 } from '~/components/ui/tabs'
 import Link from 'next/link'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '~/components/ui/dialog'
+import { CopyIcon } from '~/components/icons/copy'
+import { DownloadIcon } from '~/components/icons/download'
+import { LinkIcon } from '~/components/icons/link'
+import { ArrowLeftIcon } from '~/components/icons/arrow-left'
+import { ArrowRightIcon } from '~/components/icons/arrow-right'
 
 dayjs.extend(customParseFormat)
 
@@ -129,15 +129,17 @@ export default function MasonryItem() {
                 <Button
                   className="w-full active:scale-95 duration-200 ease-in-out"
                   onClick={() => loadingHandle('prev')}
+                  variant="outline"
                 >
-                  <ArrowLeft className="mr-2 h-4 w-4"/>
+                  <ArrowLeftIcon />
                   上一张
                 </Button>
                 <Button
                   className="w-full active:scale-95 duration-200 ease-in-out"
                   onClick={() => loadingHandle('next')}
+                  variant="outline"
                 >
-                  <ArrowRight className="mr-2 h-4 w-4"/>
+                  <ArrowRightIcon />
                   下一张
                 </Button>
               </div>
@@ -177,8 +179,10 @@ export default function MasonryItem() {
                           toast.error('复制图片链接失败！', {duration: 500})
                         }
                       }}
+                      variant="outline"
+                      className="active:scale-95 duration-200 ease-in-out"
                     >
-                      <Images className="mr-2 h-4 w-4"/>
+                      <CopyIcon />
                       复制
                     </Button>
                     <Button
@@ -192,22 +196,26 @@ export default function MasonryItem() {
                           toast.error('复制分享直链失败！', {duration: 500})
                         }
                       }}
+                      variant="outline"
+                      className="active:scale-95 duration-200 ease-in-out"
                     >
-                      <LinkIcon className="mr-2 h-4 w-4"/>
+                      <LinkIcon />
                       分享
                     </Button>
                     <Button
                       onClick={() => downloadImg()}
                       disabled={download}
+                      variant="outline"
+                      className="active:scale-95 duration-200 ease-in-out"
                     >
-                      {download ? <ReloadIcon className="mr-2 h-4 w-4 animate-spin"/> : <ImageDown className="mr-2 h-4 w-4"/>}
+                      {download ? <ReloadIcon className="mr-2 h-4 w-4 animate-spin"/> : <DownloadIcon />}
                       下载
                     </Button>
                   </div>
                   {MasonryViewData?.exif?.model && MasonryViewData?.exif?.f_number
                     && MasonryViewData?.exif?.exposure_time && MasonryViewData?.exif?.focal_length
                     && MasonryViewData?.exif?.iso_speed_rating && MasonryViewData?.exif?.make &&
-                    <Card className="py-2">
+                    <Card className="py-2 show-up-motion">
                       <div className="pb-0 pt-2 px-2 flex-col items-start space-y-2">
                         <div className="flex items-center justify-center space-x-1 w-full">
                           <Camera size={20}/>
