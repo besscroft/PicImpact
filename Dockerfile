@@ -1,4 +1,4 @@
-FROM node:18-alpine AS base
+FROM node:20.18-alpine3.19 AS base
 
 # Install dependencies only when needed
 FROM base AS deps
@@ -17,7 +17,7 @@ RUN apk add --no-cache libc6-compat
 
 WORKDIR /app
 
-RUN corepack enable pnpm && pnpm add prisma@5.17.0 @prisma/client@5.17.0
+RUN corepack enable pnpm && pnpm add prisma @prisma/client
 
 FROM base AS builder
 
