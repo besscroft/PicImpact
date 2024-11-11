@@ -461,6 +461,7 @@ export default function FileUpload() {
           </Button>
           {mode === 'singleton'
             ? <Button
+              variant="outline"
               disabled={loading}
               onClick={() => submit()}
               aria-label="提交"
@@ -470,6 +471,7 @@ export default function FileUpload() {
             </Button>
             :
             <Button
+              variant="outline"
               disabled={loading}
               onClick={() => onRemoveFile()}
               aria-label="重置"

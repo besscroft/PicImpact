@@ -11,6 +11,7 @@ export default function AlbumAddButton() {
 
   return (
     <Button
+      variant="outline"
       className="cursor-pointer"
       onClick={() => setAlbumAdd(true)}
       aria-label="新增"

@@ -59,6 +59,7 @@ export default function Preferences() {
       </label>
       <div className="flex w-full sm:w-64 items-center justify-center space-x-1">
         <Button
+          variant="outline"
           disabled={loading}
           onClick={() => updateTitle()}
           aria-label="提交"

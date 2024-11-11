@@ -11,6 +11,7 @@ export default function CopyrightAddButton() {
 
   return (
     <Button
+      variant="outline"
       className="cursor-pointer"
       onClick={() => setCopyrightAdd(true)}
       aria-label="新增"

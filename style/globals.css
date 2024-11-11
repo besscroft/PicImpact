@@ -21,10 +21,6 @@
   --foreground: white;
 }
 
-.semi-tagInput {
-  background-color: #e5e7eb !important;
-}
-
 .ant-upload-list-item-progress {
   display: none;
 }

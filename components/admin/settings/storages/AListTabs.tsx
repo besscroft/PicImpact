@@ -40,6 +40,7 @@ export default function AListTabs() {
           </div>
           <div className="flex items-center space-x-2">
             <Button
+              variant="outline"
               className="cursor-pointer"
               disabled={isValidating}
               onClick={() => mutate()}
@@ -49,6 +50,7 @@ export default function AListTabs() {
               刷新
             </Button>
             <Button
+              variant="outline"
               className="cursor-pointer"
               onClick={() => {
                 setAListEdit(true)

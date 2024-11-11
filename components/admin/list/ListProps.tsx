@@ -4,7 +4,7 @@ import React, { useState } from 'react'
 import { DataProps, ImageServerHandleProps, ImageType, AlbumType } from '~/types'
 import { useSWRInfiniteServerHook } from '~/hooks/useSWRInfiniteServerHook'
 import { useSWRPageTotalServerHook } from '~/hooks/useSWRPageTotalServerHook'
-import { Pagination } from 'antd'
+import { ConfigProvider, Pagination } from 'antd'
 import { ArrowDown10, ScanSearch, Replace } from 'lucide-react'
 import { CircleHelpIcon } from '~/components/icons/circle-help'
 import { toast } from 'sonner'
@@ -173,6 +173,7 @@ export default function ListProps(props : Readonly<ImageServerHandleProps>) {
           </Button>
           <Button
             className="cursor-pointer"
+            variant="outline"
             disabled={isLoading}
             onClick={async () => {
               await totalMutate()
@@ -316,17 +317,25 @@ export default function ListProps(props : Readonly<ImageServerHandleProps>) {
           </Card>
         ))}
       </div>
-      <Pagination
-        defaultCurrent={1}
-        current={pageNum}
-        total={total}
-        pageSize={8}
-        hideOnSinglePage
-        onChange={async (page, pageSize) => {
-          setPageNum(page)
-          await mutate()
+      <ConfigProvider
+        theme={{
+          "token": {
+            "colorTextBase": "#13c2c2"
+          }
         }}
-      />
+      >
+        <Pagination
+          defaultCurrent={1}
+          current={pageNum}
+          total={total}
+          pageSize={8}
+          hideOnSinglePage
+          onChange={async (page, pageSize) => {
+            setPageNum(page)
+            await mutate()
+          }}
+        />
+      </ConfigProvider>
       <ImageEditSheet {...{...props, pageNum, album}} />
       <ImageView />
       <ImageHelpSheet />

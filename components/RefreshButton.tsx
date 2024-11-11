@@ -11,8 +11,8 @@ export default function RefreshButton(props: Readonly<HandleProps>) {
 
   return (
     <Button
+      variant="outline"
       className="cursor-pointer"
-      type="submit"
       disabled={isLoading}
       aria-label="刷新"
       onClick={async () => {

@@ -32,7 +32,6 @@ export default function Authenticator() {
   const [password, setPassword] = useState('')
   const [uri, setUri] = useState('')
   const [secret, setSecret] = useState('')
-  const [isOpen, setIsOpen] = useState(false)
   const [deleteLoading, setDeleteLoading] = useState(false)
   const { data, isValidating, isLoading, mutate } = useSWR('/api/open/get-auth-status', fetcher,
     {
@@ -103,7 +102,6 @@ export default function Authenticator() {
       setUri('')
       setSecret('')
       setDeleteLoading(false)
-      setIsOpen(false)
       await mutate()
       await getQRCode()
     }
@@ -212,6 +210,7 @@ export default function Authenticator() {
               </InputOTP>
               <div className="flex items-center justify-center space-x-2 w-full sm:w-64">
                 <Button
+                  variant="outline"
                   className="cursor-pointer w-full sm:w-64"
                   onClick={async () => {
                     setPassword('')
@@ -223,6 +222,7 @@ export default function Authenticator() {
                   重新获取
                 </Button>
                 <Button
+                  variant="outline"
                   onClick={() => saveAuthTemplateToken()}
                   className="cursor-pointer w-full sm:w-64"
                   disabled={password.length !== 6}
