@@ -39,6 +39,10 @@ export default function AlbumList(props : Readonly<HandleProps>) {
   async function deleteAlbum() {
     setDeleteLoading(true)
     if (!album.id) return
+    if (album.album_value === '/') {
+      toast.warning('/ 路由不允许被删除！')
+      return
+    }
     try {
       const res = await fetch(`/api/v1/albums/delete/${album.id}`, {
         method: 'DELETE',
@@ -144,44 +148,47 @@ export default function AlbumList(props : Readonly<HandleProps>) {
               >
                 <SquarePenIcon />
               </Button>
-              <Dialog onOpenChange={(value) => {
-                if (!value) {
-                  setAlbum({} as AlbumType)
-                }
-              }}>
-                <DialogTrigger asChild>
-                  <Button
-                    variant="outline"
-                    size="icon"
-                    onClick={() => {
-                      setAlbum(album)
-                    }}
-                    aria-label="删除相册"
-                  >
-                    <DeleteIcon />
-                  </Button>
-                </DialogTrigger>
-                <DialogContent className="sm:max-w-[425px]">
-                  <DialogHeader>
-                    <DialogTitle>确定要删掉？</DialogTitle>
-                  </DialogHeader>
-                  <div>
-                    <p>相册 ID：{album.id}</p>
-                    <p>相册名称：{album.name}</p>
-                    <p>相册路由：{album.album_value}</p>
-                  </div>
-                  <DialogFooter>
+              {
+                album.album_value !== '/' &&
+                <Dialog onOpenChange={(value) => {
+                  if (!value) {
+                    setAlbum({} as AlbumType)
+                  }
+                }}>
+                  <DialogTrigger asChild>
                     <Button
-                      disabled={deleteLoading}
-                      onClick={() => deleteAlbum()}
-                      aria-label="确认删除"
+                      variant="outline"
+                      size="icon"
+                      onClick={() => {
+                        setAlbum(album)
+                      }}
+                      aria-label="删除相册"
                     >
-                      {deleteLoading && <ReloadIcon className="mr-2 h-4 w-4 animate-spin"/>}
-                      删除
+                      <DeleteIcon />
                     </Button>
-                  </DialogFooter>
-                </DialogContent>
-              </Dialog>
+                  </DialogTrigger>
+                  <DialogContent className="sm:max-w-[425px]">
+                    <DialogHeader>
+                      <DialogTitle>确定要删掉？</DialogTitle>
+                    </DialogHeader>
+                    <div>
+                      <p>相册 ID：{album.id}</p>
+                      <p>相册名称：{album.name}</p>
+                      <p>相册路由：{album.album_value}</p>
+                    </div>
+                    <DialogFooter>
+                      <Button
+                        disabled={deleteLoading}
+                        onClick={() => deleteAlbum()}
+                        aria-label="确认删除"
+                      >
+                        {deleteLoading && <ReloadIcon className="mr-2 h-4 w-4 animate-spin"/>}
+                        删除
+                      </Button>
+                    </DialogFooter>
+                  </DialogContent>
+                </Dialog>
+              }
             </div>
           </CardFooter>
         </Card>
