@@ -118,17 +118,16 @@ export default function FileUpload() {
   async function submit() {
     try {
       setLoading(true)
-      const albumArray = Array.from(album)
       if (!url || url === '') {
         toast.warning('请先上传文件！')
         return
       }
-      if (albumArray.length === 0 || albumArray[0] === '') {
+      if (album === '') {
         toast.warning('请先选择相册！')
         return
       }
       const data = {
-        album: albumArray[0],
+        album: album,
         url: url,
         title: title,
         preview_url: previewUrl,
@@ -164,16 +163,13 @@ export default function FileUpload() {
     setTitle('')
     setPreviewUrl('')
     setImageLabels([])
-    const storageArray = Array.from(storage)
-    const albumArray = Array.from(album)
-    const alistMountPathArray = Array.from(alistMountPath)
-    if (storageArray.length === 0 || storageArray[0] === '') {
+    if (storage === '') {
       toast.warning('请先选择存储！')
       file.abort()
-    } else if (storageArray[0] === 'alist' && (alistMountPathArray.length === 0 || alistMountPathArray[0] === '')) {
+    } else if (storage === 'alist' && alistMountPath === '') {
       toast.warning('请先选择挂载目录！')
       file.abort()
-    } else if (albumArray.length === 0 || albumArray[0] === '') {
+    } else if (album === '') {
       toast.warning('请先选择相册！')
       file.abort()
     } else {
@@ -220,13 +216,11 @@ export default function FileUpload() {
   const { Dragger } = Upload;
 
   async function uploadFile(file: any, type: string) {
-    const storageArray = Array.from(storage)
-    const alistMountPathArray = Array.from(alistMountPath)
     const formData = new FormData()
     formData.append('file', file)
-    formData.append('storage', storageArray[0])
+    formData.append('storage', storage)
     formData.append('type', type)
-    formData.append('mountPath', alistMountPathArray[0])
+    formData.append('mountPath', alistMountPath)
     return await fetch('/api/v1/file/upload', {
       method: 'POST',
       body: formData
@@ -236,8 +230,7 @@ export default function FileUpload() {
   async function autoSubmit(file: any, url: string, previewUrl: string) {
     try {
       if (mode === 'multiple') {
-        const albumArray = Array.from(album)
-        if (albumArray.length === 0 || albumArray[0] === '') {
+        if (album === '') {
           toast.warning('请先选择相册！')
           return
         }
@@ -291,7 +284,7 @@ export default function FileUpload() {
             const img = new Image();
             img.onload = async () => {
               const data = {
-                album: albumArray[0],
+                album: album,
                 url: url,
                 title: '',
                 preview_url: previewUrl,
@@ -370,15 +363,14 @@ export default function FileUpload() {
   }
 
   async function onRequestUpload(option: any) {
-    const albumArray = Array.from(album)
-    const res = await uploadFile(option.file, albumArray[0])
+    const res = await uploadFile(option.file, album)
     if (res?.code === 200) {
       toast.success('图片上传成功，尝试生成预览图片并上传！')
       try {
-        if (albumArray[0] === '/') {
+        if (album === '/') {
           await uploadPreviewImage(option, '/preview', res?.data)
         } else {
-          await uploadPreviewImage(option, albumArray[0] + '/preview', res?.data)
+          await uploadPreviewImage(option, album + '/preview', res?.data)
         }
       } catch (e) {
         console.log(e)
@@ -486,7 +478,7 @@ export default function FileUpload() {
         <div className="flex justify-between space-x-2">
           <div className="flex w-full justify-between space-x-1">
             <Select
-              defaultValue={'r2'}
+              defaultValue={storage}
               onValueChange={async (value: string) => {
                 setStorage(value)
                 if (value === 'alist') {
