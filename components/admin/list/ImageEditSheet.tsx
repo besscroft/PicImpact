@@ -1,24 +1,27 @@
 'use client'
 
-import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from '~/components/ui/Sheet'
 import { useButtonStore } from '~/app/providers/button-store-Providers'
 import { ImageServerHandleProps, ImageType } from '~/types'
 import { useSWRInfiniteServerHook } from '~/hooks/useSWRInfiniteServerHook'
-import { Button, cn, Input, Switch, Textarea } from '@nextui-org/react'
 import { Select } from 'antd'
 import React, { useState } from 'react'
 import { toast } from 'sonner'
-import { fetcher } from '~/utils/fetcher'
+import { fetcher } from '~/lib/utils/fetcher'
 import useSWR from 'swr'
+import { Switch } from '~/components/ui/switch'
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from '~/components/ui/sheet'
+import { ReloadIcon } from '@radix-ui/react-icons'
+import { Button } from '~/components/ui/button'
 
-export default function ImageEditSheet(props : Readonly<ImageServerHandleProps & { pageNum: number } & { tag: string }>) {
-  const { pageNum, tag, ...restProps } = props
-  const { mutate } = useSWRInfiniteServerHook(restProps, pageNum, tag)
+
+export default function ImageEditSheet(props : Readonly<ImageServerHandleProps & { pageNum: number } & { album: string }>) {
+  const { pageNum, album, ...restProps } = props
+  const { mutate } = useSWRInfiniteServerHook(restProps, pageNum, album)
   const { imageEdit, image, setImageEdit, setImageEditData } = useButtonStore(
     (state) => state,
   )
   const [loading, setLoading] = useState(false)
-  const { data, isLoading } = useSWR('/api/v1/copyright/get', fetcher)
+  const { data, isLoading } = useSWR('/api/v1/copyrights/get', fetcher)
 
   async function submit() {
     if (!image.url) {
@@ -35,7 +38,7 @@ export default function ImageEditSheet(props : Readonly<ImageServerHandleProps &
     }
     try {
       setLoading(true)
-      await fetch('/api/v1/image/update', {
+      await fetch('/api/v1/images/update', {
         headers: {
           'Content-Type': 'application/json',
         },
@@ -67,150 +70,183 @@ export default function ImageEditSheet(props : Readonly<ImageServerHandleProps &
       }}
       modal={false}
     >
-      <SheetContent side="left" onInteractOutside={(event: any) => event.preventDefault()}>
+      <SheetContent side="left" className="overflow-y-auto scrollbar-hide" onInteractOutside={(event: any) => event.preventDefault()}>
         <SheetHeader>
           <SheetTitle>编辑图片</SheetTitle>
-          <SheetDescription className="space-y-2">
-            <Input
-              value={image?.title}
-              onValueChange={(value) => setImageEditData({ ...image, title: value })}
-              variant="bordered"
-              label="图片标题"
-              placeholder="请输入图片标题"
-            />
-            <Textarea
-              isRequired
-              value={image?.url}
-              onValueChange={(value) => setImageEditData({ ...image, url: value })}
-              label="链接"
-              variant="bordered"
-              placeholder="输入链接"
-              disableAnimation
-              disableAutosize
-              classNames={{
-                input: "resize-y min-h-[40px]",
-              }}
-            />
-            <Textarea
-              value={image?.preview_url}
-              onValueChange={(value) => setImageEditData({ ...image, preview_url: value })}
-              label="预览链接"
-              variant="bordered"
-              placeholder="输入预览链接"
-              disableAnimation
-              disableAutosize
-              classNames={{
-                input: "resize-y min-h-[40px]",
-              }}
-            />
-            <Textarea
-              value={image?.detail}
-              onValueChange={(value) => setImageEditData({ ...image, detail: value })}
-              label="详情"
-              variant="bordered"
-              placeholder="输入详情"
-              disableAnimation
-              disableAutosize
-              classNames={{
-                input: "resize-y min-h-[40px]",
-              }}
-            />
-            <Input
-              isRequired
-              value={String(image?.width)}
-              onValueChange={(value) => setImageEditData({ ...image, width: Number(value) })}
-              type="number"
-              variant="bordered"
-              label="宽度 px"
-              placeholder="0"
-            />
-            <Input
-              isRequired
-              value={String(image?.height)}
-              onValueChange={(value) => setImageEditData({ ...image, height: Number(value) })}
-              type="number"
-              variant="bordered"
-              label="高度 px"
-              placeholder="0"
-            />
-            <Input
-              value={String(image?.lon)}
-              onValueChange={(value) => setImageEditData({ ...image, lon: value })}
-              variant="bordered"
-              label="经度"
-            />
-            <Input
-              value={String(image?.lat)}
-              onValueChange={(value) => setImageEditData({ ...image, lat: value })}
-              variant="bordered"
-              label="纬度"
-            />
-            <Input
-              value={String(image?.sort)}
-              onValueChange={(value) => setImageEditData({ ...image, sort: Number(value) })}
-              type="number"
-              variant="bordered"
-              label="排序"
-              placeholder="0"
-            />
-            <Select
-              className="!block"
-              mode="multiple"
-              placeholder="选择版权信息"
-              defaultValue={image.copyrights}
-              fieldNames={fieldNames}
-              options={data}
-              onChange={(value, option:any) => {
-                setImageEditData({ ...image, copyrights: value })
-              }}
-            />
-            <Select
-              mode="tags"
-              value={image.labels}
-              style={{ width: '100%' }}
-              placeholder="请输入图片索引标签，如：猫猫，不要输入特殊字符。"
-              onChange={(value: any) => setImageEditData({ ...image, labels: value })}
-              options={[]}
-            />
-            <Switch
-              isSelected={image?.show === 0}
-              value={image?.show === 0 ? 'true' : 'false'}
-              onValueChange={(value) => setImageEditData({ ...image, show: value ? 0 : 1 })}
-              classNames={{
-                base: cn(
-                  "inline-flex flex-row-reverse w-full max-w-full bg-content1 hover:bg-content2 items-center",
-                  "justify-between cursor-pointer rounded-lg gap-2 p-4 border-2 border-transparent",
-                  "data-[selected=true]:border-primary",
-                ),
-                wrapper: "p-0 h-4 overflow-visible",
-                thumb: cn("w-6 h-6 border-2 shadow-lg",
-                  "group-data-[hover=true]:border-primary",
-                  //selected
-                  "group-data-[selected=true]:ml-6",
-                  // pressed
-                  "group-data-[pressed=true]:w-7",
-                  "group-data-[selected]:group-data-[pressed]:ml-4",
-                ),
-              }}
-            >
-              <div className="flex flex-col gap-1">
-                <p className="text-medium">显示状态</p>
-                <p className="text-tiny text-default-400">
-                  是否需要在首页显示图片
-                </p>
-              </div>
-            </Switch>
-            <Button
-              isLoading={loading}
-              color="primary"
-              variant="shadow"
-              onClick={() => submit()}
-              aria-label="更新"
-            >
-              更新
-            </Button>
-          </SheetDescription>
         </SheetHeader>
+        <div className="mt-2 space-y-2">
+          <label
+            htmlFor="title"
+            className="block overflow-hidden rounded-md border border-gray-200 px-3 py-2 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600"
+          >
+            <span className="text-xs font-medium text-gray-700"> 图片标题 </span>
+
+            <input
+              type="text"
+              id="title"
+              placeholder="请输入图片标题"
+              value={image?.title}
+              onChange={(e) => setImageEditData({...image, title: e.target.value})}
+              className="mt-1 w-full border-none p-0 focus:border-transparent focus:outline-none focus:ring-0 sm:text-sm"
+            />
+          </label>
+          <label
+            htmlFor="url"
+            className="block overflow-hidden rounded-md border border-gray-200 px-3 py-2 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600"
+          >
+            <span className="text-xs font-medium text-gray-700"> 链接 </span>
+
+            <input
+              type="text"
+              id="url"
+              placeholder="输入链接"
+              value={image?.url}
+              onChange={(e) => setImageEditData({...image, url: e.target.value})}
+              className="mt-1 w-full border-none p-0 focus:border-transparent focus:outline-none focus:ring-0 sm:text-sm"
+            />
+          </label>
+          <label
+            htmlFor="preview_url"
+            className="block overflow-hidden rounded-md border border-gray-200 px-3 py-2 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600"
+          >
+            <span className="text-xs font-medium text-gray-700"> 预览链接 </span>
+
+            <input
+              type="text"
+              id="preview_url"
+              placeholder="输入预览链接"
+              value={image?.preview_url}
+              onChange={(e) => setImageEditData({...image, preview_url: e.target.value})}
+              className="mt-1 w-full border-none p-0 focus:border-transparent focus:outline-none focus:ring-0 sm:text-sm"
+            />
+          </label>
+          <label
+            htmlFor="detail"
+            className="block overflow-hidden rounded-md border border-gray-200 px-3 py-2 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600"
+          >
+            <span className="text-xs font-medium text-gray-700"> 详情 </span>
+
+            <input
+              type="text"
+              id="detail"
+              placeholder="输入详情"
+              value={image?.detail}
+              onChange={(e) => setImageEditData({...image, detail: e.target.value})}
+              className="mt-1 w-full border-none p-0 focus:border-transparent focus:outline-none focus:ring-0 sm:text-sm"
+            />
+          </label>
+          <label
+            htmlFor="width"
+            className="block overflow-hidden rounded-md border border-gray-200 px-3 py-2 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600"
+          >
+            <span className="text-xs font-medium text-gray-700"> 宽度 px </span>
+
+            <input
+              type="number"
+              id="width"
+              value={image?.width}
+              onChange={(e) => setImageEditData({...image, width: Number(e.target.value)})}
+              className="mt-1 w-full border-none p-0 focus:border-transparent focus:outline-none focus:ring-0 sm:text-sm"
+            />
+          </label>
+          <label
+            htmlFor="height"
+            className="block overflow-hidden rounded-md border border-gray-200 px-3 py-2 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600"
+          >
+            <span className="text-xs font-medium text-gray-700"> 高度 px </span>
+
+            <input
+              type="number"
+              id="height"
+              value={image?.height}
+              onChange={(e) => setImageEditData({...image, height: Number(e.target.value)})}
+              className="mt-1 w-full border-none p-0 focus:border-transparent focus:outline-none focus:ring-0 sm:text-sm"
+            />
+          </label>
+          <label
+            htmlFor="lon"
+            className="block overflow-hidden rounded-md border border-gray-200 px-3 py-2 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600"
+          >
+            <span className="text-xs font-medium text-gray-700"> 经度 </span>
+
+            <input
+              type="text"
+              id="lon"
+              placeholder="输入经度"
+              value={image?.lon}
+              onChange={(e) => setImageEditData({...image, lon: e.target.value})}
+              className="mt-1 w-full border-none p-0 focus:border-transparent focus:outline-none focus:ring-0 sm:text-sm"
+            />
+          </label>
+          <label
+            htmlFor="lat"
+            className="block overflow-hidden rounded-md border border-gray-200 px-3 py-2 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600"
+          >
+            <span className="text-xs font-medium text-gray-700"> 纬度 </span>
+
+            <input
+              type="text"
+              id="lat"
+              placeholder="输入纬度"
+              value={image?.lat}
+              onChange={(e) => setImageEditData({...image, lat: e.target.value})}
+              className="mt-1 w-full border-none p-0 focus:border-transparent focus:outline-none focus:ring-0 sm:text-sm"
+            />
+          </label>
+          <label
+            htmlFor="sort"
+            className="block overflow-hidden rounded-md border border-gray-200 px-3 py-2 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600"
+          >
+            <span className="text-xs font-medium text-gray-700"> 排序 </span>
+
+            <input
+              type="number"
+              id="sort"
+              value={image?.sort}
+              onChange={(e) => setImageEditData({...image, sort: Number(e.target.value)})}
+              className="mt-1 w-full border-none p-0 focus:border-transparent focus:outline-none focus:ring-0 sm:text-sm"
+            />
+          </label>
+          <Select
+            className="!block"
+            mode="multiple"
+            placeholder="选择版权信息"
+            defaultValue={image.copyrights}
+            fieldNames={fieldNames}
+            options={data}
+            onChange={(value, option: any) => {
+              setImageEditData({...image, copyrights: value})
+            }}
+          />
+          <Select
+            mode="tags"
+            value={image.labels}
+            style={{width: '100%'}}
+            placeholder="请输入图片索引标签，如：猫猫，不要输入特殊字符。"
+            onChange={(value: any) => setImageEditData({...image, labels: value})}
+            options={[]}
+          />
+          <div className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
+            <div className="flex flex-col gap-1">
+              <div className="text-medium">显示状态</div>
+              <div className="text-tiny text-default-400">
+                是否需要在首页显示图片
+              </div>
+            </div>
+            <Switch
+              checked={image?.show === 0}
+              onCheckedChange={(value) => setImageEditData({...image, show: value ? 0 : 1})}
+            />
+          </div>
+          <Button
+            disabled={loading}
+            onClick={() => submit()}
+            aria-label="更新"
+          >
+            {loading && <ReloadIcon className="mr-2 h-4 w-4 animate-spin"/>}
+            更新
+          </Button>
+        </div>
       </SheetContent>
     </Sheet>
   )

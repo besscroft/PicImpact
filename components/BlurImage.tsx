@@ -1,28 +1,35 @@
 'use client'
 
-import React from 'react'
+import React, { useState } from 'react'
 import { useButtonStore } from '~/app/providers/button-store-Providers'
-import { Image } from '@nextui-org/image'
+import { cn } from '~/lib/utils'
 
 export default function BlurImage({ photo, dataList }: { photo: any, dataList: any }) {
   const { setMasonryView, setMasonryViewData, setMasonryViewDataList } = useButtonStore(
     (state) => state,
   )
 
+  const [loaded, setLoaded] = useState(false)
+
   return (
-    <Image
-      src={photo.src}
-      alt={photo.alt}
+    <img
       width={photo.width}
       loading="lazy"
-      shadow="sm"
-      radius="none"
+      src={photo.src}
+      alt={photo.alt}
       onClick={() => {
         setMasonryView(true)
         setMasonryViewData(photo)
         setMasonryViewDataList(dataList)
       }}
-      className="duration-700 ease-in-out group-hover:opacity-75 cursor-pointer transition-all will-change-transform hover:scale-[1.01]"
+      onLoad={() => setLoaded(true)}
+      className={cn(
+        "duration-700 ease-[cubic-bezier(0.4, 0, 0.2, 1)] group-hover:opacity-75 cursor-pointer transition-all will-change-transform hover:scale-[1.01]",
+        {
+          'opacity-100 scale-100 blur-0': loaded,
+          'opacity-0 scale-95 blur-sm': !loaded,
+        }
+      )}
     />
   )
 }

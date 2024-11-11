@@ -1,6 +1,6 @@
 'use client'
 
-import { Button } from '@nextui-org/react'
+import { Button } from '~/components/ui/button'
 import React from 'react'
 import { useButtonStore } from '~/app/providers/button-store-Providers'
 
@@ -11,10 +11,8 @@ export default function CopyrightAddButton() {
 
   return (
     <Button
-      color="primary"
-      radius="full"
-      size="sm"
-      variant="shadow"
+      variant="outline"
+      className="cursor-pointer"
       onClick={() => setCopyrightAdd(true)}
       aria-label="新增"
     >

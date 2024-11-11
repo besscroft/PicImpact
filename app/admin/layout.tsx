@@ -1,8 +1,7 @@
-import DashHeader from '~/components/layout/DashHeader'
-import { BaseSide } from '~/components/layout/BaseSide'
-
 import { AntdRegistry } from '@ant-design/nextjs-registry'
 import Command from '~/components/admin/Command'
+import { AppSidebar } from '~/components/layout/admin/app-sidebar'
+import { SidebarProvider, SidebarTrigger } from "~/components/ui/sidebar"
 
 export default function AdminLayout({
   children,
@@ -10,19 +9,17 @@ export default function AdminLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <>
-      <div className="flex flex-col h-screen">
-        <DashHeader/>
-        <div className="grid flex-1 sm:grid-cols-[200px_1fr] h-full w-full">
-          <aside className="hidden w-[200px] flex-col sm:flex">
-            <BaseSide/>
-          </aside>
-          <main className="flex w-full h-full flex-1 flex-col p-2">
-            <Command />
-            <AntdRegistry>{children}</AntdRegistry>
-          </main>
-        </div>
-      </div>
-    </>
+    <SidebarProvider>
+      <AppSidebar />
+      <main className="flex w-full h-full flex-1 flex-col p-4">
+        <SidebarTrigger/>
+        <Command/>
+        <AntdRegistry>
+          <div className="w-full h-full p-2">
+            {children}
+          </div>
+        </AntdRegistry>
+      </main>
+    </SidebarProvider>
   );
 }

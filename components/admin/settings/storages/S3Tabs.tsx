@@ -1,10 +1,22 @@
 'use client'
 
-import { Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Card, CardHeader, Button } from '@nextui-org/react'
+import { Card } from '~/components/ui/card'
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "~/components/ui/table"
+import { Button } from '~/components/ui/button'
+import { ReloadIcon } from '@radix-ui/react-icons'
+import React from 'react'
 import useSWR from 'swr'
-import { fetcher } from '~/utils/fetcher'
+import { fetcher } from '~/lib/utils/fetcher'
 import { toast } from 'sonner'
 import { useButtonStore } from '~/app/providers/button-store-Providers'
+import S3EditSheet from '~/components/admin/settings/storages/S3EditSheet'
 
 export default function S3Tabs() {
   const { data, error, isValidating, mutate } = useSWR('/api/v1/settings/s3-info', fetcher
@@ -19,8 +31,8 @@ export default function S3Tabs() {
 
   return (
     <div className="space-y-2">
-      <Card shadow="sm">
-        <CardHeader className="justify-between">
+      <Card>
+        <div className="flex justify-between p-2">
           <div className="flex gap-5">
             <div className="flex flex-col gap-1 items-start justify-center">
               <h4 className="text-small font-semibold leading-none text-default-600">S3 配置信息</h4>
@@ -28,21 +40,18 @@ export default function S3Tabs() {
           </div>
           <div className="flex items-center space-x-2">
             <Button
-              color="primary"
-              variant="shadow"
-              size="sm"
-              radius="full"
-              isLoading={isValidating}
+              variant="outline"
+              className="cursor-pointer"
+              disabled={isValidating}
               onClick={() => mutate()}
               aria-label="刷新"
             >
+              {isValidating && <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />}
               刷新
             </Button>
             <Button
-              color="primary"
-              variant="shadow"
-              size="sm"
-              radius="full"
+              variant="outline"
+              className="cursor-pointer"
               onClick={() => {
                 setS3Edit(true)
                 setS3EditData(JSON.parse(JSON.stringify(data)))
@@ -52,27 +61,30 @@ export default function S3Tabs() {
               编辑
             </Button>
           </div>
-        </CardHeader>
+        </div>
       </ Card>
       {
         data &&
+        <Card>
           <Table aria-label="S3 设置">
             <TableHeader>
-              <TableColumn>Key</TableColumn>
-              <TableColumn>Value</TableColumn>
+              <TableRow>
+                <TableHead>Key</TableHead>
+                <TableHead>Value</TableHead>
+              </TableRow>
             </TableHeader>
-            <TableBody emptyContent={"No rows to display."}>
-              {
-                data.map((item: any) => (
-                  <TableRow key={item.id}>
-                    <TableCell>{item.config_key}</TableCell>
-                    <TableCell className="truncate max-w-48">{item.config_value || 'N&A'}</TableCell>
-                  </TableRow>
-                ))
-              }
+            <TableBody>
+              {data.map((item: any) => (
+                <TableRow key={item.id}>
+                  <TableCell className="font-medium">{item.config_key}</TableCell>
+                  <TableCell className="truncate max-w-48">{item.config_value || 'N&A'}</TableCell>
+                </TableRow>
+              ))}
             </TableBody>
           </Table>
+        </Card>
       }
+      {Array.isArray(data) && data.length > 0 && <S3EditSheet />}
     </div>
   )
 }

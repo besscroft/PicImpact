@@ -1,7 +1,7 @@
 'use client'
 
 import { Button } from '~/components/ui/button'
-import { cn } from '~/utils'
+import { cn } from '~/lib/utils'
 import { MagnifyingGlassIcon } from '@radix-ui/react-icons'
 import { useButtonStore } from '~/app/providers/button-store-Providers'
 

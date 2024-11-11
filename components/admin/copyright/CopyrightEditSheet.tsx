@@ -1,13 +1,15 @@
 'use client'
 
-import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from '~/components/ui/Sheet'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '~/components/ui/Select'
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from '~/components/ui/sheet'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '~/components/ui/select'
 import { useButtonStore } from '~/app/providers/button-store-Providers'
 import { HandleProps, CopyrightType } from '~/types'
 import { useSWRHydrated } from '~/hooks/useSWRHydrated'
-import { Button, cn, Input, Switch, Textarea } from '@nextui-org/react'
 import React, { useState } from 'react'
 import { toast } from 'sonner'
+import { ReloadIcon } from '@radix-ui/react-icons'
+import { Button } from '~/components/ui/button'
+import { Switch } from '~/components/ui/switch'
 
 export default function CopyrightEditSheet(props : Readonly<HandleProps>) {
   const { mutate } = useSWRHydrated(props)
@@ -27,7 +29,7 @@ export default function CopyrightEditSheet(props : Readonly<HandleProps>) {
     }
     try {
       setLoading(true)
-      const res = await fetch('/api/v1/copyright/update', {
+      const res = await fetch('/api/v1/copyrights/update', {
         headers: {
           'Content-Type': 'application/json',
         },
@@ -72,153 +74,136 @@ export default function CopyrightEditSheet(props : Readonly<HandleProps>) {
       }}
       modal={false}
     >
-      <SheetContent side="left" onInteractOutside={(event: any) => event.preventDefault()}>
+      <SheetContent side="left" className="overflow-y-auto scrollbar-hide" onInteractOutside={(event: any) => event.preventDefault()}>
         <SheetHeader>
           <SheetTitle>编辑版权</SheetTitle>
-          <SheetDescription className="space-y-2">
-            <Input
-              isRequired
-              value={copyright?.name}
-              onValueChange={(value) => setCopyrightEditData({ ...copyright, name: value })}
-              isClearable
-              type="text"
-              variant="bordered"
-              label="版权名称"
-              placeholder="输入版权名称"
-            />
-            <Input
-              value={copyright.social_name}
-              onValueChange={(value) => setCopyrightEditData({ ...copyright, social_name: value })}
-              isClearable
-              type="text"
-              variant="bordered"
-              label="社交媒体名称"
-              placeholder="输入社交媒体名称"
-            />
-            <Select
-              value={copyright.type}
-              onValueChange={(value: string) => {
-                setCopyrightEditData({ ...copyright, type: value })
-              }}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="请选择类型" />
-              </SelectTrigger>
-              <SelectContent>
-                {copyrightSelect.map((copyright) => (
-                  <SelectItem key={copyright.value} value={copyright.value}>
-                    {copyright.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            <Textarea
-              value={copyright?.url}
-              onValueChange={(value) => setCopyrightEditData({ ...copyright, url: value })}
-              label="地址"
-              variant="bordered"
-              placeholder="输入地址"
-              disableAnimation
-              disableAutosize
-              classNames={{
-                input: "resize-y min-h-[40px]",
-              }}
-            />
-            <Textarea
-              value={copyright.avatar_url}
-              onValueChange={(value) => setCopyrightEditData({ ...copyright, avatar_url: value })}
-              label="社交媒体头像地址"
-              variant="bordered"
-              placeholder="输入社交媒体头像地址"
-              disableAnimation
-              disableAutosize
-              classNames={{
-                input: "resize-y min-h-[40px]",
-              }}
-            />
-            <Textarea
-              value={copyright.detail}
-              onValueChange={(value) => setCopyrightEditData({ ...copyright, detail: value })}
-              label="社交媒体介绍"
-              variant="bordered"
-              placeholder="输入社交媒体介绍"
-              disableAnimation
-              disableAutosize
-              classNames={{
-                input: "resize-y min-h-[40px]",
-              }}
-            />
-            <Switch
-              isSelected={copyright?.show === 0}
-              value={copyright?.show === 0 ? 'true' : 'false'}
-              onValueChange={(value) => {
-                setCopyrightEditData({ ...copyright, show: value ? 0 : 1 })
-              }}
-              classNames={{
-                base: cn(
-                  "inline-flex flex-row-reverse w-full max-w-full bg-content1 hover:bg-content2 items-center",
-                  "justify-between cursor-pointer rounded-lg gap-2 p-4 border-2 border-transparent",
-                  "data-[selected=true]:border-primary",
-                ),
-                wrapper: "p-0 h-4 overflow-visible",
-                thumb: cn("w-6 h-6 border-2 shadow-lg",
-                  "group-data-[hover=true]:border-primary",
-                  //selected
-                  "group-data-[selected=true]:ml-6",
-                  // pressed
-                  "group-data-[pressed=true]:w-7",
-                  "group-data-[selected]:group-data-[pressed]:ml-4",
-                ),
-              }}
-            >
-              <div className="flex flex-col gap-1">
-                <p className="text-medium">显示状态</p>
-                <p className="text-tiny text-default-400">
-                  是否需要在用户侧显示当前版权信息，关闭后在所有图片都会不显示。
-                </p>
-              </div>
-            </Switch>
-            <Switch
-              isSelected={copyright?.default === 0}
-              value={copyright?.default === 0 ? 'true' : 'false'}
-              onValueChange={(value) => {
-                setCopyrightEditData({ ...copyright, default: value ? 0 : 1 })
-              }}
-              classNames={{
-                base: cn(
-                  "inline-flex flex-row-reverse w-full max-w-full bg-content1 hover:bg-content2 items-center",
-                  "justify-between cursor-pointer rounded-lg gap-2 p-4 border-2 border-transparent",
-                  "data-[selected=true]:border-primary",
-                ),
-                wrapper: "p-0 h-4 overflow-visible",
-                thumb: cn("w-6 h-6 border-2 shadow-lg",
-                  "group-data-[hover=true]:border-primary",
-                  //selected
-                  "group-data-[selected=true]:ml-6",
-                  // pressed
-                  "group-data-[pressed=true]:w-7",
-                  "group-data-[selected]:group-data-[pressed]:ml-4",
-                ),
-              }}
-            >
-              <div className="flex flex-col gap-1">
-                <p className="text-medium">默认状态</p>
-                <p className="text-tiny text-default-400">
-                  设置为默认后，所有的图片都会默认显示该版权信息。
-                </p>
-              </div>
-            </Switch>
-            <Button
-              isLoading={loading}
-              color="primary"
-              variant="shadow"
-              onClick={() => submit()}
-              aria-label="更新"
-            >
-              更新
-            </Button>
-          </SheetDescription>
         </SheetHeader>
+        <div className="space-y-2">
+          <label
+            htmlFor="name"
+            className="block overflow-hidden rounded-md border border-gray-200 px-3 py-2 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600"
+          >
+            <span className="text-xs font-medium text-gray-700"> 版权名称 </span>
+
+            <input
+              type="text"
+              id="name"
+              value={copyright?.name}
+              placeholder="输入版权名称"
+              onChange={(e) => setCopyrightEditData({...copyright, name: e.target.value})}
+              className="mt-1 w-full border-none p-0 focus:border-transparent focus:outline-none focus:ring-0 sm:text-sm"
+            />
+          </label>
+          <label
+            htmlFor="social_name"
+            className="block overflow-hidden rounded-md border border-gray-200 px-3 py-2 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600"
+          >
+            <span className="text-xs font-medium text-gray-700"> 社交媒体名称 </span>
+
+            <input
+              type="text"
+              id="social_name"
+              value={copyright?.social_name}
+              placeholder="输入社交媒体名称"
+              onChange={(e) => setCopyrightEditData({...copyright, social_name: e.target.value})}
+              className="mt-1 w-full border-none p-0 focus:border-transparent focus:outline-none focus:ring-0 sm:text-sm"
+            />
+          </label>
+          <Select
+            value={copyright.type}
+            onValueChange={(value: string) => {
+              setCopyrightEditData({...copyright, type: value})
+            }}
+          >
+            <SelectTrigger>
+              <SelectValue placeholder="请选择类型"/>
+            </SelectTrigger>
+            <SelectContent>
+              {copyrightSelect.map((copyright) => (
+                <SelectItem key={copyright.value} value={copyright.value}>
+                  {copyright.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <label
+            htmlFor="url"
+            className="block overflow-hidden rounded-md border border-gray-200 px-3 py-2 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600"
+          >
+            <span className="text-xs font-medium text-gray-700"> 地址 </span>
+
+            <input
+              type="text"
+              id="url"
+              value={copyright?.url}
+              placeholder="输入地址"
+              onChange={(e) => setCopyrightEditData({...copyright, url: e.target.value})}
+              className="mt-1 w-full border-none p-0 focus:border-transparent focus:outline-none focus:ring-0 sm:text-sm"
+            />
+          </label>
+          <label
+            htmlFor="avatar_url"
+            className="block overflow-hidden rounded-md border border-gray-200 px-3 py-2 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600"
+          >
+            <span className="text-xs font-medium text-gray-700"> 社交媒体头像地址 </span>
+
+            <input
+              type="text"
+              id="avatar_url"
+              value={copyright?.avatar_url}
+              placeholder="输入社交媒体头像地址"
+              onChange={(e) => setCopyrightEditData({...copyright, avatar_url: e.target.value})}
+              className="mt-1 w-full border-none p-0 focus:border-transparent focus:outline-none focus:ring-0 sm:text-sm"
+            />
+          </label>
+          <label
+            htmlFor="detail"
+            className="block overflow-hidden rounded-md border border-gray-200 px-3 py-2 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600"
+          >
+            <span className="text-xs font-medium text-gray-700"> 社交媒体介绍 </span>
+
+            <input
+              type="text"
+              id="detail"
+              value={copyright?.detail}
+              placeholder="输入社交媒体介绍"
+              onChange={(e) => setCopyrightEditData({...copyright, detail: e.target.value})}
+              className="mt-1 w-full border-none p-0 focus:border-transparent focus:outline-none focus:ring-0 sm:text-sm"
+            />
+          </label>
+          <div className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
+            <div className="flex flex-col gap-1">
+              <div className="text-medium">显示状态</div>
+              <div className="text-tiny text-default-400">
+                是否需要在用户侧显示当前版权信息，关闭后在所有图片都会不显示。
+              </div>
+            </div>
+            <Switch
+              checked={copyright?.default === 0}
+              onCheckedChange={(value) => setCopyrightEditData({...copyright, default: value ? 0 : 1})}
+            />
+          </div>
+          <div className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
+            <div className="flex flex-col gap-1">
+              <div className="text-medium">默认状态</div>
+              <div className="text-tiny text-default-400">
+                设置为默认后，所有的图片都会默认显示该版权信息。
+              </div>
+            </div>
+            <Switch
+              checked={copyright?.show === 0}
+              onCheckedChange={(value) => setCopyrightEditData({...copyright, show: value ? 0 : 1})}
+            />
+          </div>
+          <Button
+            disabled={loading}
+            onClick={() => submit()}
+            aria-label="更新"
+          >
+            {loading && <ReloadIcon className="mr-2 h-4 w-4 animate-spin"/>}
+            更新
+          </Button>
+        </div>
       </SheetContent>
     </Sheet>
   )

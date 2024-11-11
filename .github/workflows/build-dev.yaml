@@ -3,7 +3,7 @@ name: Dev Docker Multi-arch Image CI & CD
 on:
   push:
     branches:
-      - dev
+      - v2
 
 jobs:
   build:

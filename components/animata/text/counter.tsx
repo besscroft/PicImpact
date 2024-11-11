@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react'
 import { useInView, useMotionValue, useSpring } from 'framer-motion'
 
-import { cn } from '~/utils'
+import { cn } from '~/lib/utils'
 
 interface CounterProps {
   /**
@@ -71,6 +71,7 @@ export default function Counter({
   useEffect(() => {
     springValue.on("change", (value) => {
       if (ref.current) {
+        // @ts-ignore
         ref.current.textContent = format ? format(value) : value;
       }
     });

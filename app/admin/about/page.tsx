@@ -2,9 +2,13 @@
 
 import favicon from '~/public/favicon.svg'
 import Image from 'next/image'
-import { Chip, Divider, Avatar } from '@nextui-org/react'
 import { ExternalLink, Github } from 'lucide-react'
 import Link from 'next/link'
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from '~/components/ui/avatar'
 
 export default function About() {
   const contributors = [
@@ -33,21 +37,36 @@ export default function About() {
         width={64}
         height={64}
       />
-      <Chip color="success" variant="bordered">v1.1.0</Chip>
-      <span>PicImpact 是一个摄影师专用的摄影作品展示网站，基于 Next.js 开发。</span>
-      <Divider className="my-4" />
+      <span className="inline-flex items-center justify-center rounded-full bg-emerald-100 px-2.5 py-0.5 text-emerald-700">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          strokeWidth="1.5"
+          stroke="currentColor"
+          className="-ms-1 me-1.5 size-4"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+          />
+        </svg>
+
+        <p className="whitespace-nowrap text-sm">v2.0.0</p>
+      </span>
+      <span>PicImpact 是一个摄影师专用的摄影作品展示网站，基于 Next.js + Hono.js 开发。</span>
       <div className="flex flex-col w-full">
         <Link
           className="flex items-center w-full p-2 hover:bg-slate-100 dark:hover:text-black"
           href="https://github.com/besscroft/PicImpact"
           target="_blank"
         >
-          <Github />
+          <Github/>
           <span className="flex-1 px-2">GitHub</span>
-          <ExternalLink />
+          <ExternalLink/>
         </Link>
       </div>
-      <Divider className="my-4" />
       <div className="flex flex-col w-full">
         <span>Contributors</span>
         {
@@ -59,15 +78,17 @@ export default function About() {
                 href={item.url}
                 target="_blank"
               >
-                <Avatar src={item.avatar} />
+                <Avatar>
+                  <AvatarImage src={item.avatar} alt="avatar"/>
+                  <AvatarFallback>CN</AvatarFallback>
+                </Avatar>
                 <span className="flex-1 px-2">{item.name}</span>
-                <ExternalLink />
+                <ExternalLink/>
               </Link>
             )
           })
         }
       </div>
-      <Divider className="my-4" />
       <div className="flex flex-col w-full">
         <span>支持项目</span>
         <Link
@@ -75,9 +96,12 @@ export default function About() {
           href="https://afdian.com/a/besscroft"
           target="_blank"
         >
-          <Avatar src="https://pic1.afdiancdn.com/default/avatar/avatar-purple.png" />
+          <Avatar>
+            <AvatarImage src="https://pic1.afdiancdn.com/default/avatar/avatar-purple.png" alt="afdian"/>
+            <AvatarFallback>CN</AvatarFallback>
+          </Avatar>
           <span className="flex-1 px-2">爱发电</span>
-          <ExternalLink />
+          <ExternalLink/>
         </Link>
       </div>
     </div>

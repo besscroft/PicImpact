@@ -1,17 +1,14 @@
 import NextAuth from 'next-auth'
 import { PrismaAdapter } from '@auth/prisma-adapter'
-import { PrismaClient } from '@prisma/client'
 import CredentialsProvider from 'next-auth/providers/credentials'
 import { db } from '~/server/lib/db'
 import { z } from 'zod'
 import CryptoJS from 'crypto-js'
 import { fetchSecretKey } from '~/server/db/query'
 
-const prisma = new PrismaClient()
-
 export const { handlers, auth, signIn, signOut } = NextAuth({
   secret: process.env.AUTH_SECRET || 'pic-impact',
-  adapter: PrismaAdapter(prisma),
+  adapter: PrismaAdapter(db),
   pages: {
     signIn: '/login',
   },

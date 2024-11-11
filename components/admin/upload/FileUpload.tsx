@@ -1,33 +1,35 @@
 'use client'
 
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import type { UploadProps } from 'antd'
 import { Upload, ConfigProvider, Select as AntdSelect } from 'antd'
 import { toast } from 'sonner'
 import useSWR from 'swr'
-import { fetcher } from '~/utils/fetcher'
-import { ExifType, TagType, ImageType } from '~/types'
-import { Button, Select, SelectItem, Input, Divider, Card, CardBody, CardHeader, CardFooter } from '@nextui-org/react'
+import { fetcher } from '~/lib/utils/fetcher'
+import { ExifType, AlbumType, ImageType } from '~/types'
 import ExifReader from 'exifreader'
 import Compressor from 'compressorjs'
+import { useButtonStore } from '~/app/providers/button-store-Providers'
+import FileUploadHelpSheet from '~/components/admin/upload/FileUploadHelpSheet'
+import { ReloadIcon } from '@radix-ui/react-icons'
+import { Button } from '~/components/ui/button'
 import {
-  Select as ShadcnSelect,
+  Select,
   SelectContent,
   SelectGroup,
-  SelectItem as ShadcnSelectItem,
+  SelectItem,
+  SelectLabel,
   SelectTrigger,
   SelectValue,
-} from '~/components/ui/Select'
-import { useButtonStore } from '~/app/providers/button-store-Providers'
-import { CircleHelp } from 'lucide-react'
-import FileUploadHelpSheet from '~/components/admin/upload/FileUploadHelpSheet'
+} from '~/components/ui/select'
+import { CircleHelpIcon } from '~/components/icons/circle-help'
 
 export default function FileUpload() {
   const [alistStorage, setAlistStorage] = useState([])
   const [storageSelect, setStorageSelect] = useState(false)
-  const [storage, setStorage] = useState(new Set([] as string[]))
-  const [tag, setTag] = useState(new Set([] as string[]))
-  const [alistMountPath, setAlistMountPath] = useState(new Set([] as string[]))
+  const [storage, setStorage] = useState('')
+  const [album, setAlbum] = useState('')
+  const [alistMountPath, setAlistMountPath] = useState('')
   const [exif, setExif] = useState({} as ExifType)
   const [title, setTitle] = useState('')
   const [url, setUrl] = useState('')
@@ -44,7 +46,7 @@ export default function FileUpload() {
     (state) => state,
   )
 
-  const { data, isLoading } = useSWR('/api/v1/tags/get', fetcher)
+  const { data, isLoading } = useSWR('/api/v1/albums/get', fetcher)
 
   async function loadExif(file: any) {
     try {
@@ -78,6 +80,7 @@ export default function FileUpload() {
       exifObj.lens_specification = tags?.LensSpecification?.description
       exifObj.lens_model = tags?.LensModel?.description
       exifObj.exposure_mode = tags?.ExposureMode?.description
+      // @ts-ignore
       exifObj.cfa_pattern = tags?.CFAPattern?.description
       exifObj.color_space = tags?.ColorSpace?.description
       exifObj.white_balance = tags?.WhiteBalance?.description
@@ -115,17 +118,17 @@ export default function FileUpload() {
   async function submit() {
     try {
       setLoading(true)
-      const tagArray = Array.from(tag)
+      const albumArray = Array.from(album)
       if (!url || url === '') {
         toast.warning('请先上传文件！')
         return
       }
-      if (tagArray.length === 0 || tagArray[0] === '') {
+      if (albumArray.length === 0 || albumArray[0] === '') {
         toast.warning('请先选择相册！')
         return
       }
       const data = {
-        tag: tagArray[0],
+        album: albumArray[0],
         url: url,
         title: title,
         preview_url: previewUrl,
@@ -137,7 +140,7 @@ export default function FileUpload() {
         lat: lat,
         lon: lon,
       } as ImageType
-      const res = await fetch('/api/v1/image/add', {
+      const res = await fetch('/api/v1/images/add', {
         headers: {
           'Content-Type': 'application/json',
         },
@@ -162,7 +165,7 @@ export default function FileUpload() {
     setPreviewUrl('')
     setImageLabels([])
     const storageArray = Array.from(storage)
-    const tagArray = Array.from(tag)
+    const albumArray = Array.from(album)
     const alistMountPathArray = Array.from(alistMountPath)
     if (storageArray.length === 0 || storageArray[0] === '') {
       toast.warning('请先选择存储！')
@@ -170,7 +173,7 @@ export default function FileUpload() {
     } else if (storageArray[0] === 'alist' && (alistMountPathArray.length === 0 || alistMountPathArray[0] === '')) {
       toast.warning('请先选择挂载目录！')
       file.abort()
-    } else if (tagArray.length === 0 || tagArray[0] === '') {
+    } else if (albumArray.length === 0 || albumArray[0] === '') {
       toast.warning('请先选择相册！')
       file.abort()
     } else {
@@ -233,8 +236,8 @@ export default function FileUpload() {
   async function autoSubmit(file: any, url: string, previewUrl: string) {
     try {
       if (mode === 'multiple') {
-        const tagArray = Array.from(tag)
-        if (tagArray.length === 0 || tagArray[0] === '') {
+        const albumArray = Array.from(album)
+        if (albumArray.length === 0 || albumArray[0] === '') {
           toast.warning('请先选择相册！')
           return
         }
@@ -268,6 +271,7 @@ export default function FileUpload() {
         exifObj.lens_specification = tags?.LensSpecification?.description
         exifObj.lens_model = tags?.LensModel?.description
         exifObj.exposure_mode = tags?.ExposureMode?.description
+        // @ts-ignore
         exifObj.cfa_pattern = tags?.CFAPattern?.description
         exifObj.color_space = tags?.ColorSpace?.description
         exifObj.white_balance = tags?.WhiteBalance?.description
@@ -287,7 +291,7 @@ export default function FileUpload() {
             const img = new Image();
             img.onload = async () => {
               const data = {
-                tag: tagArray[0],
+                album: albumArray[0],
                 url: url,
                 title: '',
                 preview_url: previewUrl,
@@ -299,7 +303,7 @@ export default function FileUpload() {
                 lat: '',
                 lon: '',
               } as ImageType
-              const res = await fetch('/api/v1/image/add', {
+              const res = await fetch('/api/v1/images/add', {
                 headers: {
                   'Content-Type': 'application/json',
                 },
@@ -366,15 +370,15 @@ export default function FileUpload() {
   }
 
   async function onRequestUpload(option: any) {
-    const tagArray = Array.from(tag)
-    const res = await uploadFile(option.file, tagArray[0])
+    const albumArray = Array.from(album)
+    const res = await uploadFile(option.file, albumArray[0])
     if (res?.code === 200) {
       toast.success('图片上传成功，尝试生成预览图片并上传！')
       try {
-        if (tagArray[0] === '/') {
+        if (albumArray[0] === '/') {
           await uploadPreviewImage(option, '/preview', res?.data)
         } else {
-          await uploadPreviewImage(option, tagArray[0] + '/preview', res?.data)
+          await uploadPreviewImage(option, albumArray[0] + '/preview', res?.data)
         }
       } catch (e) {
         console.log(e)
@@ -392,9 +396,9 @@ export default function FileUpload() {
 
   async function onRemoveFile() {
     setStorageSelect(false)
-    setStorage(new Set([] as string[]))
-    setTag(new Set([] as string[]))
-    setAlistMountPath(new Set([] as string[]))
+    setStorage('')
+    setAlbum('')
+    setAlistMountPath('')
     setExif({} as ExifType)
     setUrl('')
     setTitle('')
@@ -421,149 +425,141 @@ export default function FileUpload() {
     }
   }
 
-  useEffect(() => {
-    const updatedSet = new Set([] as string[]);
-    updatedSet.add('r2');
-    setStorage(updatedSet)
-  }, []);
-
   return (
     <div className="flex flex-col space-y-2 h-full flex-1">
-      <Card shadow="sm">
-        <CardHeader className="justify-between">
-          <div className="flex gap-5">
-            <ShadcnSelect
-              value={mode}
-              onValueChange={(value: string) => {
-                setMode(value)
-              }}
+      <div className="flex justify-between">
+        <div className="flex items-center justify-center w-full sm:w-64 md:w-80">
+          <Select
+            value={mode}
+            onValueChange={(value: string) => {
+              setMode(value)
+            }}
+          >
+            <SelectTrigger>
+              <SelectValue placeholder="请选择上传方式，默认单文件上传"/>
+            </SelectTrigger>
+            <SelectContent>
+              <SelectGroup>
+                <SelectItem key="singleton" value="singleton">
+                  单文件上传
+                </SelectItem>
+                <SelectItem key="multiple" value="multiple">
+                  多文件上传
+                </SelectItem>
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+        </div>
+        <div className="flex items-center space-x-1">
+          <Button
+            variant="outline"
+            size="icon"
+            aria-label="帮助"
+            onClick={() => setUploadHelp(true)}
+          >
+            <CircleHelpIcon />
+          </Button>
+          {mode === 'singleton'
+            ? <Button
+              variant="outline"
+              disabled={loading}
+              onClick={() => submit()}
+              aria-label="提交"
             >
-              <SelectTrigger>
-                <SelectValue placeholder="请选择上传方式，默认单文件上传"/>
-              </SelectTrigger>
-              <SelectContent>
-                <SelectGroup>
-                  <ShadcnSelectItem key="singleton" value="singleton">
-                    单文件上传
-                  </ShadcnSelectItem>
-                  <ShadcnSelectItem key="multiple" value="multiple">
-                    多文件上传
-                  </ShadcnSelectItem>
-                </SelectGroup>
-              </SelectContent>
-            </ShadcnSelect>
-          </div>
-          <div className="flex items-center space-x-1">
-            <Button
-              isIconOnly
-              size="sm"
-              color="warning"
-              aria-label="帮助"
-              onClick={() => setUploadHelp(true)}
-            >
-              <CircleHelp/>
+              {loading && <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />}
+              提交
             </Button>
-            {mode === 'singleton'
-              ? <Button
-                color="primary"
-                radius="full"
-                size="sm"
-                isLoading={loading}
-                onClick={() => submit()}
-                aria-label="提交"
-              >
-                提交
-              </Button>
-              :
-              <Button
-                color="primary"
-                radius="full"
-                size="sm"
-                isLoading={loading}
-                onClick={() => onRemoveFile()}
-                aria-label="重置"
-              >
-                重置
-              </Button>
-            }
-          </div>
-        </CardHeader>
-      </Card>
-      <Card shadow="sm" className="flex-1">
-        <CardHeader className="flex flex-col space-y-1 pb-1">
+            :
+            <Button
+              variant="outline"
+              disabled={loading}
+              onClick={() => onRemoveFile()}
+              aria-label="重置"
+            >
+              {loading && <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />}
+              重置
+            </Button>
+          }
+        </div>
+      </div>
+      <div className="flex flex-col show-up-motion space-y-2">
+        <div className="flex justify-between space-x-2">
           <div className="flex w-full justify-between space-x-1">
             <Select
-              isRequired
-              size="sm"
-              variant="bordered"
-              label="存储"
-              placeholder="请选择存储"
-              selectedKeys={storage}
-              onSelectionChange={(keys: any) => {
-                const updatedSet = new Set([] as string[]);
-                updatedSet.add(keys?.currentKey);
-                setStorage(updatedSet)
-                if (keys?.currentKey === 'alist') {
+              defaultValue={'r2'}
+              onValueChange={async (value: string) => {
+                setStorage(value)
+                if (value === 'alist') {
                   getAlistStorage()
                 } else {
                   setStorageSelect(false)
                 }
               }}
             >
-              {storages.map((storage) => (
-                <SelectItem key={storage.value} value={storage.value}>
-                  {storage.label}
-                </SelectItem>
-              ))}
-            </Select>
-            <Select
-              isRequired
-              size="sm"
-              variant="bordered"
-              label="相册"
-              placeholder="请选择相册"
-              isLoading={isLoading}
-              selectedKeys={tag}
-              onSelectionChange={(keys: any) => {
-                const updatedSet = new Set([] as string[]);
-                updatedSet.add(keys?.currentKey);
-                setTag(updatedSet)
-              }}
-            >
-              {data?.map((tag: TagType) => (
-                <SelectItem key={tag.tag_value} value={tag.tag_value}>
-                  {tag.name}
-                </SelectItem>
-              ))}
-            </Select>
-          </div>
-          <div className="w-full">
-            {
-              storageSelect && alistStorage?.length > 0
-                &&
-                <Select
-                  isRequired
-                  size="sm"
-                  variant="bordered"
-                  label="目录"
-                  placeholder="请选择Alist目录"
-                  selectedKeys={alistMountPath}
-                  onSelectionChange={(keys: any) => {
-                    const updatedSet = new Set([] as string[]);
-                    updatedSet.add(keys?.currentKey);
-                    setAlistMountPath(updatedSet)
-                  }}
-                >
-                  {alistStorage?.map((storage: any) => (
-                    <SelectItem key={storage?.mount_path} value={storage?.mount_path}>
-                      {storage?.mount_path}
+              <SelectTrigger>
+                <SelectValue placeholder="请选择存储" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  <SelectLabel>相册</SelectLabel>
+                  {storages?.map((storage: any) => (
+                    <SelectItem key={storage.value} value={storage.value}>
+                      {storage.label}
                     </SelectItem>
                   ))}
-                </Select>
-            }
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+            <Select
+              disabled={isLoading}
+              defaultValue={album}
+              onValueChange={async (value: string) => {
+                setAlbum(value)
+              }}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="请选择相册" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  <SelectLabel>相册</SelectLabel>
+                  {data?.map((album: AlbumType) => (
+                    <SelectItem key={album.album_value} value={album.album_value}>
+                      {album.name}
+                    </SelectItem>
+                  ))}
+                </SelectGroup>
+              </SelectContent>
+            </Select>
           </div>
-        </CardHeader>
-        <CardBody>
+          {
+            storageSelect && alistStorage?.length > 0 &&
+            <div className="w-full">
+              <Select
+                disabled={isLoading}
+                defaultValue={album}
+                onValueChange={async (value: string) => {
+                  setAlistMountPath(value)
+                }}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="请选择Alist目录" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectGroup>
+                    <SelectLabel>Alist目录</SelectLabel>
+                    {alistStorage?.map((storage: any) => (
+                      <SelectItem key={storage?.mount_path} value={storage?.mount_path}>
+                        {storage?.mount_path}
+                      </SelectItem>
+                    ))}
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
+            </div>
+          }
+        </div>
+        <div>
           <ConfigProvider
             theme={{
               "token": {
@@ -578,102 +574,148 @@ export default function FileUpload() {
               </p>
             </Dragger>
           </ConfigProvider>
-        </CardBody>
-        <CardFooter>
+        </div>
+        <div>
           {
             url && url !== '' && mode === 'singleton' &&
             <div className="w-full mt-2 space-y-2">
-              <Input
-                size="sm"
-                type="text"
-                label="图片标题"
-                variant="bordered"
-                value={title}
-                onValueChange={(value) => setTitle(value)}
-              />
-              <Input
-                size="sm"
-                isReadOnly
-                type="text"
-                label="图片地址"
-                variant="bordered"
-                value={url}
-              />
-              {previewUrl && previewUrl !== '' &&
-                <Input
-                  size="sm"
-                  isReadOnly
+              <label
+                htmlFor="title"
+                className="block overflow-hidden rounded-md border border-gray-200 px-3 py-2 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600"
+              >
+                <span className="text-xs font-medium text-gray-700"> 图片标题 </span>
+
+                <input
                   type="text"
-                  label="预览图片地址"
-                  variant="bordered"
-                  value={previewUrl}
+                  id="title"
+                  value={title}
+                  placeholder="输入图片标题"
+                  onChange={(e) => setTitle(e.target.value)}
+                  className="mt-1 w-full border-none p-0 focus:border-transparent focus:outline-none focus:ring-0 sm:text-sm"
                 />
+              </label>
+              <label
+                htmlFor="url"
+                className="block overflow-hidden rounded-md border border-gray-200 px-3 py-2 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600"
+              >
+                <span className="text-xs font-medium text-gray-700"> 图片地址 </span>
+
+                <input
+                  type="text"
+                  id="url"
+                  disabled
+                  value={url}
+                  className="mt-1 w-full border-none p-0 focus:border-transparent focus:outline-none focus:ring-0 sm:text-sm"
+                />
+              </label>
+              {previewUrl && previewUrl !== '' &&
+                <label
+                  htmlFor="previewUrl"
+                  className="block overflow-hidden rounded-md border border-gray-200 px-3 py-2 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600"
+                >
+                  <span className="text-xs font-medium text-gray-700"> 预览图片地址 </span>
+
+                  <input
+                    type="text"
+                    id="previewUrl"
+                    disabled
+                    value={previewUrl}
+                    className="mt-1 w-full border-none p-0 focus:border-transparent focus:outline-none focus:ring-0 sm:text-sm"
+                  />
+                </label>
               }
               <div className="flex items-center space-x-1 w-full">
-                <Input
-                  size="sm"
-                  isRequired
-                  value={String(width)}
-                  onValueChange={(value) => setWidth(Number(value))}
-                  type="number"
-                  variant="bordered"
-                  label="宽度 px"
-                  placeholder="0"
-                />
-                <Input
-                  size="sm"
-                  isRequired
-                  value={String(height)}
-                  onValueChange={(value) => setHeight(Number(value))}
-                  type="number"
-                  variant="bordered"
-                  label="高度 px"
-                  placeholder="0"
-                />
+                <label
+                  htmlFor="width"
+                  className="w-full block overflow-hidden rounded-md border border-gray-200 px-3 py-2 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600"
+                >
+                  <span className="text-xs font-medium text-gray-700"> 图片宽度 px </span>
+
+                  <input
+                    type="number"
+                    id="width"
+                    value={width}
+                    placeholder="0"
+                    onChange={(e) => setWidth(Number(e.target.value))}
+                    className="mt-1 w-full border-none p-0 focus:border-transparent focus:outline-none focus:ring-0 sm:text-sm"
+                  />
+                </label>
+                <label
+                  htmlFor="height"
+                  className="w-full block overflow-hidden rounded-md border border-gray-200 px-3 py-2 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600"
+                >
+                  <span className="text-xs font-medium text-gray-700"> 图片高度 px </span>
+
+                  <input
+                    type="number"
+                    id="height"
+                    value={height}
+                    placeholder="0"
+                    onChange={(e) => setHeight(Number(e.target.value))}
+                    className="mt-1 w-full border-none p-0 focus:border-transparent focus:outline-none focus:ring-0 sm:text-sm"
+                  />
+                </label>
               </div>
               <div className="flex items-center space-x-1 w-full">
-                <Input
-                  size="sm"
-                  value={lon}
-                  onValueChange={(value) => setLon(value)}
-                  type="number"
-                  variant="bordered"
-                  label="经度"
-                />
-                <Input
-                  size="sm"
-                  value={lat}
-                  onValueChange={(value) => setLat(value)}
-                  type="number"
-                  variant="bordered"
-                  label="纬度"
-                />
+                <label
+                  htmlFor="lon"
+                  className="w-full block overflow-hidden rounded-md border border-gray-200 px-3 py-2 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600"
+                >
+                  <span className="text-xs font-medium text-gray-700"> 经度 </span>
+
+                  <input
+                    type="text"
+                    id="lon"
+                    value={lon}
+                    placeholder="输入经度"
+                    onChange={(e) => setLon(e.target.value)}
+                    className="mt-1 w-full border-none p-0 focus:border-transparent focus:outline-none focus:ring-0 sm:text-sm"
+                  />
+                </label>
+                <label
+                  htmlFor="lat"
+                  className="w-full block overflow-hidden rounded-md border border-gray-200 px-3 py-2 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600"
+                >
+                  <span className="text-xs font-medium text-gray-700"> 纬度 </span>
+
+                  <input
+                    type="text"
+                    id="lat"
+                    value={lat}
+                    placeholder="输入经度"
+                    onChange={(e) => setLat(e.target.value)}
+                    className="mt-1 w-full border-none p-0 focus:border-transparent focus:outline-none focus:ring-0 sm:text-sm"
+                  />
+                </label>
               </div>
-              <Input
-                size="sm"
-                type="text"
-                label="描述"
-                placeholder="请输入描述"
-                variant="bordered"
-                value={detail}
-                onValueChange={(value: string) => {
-                  setDetail(value)
-                }}
-              />
+              <label
+                htmlFor="detail"
+                className="block overflow-hidden rounded-md border border-gray-200 px-3 py-2 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600"
+              >
+                <span className="text-xs font-medium text-gray-700"> 描述 </span>
+
+                <input
+                  type="text"
+                  id="detail"
+                  value={detail}
+                  placeholder="请输入描述"
+                  onChange={(e) => setDetail(e.target.value)}
+                  className="mt-1 w-full border-none p-0 focus:border-transparent focus:outline-none focus:ring-0 sm:text-sm"
+                />
+              </label>
               <AntdSelect
                 mode="tags"
                 value={imageLabels}
-                style={{ width: '100%' }}
+                style={{width: '100%'}}
                 placeholder="请输入图片索引标签，如：猫猫，不要输入特殊字符。"
                 onChange={(value: any) => setImageLabels(value)}
                 options={[]}
               />
-              <Divider className="my-4"/>
             </div>
           }
-        </CardFooter>
-      </Card>
-      <FileUploadHelpSheet />
+        </div>
+      </div>
+      <FileUploadHelpSheet/>
     </div>
   )
 }
