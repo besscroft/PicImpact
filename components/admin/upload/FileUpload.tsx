@@ -27,7 +27,7 @@ import { CircleHelpIcon } from '~/components/icons/circle-help'
 export default function FileUpload() {
   const [alistStorage, setAlistStorage] = useState([])
   const [storageSelect, setStorageSelect] = useState(false)
-  const [storage, setStorage] = useState('')
+  const [storage, setStorage] = useState('r2')
   const [album, setAlbum] = useState('')
   const [alistMountPath, setAlistMountPath] = useState('')
   const [exif, setExif] = useState({} as ExifType)
