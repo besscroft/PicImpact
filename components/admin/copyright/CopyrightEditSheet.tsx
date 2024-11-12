@@ -179,8 +179,8 @@ export default function CopyrightEditSheet(props : Readonly<HandleProps>) {
               </div>
             </div>
             <Switch
-              checked={copyright?.default === 0}
-              onCheckedChange={(value) => setCopyrightEditData({...copyright, default: value ? 0 : 1})}
+              checked={copyright?.show === 0}
+              onCheckedChange={(value) => setCopyrightEditData({...copyright, show: value ? 0 : 1})}
             />
           </div>
           <div className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
@@ -191,8 +191,8 @@ export default function CopyrightEditSheet(props : Readonly<HandleProps>) {
               </div>
             </div>
             <Switch
-              checked={copyright?.show === 0}
-              onCheckedChange={(value) => setCopyrightEditData({...copyright, show: value ? 0 : 1})}
+              checked={copyright?.default === 0}
+              onCheckedChange={(value) => setCopyrightEditData({...copyright, default: value ? 0 : 1})}
             />
           </div>
           <Button

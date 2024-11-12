@@ -14,6 +14,7 @@ export default function BlurImage({ photo, dataList }: { photo: any, dataList: a
   return (
     <img
       width={photo.width}
+      height={photo.height}
       loading="lazy"
       src={photo.src}
       alt={photo.alt}
