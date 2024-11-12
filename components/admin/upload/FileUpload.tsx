@@ -388,8 +388,6 @@ export default function FileUpload() {
 
   async function onRemoveFile() {
     setStorageSelect(false)
-    setStorage('')
-    setAlbum('')
     setAlistMountPath('')
     setExif({} as ExifType)
     setUrl('')
