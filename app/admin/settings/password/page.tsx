@@ -105,7 +105,7 @@ export default function PassWord() {
                   <span className="text-xs font-medium text-gray-700"> 旧密码 </span>
 
                   <input
-                    type="text"
+                    type="password"
                     id="onePassword"
                     placeholder="请输入旧密码。"
                     {...field}
@@ -130,7 +130,7 @@ export default function PassWord() {
                   <span className="text-xs font-medium text-gray-700"> 新密码 </span>
 
                   <input
-                    type="text"
+                    type="password"
                     id="twoPassword"
                     placeholder="请输入新密码。"
                     {...field}
@@ -155,7 +155,7 @@ export default function PassWord() {
                   <span className="text-xs font-medium text-gray-700"> 确认密码 </span>
 
                   <input
-                    type="text"
+                    type="password"
                     id="threePassword"
                     placeholder="请输入确认密码。"
                     {...field}
