@@ -39,6 +39,8 @@ export async function register() {
             { config_key: 'auth_enable', config_value: 'false', detail: '是否启用双因素验证' },
             { config_key: 'auth_temp_secret', config_value: '', detail: '双因素验证临时种子密钥' },
             { config_key: 'auth_secret', config_value: '', detail: '双因素验证种子密钥' },
+            { config_key: 'custom_favicon_url', config_value: '', detail: '用户自定义的 favicon 地址' },
+            { config_key: 'custom_author', config_value: '', detail: '网站归属者名称' },
           ],
           skipDuplicates: true,
         })
