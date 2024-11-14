@@ -1,28 +1,37 @@
 import 'server-only'
 import RSS from 'rss'
-import { fetchCustomTitle, getRSSImages } from '~/server/db/query'
+import { fetchCustomInfo, getRSSImages } from '~/server/db/query'
 
 export async function GET(request: Request) {
-  // const revalidate = 60 * 60 * 24;
-  const data = await fetchCustomTitle()
+  const data = await fetchCustomInfo()
 
   const url = new URL(request.url);
 
-  // TODO
-  //<follow_challenge>
-  //  <feedId>feedId</feedId>
-  //  <userId>userId</userId>
-  //</follow_challenge>
+  const feedId = data?.find((item: any) => item.config_key === 'rss_feed_id')?.config_value?.toString();
+  const userId = data?.find((item: any) => item.config_key === 'rss_user_id')?.config_value?.toString();
+
+  const customElements = feedId && userId
+    ? [
+      {
+        follow_challenge: [
+          { feedId: feedId },
+          { userId: userId }
+        ]
+      }
+    ]
+    : [];
 
   const feed = new RSS({
-    title: data?.config_value?.toString() || 'PicImpact',
+    title: data?.find((item: any) => item.config_key === 'custom_title')?.config_value?.toString() || '相册',
     generator: 'RSS for Next.js',
     feed_url: `${url.origin}/rss.xml`,
     site_url: url.origin,
-    // TODO
-    copyright: `Copyright ${new Date().getFullYear().toString()}, PicImpact`,
+    copyright: `© 2024${new Date().getFullYear().toString() === '2024' ? '' : `-${new Date().getFullYear().toString()}`} ${
+      data?.find((item: any) => item.config_key === 'custom_author')?.config_value?.toString() || ''
+    }.`,
     pubDate: new Date().toUTCString(),
-    // ttl: 60,
+    ttl: 60,
+    custom_elements: customElements,
   });
 
   const images = await getRSSImages()
@@ -61,7 +70,6 @@ export async function GET(request: Request) {
   return new Response(feed.xml(), {
     headers: {
       'Content-Type': 'application/xml',
-      // 'Cache-Control': `s-maxage=${ revalidate }, stale-while-revalidate`
     }
   });
 }

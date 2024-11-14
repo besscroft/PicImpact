@@ -378,7 +378,7 @@ export async function updateCopyrightShow(id: string, show: number) {
   return resultRow
 }
 
-export async function updateCustomInfo(title: string, customFaviconUrl: string, customAuthor: string) {
+export async function updateCustomInfo(title: string, customFaviconUrl: string, customAuthor: string, feedId: string, userId: string) {
   await db.$transaction(async (tx) => {
     await tx.configs.update({
       where: {
@@ -404,6 +404,24 @@ export async function updateCustomInfo(title: string, customFaviconUrl: string, 
       },
       data: {
         config_value: customAuthor,
+        updatedAt: new Date()
+      }
+    })
+    await tx.configs.update({
+      where: {
+        config_key: 'rss_feed_id'
+      },
+      data: {
+        config_value: feedId,
+        updatedAt: new Date()
+      }
+    })
+    await tx.configs.update({
+      where: {
+        config_key: 'rss_user_id'
+      },
+      data: {
+        config_value: userId,
         updatedAt: new Date()
       }
     })

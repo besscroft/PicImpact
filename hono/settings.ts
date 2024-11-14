@@ -67,7 +67,7 @@ app.put('/update-s3-info', async (c) => {
 app.put('/update-custom-info', async (c) => {
   const query = await c.req.json()
   try {
-    await updateCustomInfo(query.title, query.customFaviconUrl, query.customAuthor);
+    await updateCustomInfo(query.title, query.customFaviconUrl, query.customAuthor, query.feedId, query.userId);
     return c.json({
       code: 200,
       message: '更新成功！'

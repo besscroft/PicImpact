@@ -504,7 +504,7 @@ export async function fetchCustomInfo() {
   const find = await db.configs.findMany({
     where: {
       config_key: {
-        in: ['custom_title', 'custom_favicon_url', 'custom_author']
+        in: ['custom_title', 'custom_favicon_url', 'custom_author', 'rss_feed_id', 'rss_user_id']
       }
     },
     select: {
