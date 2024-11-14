@@ -500,10 +500,12 @@ export async function fetchSecretKey() {
   return find
 }
 
-export async function fetchCustomTitle() {
-  const find = await db.configs.findFirst({
+export async function fetchCustomInfo() {
+  const find = await db.configs.findMany({
     where: {
-      config_key: 'custom_title'
+      config_key: {
+        in: ['custom_title', 'custom_favicon_url', 'custom_author']
+      }
     },
     select: {
       id: true,

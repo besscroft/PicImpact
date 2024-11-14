@@ -378,17 +378,36 @@ export async function updateCopyrightShow(id: string, show: number) {
   return resultRow
 }
 
-export async function updateCustomTitle(title: string) {
-  const resultRow = await db.configs.update({
-    where: {
-      config_key: 'custom_title'
-    },
-    data: {
-      config_value: title,
-      updatedAt: new Date()
-    }
+export async function updateCustomInfo(title: string, customFaviconUrl: string, customAuthor: string) {
+  await db.$transaction(async (tx) => {
+    await tx.configs.update({
+      where: {
+        config_key: 'custom_title'
+      },
+      data: {
+        config_value: title,
+        updatedAt: new Date()
+      }
+    })
+    await tx.configs.update({
+      where: {
+        config_key: 'custom_favicon_url'
+      },
+      data: {
+        config_value: customFaviconUrl,
+        updatedAt: new Date()
+      }
+    })
+    await tx.configs.update({
+      where: {
+        config_key: 'custom_author'
+      },
+      data: {
+        config_value: customAuthor,
+        updatedAt: new Date()
+      }
+    })
   })
-  return resultRow
 }
 
 export async function saveAuthTemplateSecret(token: string) {
