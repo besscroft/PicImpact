@@ -1,15 +1,15 @@
 import 'server-only'
-import { fetchCustomTitle, fetchR2Info, fetchS3Info, fetchSecretKey, fetchUserById } from '~/server/db/query'
+import { fetchCustomInfo, fetchR2Info, fetchS3Info, fetchSecretKey, fetchUserById } from '~/server/db/query'
 import { Config } from '~/types'
-import { updateAListConfig, updateCustomTitle, updatePassword, updateR2Config, updateS3Config } from '~/server/db/operate'
+import { updateAListConfig, updateCustomInfo, updatePassword, updateR2Config, updateS3Config } from '~/server/db/operate'
 import { auth } from '~/server/auth'
 import CryptoJS from 'crypto-js'
 import { Hono } from 'hono'
 
 const app = new Hono()
 
-app.get('/get-custom-title', async (c) => {
-  const data = await fetchCustomTitle();
+app.get('/get-custom-info', async (c) => {
+  const data = await fetchCustomInfo();
   return c.json(data)
 })
 
@@ -64,10 +64,20 @@ app.put('/update-s3-info', async (c) => {
   return c.json(data)
 })
 
-app.put('/update-custom-title', async (c) => {
+app.put('/update-custom-info', async (c) => {
   const query = await c.req.json()
-  const data = await updateCustomTitle(query.title);
-  return c.json(data)
+  try {
+    await updateCustomInfo(query.title, query.customFaviconUrl, query.customAuthor);
+    return c.json({
+      code: 200,
+      message: '更新成功！'
+    })
+  } catch (e) {
+    return Response.json({
+      code: 500,
+      message: '更新失败！'
+    })
+  }
 })
 
 app.put('/update-password', async (c) => {
