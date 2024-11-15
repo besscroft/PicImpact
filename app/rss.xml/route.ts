@@ -35,7 +35,6 @@ export async function GET(request: Request) {
   });
 
   const images = await getRSSImages()
-
   if (Array.isArray(images) && images.length > 0) {
     images?.map(item => {
       feed.item({
@@ -44,7 +43,7 @@ export async function GET(request: Request) {
           <div>
             <img src="${item.preview_url || item.url}" alt="${item.detail}" />
             <p>${item.detail}</p>
-            <a href={url.origin + (item.album_value === '/' ? '/preview/' : item.album_value + '/preview/') + item.id} target="_blank">查看图片信息</a>
+            <a href="${url.origin + (item.album_value === '/' ? '/preview/' : item.album_value + '/preview/') + item.id}" target="_blank">查看图片信息</a>
           </div>
         `,
         url: url.origin + (item.album_value === '/' ? '/preview/' : item.album_value + '/preview/') + item.id,
