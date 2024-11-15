@@ -52,7 +52,6 @@ export default function PassWord() {
   })
 
   async function updatePassword(data: z.infer<typeof FormSchema>) {
-    console.log(data)
     if (data.onePassword === '') {
       toast.error('请输入旧密码！')
       return

@@ -304,7 +304,6 @@ export default function FileUpload() {
                 // @ts-ignore
                 body: JSON.stringify(data),
               }).then(res => res.json())
-              console.log(res)
               if (res?.code === 200) {
                 toast.success('保存成功！')
               } else {
