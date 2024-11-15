@@ -287,16 +287,14 @@ export default function ListProps(props : Readonly<ImageServerHandleProps>) {
                       <AlertDialogCancel onClick={() => {
                         setImage({} as ImageType)
                         setImageAlbum('')
-                      }}>Cancel</AlertDialogCancel>
-                      <AlertDialogAction>
-                        <Button
-                          disabled={updateImageAlbumLoading}
-                          onClick={() => updateImageAlbum()}
-                          aria-label="更新"
-                        >
-                          {updateImageAlbumLoading && <ReloadIcon className="mr-2 h-4 w-4 animate-spin"/>}
-                          更新
-                        </Button>
+                      }}>取消</AlertDialogCancel>
+                      <AlertDialogAction
+                        disabled={updateImageAlbumLoading}
+                        onClick={() => updateImageAlbum()}
+                        aria-label="更新"
+                      >
+                        {updateImageAlbumLoading && <ReloadIcon className="mr-2 h-4 w-4 animate-spin"/>}
+                        更新
                       </AlertDialogAction>
                     </AlertDialogFooter>
                   </AlertDialogContent>
