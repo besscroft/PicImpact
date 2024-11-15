@@ -330,6 +330,7 @@ export default function ListProps(props : Readonly<ImageServerHandleProps>) {
           total={total}
           pageSize={8}
           hideOnSinglePage
+          showSizeChanger={false}
           onChange={async (page, pageSize) => {
             setPageNum(page)
             await mutate()
