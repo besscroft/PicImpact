@@ -504,7 +504,7 @@ export async function fetchCustomInfo() {
   const find = await db.configs.findMany({
     where: {
       config_key: {
-        in: ['custom_title', 'custom_favicon_url', 'custom_author']
+        in: ['custom_title', 'custom_favicon_url', 'custom_author', 'rss_feed_id', 'rss_user_id']
       }
     },
     select: {
@@ -601,6 +601,32 @@ export async function queryAuthSecret() {
       config_value: true
     }
   })
+
+  return find;
+}
+
+export async function getRSSImages() {
+  // 每个相册取最新 10 张照片
+  const find = await db.$queryRaw`
+    WITH RankedImages AS (
+    SELECT
+      i.*,
+      A.album_value,
+      ROW_NUMBER() OVER (PARTITION BY A.album_value ORDER BY i.created_at DESC) AS rn
+    FROM
+      images i
+      INNER JOIN images_albums_relation iar ON i.ID = iar."imageId"
+      INNER JOIN albums A ON iar.album_value = A.album_value
+    WHERE
+      A.del = 0
+      AND A."show" = 0
+      AND i.del = 0
+      AND i."show" = 0
+    )
+    SELECT *
+    FROM RankedImages
+    WHERE rn <= 10;
+  `
 
   return find;
 }
