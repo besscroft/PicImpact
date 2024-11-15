@@ -3,7 +3,6 @@
 import React, { useEffect } from 'react'
 import { ImageHandleProps, ImageType } from '~/types'
 import { MasonryPhotoAlbum, RenderImageContext, RenderImageProps } from 'react-photo-album'
-import { Button, Spinner } from '@nextui-org/react'
 import { useSWRPageTotalHook } from '~/hooks/useSWRPageTotalHook'
 import useSWRInfinite from 'swr/infinite'
 import MasonryItem from '~/components/MasonryItem'
@@ -14,6 +13,8 @@ import { useButtonStore } from '~/app/providers/button-store-Providers'
 import { FloatButton } from 'antd'
 
 import 'react-photo-album/masonry.css'
+import { ReloadIcon } from '@radix-ui/react-icons'
+import { Button } from '~/components/ui/button'
 
 function renderNextImage(
   { alt = '', title, sizes }: RenderImageProps,
@@ -28,10 +29,10 @@ function renderNextImage(
 export default function Masonry(props : Readonly<ImageHandleProps>) {
   const { data: pageTotal } = useSWRPageTotalHook(props)
   const { data, error, isLoading, isValidating, size, setSize } = useSWRInfinite((index) => {
-    return [`client-${props.args}-${index}-${props.tag}`, index]
+    return [`client-${props.args}-${index}-${props.album}`, index]
     },
     ([_, index]) => {
-      return props.handle(index + 1, props.tag)
+      return props.handle(index + 1, props.album)
     }, {
       revalidateOnFocus: false,
       revalidateIfStale: false,
@@ -90,13 +91,11 @@ export default function Masonry(props : Readonly<ImageHandleProps>) {
       <div className="flex items-center justify-center my-4">
         {
           isValidating ?
-            <Spinner label="Loading..." color="primary" />
+            <ReloadIcon className="mr-2 h-4 w-4 animate-spin"/>
             : dataList.length > 0 ?
           size < pageTotal &&
             <Button
-              color="primary"
-              variant="bordered"
-              isLoading={isLoading}
+              disabled={isLoading}
               onClick={() => {
                 setSize(size + 1)
               }}

@@ -64,7 +64,7 @@ export default function CardList(props: Readonly<DataProps>) {
                 <span className="h-px flex-1 bg-black"></span>
               </span>
               <Link href="https://github.com/besscroft/PicImpact" target="_blank">
-                <Button>
+                <Button variant="outline">
                   <Star size={20} className="mr-1"/> Star
                 </Button>
               </Link>
@@ -73,7 +73,7 @@ export default function CardList(props: Readonly<DataProps>) {
               <span className="h-px flex-1 bg-black"></span>
               </span>
               <Link href="https://github.com/besscroft/PicImpact/issues/new" target="_blank">
-                <Button>
+                <Button variant="outline">
                   <MessageSquareHeart size={20} className="mr-1"/> 反馈 | 建议
                 </Button>
               </Link>

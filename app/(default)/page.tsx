@@ -1,22 +1,22 @@
 import Masonry from '~/components/Masonry'
-import { fetchClientImagesListByTag, fetchClientImagesPageTotalByTag } from '~/server/db/query'
+import { fetchClientImagesListByAlbum, fetchClientImagesPageTotalByAlbum } from '~/server/db/query'
 import { ImageHandleProps } from '~/types'
 
 export default async function Home() {
-  const getData = async (pageNum: number, tag: string) => {
+  const getData = async (pageNum: number, album: string) => {
     'use server'
-    return await fetchClientImagesListByTag(pageNum, tag)
+    return await fetchClientImagesListByAlbum(pageNum, album)
   }
 
-  const getPageTotal = async (tag: string) => {
+  const getPageTotal = async (album: string) => {
     'use server'
-    return await fetchClientImagesPageTotalByTag(tag)
+    return await fetchClientImagesPageTotalByAlbum(album)
   }
 
   const props: ImageHandleProps = {
     handle: getData,
     args: 'getImages-client',
-    tag: '/',
+    album: '/',
     totalHandle: getPageTotal
   }
 

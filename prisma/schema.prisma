@@ -7,9 +7,27 @@ generator client {
   provider = "prisma-client-js"
 }
 
+// auth.js
+model User {
+  id            String    @id @default(cuid()) @db.VarChar(50)
+  name          String?   @db.VarChar(50)
+  username      String?   @unique @db.VarChar(50)
+  email         String    @unique @db.VarChar(50)
+  password      String?   @db.VarChar(200)
+  emailVerified DateTime? @map("email_verified") @db.Timestamp()
+  image         String?   @db.Text
+  accounts      Account[]
+  sessions      Session[]
+
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamp()
+  updatedAt DateTime? @updatedAt @map("updated_at") @db.Timestamp()
+
+  @@map("users")
+}
+
 model Account {
-  id                String  @id @default(cuid())
-  userId            String  @map("user_id")
+  id                String  @id @default(cuid()) @db.VarChar(50)
+  userId            String  @map("user_id") @db.VarChar(50)
   type              String
   provider          String
   providerAccountId String  @map("provider_account_id")
@@ -19,113 +37,129 @@ model Account {
   token_type        String?
   scope             String?
   id_token          String? @db.Text
-  session_state     String?
+  session_state     String? @db.Text
+
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamp()
+  updatedAt DateTime? @updatedAt @map("updated_at") @db.Timestamp()
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerAccountId])
+  @@map("accounts")
 }
 
 model Session {
-  id           String   @id @default(cuid())
-  sessionToken String   @unique @map("session_token")
-  userId       String   @map("user_id")
-  expires      DateTime
+  id           String   @id @default(cuid()) @db.VarChar(50)
+  sessionToken String   @unique @map("session_token") @db.Text
+  userId       String   @map("user_id") @db.VarChar(50)
+  expires      DateTime @db.Timestamp()
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-}
 
-model User {
-  id            String    @id @default(cuid())
-  name          String?   @unique
-  email         String?   @unique
-  password      String?
-  emailVerified DateTime? @map("email_verified")
-  image         String?
-  accounts      Account[]
-  sessions      Session[]
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamp()
+  updatedAt DateTime? @updatedAt @map("updated_at") @db.Timestamp()
+
+  @@map("sessions")
 }
 
 model VerificationToken {
   identifier String
-  token      String
-  expires    DateTime
+  token      String   @db.Text
+  expires    DateTime @db.Timestamp()
 
-  @@unique([identifier, token])
+  @@id([identifier, token])
+  @@map("verification_tokens")
 }
 
+// 业务表部分
+// 图片表
 model Images {
-  id                     Int                      @id @default(autoincrement())
-  url                    String?                  @db.Text
-  preview_url            String?                  @db.Text
-  exif                   Json?                    @db.Json
-  labels                 Json?                    @db.Json
-  width                  Int                      @default(0)
-  height                 Int                      @default(0)
-  lon                    String?
-  lat                    String?
-  title                  String?
-  detail                 String?                  @db.Text
-  show                   Int                      @default(1) @db.SmallInt
-  sort                   Int                      @default(0) @db.SmallInt
-  create_time            DateTime?                @default(now()) @db.Timestamp()
-  update_time            DateTime?                @db.Timestamp()
-  del                    Int                      @default(0) @db.SmallInt
-  imageTagRelation       ImageTagRelation[]
-  ImageCopyrightRelation ImageCopyrightRelation[]
+  id                      String                    @id @default(cuid()) @db.VarChar(50)
+  url                     String?                   @db.Text
+  preview_url             String?                   @db.Text
+  exif                    Json?                     @db.Json
+  labels                  Json?                     @db.Json
+  width                   Int                       @default(0)
+  height                  Int                       @default(0)
+  lon                     String?
+  lat                     String?
+  title                   String?                   @db.VarChar(200)
+  detail                  String?                   @db.Text
+  show                    Int                       @default(1) @db.SmallInt
+  sort                    Int                       @default(0) @db.SmallInt
+  createdAt               DateTime                  @default(now()) @map("created_at") @db.Timestamp()
+  updatedAt               DateTime?                 @updatedAt @map("updated_at") @db.Timestamp()
+  del                     Int                       @default(0) @db.SmallInt
+  imagesAlbumsRelation    ImagesAlbumsRelation[]
+  ImagesCopyrightRelation ImagesCopyrightRelation[]
+
+  @@map("images")
 }
 
+// 配置表
 model Configs {
-  id           Int       @id @default(autoincrement())
-  config_key   String    @unique
+  id           String    @id @default(cuid()) @db.VarChar(50)
+  config_key   String    @unique @db.VarChar(200)
   config_value String?   @db.Text
   detail       String?   @db.Text
-  create_time  DateTime? @default(now()) @db.Timestamp()
-  update_time  DateTime? @db.Timestamp()
+  createdAt    DateTime  @default(now()) @map("created_at") @db.Timestamp()
+  updatedAt    DateTime? @updatedAt @map("updated_at") @db.Timestamp()
+
+  @@map("configs")
 }
 
-model Tags {
-  id               Int                @id @default(autoincrement())
-  name             String
-  tag_value        String             @unique
-  detail           String?            @db.Text
-  show             Int                @default(1) @db.SmallInt
-  sort             Int                @default(0) @db.SmallInt
-  create_time      DateTime?          @default(now()) @db.Timestamp()
-  update_time      DateTime?          @db.Timestamp()
-  del              Int                @default(0) @db.SmallInt
-  imageTagRelation ImageTagRelation[]
+// 相册表
+model Albums {
+  id                   String                 @id @default(cuid()) @db.VarChar(50)
+  name                 String                 @db.VarChar(200)
+  album_value          String                 @unique @db.Text
+  detail               String?                @db.Text
+  show                 Int                    @default(1) @db.SmallInt
+  sort                 Int                    @default(0) @db.SmallInt
+  createdAt            DateTime               @default(now()) @map("created_at") @db.Timestamp()
+  updatedAt            DateTime?              @updatedAt @map("updated_at") @db.Timestamp()
+  del                  Int                    @default(0) @db.SmallInt
+  imagesAlbumsRelation ImagesAlbumsRelation[]
+
+  @@map("albums")
 }
 
-model ImageTagRelation {
-  tag       Tags   @relation(fields: [tag_value], references: [tag_value])
-  tag_value String
-  image     Images @relation(fields: [imageId], references: [id])
-  imageId   Int
+// 图片相册关联表
+model ImagesAlbumsRelation {
+  albums      Albums @relation(fields: [album_value], references: [album_value])
+  album_value String @db.Text
+  images      Images @relation(fields: [imageId], references: [id])
+  imageId     String @db.VarChar(50)
 
-  @@id([imageId, tag_value])
+  @@id([imageId, album_value])
+  @@map("images_albums_relation")
 }
 
+// 版权表
 model Copyright {
-  id                     Int                      @id @default(autoincrement())
-  name                   String
-  social_name            String?
-  type                   String
-  url                    String?                  @db.Text
-  avatar_url             String?                  @db.Text
-  detail                 String?                  @db.Text
-  default                Int                      @default(1) @db.SmallInt
-  show                   Int                      @default(1) @db.SmallInt
-  create_time            DateTime?                @default(now()) @db.Timestamp()
-  update_time            DateTime?                @db.Timestamp()
-  del                    Int                      @default(0) @db.SmallInt
-  ImageCopyrightRelation ImageCopyrightRelation[]
+  id                      String                    @id @default(cuid()) @db.VarChar(50)
+  name                    String                    @db.VarChar(200)
+  social_name             String?                   @db.VarChar(200)
+  type                    String                    @db.VarChar(50)
+  url                     String?                   @db.Text
+  avatar_url              String?                   @db.Text
+  detail                  String?                   @db.Text
+  default                 Int                       @default(1) @db.SmallInt
+  show                    Int                       @default(1) @db.SmallInt
+  createdAt               DateTime                  @default(now()) @map("created_at") @db.Timestamp()
+  updatedAt               DateTime?                 @updatedAt @map("updated_at") @db.Timestamp()
+  del                     Int                       @default(0) @db.SmallInt
+  ImagesCopyrightRelation ImagesCopyrightRelation[]
+
+  @@map("copyrights")
 }
 
-model ImageCopyrightRelation {
+// 图片版权关联表
+model ImagesCopyrightRelation {
   copyright   Copyright @relation(fields: [copyrightId], references: [id])
-  copyrightId Int
-  image       Images    @relation(fields: [imageId], references: [id])
-  imageId     Int
+  copyrightId String    @db.VarChar(50)
+  images      Images    @relation(fields: [imageId], references: [id])
+  imageId     String    @db.VarChar(50)
 
   @@id([copyrightId, imageId])
+  @@map("images_copyright_relation")
 }

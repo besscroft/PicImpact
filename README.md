@@ -14,6 +14,8 @@ PicImpact
 
 PicImpact 是一个摄影师专用的摄影作品展示网站，基于 Next.js + Hono.js 开发。
 
+> 注：这是个很艰难的决定，v2 版本与 v1 版本不兼容，您需要重新配置数据库。[迁移脚本](./scripts/migrate/)
+
 ### 功能特性
 
 - 瀑布流相册展示图片，支持常见的格式。
@@ -21,6 +23,7 @@ PicImpact 是一个摄影师专用的摄影作品展示网站，基于 Next.js +
 - 响应式设计，在 PC 和移动端都有不错的体验，支持暗黑模式。
 - 图片存储兼容 S3 API、Cloudflare R2、AList API。
 - 图片支持绑定标签，并且可通过标签进行交互，筛选标签下所有图片。
+- 支持输出 RSS，可以使用 [Follow](https://github.com/RSSNext/Follow) 订阅，并支持订阅源所有权验证。
 - 支持批量自动化上传，上传图片时会生成 0.3 倍率的压缩图片，以提供加载优化。
 - 图片版权信息展示和维护功能，支持外链跳转。
 - 后台有图片数据统计、图片上传、图片维护、相册管理、系统设置和存储配置功能。
@@ -29,16 +32,25 @@ PicImpact 是一个摄影师专用的摄影作品展示网站，基于 Next.js +
 - 基于 prisma 的自动初始化数据库和数据迁移，简化部署流程。
 - 支持 Vercel 部署、Node.js 部署、Docker 等容器化部署，当然 k8s 也支持。
 
+### TODO 
+
+- [ ] 单独的存储管理功能（不会影响现有功能，属于扩展）。
+- [x] RSS 支持，能够使用 Follow 订阅。
+- [ ] Web Analytics 支持。
+- [ ] OneDrive 支持。
+
+> 会抽空进行开发与维护，也欢迎 PR!
+
 ### 如何部署
 
 你可以点击下面的按钮来一键部署到 Vercel，**然后将 `Build Command` 设置为 `pnpm run build:vercel`**，也可以 Fork 项目后手动部署到任何支持的平台。
 
 <a href="https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fbesscroft%2FPicImpact&env=DATABASE_URL,AUTH_SECRET"><img src="https://vercel.com/button" alt="Deploy with Vercel"/></a>
 
-| Key          | 备注                                                                                       |
-|--------------|------------------------------------------------------------------------------------------|
-| DATABASE_URL | Postgre 数据库 url，如：postgres://账号:密码@aws-0-ap-northeast-1.pooler.supabase.com:5432/postgres |
-| AUTH_SECRET  | 权限机密，你可以执行 npx auth secret 生成一个，反正是随机的字符串就行                                              |
+| Key          | 备注                                                                                           |
+|--------------|----------------------------------------------------------------------------------------------|
+| DATABASE_URL | Postgre 数据库 url，`postgresql://[用户名]:[密码]@[地址和端口]/[数据库]`，如：`postgresql://postgres:666666@aws-0-ap-northeast-1.pooler.supabase.com:6543/postgres` |
+| AUTH_SECRET  | 权限机密，你可以执行 npx auth secret 生成一个，反正是随机的字符串就行                                                  |
 
 默认账号：`admin@qq.com`，默认密码：`666666`，**登录后请先去设置里面修改密码！**
 
@@ -56,7 +68,7 @@ PicImpact 是一个摄影师专用的摄影作品展示网站，基于 Next.js +
 ```shell
 docker run -d --name picimpact \
   -p 3000:3000 \
-  -e DATABASE_URL="postgres://账号:密码@aws-0-ap-northeast-1.pooler.supabase.com:5432/postgres" \
+  -e DATABASE_URL="postgresql://[用户名]:[密码]@[地址和端口]/[数据库]" \
   -e AUTH_SECRET="自己运行npx auth secret或一串随机的字符串都行" \
   besscroft/picimpact:latest
 ```

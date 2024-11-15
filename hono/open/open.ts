@@ -32,7 +32,7 @@ app.get('/get-image-blob', async (c) => {
 app.get('/get-image-by-id', async (c) => {
   const { searchParams } = new URL(c.req.url)
   const id = searchParams.get('id')
-  const data = await fetchImageByIdAndAuth(Number(id));
+  const data = await fetchImageByIdAndAuth(String(id));
   if (data && data?.length > 0) {
     return c.json({ code: 200, message: '图片数据获取成功！', data: data })
   } else {

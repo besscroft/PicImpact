@@ -76,32 +76,8 @@ export async function fetchAListInfo() {
   return findConfig;
 }
 
-export async function fetchTagsList() {
-  const findAll = await db.tags.findMany({
-    where: {
-      del: 0,
-      tag_value: {
-        notIn: ['/']
-      }
-    },
-    orderBy: [
-      {
-        sort: 'desc',
-      },
-      {
-        create_time: 'desc',
-      },
-      {
-        update_time: 'desc'
-      }
-    ]
-  })
-
-  return findAll;
-}
-
-export async function fetchTagsListAndNotDefault() {
-  const findAll = await db.tags.findMany({
+export async function fetchAlbumsList() {
+  const findAll = await db.albums.findMany({
     where: {
       del: 0
     },
@@ -110,10 +86,10 @@ export async function fetchTagsListAndNotDefault() {
         sort: 'desc',
       },
       {
-        create_time: 'desc',
+        createdAt: 'desc',
       },
       {
-        update_time: 'desc'
+        updatedAt: 'desc'
       }
     ]
   })
@@ -121,27 +97,48 @@ export async function fetchTagsListAndNotDefault() {
   return findAll;
 }
 
-export async function fetchServerImagesListByTag(pageNum: number, tag: string) {
-  if (tag === 'all') {
-    tag = ''
+export async function fetchAlbumsListAndNotDefault() {
+  const findAll = await db.albums.findMany({
+    where: {
+      del: 0
+    },
+    orderBy: [
+      {
+        sort: 'desc',
+      },
+      {
+        createdAt: 'desc',
+      },
+      {
+        updatedAt: 'desc'
+      }
+    ]
+  })
+
+  return findAll;
+}
+
+export async function fetchServerImagesListByAlbum(pageNum: number, album: string) {
+  if (album === 'all') {
+    album = ''
   }
   if (pageNum < 1) {
     pageNum = 1
   }
-  if (tag && tag !== '') {
+  if (album && album !== '') {
     const findAll = await db.$queryRaw`
       SELECT 
           image.*,
-          STRING_AGG(tags."name", ',') AS tag_names,
-          STRING_AGG(tags.id::text, ',') AS tag_values,
+          albums.name AS album_name,
+          albums.id AS album_value,
           (
               SELECT json_agg(row_to_json(t))
               FROM (
                   SELECT copyright.id
-                  FROM "public"."Copyright" AS copyright
-                      INNER JOIN "public"."ImageCopyrightRelation" AS icrelation
+                  FROM "public"."copyrights" AS copyright
+                      INNER JOIN "public"."images_copyright_relation" AS icrelation
                           ON copyright.id = icrelation."copyrightId"
-                      INNER JOIN "public"."Images" AS image_child
+                      INNER JOIN "public"."images" AS image_child
                           ON icrelation."imageId" = image_child."id"
                   WHERE copyright.del = 0
                       AND image_child.del = 0
@@ -149,46 +146,36 @@ export async function fetchServerImagesListByTag(pageNum: number, tag: string) {
               ) t
           ) AS copyrights
       FROM 
-          "public"."Images" AS image
-      INNER JOIN "public"."ImageTagRelation" AS relation
+          "public"."images" AS image
+      INNER JOIN "public"."images_albums_relation" AS relation
           ON image.id = relation."imageId"
-      INNER JOIN "public"."Tags" AS tags
-          ON relation.tag_value = tags.tag_value
+      INNER JOIN "public"."albums" AS albums
+          ON relation.album_value = albums.album_value
       WHERE
           image.del = 0
       AND
-          tags.del = 0
+          albums.del = 0
       AND
-          tags.tag_value = ${tag}
-      GROUP BY image.id
-      ORDER BY image.sort DESC, image.create_time DESC, image.update_time DESC
+          albums.album_value = ${album}
+      ORDER BY image.sort DESC, image.created_at DESC, image.updated_at DESC
       LIMIT 8 OFFSET ${(pageNum - 1) * 8}
     `
-
-    if (findAll) {
-      // @ts-ignore
-      findAll?.map((item: any) => {
-        if (item.copyrights) {
-          item.copyrights = item?.copyrights.map((item: any) => Number(item.id))
-        }
-      })
-    }
 
     return findAll;
   }
   const findAll = await db.$queryRaw`
     SELECT 
         image.*,
-        STRING_AGG(tags."name", ',') AS tag_names,
-        STRING_AGG(tags.id::text, ',') AS tag_values,
+        albums.name AS album_name,
+        albums.id AS album_value,
         (
             SELECT json_agg(row_to_json(t))
             FROM (
                 SELECT copyright.id
-                FROM "public"."Copyright" AS copyright
-                INNER JOIN "public"."ImageCopyrightRelation" AS icrelation
+                FROM "public"."copyrights" AS copyright
+                INNER JOIN "public"."images_copyright_relation" AS icrelation
                     ON copyright.id = icrelation."copyrightId"
-                INNER JOIN "public"."Images" AS image_child
+                INNER JOIN "public"."images" AS image_child
                     ON icrelation."imageId" = image_child."id"
             WHERE copyright.del = 0
             AND image_child.del = 0
@@ -196,54 +183,46 @@ export async function fetchServerImagesListByTag(pageNum: number, tag: string) {
             ) t
         ) AS copyrights
     FROM 
-        "public"."Images" AS image
-    LEFT JOIN "public"."ImageTagRelation" AS relation
+        "public"."images" AS image
+    LEFT JOIN "public"."images_albums_relation" AS relation
         ON image.id = relation."imageId"
-    LEFT JOIN "public"."Tags" AS tags
-        ON relation.tag_value = tags.tag_value
+    LEFT JOIN "public"."albums" AS albums
+        ON relation.album_value = albums.album_value
     WHERE 
         image.del = 0
-    GROUP BY image.id
-    ORDER BY image.sort DESC, image.create_time DESC, image.update_time DESC 
+    ORDER BY image.sort DESC, image.created_at DESC, image.updated_at DESC 
     LIMIT 8 OFFSET ${(pageNum - 1) * 8}
   `
-  if (findAll) {
-    // @ts-ignore
-    findAll?.map((item: any) => {
-      if (item.copyrights) {
-        item.copyrights = item?.copyrights.map((item: any) => Number(item.id))
-      }
-    })
-  }
+
   return findAll;
 }
 
-export async function fetchServerImagesPageTotalByTag(tag: string) {
-  if (tag === 'all') {
-    tag = ''
+export async function fetchServerImagesPageTotalByAlbum(album: string) {
+  if (album === 'all') {
+    album = ''
   }
-  if (tag && tag !== '') {
+  if (album && album !== '') {
     const pageTotal = await db.$queryRaw`
       SELECT COALESCE(COUNT(1),0) AS total
       FROM (
         SELECT DISTINCT ON (image.id)
             image.id 
         FROM 
-            "public"."Images" AS image
-        INNER JOIN "public"."ImageTagRelation" AS relation
+            "public"."images" AS image
+        INNER JOIN "public"."images_albums_relation" AS relation
             ON image.id = relation."imageId"
-        INNER JOIN "public"."Tags" AS tags
-            ON relation.tag_value = tags.tag_value
+        INNER JOIN "public"."albums" AS albums
+            ON relation.album_value = albums.album_value
         WHERE 
             image.del = 0
         AND
-            tags.del = 0
+            albums.del = 0
         AND
-            tags.tag_value = ${tag}
+            albums.album_value = ${album}
       ) AS unique_images;
     `
     // @ts-ignore
-    return Number(pageTotal[0].total) > 0 ? Math.ceil(Number(pageTotal[0].total) / 8) : 0
+    return Number(pageTotal[0].total) ?? 0
   }
   const pageTotal = await db.$queryRaw`
     SELECT COALESCE(COUNT(1),0) AS total
@@ -251,17 +230,100 @@ export async function fetchServerImagesPageTotalByTag(tag: string) {
       SELECT DISTINCT ON (image.id)
           image.id
       FROM
-          "public"."Images" AS image
-      LEFT JOIN "public"."ImageTagRelation" AS relation
+          "public"."images" AS image
+      LEFT JOIN "public"."images_albums_relation" AS relation
           ON image.id = relation."imageId"
-      LEFT JOIN "public"."Tags" AS tags
-          ON relation.tag_value = tags.tag_value
+      LEFT JOIN "public"."albums" AS albums
+          ON relation.album_value = albums.album_value
       WHERE
           image.del = 0
      ) AS unique_images;
   `
   // @ts-ignore
-  return Number(pageTotal[0].total) > 0 ? Math.ceil(Number(pageTotal[0].total) / 8) : 0
+  // return Number(pageTotal[0].total) > 0 ? Math.ceil(Number(pageTotal[0].total) / 8) : 0
+  return Number(pageTotal[0].total) ?? 0
+}
+
+export async function fetchClientImagesListByAlbum(pageNum: number, album: string) {
+  if (pageNum < 1) {
+    pageNum = 1
+  }
+  const findAll = await db.$queryRaw`
+    SELECT 
+        image.*,
+        albums.name AS album_name,
+        albums.id AS album_value,
+        (
+            SELECT json_agg(row_to_json(t))
+            FROM (
+                SELECT copyright.*
+                FROM "public"."copyrights" AS copyright
+                INNER JOIN "public"."images_copyright_relation" AS icrelation
+                    ON copyright.id = icrelation."copyrightId"
+                INNER JOIN "public"."images" AS image_child
+                    ON icrelation."imageId" = image_child."id"
+                WHERE copyright.del = 0
+                AND image_child.del = 0
+                AND copyright.show = 0
+                AND copyright.default = 1
+                AND image.id = image_child.id
+                UNION
+                SELECT copyright.*
+                FROM "public"."copyrights" AS copyright
+                WHERE copyright.del = 0
+                AND copyright.show = 0
+                AND copyright.default = 0
+            ) t
+        ) AS copyrights
+    FROM 
+        "public"."images" AS image
+    INNER JOIN "public"."images_albums_relation" AS relation
+        ON image.id = relation."imageId"
+    INNER JOIN "public"."albums" AS albums
+        ON relation.album_value = albums.album_value
+    WHERE
+        image.del = 0
+    AND
+        albums.del = 0
+    AND
+        image.show = 0
+    AND
+        albums.show = 0
+    AND
+        albums.album_value = ${album}
+    ORDER BY image.sort DESC, image.created_at DESC, image.updated_at DESC
+    LIMIT 16 OFFSET ${(pageNum - 1) * 16}
+  `
+
+  return findAll;
+}
+
+export async function fetchClientImagesPageTotalByAlbum(album: string) {
+  const pageTotal = await db.$queryRaw`
+    SELECT COALESCE(COUNT(1),0) AS total
+    FROM (
+        SELECT DISTINCT ON (image.id)
+           image.id
+        FROM
+           "public"."images" AS image
+        INNER JOIN "public"."images_albums_relation" AS relation
+            ON image.id = relation."imageId"
+        INNER JOIN "public"."albums" AS albums
+            ON relation.album_value = albums.album_value
+        WHERE
+            image.del = 0
+        AND
+            albums.del = 0
+        AND
+            image.show = 0
+        AND
+            albums.show = 0
+        AND
+            albums.album_value = ${album}
+    ) AS unique_images;
+  `
+  // @ts-ignore
+  return Number(pageTotal[0].total) > 0 ? Math.ceil(Number(pageTotal[0].total) / 16) : 0
 }
 
 export async function fetchClientImagesListByTag(pageNum: number, tag: string) {
@@ -271,51 +333,42 @@ export async function fetchClientImagesListByTag(pageNum: number, tag: string) {
   const findAll = await db.$queryRaw`
     SELECT 
         image.*,
-        STRING_AGG(tags."name", ',') AS tag_names,
-        STRING_AGG(tags.tag_value, ',') AS tag_values,
+        albums.name AS album_name,
+        albums.id AS album_value,
         (
             SELECT json_agg(row_to_json(t))
             FROM (
                 SELECT copyright.*
-                FROM "public"."Copyright" AS copyright
-                INNER JOIN "public"."ImageCopyrightRelation" AS icrelation
+                FROM "public"."copyrights" AS copyright
+                INNER JOIN "public"."images_copyright_relation" AS icrelation
                     ON copyright.id = icrelation."copyrightId"
-                INNER JOIN "public"."Images" AS image_child
+                INNER JOIN "public"."images" AS image_child
                     ON icrelation."imageId" = image_child."id"
                 WHERE copyright.del = 0
                 AND image_child.del = 0
                 AND copyright.show = 0
-                AND copyright.default = 1
                 AND image.id = image_child.id
-                UNION
-                SELECT copyright.*
-                FROM "public"."Copyright" AS copyright
-                WHERE copyright.del = 0
-                AND copyright.show = 0
-                AND copyright.default = 0
             ) t
         ) AS copyrights
     FROM 
-        "public"."Images" AS image
-    INNER JOIN "public"."ImageTagRelation" AS relation
+        "public"."images" AS image
+    INNER JOIN "public"."images_albums_relation" AS relation
         ON image.id = relation."imageId"
-    INNER JOIN "public"."Tags" AS tags
-        ON relation.tag_value = tags.tag_value
+    INNER JOIN "public"."albums" AS albums
+        ON relation.album_value = albums.album_value
     WHERE
         image.del = 0
     AND
-        tags.del = 0
+        albums.del = 0
     AND
         image.show = 0
     AND
-        tags.show = 0
+        albums.show = 0
     AND
-        tags.tag_value = ${tag}
-    GROUP BY image.id
-    ORDER BY image.sort DESC, image.create_time DESC, image.update_time DESC
+        image.labels::jsonb @> ${JSON.stringify([tag])}::jsonb
+    ORDER BY image.sort DESC, image.created_at DESC, image.updated_at DESC
     LIMIT 16 OFFSET ${(pageNum - 1) * 16}
   `
-
   return findAll;
 }
 
@@ -326,110 +379,32 @@ export async function fetchClientImagesPageTotalByTag(tag: string) {
         SELECT DISTINCT ON (image.id)
            image.id
         FROM
-           "public"."Images" AS image
-        INNER JOIN "public"."ImageTagRelation" AS relation
+           "public"."images" AS image
+        INNER JOIN "public"."images_albums_relation" AS relation
             ON image.id = relation."imageId"
-        INNER JOIN "public"."Tags" AS tags
-            ON relation.tag_value = tags.tag_value
+        INNER JOIN "public"."albums" AS albums
+            ON relation.album_value = albums.album_value
         WHERE
             image.del = 0
         AND
-            tags.del = 0
+            albums.del = 0
         AND
             image.show = 0
         AND
-            tags.show = 0
+            albums.show = 0
         AND
-            tags.tag_value = ${tag}
+            image.labels::jsonb @> ${JSON.stringify([tag])}::jsonb
     ) AS unique_images;
   `
   // @ts-ignore
   return Number(pageTotal[0].total) > 0 ? Math.ceil(Number(pageTotal[0].total) / 16) : 0
 }
 
-export async function fetchClientImagesListByLabel(pageNum: number, label: string) {
-  if (pageNum < 1) {
-    pageNum = 1
-  }
-  const findAll = await db.$queryRaw`
-    SELECT 
-        image.*,
-        STRING_AGG(tags."name", ',') AS tag_names,
-        STRING_AGG(tags.tag_value, ',') AS tag_values,
-        (
-            SELECT json_agg(row_to_json(t))
-            FROM (
-                SELECT copyright.*
-                FROM "public"."Copyright" AS copyright
-                INNER JOIN "public"."ImageCopyrightRelation" AS icrelation
-                    ON copyright.id = icrelation."copyrightId"
-                INNER JOIN "public"."Images" AS image_child
-                    ON icrelation."imageId" = image_child."id"
-                WHERE copyright.del = 0
-                AND image_child.del = 0
-                AND copyright.show = 0
-                AND image.id = image_child.id
-            ) t
-        ) AS copyrights
-    FROM 
-        "public"."Images" AS image
-    INNER JOIN "public"."ImageTagRelation" AS relation
-        ON image.id = relation."imageId"
-    INNER JOIN "public"."Tags" AS tags
-        ON relation.tag_value = tags.tag_value
-    WHERE
-        image.del = 0
-    AND
-        tags.del = 0
-    AND
-        image.show = 0
-    AND
-        tags.show = 0
-    AND
-        image.labels::jsonb @> ${JSON.stringify([label])}::jsonb
-    GROUP BY image.id
-    ORDER BY image.sort DESC, image.create_time DESC, image.update_time DESC
-    LIMIT 16 OFFSET ${(pageNum - 1) * 16}
-  `
-  return findAll;
-}
-
-export async function fetchClientImagesPageTotalByLabel(label: string) {
-  const pageTotal = await db.$queryRaw`
-    SELECT COALESCE(COUNT(1),0) AS total
-    FROM (
-        SELECT DISTINCT ON (image.id)
-           image.id
-        FROM
-           "public"."Images" AS image
-        INNER JOIN "public"."ImageTagRelation" AS relation
-            ON image.id = relation."imageId"
-        INNER JOIN "public"."Tags" AS tags
-            ON relation.tag_value = tags.tag_value
-        WHERE
-            image.del = 0
-        AND
-            tags.del = 0
-        AND
-            image.show = 0
-        AND
-            tags.show = 0
-        AND
-            image.labels::jsonb @> ${JSON.stringify([label])}::jsonb
-    ) AS unique_images;
-  `
-  // @ts-ignore
-  return Number(pageTotal[0].total) > 0 ? Math.ceil(Number(pageTotal[0].total) / 16) : 0
-}
-
-export async function fetchTagsShow() {
-  const findAll = await db.tags.findMany({
+export async function fetchAlbumsShow() {
+  const findAll = await db.albums.findMany({
     where: {
       del: 0,
-      show: 0,
-      tag_value: {
-        notIn: ['/']
-      }
+      show: 0
     },
     orderBy: [
       {
@@ -461,29 +436,29 @@ export async function fetchImagesAnalysis() {
     }
   })
 
-  const tagsTotal = await db.tags.count({
+  const tagsTotal = await db.albums.count({
     where: {
       del: 0
     },
   })
 
   const result = await db.$queryRaw`
-    SELECT 
-        tags.name AS name,
-        tags.tag_value AS value,
+    SELECT
+        albums.name AS name,
+        albums.album_value AS value,
         COALESCE(COUNT(1), 0) AS total,
         COALESCE(SUM(CASE WHEN image.show = 0 THEN 1 ELSE 0 END), 0) AS show_total
     FROM
-        "public"."Images" AS image
-    INNER JOIN "public"."ImageTagRelation" AS relation
+        "public"."images" AS image
+    INNER JOIN "public"."images_albums_relation" AS relation
         ON image.id = relation."imageId"
-    INNER JOIN "public"."Tags" AS tags
-        ON relation.tag_value = tags.tag_value
+    INNER JOIN "public"."albums" AS albums
+        ON relation.album_value = albums.album_value
     WHERE 
         image.del = 0
-    AND 
-        tags.del = 0
-    GROUP BY tags.name, tags.tag_value
+    AND
+        albums.del = 0
+    GROUP BY albums.name, albums.album_value
     ORDER BY total DESC
   `
 
@@ -525,10 +500,12 @@ export async function fetchSecretKey() {
   return find
 }
 
-export async function fetchCustomTitle() {
-  const find = await db.configs.findFirst({
+export async function fetchCustomInfo() {
+  const find = await db.configs.findMany({
     where: {
-      config_key: 'custom_title'
+      config_key: {
+        in: ['custom_title', 'custom_favicon_url', 'custom_author', 'rss_feed_id', 'rss_user_id']
+      }
     },
     select: {
       id: true,
@@ -547,10 +524,10 @@ export async function fetchCopyrightList() {
     },
     orderBy: [
       {
-        create_time: 'desc',
+        createdAt: 'desc',
       },
       {
-        update_time: 'desc'
+        updatedAt: 'desc'
       }
     ]
   })
@@ -558,26 +535,26 @@ export async function fetchCopyrightList() {
   return findAll;
 }
 
-export async function fetchImageByIdAndAuth(id: number) {
+export async function fetchImageByIdAndAuth(id: string) {
   const findAll = await db.$queryRaw`
     SELECT
-        "Images".*
+        "images".*
     FROM
-        "Images"
-    INNER JOIN "ImageTagRelation"
-        ON "Images"."id" = "ImageTagRelation"."imageId"
-    INNER JOIN "Tags"
-        ON "ImageTagRelation".tag_value = "Tags".tag_value
+        "images"
+    INNER JOIN "images_albums_relation"
+        ON "images"."id" = "images_albums_relation"."imageId"
+    INNER JOIN "albums"
+        ON "images_albums_relation".album_value = "albums".album_value
     WHERE
-        "Images".del = 0
+        "images".del = 0
     AND
-        "Tags".del = 0
+        "albums".del = 0
     AND
-        "Images".show = 0
+        "images".show = 0
     AND
-        "Tags".show = 0
+        "albums".show = 0
     AND
-        "Images".id = ${id}
+        "images".id = ${id}
   `
 
   return findAll;
@@ -624,6 +601,32 @@ export async function queryAuthSecret() {
       config_value: true
     }
   })
+
+  return find;
+}
+
+export async function getRSSImages() {
+  // 每个相册取最新 10 张照片
+  const find = await db.$queryRaw`
+    WITH RankedImages AS (
+    SELECT
+      i.*,
+      A.album_value,
+      ROW_NUMBER() OVER (PARTITION BY A.album_value ORDER BY i.created_at DESC) AS rn
+    FROM
+      images i
+      INNER JOIN images_albums_relation iar ON i.ID = iar."imageId"
+      INNER JOIN albums A ON iar.album_value = A.album_value
+    WHERE
+      A.del = 0
+      AND A."show" = 0
+      AND i.del = 0
+      AND i."show" = 0
+    )
+    SELECT *
+    FROM RankedImages
+    WHERE rn <= 10;
+  `
 
   return find;
 }

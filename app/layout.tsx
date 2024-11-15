@@ -1,13 +1,13 @@
 import type { Metadata, ResolvingMetadata } from 'next'
 
-import { NextUIProviders } from '~/app/providers/next-ui-providers'
+import { ThemeProvider } from '~/app/providers/next-ui-providers'
 import { ToasterProviders } from '~/app/providers/toaster-providers'
 import { SessionProviders } from '~/app/providers/session-providers'
 import { ProgressBarProviders } from '~/app/providers/progress-bar-providers'
 import { ButtonStoreProvider } from '~/app/providers/button-store-Providers'
 
 import '~/style/globals.css'
-import { fetchCustomTitle } from '~/server/db/query'
+import { fetchCustomInfo } from '~/server/db/query'
 
 type Props = {
   params: { id: string }
@@ -19,11 +19,11 @@ export async function generateMetadata(
   parent: ResolvingMetadata
 ): Promise<Metadata> {
 
-  const data = await fetchCustomTitle()
+  const data = await fetchCustomInfo()
 
   return {
-    title: data?.config_value || 'PicImpact',
-    icons: { icon: './favicon.ico' },
+    title: data?.find((item: any) => item.config_key === 'custom_title')?.config_value || 'PicImpact',
+    icons: { icon: data?.find((item: any) => item.config_key === 'custom_favicon_url')?.config_value || './favicon.ico' },
   }
 }
 
@@ -37,12 +37,12 @@ export default function RootLayout({
       <body>
         <SessionProviders>
           <ButtonStoreProvider>
-            <NextUIProviders>
+            <ThemeProvider>
               <ToasterProviders />
               <ProgressBarProviders>
                 {children}
               </ProgressBarProviders>
-            </NextUIProviders>
+            </ThemeProvider>
           </ButtonStoreProvider>
         </SessionProviders>
       </body>

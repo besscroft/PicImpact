@@ -11,9 +11,9 @@ export async function register() {
       const cuid = cuidModule.default
       await prisma.$transaction(async (tx) => {
         await tx.$executeRaw`
-          INSERT INTO "public"."User" (id, name, email, password, image)
-            VALUES (${cuid()}, 'admin', 'admin@qq.com', '51630b15b0cec2da9926af7015db33b7809f9d24959a0d48665b83e9d19216cd5601d08a622a8b2c48709d5bbb62eef6ae76addce5d18703b28965eef62d491b', 'https://bbs-static.miyoushe.com/communityweb/upload/97734c89374997c7c87d5af5f7442171.png')
-          ON CONFLICT (name) DO NOTHING;
+          INSERT INTO "public"."users" (id, name, username, email, password, image)
+            VALUES (${cuid()}, 'admin', 'admin', 'admin@qq.com', '51630b15b0cec2da9926af7015db33b7809f9d24959a0d48665b83e9d19216cd5601d08a622a8b2c48709d5bbb62eef6ae76addce5d18703b28965eef62d491b', 'https://bbs-static.miyoushe.com/communityweb/upload/97734c89374997c7c87d5af5f7442171.png')
+          ON CONFLICT (username) DO NOTHING;
         `
         await tx.configs.createMany({
           data: [
@@ -39,15 +39,18 @@ export async function register() {
             { config_key: 'auth_enable', config_value: 'false', detail: '是否启用双因素验证' },
             { config_key: 'auth_temp_secret', config_value: '', detail: '双因素验证临时种子密钥' },
             { config_key: 'auth_secret', config_value: '', detail: '双因素验证种子密钥' },
+            { config_key: 'custom_favicon_url', config_value: '', detail: '用户自定义的 favicon 地址' },
+            { config_key: 'custom_author', config_value: '', detail: '网站归属者名称' },
+            { config_key: 'rss_feed_id', config_value: '', detail: 'Follow feedId' },
+            { config_key: 'rss_user_id', config_value: '', detail: 'Follow userId' },
           ],
           skipDuplicates: true,
         })
-        await tx.tags.createMany({
-          data: [
-            { name: '首页', tag_value: '/', detail: '首页，勿删', show: 0, sort: 0 },
-          ],
-          skipDuplicates: true,
-        })
+        await tx.$executeRaw`
+          INSERT INTO "public"."albums" (id, name, album_value, detail, show, sort)
+            VALUES (${cuid()}, '首页', '/', '请保留首页的路由，名字随意~', 0, 0)
+          ON CONFLICT (album_value) DO NOTHING;
+        `
       })
       console.log('初始化完毕！')
       await prisma.$disconnect()
