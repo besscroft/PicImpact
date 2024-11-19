@@ -46,7 +46,7 @@ export default function Masonry(props : Readonly<ImageHandleProps>) {
   )
 
   useEffect(() => {
-    const fetchData = async (id: number) => {
+    const fetchData = async (id: string) => {
       try {
         const res = await fetch(`/api/open/get-image-by-id?id=${id}`, {
           headers: {
@@ -66,8 +66,8 @@ export default function Masonry(props : Readonly<ImageHandleProps>) {
       }
     };
     const id = searchParams.get('id')
-    if (Number(id) > 0) {
-      fetchData(Number(id));
+    if (id) {
+      fetchData(id);
     }
   }, []);
 
