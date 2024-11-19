@@ -1,0 +1,38 @@
+name: Deploy to VPS
+
+on:
+  workflow_run:
+    workflows:
+      - name: Dev Docker Multi-arch Image CI & CD
+    types:
+      - completed
+
+jobs:
+  deploy:
+    name: Deploy to VPS
+    runs-on: ubuntu-latest
+
+    steps:
+    # 1. SSH 登录到 VPS 部署
+    - name: Deploy to VPS
+      uses: appleboy/ssh-action@v0.1.5
+      with:
+        host: ${{ secrets.VPS_HOST }}
+        username: ${{ secrets.VPS_USER }}
+        password: ${{ secrets.VPS_PASSWORD }}
+        script: |
+          echo "Pulling latest Docker image..."
+          docker pull ${{ secrets.DOCKERHUB_USERNAME }}/picimpact:latest
+
+          echo "Stopping old container..."
+          docker stop picimpact || true
+          docker rm picimpact || true
+
+          echo "Starting new container..."
+          docker run -d --name picimpact \
+            -p 3000:3000 \
+            -e DATABASE_URL="${{ secrets.DATABASE_URL }}" \
+            -e AUTH_SECRET="${{ secrets.AUTH_SECRET }}" \
+            ${{ secrets.DOCKERHUB_USERNAME }}/picimpact:latest
+
+          echo "Deployment completed!"
