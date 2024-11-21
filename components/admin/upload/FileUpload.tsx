@@ -407,7 +407,7 @@ export default function FileUpload() {
     maxCount: mode === 'singleton' ? 1 : 5,
     customRequest: (file) => onRequestUpload(file),
     beforeUpload: async (file) => await onBeforeUpload(file),
-    onRemove: async (file) => {
+    onRemove: async () => {
       if (mode === 'singleton') {
         await onRemoveFile()
       }
@@ -416,7 +416,7 @@ export default function FileUpload() {
 
   return (
     <div className="flex flex-col space-y-2 h-full flex-1">
-      <div className="flex justify-between">
+      <div className="flex justify-between space-x-1">
         <div className="flex items-center justify-center w-full sm:w-64 md:w-80">
           <Select
             value={mode}
