@@ -138,6 +138,7 @@ export async function insertImage(image: ImageType) {
         url: image.url,
         title: image.title,
         preview_url: image.preview_url,
+        video_url: image.video_url,
         exif: image.exif,
         labels: image.labels,
         width: image.width,
@@ -145,6 +146,7 @@ export async function insertImage(image: ImageType) {
         detail: image.detail,
         lat: String(image.lat),
         lon: String(image.lon),
+        type: image.type,
         show: 1,
         sort: image.sort,
         del: 0

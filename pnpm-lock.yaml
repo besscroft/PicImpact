@@ -104,12 +104,18 @@ importers:
       framer-motion:
         specifier: ^11.11.10
         version: 11.11.10(react-dom@19.0.0-rc-5c56b873-20241107(react@19.0.0-rc-5c56b873-20241107))(react@19.0.0-rc-5c56b873-20241107)
+      heic2any:
+        specifier: ^0.0.4
+        version: 0.0.4
       hono:
         specifier: ^4.6.7
         version: 4.6.7
       input-otp:
         specifier: ^1.2.4
         version: 1.2.4(react-dom@19.0.0-rc-5c56b873-20241107(react@19.0.0-rc-5c56b873-20241107))(react@19.0.0-rc-5c56b873-20241107)
+      livephotoskit:
+        specifier: ^1.5.6
+        version: 1.5.6
       lucide-react:
         specifier: ^0.454.0
         version: 0.454.0(react@19.0.0-rc-5c56b873-20241107)
@@ -2503,6 +2509,9 @@ packages:
     resolution: {integrity: sha512-0hJU9SCPvmMzIBdZFqNPXWa6dqh7WdH0cII9y+CyS8rG3nL48Bclra9HmKhVVUHyPWNH5Y7xDwAB7bfgSjkUMQ==}
     engines: {node: '>= 0.4'}
 
+  heic2any@0.0.4:
+    resolution: {integrity: sha512-3lLnZiDELfabVH87htnRolZ2iehX9zwpRyGNz22GKXIu0fznlblf0/ftppXKNqS26dqFSeqfIBhAmAj/uSp0cA==}
+
   hono@4.6.7:
     resolution: {integrity: sha512-wX4ZbOnzfNO61hUjuQbJ7OPGs1fWXXVVJ8VTPDb2Ls/x9HjCbVTm80Je6VTHMz5n5RGDtBgV9d9ZFZxBqx56ng==}
     engines: {node: '>=16.9.0'}
@@ -2729,6 +2738,9 @@ packages:
 
   lines-and-columns@1.2.4:
     resolution: {integrity: sha512-7ylylesZQ/PV29jhEDl3Ufjo6ZX7gCqJr5F7PKrqc93v7fzSymt1BpwEU8nAUXs8qzzvqhbjhK5QZg6Mt/HkBg==}
+
+  livephotoskit@1.5.6:
+    resolution: {integrity: sha512-dsD6EzQnExuYfYvBSxf3t1bdl2Juw7NnlpWZrsGxdYq2x4pnxyOYrkOG6LGHmklytdFdxaru86GvviLpUhaIBQ==}
 
   locate-path@5.0.0:
     resolution: {integrity: sha512-t7hw9pI+WvuwNJXwk5zVHpyhIqzg2qTlklJOf0mVxGSbe3Fp2VieZcduNYjaLDoy6p9uGpQEGWG87WpMKlNq8g==}
@@ -6794,6 +6806,8 @@ snapshots:
     dependencies:
       function-bind: 1.1.2
 
+  heic2any@0.0.4: {}
+
   hono@4.6.7: {}
 
   ignore@5.3.2: {}
@@ -7002,6 +7016,8 @@ snapshots:
   lilconfig@3.1.2: {}
 
   lines-and-columns@1.2.4: {}
+
+  livephotoskit@1.5.6: {}
 
   locate-path@5.0.0:
     dependencies:

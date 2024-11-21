@@ -39,6 +39,7 @@ import { DownloadIcon } from '~/components/icons/download'
 import { LinkIcon } from '~/components/icons/link'
 import { ArrowLeftIcon } from '~/components/icons/arrow-left'
 import { ArrowRightIcon } from '~/components/icons/arrow-right'
+import LivePhoto from '~/components/LivePhoto.tsx'
 
 dayjs.extend(customParseFormat)
 
@@ -114,13 +115,20 @@ export default function MasonryItem() {
         </div>
         <div className="h-full flex flex-col space-y-2 md:grid md:gap-2 md:grid-cols-3 xl:gap-4">
           <div className="md:col-span-2 md:flex md:justify-center md:max-h-[90vh]">
-            <img
-              width={MasonryViewData.width}
-              loading="lazy"
-              src={MasonryViewData.preview_url || MasonryViewData.url}
-              alt={MasonryViewData.detail}
-              className="object-contain md:max-h-[90vh]"
-            />
+            {
+              MasonryViewData.type === 1 ?
+                <img
+                  width={MasonryViewData.width}
+                  loading="lazy"
+                  src={MasonryViewData.preview_url || MasonryViewData.url}
+                  alt={MasonryViewData.detail}
+                  className="object-contain md:max-h-[90vh]"
+                />
+                : <LivePhoto
+                  url={MasonryViewData.preview_url || MasonryViewData.url}
+                  videoUrl={MasonryViewData.video_url}
+                />
+          }
           </div>
           <div className="flex w-full flex-col">
             {
