@@ -23,6 +23,8 @@ import {
   SelectValue,
 } from '~/components/ui/select'
 import { CircleHelpIcon } from '~/components/icons/circle-help'
+import { ImagePlus } from 'lucide-react'
+import {Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle} from "~/components/ui/sheet.tsx";
 
 export default function FileUpload() {
   const [alistStorage, setAlistStorage] = useState([])
@@ -42,6 +44,7 @@ export default function FileUpload() {
   const [detail, setDetail] = useState('')
   const [imageLabels, setImageLabels] = useState([] as string[])
   const [mode, setMode] = useState('singleton')
+  const [customUpload, setCustomUpload] = useState(false)
   const { setUploadHelp } = useButtonStore(
     (state) => state,
   )
@@ -115,6 +118,58 @@ export default function FileUpload() {
     }
   }
 
+  async function customSubmit() {
+    try {
+      setLoading(true)
+      if (!url || url === '') {
+        toast.warning('请先填写图片地址！')
+        return
+      }
+      if (album === '') {
+        toast.warning('请先选择相册！')
+        return
+      }
+      if (!height || height <= 0) {
+        toast.warning('图片高度不能为空且必须大于 0！')
+        return
+      }
+      if (!width || width <= 0) {
+        toast.warning('图片宽度不能为空且必须大于 0！')
+        return
+      }
+      const data = {
+        album: album,
+        url: url,
+        title: title,
+        labels: imageLabels,
+        detail: detail,
+        width: width,
+        height: height,
+        lat: lat,
+        lon: lon,
+      } as ImageType
+      const res = await fetch('/api/v1/images/add', {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        method: 'post',
+        // @ts-ignore
+        body: JSON.stringify(data),
+      }).then(res => res.json())
+      console.log(res)
+      if (res?.code === 200) {
+        toast.success('保存成功！')
+      } else {
+        toast.error('保存失败！')
+      }
+    } catch (e) {
+      console.log(e)
+      toast.error('保存失败！')
+    } finally {
+      setLoading(false)
+    }
+  }
+
   async function submit() {
     try {
       setLoading(true)
@@ -153,6 +208,7 @@ export default function FileUpload() {
         toast.error('保存失败！')
       }
     } catch (e) {
+      console.log(e)
       toast.error('保存失败！')
     } finally {
       setLoading(false)
@@ -443,6 +499,14 @@ export default function FileUpload() {
           <Button
             variant="outline"
             size="icon"
+            aria-label="新增"
+            onClick={() => setCustomUpload(true)}
+          >
+            <ImagePlus />
+          </Button>
+          <Button
+            variant="outline"
+            size="icon"
             aria-label="帮助"
             onClick={() => setUploadHelp(true)}
           >
@@ -566,7 +630,7 @@ export default function FileUpload() {
         </div>
         <div>
           {
-            url && url !== '' && mode === 'singleton' &&
+            url && url !== '' && mode === 'singleton' && !customUpload &&
             <div className="w-full mt-2 space-y-2">
               <label
                 htmlFor="title"
@@ -705,6 +769,232 @@ export default function FileUpload() {
         </div>
       </div>
       <FileUploadHelpSheet/>
+      <Sheet
+        defaultOpen={false}
+        open={customUpload}
+        onOpenChange={async (open: boolean) => {
+          if (!open) {
+            setCustomUpload(false)
+            await onRemoveFile()
+          }
+        }}
+        modal={false}
+      >
+        <SheetContent side="left" className="overflow-y-auto scrollbar-hide space-y-2"
+                      onInteractOutside={(event: any) => event.preventDefault()}>
+          <SheetHeader>
+            <SheetTitle>手动上传</SheetTitle>
+            <SheetDescription className="space-y-2">
+              <p>
+                虽然不太推荐，但还是提供了这么个方式。
+              </p>
+            </SheetDescription>
+          </SheetHeader>
+          <div className="flex justify-between space-x-2">
+            <div className="flex w-full justify-between space-x-1">
+              <Select
+                defaultValue={storage}
+                onValueChange={async (value: string) => {
+                  setStorage(value)
+                  if (value === 'alist') {
+                    getAlistStorage()
+                  } else {
+                    setStorageSelect(false)
+                  }
+                }}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="请选择存储"/>
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectGroup>
+                    <SelectLabel>相册</SelectLabel>
+                    {storages?.map((storage: any) => (
+                      <SelectItem key={storage.value} value={storage.value}>
+                        {storage.label}
+                      </SelectItem>
+                    ))}
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
+              <Select
+                disabled={isLoading}
+                defaultValue={album}
+                onValueChange={async (value: string) => {
+                  setAlbum(value)
+                }}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="请选择相册"/>
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectGroup>
+                    <SelectLabel>相册</SelectLabel>
+                    {data?.map((album: AlbumType) => (
+                      <SelectItem key={album.album_value} value={album.album_value}>
+                        {album.name}
+                      </SelectItem>
+                    ))}
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
+            </div>
+            {
+              storageSelect && alistStorage?.length > 0 &&
+              <div className="w-full">
+                <Select
+                  disabled={isLoading}
+                  defaultValue={album}
+                  onValueChange={async (value: string) => {
+                    setAlistMountPath(value)
+                  }}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="请选择Alist目录"/>
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectGroup>
+                      <SelectLabel>Alist目录</SelectLabel>
+                      {alistStorage?.map((storage: any) => (
+                        <SelectItem key={storage?.mount_path} value={storage?.mount_path}>
+                          {storage?.mount_path}
+                        </SelectItem>
+                      ))}
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
+              </div>
+            }
+          </div>
+          <div className="w-full mt-2 space-y-2">
+            <label
+              htmlFor="title"
+              className="block overflow-hidden rounded-md border border-gray-200 px-3 py-2 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600"
+            >
+              <span className="text-xs font-medium text-gray-700"> 图片标题 </span>
+
+              <input
+                type="text"
+                id="title"
+                value={title}
+                placeholder="输入图片标题"
+                onChange={(e) => setTitle(e.target.value)}
+                className="mt-1 w-full border-none p-0 focus:border-transparent focus:outline-none focus:ring-0 sm:text-sm"
+              />
+            </label>
+            <label
+              htmlFor="url"
+              className="block overflow-hidden rounded-md border border-gray-200 px-3 py-2 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600"
+            >
+              <span className="text-xs font-medium text-gray-700"> 图片地址 </span>
+
+              <input
+                type="text"
+                id="url"
+                value={url}
+                onChange={(e) => setUrl(e.target.value)}
+                className="mt-1 w-full border-none p-0 focus:border-transparent focus:outline-none focus:ring-0 sm:text-sm"
+              />
+            </label>
+            <div className="flex items-center space-x-1 w-full">
+              <label
+                htmlFor="width"
+                className="w-full block overflow-hidden rounded-md border border-gray-200 px-3 py-2 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600"
+              >
+                <span className="text-xs font-medium text-gray-700"> 图片宽度 px </span>
+
+                <input
+                  type="number"
+                  id="width"
+                  value={width}
+                  placeholder="0"
+                  onChange={(e) => setWidth(Number(e.target.value))}
+                  className="mt-1 w-full border-none p-0 focus:border-transparent focus:outline-none focus:ring-0 sm:text-sm"
+                />
+              </label>
+              <label
+                htmlFor="height"
+                className="w-full block overflow-hidden rounded-md border border-gray-200 px-3 py-2 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600"
+              >
+                <span className="text-xs font-medium text-gray-700"> 图片高度 px </span>
+
+                <input
+                  type="number"
+                  id="height"
+                  value={height}
+                  placeholder="0"
+                  onChange={(e) => setHeight(Number(e.target.value))}
+                  className="mt-1 w-full border-none p-0 focus:border-transparent focus:outline-none focus:ring-0 sm:text-sm"
+                />
+              </label>
+            </div>
+            <div className="flex items-center space-x-1 w-full">
+              <label
+                htmlFor="lon"
+                className="w-full block overflow-hidden rounded-md border border-gray-200 px-3 py-2 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600"
+              >
+                <span className="text-xs font-medium text-gray-700"> 经度 </span>
+
+                <input
+                  type="text"
+                  id="lon"
+                  value={lon}
+                  placeholder="输入经度"
+                  onChange={(e) => setLon(e.target.value)}
+                  className="mt-1 w-full border-none p-0 focus:border-transparent focus:outline-none focus:ring-0 sm:text-sm"
+                />
+              </label>
+              <label
+                htmlFor="lat"
+                className="w-full block overflow-hidden rounded-md border border-gray-200 px-3 py-2 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600"
+              >
+                <span className="text-xs font-medium text-gray-700"> 纬度 </span>
+
+                <input
+                  type="text"
+                  id="lat"
+                  value={lat}
+                  placeholder="输入经度"
+                  onChange={(e) => setLat(e.target.value)}
+                  className="mt-1 w-full border-none p-0 focus:border-transparent focus:outline-none focus:ring-0 sm:text-sm"
+                />
+              </label>
+            </div>
+            <label
+              htmlFor="detail"
+              className="block overflow-hidden rounded-md border border-gray-200 px-3 py-2 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600"
+            >
+              <span className="text-xs font-medium text-gray-700"> 描述 </span>
+
+              <input
+                type="text"
+                id="detail"
+                value={detail}
+                placeholder="请输入描述"
+                onChange={(e) => setDetail(e.target.value)}
+                className="mt-1 w-full border-none p-0 focus:border-transparent focus:outline-none focus:ring-0 sm:text-sm"
+              />
+            </label>
+            <AntdSelect
+              mode="tags"
+              value={imageLabels}
+              style={{width: '100%'}}
+              placeholder="请输入图片索引标签，如：猫猫，不要输入特殊字符。"
+              onChange={(value: any) => setImageLabels(value)}
+              options={[]}
+            />
+          </div>
+          <Button
+            variant="outline"
+            disabled={loading}
+            onClick={() => customSubmit()}
+            aria-label="提交"
+          >
+            {loading && <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />}
+            提交
+          </Button>
+        </SheetContent>
+      </Sheet>
     </div>
   )
 }
