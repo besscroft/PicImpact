@@ -18,7 +18,7 @@ PicImpact 是一个摄影师专用的摄影作品展示网站，基于 Next.js +
 
 ### 功能特性
 
-- 瀑布流相册展示图片，支持常见的格式。
+- 瀑布流相册展示图片，支持[实况照片(Live Photos)](https://support.apple.com/zh-cn/104966)，基于 [LivePhotosKit JS](https://developer.apple.com/documentation/livephotoskitjs) 开发。
 - 点击图片查看原图，浏览图片信息和 EXIF 信息，支持直链访问。
 - 响应式设计，在 PC 和移动端都有不错的体验，支持暗黑模式。
 - 图片存储兼容 S3 API、Cloudflare R2、AList API。

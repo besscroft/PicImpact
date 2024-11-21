@@ -58,6 +58,7 @@ export type ImageType = {
   title: string;
   url: string;
   preview_url: string;
+  video_url: string;
   exif: ExifType;
   labels: any;
   width: number;
@@ -66,6 +67,7 @@ export type ImageType = {
   lat: string;
   album: string;
   detail: string;
+  type: number;
   show: number;
   sort: number;
   album_name: string;
