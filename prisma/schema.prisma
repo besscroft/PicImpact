@@ -72,10 +72,12 @@ model VerificationToken {
 
 // 业务表部分
 // 图片表
+// type 1->普通图片；2->livephoto
 model Images {
   id                      String                    @id @default(cuid()) @db.VarChar(50)
   url                     String?                   @db.Text
   preview_url             String?                   @db.Text
+  video_url               String?                   @db.Text
   exif                    Json?                     @db.Json
   labels                  Json?                     @db.Json
   width                   Int                       @default(0)
@@ -84,6 +86,7 @@ model Images {
   lat                     String?
   title                   String?                   @db.VarChar(200)
   detail                  String?                   @db.Text
+  type                    Int                       @default(1) @db.SmallInt
   show                    Int                       @default(1) @db.SmallInt
   sort                    Int                       @default(0) @db.SmallInt
   createdAt               DateTime                  @default(now()) @map("created_at") @db.Timestamp()

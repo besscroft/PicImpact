@@ -24,7 +24,7 @@ import {
 } from '~/components/ui/select'
 import { CircleHelpIcon } from '~/components/icons/circle-help'
 import { ImagePlus } from 'lucide-react'
-import {Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle} from "~/components/ui/sheet.tsx";
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from '~/components/ui/sheet.tsx'
 
 export default function FileUpload() {
   const [alistStorage, setAlistStorage] = useState([])
@@ -36,6 +36,7 @@ export default function FileUpload() {
   const [title, setTitle] = useState('')
   const [url, setUrl] = useState('')
   const [previewUrl, setPreviewUrl] = useState('')
+  const [videoUrl, setVideoUrl] = useState('')
   const [loading, setLoading] = useState(false)
   const [width, setWidth] = useState(0)
   const [height, setHeight] = useState(0)
@@ -51,7 +52,7 @@ export default function FileUpload() {
 
   const { data, isLoading } = useSWR('/api/v1/albums/get', fetcher)
 
-  async function loadExif(file: any) {
+  async function loadExif(file: any, outputBuffer: any, flag: boolean) {
     try {
       const tags = await ExifReader.load(file)
       const exifObj = {
@@ -112,7 +113,11 @@ export default function FileUpload() {
         // @ts-ignore
         img.src = e.target.result;
       };
-      reader.readAsDataURL(file);
+      if (flag) {
+        reader.readAsDataURL(outputBuffer);
+      } else {
+        reader.readAsDataURL(file);
+      }
     } catch (e) {
       console.log(e)
     }
@@ -146,6 +151,7 @@ export default function FileUpload() {
         width: width,
         height: height,
         lat: lat,
+        type: 1,
         lon: lon,
       } as ImageType
       const res = await fetch('/api/v1/images/add', {
@@ -156,7 +162,6 @@ export default function FileUpload() {
         // @ts-ignore
         body: JSON.stringify(data),
       }).then(res => res.json())
-      console.log(res)
       if (res?.code === 200) {
         toast.success('保存成功！')
       } else {
@@ -181,16 +186,26 @@ export default function FileUpload() {
         toast.warning('请先选择相册！')
         return
       }
+      if (!height || height <= 0) {
+        toast.warning('图片高度不能为空且必须大于 0！')
+        return
+      }
+      if (!width || width <= 0) {
+        toast.warning('图片宽度不能为空且必须大于 0！')
+        return
+      }
       const data = {
         album: album,
         url: url,
         title: title,
         preview_url: previewUrl,
+        video_url: videoUrl,
         exif: exif,
         labels: imageLabels,
         detail: detail,
         width: width,
         height: height,
+        type: mode === 'livephoto' ? 2 : 1,
         lat: lat,
         lon: lon,
       } as ImageType
@@ -215,10 +230,13 @@ export default function FileUpload() {
     }
   }
 
-  async function onBeforeUpload(file: any) {
-    setTitle('')
-    setPreviewUrl('')
-    setImageLabels([])
+  async function onBeforeUpload(file: any, type: number) {
+    if (type === 1) {
+      setTitle('')
+      setPreviewUrl('')
+      setVideoUrl('')
+      setImageLabels([])
+    }
     if (storage === '') {
       toast.warning('请先选择存储！')
       file.abort()
@@ -379,8 +397,8 @@ export default function FileUpload() {
     }
   }
 
-  async function uploadPreviewImage(option: any, type: string, url: string) {
-    new Compressor(option.file, {
+  async function uploadPreviewImage(option: any, type: string, url: string, flag: boolean, outputBuffer: any) {
+    new Compressor(flag ? outputBuffer : option.file, {
       quality: 0.2,
       checkOrientation: false,
       mimeType: 'image/webp',
@@ -391,12 +409,12 @@ export default function FileUpload() {
             toast.success('预览图片上传成功！')
             option.onSuccess(option.file)
             setPreviewUrl(res?.data)
-            await autoSubmit(option.file, url, res?.data)
+            await autoSubmit(flag ? outputBuffer : option.file, url, res?.data)
           } else {
             toast.error('预览图片上传失败！')
           }
         } else {
-          const compressedFileFromBlob = new File([compressedFile], option.file.name, {
+          const compressedFileFromBlob = new File([compressedFile], flag ? outputBuffer.name : option.file.name, {
             type: compressedFile.type,
           });
           const res = await uploadFile(compressedFileFromBlob, type)
@@ -404,7 +422,7 @@ export default function FileUpload() {
             toast.success('预览图片上传成功！')
             option.onSuccess(option.file)
             setPreviewUrl(res?.data)
-            await autoSubmit(option.file, url, res?.data)
+            await autoSubmit(flag ? outputBuffer : option.file, url, res?.data)
           } else {
             toast.error('预览图片上传失败！')
           }
@@ -417,27 +435,75 @@ export default function FileUpload() {
     })
   }
 
-  async function onRequestUpload(option: any) {
-    const res = await uploadFile(option.file, album)
-    if (res?.code === 200) {
-      toast.success('图片上传成功，尝试生成预览图片并上传！')
-      try {
-        if (album === '/') {
-          await uploadPreviewImage(option, '/preview', res?.data)
-        } else {
-          await uploadPreviewImage(option, album + '/preview', res?.data)
-        }
-      } catch (e) {
-        console.log(e)
+  async function resHandle(res: any, option: any, type: number, flag: boolean, outputBuffer: any) {
+    if (mode === 'livephoto' && type === 2) {
+      if (res?.code === 200) {
+        toast.success('LivePhoto 视频上传成功！')
+        setVideoUrl(res?.data)
         option.onSuccess(option.file)
-      }
-      if (mode === 'singleton') {
-        await loadExif(option.file)
-        setUrl(res?.data)
+      } else {
+        option.onError(option.file)
+        toast.error('LivePhoto 视频上传失败！')
       }
     } else {
-      option.onError(option.file)
-      toast.error('图片上传失败！')
+      if (res?.code === 200) {
+        toast.success('图片上传成功，尝试生成预览图片并上传！')
+        try {
+          if (album === '/') {
+            await uploadPreviewImage(option, '/preview', res?.data, flag, outputBuffer)
+          } else {
+            await uploadPreviewImage(option, album + '/preview', res?.data, flag, outputBuffer)
+          }
+        } catch (e) {
+          console.log(e)
+          option.onSuccess(option.file)
+        }
+        await loadExif(option.file, outputBuffer, flag)
+        setUrl(res?.data)
+      } else {
+        option.onError(option.file)
+        toast.error('图片上传失败！')
+      }
+    }
+  }
+
+  async function onRequestUpload(option: any, type: number) {
+    let outputBuffer: Blob | Blob[];
+    const ext = option.file.name.split(".").pop()?.toLowerCase();
+    // 获取文件名但是去掉扩展名部分
+    const fileName = option.file.name.split(".").slice(0, -1).join(".");
+    const flag = ext === 'heic' || ext === 'heif'
+    if (flag && type === 1) {
+      // 把 HEIC 转成 JPEG
+      const heic2any = await import('heic2any')
+      outputBuffer = await heic2any.default({ blob: option.file, toType: 'image/jpeg' });
+      // 添加文件名
+      // @ts-ignore
+      outputBuffer.name = fileName + '.jpg'
+      // @ts-ignore
+      new Compressor(outputBuffer, {
+        quality: 0.2,
+        checkOrientation: false,
+        mimeType: 'image/jpeg',
+        async success(compressedFile) {
+          if (compressedFile instanceof File) {
+            await uploadFile(compressedFile, album).then(async (res) => {
+              await resHandle(res, option, type, flag, outputBuffer)
+            })
+          } else {
+            const compressedFileFromBlob = new File([compressedFile], fileName + '.jpg', {
+              type: compressedFile.type,
+            });
+            await uploadFile(compressedFileFromBlob, album).then(async (res) => {
+              await resHandle(res, option, type, flag, outputBuffer)
+            })
+          }
+        }
+      })
+    } else {
+      await uploadFile(option.file, album).then(async (res) => {
+        await resHandle(res, option, type, flag, outputBuffer)
+      })
     }
   }
 
@@ -453,6 +519,7 @@ export default function FileUpload() {
     setLat('')
     setLon('')
     setPreviewUrl('')
+    setVideoUrl('')
     setImageLabels([])
   }
 
@@ -460,11 +527,24 @@ export default function FileUpload() {
     listType: "picture",
     name: 'file',
     multiple: mode === 'multiple',
-    maxCount: mode === 'singleton' ? 1 : 5,
-    customRequest: (file) => onRequestUpload(file),
-    beforeUpload: async (file) => await onBeforeUpload(file),
+    maxCount: mode === 'multiple' ? 5 : 1,
+    customRequest: (file) => onRequestUpload(file, 1),
+    beforeUpload: async (file) => await onBeforeUpload(file, 1),
     onRemove: async () => {
-      if (mode === 'singleton') {
+      if (mode === 'singleton' || mode === 'livephoto') {
+        await onRemoveFile()
+      }
+    }
+  }
+
+  const videoProps: UploadProps = {
+    listType: "picture",
+    name: 'file',
+    maxCount: 1,
+    customRequest: (file) => onRequestUpload(file, 2),
+    beforeUpload: async (file) => await onBeforeUpload(file, 2),
+    onRemove: async () => {
+      if (mode === 'singleton' || mode === 'livephoto') {
         await onRemoveFile()
       }
     }
@@ -487,6 +567,9 @@ export default function FileUpload() {
               <SelectGroup>
                 <SelectItem key="singleton" value="singleton">
                   单文件上传
+                </SelectItem>
+                <SelectItem key="livephoto" value="livephoto">
+                  LivePhoto 上传
                 </SelectItem>
                 <SelectItem key="multiple" value="multiple">
                   多文件上传
@@ -512,7 +595,7 @@ export default function FileUpload() {
           >
             <CircleHelpIcon />
           </Button>
-          {mode === 'singleton'
+          {mode !== 'multiple'
             ? <Button
               variant="outline"
               disabled={loading}
@@ -630,141 +713,176 @@ export default function FileUpload() {
         </div>
         <div>
           {
-            url && url !== '' && mode === 'singleton' && !customUpload &&
-            <div className="w-full mt-2 space-y-2">
-              <label
-                htmlFor="title"
-                className="block overflow-hidden rounded-md border border-gray-200 px-3 py-2 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600"
-              >
-                <span className="text-xs font-medium text-gray-700"> 图片标题 </span>
-
-                <input
-                  type="text"
-                  id="title"
-                  value={title}
-                  placeholder="输入图片标题"
-                  onChange={(e) => setTitle(e.target.value)}
-                  className="mt-1 w-full border-none p-0 focus:border-transparent focus:outline-none focus:ring-0 sm:text-sm"
-                />
-              </label>
-              <label
-                htmlFor="url"
-                className="block overflow-hidden rounded-md border border-gray-200 px-3 py-2 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600"
-              >
-                <span className="text-xs font-medium text-gray-700"> 图片地址 </span>
-
-                <input
-                  type="text"
-                  id="url"
-                  disabled
-                  value={url}
-                  className="mt-1 w-full border-none p-0 focus:border-transparent focus:outline-none focus:ring-0 sm:text-sm"
-                />
-              </label>
-              {previewUrl && previewUrl !== '' &&
+            url && url !== '' && mode !== 'multiple' && !customUpload &&
+            <>
+              {
+                mode === 'livephoto' &&
+                <ConfigProvider
+                  theme={{
+                    "token": {
+                      "colorTextBase": "#13c2c2"
+                    }
+                  }}
+                >
+                  <Dragger {...videoProps}>
+                    <p className="ant-upload-text">上传 LivePhoto 视频</p>
+                    <p className="ant-upload-hint">
+                      Vercel 等平台 Free 订阅限制上传大小 6M。
+                    </p>
+                  </Dragger>
+                </ConfigProvider>
+              }
+              <div className="w-full mt-2 space-y-2">
                 <label
-                  htmlFor="previewUrl"
+                  htmlFor="title"
                   className="block overflow-hidden rounded-md border border-gray-200 px-3 py-2 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600"
                 >
-                  <span className="text-xs font-medium text-gray-700"> 预览图片地址 </span>
+                  <span className="text-xs font-medium text-gray-700"> 图片标题 </span>
 
                   <input
                     type="text"
-                    id="previewUrl"
+                    id="title"
+                    value={title}
+                    placeholder="输入图片标题"
+                    onChange={(e) => setTitle(e.target.value)}
+                    className="mt-1 w-full border-none p-0 focus:border-transparent focus:outline-none focus:ring-0 sm:text-sm"
+                  />
+                </label>
+                <label
+                  htmlFor="url"
+                  className="block overflow-hidden rounded-md border border-gray-200 px-3 py-2 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600"
+                >
+                  <span className="text-xs font-medium text-gray-700"> 图片地址 </span>
+
+                  <input
+                    type="text"
+                    id="url"
                     disabled
-                    value={previewUrl}
+                    value={url}
                     className="mt-1 w-full border-none p-0 focus:border-transparent focus:outline-none focus:ring-0 sm:text-sm"
                   />
                 </label>
-              }
-              <div className="flex items-center space-x-1 w-full">
-                <label
-                  htmlFor="width"
-                  className="w-full block overflow-hidden rounded-md border border-gray-200 px-3 py-2 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600"
-                >
-                  <span className="text-xs font-medium text-gray-700"> 图片宽度 px </span>
+                {previewUrl && previewUrl !== '' &&
+                  <label
+                    htmlFor="previewUrl"
+                    className="block overflow-hidden rounded-md border border-gray-200 px-3 py-2 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600"
+                  >
+                    <span className="text-xs font-medium text-gray-700"> 预览图片地址 </span>
 
-                  <input
-                    type="number"
-                    id="width"
-                    value={width}
-                    placeholder="0"
-                    onChange={(e) => setWidth(Number(e.target.value))}
-                    className="mt-1 w-full border-none p-0 focus:border-transparent focus:outline-none focus:ring-0 sm:text-sm"
-                  />
-                </label>
-                <label
-                  htmlFor="height"
-                  className="w-full block overflow-hidden rounded-md border border-gray-200 px-3 py-2 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600"
-                >
-                  <span className="text-xs font-medium text-gray-700"> 图片高度 px </span>
+                    <input
+                      type="text"
+                      id="previewUrl"
+                      disabled
+                      value={previewUrl}
+                      className="mt-1 w-full border-none p-0 focus:border-transparent focus:outline-none focus:ring-0 sm:text-sm"
+                    />
+                  </label>
+                }
+                {mode === 'livephoto' && videoUrl && videoUrl !== '' &&
+                  <label
+                    htmlFor="videoUrl"
+                    className="block overflow-hidden rounded-md border border-gray-200 px-3 py-2 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600"
+                  >
+                    <span className="text-xs font-medium text-gray-700"> LivePhoto 视频地址 </span>
 
-                  <input
-                    type="number"
-                    id="height"
-                    value={height}
-                    placeholder="0"
-                    onChange={(e) => setHeight(Number(e.target.value))}
-                    className="mt-1 w-full border-none p-0 focus:border-transparent focus:outline-none focus:ring-0 sm:text-sm"
-                  />
-                </label>
-              </div>
-              <div className="flex items-center space-x-1 w-full">
+                    <input
+                      type="text"
+                      id="videoUrl"
+                      disabled
+                      value={videoUrl}
+                      className="mt-1 w-full border-none p-0 focus:border-transparent focus:outline-none focus:ring-0 sm:text-sm"
+                    />
+                  </label>
+                }
+                <div className="flex items-center space-x-1 w-full">
+                  <label
+                    htmlFor="width"
+                    className="w-full block overflow-hidden rounded-md border border-gray-200 px-3 py-2 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600"
+                  >
+                    <span className="text-xs font-medium text-gray-700"> 图片宽度 px </span>
+
+                    <input
+                      type="number"
+                      id="width"
+                      value={width}
+                      placeholder="0"
+                      onChange={(e) => setWidth(Number(e.target.value))}
+                      className="mt-1 w-full border-none p-0 focus:border-transparent focus:outline-none focus:ring-0 sm:text-sm"
+                    />
+                  </label>
+                  <label
+                    htmlFor="height"
+                    className="w-full block overflow-hidden rounded-md border border-gray-200 px-3 py-2 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600"
+                  >
+                    <span className="text-xs font-medium text-gray-700"> 图片高度 px </span>
+
+                    <input
+                      type="number"
+                      id="height"
+                      value={height}
+                      placeholder="0"
+                      onChange={(e) => setHeight(Number(e.target.value))}
+                      className="mt-1 w-full border-none p-0 focus:border-transparent focus:outline-none focus:ring-0 sm:text-sm"
+                    />
+                  </label>
+                </div>
+                <div className="flex items-center space-x-1 w-full">
+                  <label
+                    htmlFor="lon"
+                    className="w-full block overflow-hidden rounded-md border border-gray-200 px-3 py-2 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600"
+                  >
+                    <span className="text-xs font-medium text-gray-700"> 经度 </span>
+
+                    <input
+                      type="text"
+                      id="lon"
+                      value={lon}
+                      placeholder="输入经度"
+                      onChange={(e) => setLon(e.target.value)}
+                      className="mt-1 w-full border-none p-0 focus:border-transparent focus:outline-none focus:ring-0 sm:text-sm"
+                    />
+                  </label>
+                  <label
+                    htmlFor="lat"
+                    className="w-full block overflow-hidden rounded-md border border-gray-200 px-3 py-2 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600"
+                  >
+                    <span className="text-xs font-medium text-gray-700"> 纬度 </span>
+
+                    <input
+                      type="text"
+                      id="lat"
+                      value={lat}
+                      placeholder="输入经度"
+                      onChange={(e) => setLat(e.target.value)}
+                      className="mt-1 w-full border-none p-0 focus:border-transparent focus:outline-none focus:ring-0 sm:text-sm"
+                    />
+                  </label>
+                </div>
                 <label
-                  htmlFor="lon"
-                  className="w-full block overflow-hidden rounded-md border border-gray-200 px-3 py-2 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600"
+                  htmlFor="detail"
+                  className="block overflow-hidden rounded-md border border-gray-200 px-3 py-2 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600"
                 >
-                  <span className="text-xs font-medium text-gray-700"> 经度 </span>
+                  <span className="text-xs font-medium text-gray-700"> 描述 </span>
 
                   <input
                     type="text"
-                    id="lon"
-                    value={lon}
-                    placeholder="输入经度"
-                    onChange={(e) => setLon(e.target.value)}
+                    id="detail"
+                    value={detail}
+                    placeholder="请输入描述"
+                    onChange={(e) => setDetail(e.target.value)}
                     className="mt-1 w-full border-none p-0 focus:border-transparent focus:outline-none focus:ring-0 sm:text-sm"
                   />
                 </label>
-                <label
-                  htmlFor="lat"
-                  className="w-full block overflow-hidden rounded-md border border-gray-200 px-3 py-2 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600"
-                >
-                  <span className="text-xs font-medium text-gray-700"> 纬度 </span>
-
-                  <input
-                    type="text"
-                    id="lat"
-                    value={lat}
-                    placeholder="输入经度"
-                    onChange={(e) => setLat(e.target.value)}
-                    className="mt-1 w-full border-none p-0 focus:border-transparent focus:outline-none focus:ring-0 sm:text-sm"
-                  />
-                </label>
-              </div>
-              <label
-                htmlFor="detail"
-                className="block overflow-hidden rounded-md border border-gray-200 px-3 py-2 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600"
-              >
-                <span className="text-xs font-medium text-gray-700"> 描述 </span>
-
-                <input
-                  type="text"
-                  id="detail"
-                  value={detail}
-                  placeholder="请输入描述"
-                  onChange={(e) => setDetail(e.target.value)}
-                  className="mt-1 w-full border-none p-0 focus:border-transparent focus:outline-none focus:ring-0 sm:text-sm"
+                <AntdSelect
+                  mode="tags"
+                  value={imageLabels}
+                  style={{width: '100%'}}
+                  placeholder="请输入图片索引标签，如：猫猫，不要输入特殊字符。"
+                  onChange={(value: any) => setImageLabels(value)}
+                  options={[]}
                 />
-              </label>
-              <AntdSelect
-                mode="tags"
-                value={imageLabels}
-                style={{width: '100%'}}
-                placeholder="请输入图片索引标签，如：猫猫，不要输入特殊字符。"
-                onChange={(value: any) => setImageLabels(value)}
-                options={[]}
-              />
-            </div>
+              </div>
+            </>
           }
         </div>
       </div>
