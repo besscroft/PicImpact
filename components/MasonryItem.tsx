@@ -127,6 +127,7 @@ export default function MasonryItem() {
                 : <LivePhoto
                   url={MasonryViewData.preview_url || MasonryViewData.url}
                   videoUrl={MasonryViewData.video_url}
+                  className="md:h-[90vh] md:max-h-[90vh]"
                 />
           }
           </div>

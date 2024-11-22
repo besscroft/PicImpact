@@ -71,7 +71,7 @@ export default function ImageBatchDeleteSheet(props : Readonly<ImageServerHandle
       }}
       modal={false}
     >
-      <SheetContent side="left" className="overflow-y-auto scrollbar-hide" onInteractOutside={(event: any) => event.preventDefault()}>
+      <SheetContent side="left" className="w-full overflow-y-auto scrollbar-hide" onInteractOutside={(event: any) => event.preventDefault()}>
         <SheetHeader>
           <SheetTitle>批量删除</SheetTitle>
         </SheetHeader>

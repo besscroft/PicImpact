@@ -214,7 +214,7 @@ export async function updateImage(image: ImageType) {
     image.sort = 0
   }
   await db.$transaction(async (tx) => {
-    const resultRow = await tx.images.update({
+    await tx.images.update({
       where: {
         id: image.id
       },
@@ -222,6 +222,7 @@ export async function updateImage(image: ImageType) {
         url: image.url,
         title: image.title,
         preview_url: image.preview_url,
+        video_url: image.video_url,
         exif: image.exif,
         labels: image.labels,
         detail: image.detail,

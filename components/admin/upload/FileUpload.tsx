@@ -898,7 +898,7 @@ export default function FileUpload() {
         }}
         modal={false}
       >
-        <SheetContent side="left" className="overflow-y-auto scrollbar-hide space-y-2"
+        <SheetContent side="left" className="w-full overflow-y-auto scrollbar-hide space-y-2"
                       onInteractOutside={(event: any) => event.preventDefault()}>
           <SheetHeader>
             <SheetTitle>手动上传</SheetTitle>
