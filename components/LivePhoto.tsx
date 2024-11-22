@@ -2,8 +2,9 @@
 
 import * as React from 'react'
 import { useEffect, useRef } from 'react'
+import { cn } from '~/lib/utils'
 
-export default function LivePhoto({ url, videoUrl }: { url: string; videoUrl: string }) {
+export default function LivePhoto({ url, videoUrl, className }: { url: string; videoUrl: string; className?: string }) {
   const livePhotoRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -23,6 +24,8 @@ export default function LivePhoto({ url, videoUrl }: { url: string; videoUrl: st
   }, [livePhotoRef, url, videoUrl])
 
   return (
-    <div ref={livePhotoRef} className="w-full object-contain h-[36vh] md:h-[90vh] md:max-h-[90vh]"/>
+    <div ref={livePhotoRef} className={
+      cn(className, "w-full object-contain h-[36vh]")
+    } />
   )
 }
