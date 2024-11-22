@@ -23,6 +23,6 @@ export default function LivePhoto({ url, videoUrl }: { url: string; videoUrl: st
   }, [livePhotoRef, url, videoUrl])
 
   return (
-    <div ref={livePhotoRef} className="w-full md:max-h-[90vh]"/>
+    <div ref={livePhotoRef} className="w-full object-contain h-[36vh] md:h-[90vh] md:max-h-[90vh]"/>
   )
 }
