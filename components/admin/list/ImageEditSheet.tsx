@@ -70,7 +70,7 @@ export default function ImageEditSheet(props : Readonly<ImageServerHandleProps &
       }}
       modal={false}
     >
-      <SheetContent side="left" className="overflow-y-auto scrollbar-hide" onInteractOutside={(event: any) => event.preventDefault()}>
+      <SheetContent side="left" className="w-full overflow-y-auto scrollbar-hide" onInteractOutside={(event: any) => event.preventDefault()}>
         <SheetHeader>
           <SheetTitle>编辑图片</SheetTitle>
         </SheetHeader>
