@@ -117,7 +117,7 @@ export const DropMenu = () => {
             </DropdownMenuItem>
             <DropdownMenuItem
               key="github"
-              onClick={() => router.push('https://github.com/minimuaa/PicImpact')}
+              onClick={() => router.push('https://github.com/minimua/PicImpact')}
               className="cursor-pointer"
             >
               <Github size={20} className={iconClasses} />GitHub
