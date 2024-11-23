@@ -58,7 +58,7 @@ export default function AlbumAddSheet(props : Readonly<HandleProps>) {
       onOpenChange={() => setAlbumAdd(!albumAdd)}
       modal={false}
     >
-      <SheetContent side="left" className="overflow-y-auto scrollbar-hide" onInteractOutside={(event: any) => event.preventDefault()}>
+      <SheetContent side="left" className="w-full overflow-y-auto scrollbar-hide" onInteractOutside={(event: any) => event.preventDefault()}>
         <SheetHeader>
           <SheetTitle>新增相册</SheetTitle>
           <SheetDescription className="space-y-2">

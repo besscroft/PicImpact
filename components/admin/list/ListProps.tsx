@@ -128,7 +128,7 @@ export default function ListProps(props : Readonly<ImageServerHandleProps>) {
 
   return (
     <div className="flex flex-col space-y-2 h-full flex-1">
-      <div className="flex justify-between">
+      <div className="flex justify-between space-x-1">
         <div className="flex items-center justify-center w-full sm:w-64 md:w-80">
           <Select
             disabled={albumsLoading}
