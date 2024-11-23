@@ -140,7 +140,7 @@ export default function VaulDrawer(props: Readonly<DataProps>) {
             <div className="flex gap-6 justify-end max-w-md mx-auto">
               <a
                 className="text-xs text-zinc-600 flex items-center gap-0.25"
-                href="https://github.com/besscroft/PicImpact"
+                href="https://github.com/minimua/PicImpact"
                 target="_blank"
               >
                 GitHub
