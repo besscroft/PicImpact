@@ -19,7 +19,7 @@ export default function ImageHelpSheet() {
       }}
       modal={false}
     >
-      <SheetContent side="left" className="overflow-y-auto scrollbar-hide">
+      <SheetContent side="left" className="w-full overflow-y-auto scrollbar-hide">
         <SheetHeader>
           <SheetTitle>帮助</SheetTitle>
           <SheetDescription className="space-y-2">

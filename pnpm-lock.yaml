@@ -19,7 +19,7 @@ importers:
         version: 3.679.0
       '@hono/node-server':
         specifier: ^1.13.3
-        version: 1.13.3(hono@4.6.7)
+        version: 1.13.3(hono@4.6.11)
       '@hookform/resolvers':
         specifier: ^3.9.1
         version: 3.9.1(react-hook-form@7.53.1(react@19.0.0-rc-5c56b873-20241107))
@@ -99,17 +99,23 @@ importers:
         specifier: ^1.11.13
         version: 1.11.13
       exifreader:
-        specifier: ^4.24.0
-        version: 4.24.0
+        specifier: ^4.25.0
+        version: 4.25.0
       framer-motion:
-        specifier: ^11.11.10
-        version: 11.11.10(react-dom@19.0.0-rc-5c56b873-20241107(react@19.0.0-rc-5c56b873-20241107))(react@19.0.0-rc-5c56b873-20241107)
+        specifier: ^11.11.17
+        version: 11.11.17(react-dom@19.0.0-rc-5c56b873-20241107(react@19.0.0-rc-5c56b873-20241107))(react@19.0.0-rc-5c56b873-20241107)
+      heic2any:
+        specifier: ^0.0.4
+        version: 0.0.4
       hono:
-        specifier: ^4.6.7
-        version: 4.6.7
+        specifier: ^4.6.11
+        version: 4.6.11
       input-otp:
         specifier: ^1.2.4
         version: 1.2.4(react-dom@19.0.0-rc-5c56b873-20241107(react@19.0.0-rc-5c56b873-20241107))(react@19.0.0-rc-5c56b873-20241107)
+      livephotoskit:
+        specifier: ^1.5.6
+        version: 1.5.6
       lucide-react:
         specifier: ^0.454.0
         version: 0.454.0(react@19.0.0-rc-5c56b873-20241107)
@@ -2329,8 +2335,8 @@ packages:
     resolution: {integrity: sha512-kVscqXk4OCp68SZ0dkgEKVi6/8ij300KBWTJq32P/dYeWTSwK41WyTxalN1eRmA5Z9UU/LX9D7FWSmV9SAYx6g==}
     engines: {node: '>=0.10.0'}
 
-  exifreader@4.24.0:
-    resolution: {integrity: sha512-5RJKIminZQ9KnWWrcPE8385kV58FntwRwHXGzg672ezkcTDVm6XZSgsGczY3TwVqaJ3Xd6INT596k5kb2Rg1jw==}
+  exifreader@4.25.0:
+    resolution: {integrity: sha512-lPyPXWTUuYgoKdKf3rw2EDoE9Zl7xHoy/ehPNeQ4gFVNLzfLyNMP4oEI+sP0/Czp5r/2i7cFhqg5MHsl4FYtyw==}
 
   fast-deep-equal@3.1.3:
     resolution: {integrity: sha512-f3qQ9oQy9j2AhBe/H9VC91wLmKBCCU/gDOnKNAYG5hswO7BLKj09Hc5HYNz9cGI++xlpDCIgDaitVs03ATR84Q==}
@@ -2389,8 +2395,8 @@ packages:
   fraction.js@4.3.7:
     resolution: {integrity: sha512-ZsDfxO51wGAXREY55a7la9LScWpwv9RxIrYABrlvOFBlH/ShPnrtsXeuUIfXKKOVicNxQ+o8JTbJvjS4M89yew==}
 
-  framer-motion@11.11.10:
-    resolution: {integrity: sha512-061Bt1jL/vIm+diYIiA4dP/Yld7vD47ROextS7ESBW5hr4wQFhxB5D5T5zAc3c/5me3cOa+iO5LqhA38WDln/A==}
+  framer-motion@11.11.17:
+    resolution: {integrity: sha512-O8QzvoKiuzI5HSAHbcYuL6xU+ZLXbrH7C8Akaato4JzQbX2ULNeniqC2Vo5eiCtFktX9XsJ+7nUhxcl2E2IjpA==}
     peerDependencies:
       '@emotion/is-prop-valid': '*'
       react: ^18.0.0
@@ -2503,8 +2509,11 @@ packages:
     resolution: {integrity: sha512-0hJU9SCPvmMzIBdZFqNPXWa6dqh7WdH0cII9y+CyS8rG3nL48Bclra9HmKhVVUHyPWNH5Y7xDwAB7bfgSjkUMQ==}
     engines: {node: '>= 0.4'}
 
-  hono@4.6.7:
-    resolution: {integrity: sha512-wX4ZbOnzfNO61hUjuQbJ7OPGs1fWXXVVJ8VTPDb2Ls/x9HjCbVTm80Je6VTHMz5n5RGDtBgV9d9ZFZxBqx56ng==}
+  heic2any@0.0.4:
+    resolution: {integrity: sha512-3lLnZiDELfabVH87htnRolZ2iehX9zwpRyGNz22GKXIu0fznlblf0/ftppXKNqS26dqFSeqfIBhAmAj/uSp0cA==}
+
+  hono@4.6.11:
+    resolution: {integrity: sha512-f0LwJQFKdUUrCUAVowxSvNCjyzI7ZLt8XWYU/EApyeq5FfOvHFarBaE5rjU9HTNFk4RI0FkdB2edb3p/7xZjzQ==}
     engines: {node: '>=16.9.0'}
 
   ignore@5.3.2:
@@ -2729,6 +2738,9 @@ packages:
 
   lines-and-columns@1.2.4:
     resolution: {integrity: sha512-7ylylesZQ/PV29jhEDl3Ufjo6ZX7gCqJr5F7PKrqc93v7fzSymt1BpwEU8nAUXs8qzzvqhbjhK5QZg6Mt/HkBg==}
+
+  livephotoskit@1.5.6:
+    resolution: {integrity: sha512-dsD6EzQnExuYfYvBSxf3t1bdl2Juw7NnlpWZrsGxdYq2x4pnxyOYrkOG6LGHmklytdFdxaru86GvviLpUhaIBQ==}
 
   locate-path@5.0.0:
     resolution: {integrity: sha512-t7hw9pI+WvuwNJXwk5zVHpyhIqzg2qTlklJOf0mVxGSbe3Fp2VieZcduNYjaLDoy6p9uGpQEGWG87WpMKlNq8g==}
@@ -4471,9 +4483,9 @@ snapshots:
 
   '@floating-ui/utils@0.2.7': {}
 
-  '@hono/node-server@1.13.3(hono@4.6.7)':
+  '@hono/node-server@1.13.3(hono@4.6.11)':
     dependencies:
-      hono: 4.6.7
+      hono: 4.6.11
 
   '@hookform/resolvers@3.9.1(react-hook-form@7.53.1(react@19.0.0-rc-5c56b873-20241107))':
     dependencies:
@@ -6606,7 +6618,7 @@ snapshots:
 
   esutils@2.0.3: {}
 
-  exifreader@4.24.0:
+  exifreader@4.25.0:
     optionalDependencies:
       '@xmldom/xmldom': 0.9.5
 
@@ -6677,7 +6689,7 @@ snapshots:
 
   fraction.js@4.3.7: {}
 
-  framer-motion@11.11.10(react-dom@19.0.0-rc-5c56b873-20241107(react@19.0.0-rc-5c56b873-20241107))(react@19.0.0-rc-5c56b873-20241107):
+  framer-motion@11.11.17(react-dom@19.0.0-rc-5c56b873-20241107(react@19.0.0-rc-5c56b873-20241107))(react@19.0.0-rc-5c56b873-20241107):
     dependencies:
       tslib: 2.6.3
     optionalDependencies:
@@ -6794,7 +6806,9 @@ snapshots:
     dependencies:
       function-bind: 1.1.2
 
-  hono@4.6.7: {}
+  heic2any@0.0.4: {}
+
+  hono@4.6.11: {}
 
   ignore@5.3.2: {}
 
@@ -7002,6 +7016,8 @@ snapshots:
   lilconfig@3.1.2: {}
 
   lines-and-columns@1.2.4: {}
+
+  livephotoskit@1.5.6: {}
 
   locate-path@5.0.0:
     dependencies:

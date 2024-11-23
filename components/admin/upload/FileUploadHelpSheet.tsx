@@ -19,7 +19,7 @@ export default function FileUploadHelpSheet() {
       }}
       modal={false}
     >
-      <SheetContent side="left" className="overflow-y-auto scrollbar-hide">
+      <SheetContent side="left" className="w-full overflow-y-auto scrollbar-hide">
         <SheetHeader>
           <SheetTitle>帮助</SheetTitle>
           <SheetDescription className="space-y-2">
@@ -31,6 +31,11 @@ export default function FileUploadHelpSheet() {
               选择好存储和相册后，选择文件或拖入文件到上传框，会自动上传文件到对应的存储。
               同时以 0.2 倍率压缩为 webp 格式，生成一张预览用的图片。
               同时上传完毕后，您可以编辑图片的一些信息，最后点击保存入库。
+            </p>
+            <p>
+              <b>LivePhoto 上传模式：</b>
+              根据 Apple 官方文档描述：LivePhotos 由两部分组成：一张静态照片和一段拍摄前后瞬间的视频。
+              所以，您需要将 LivePhoto 导出为一个 JPG（或 HEIC） 文件和一个 MOV 文件，并分别上传。
             </p>
             <p>
               <b>多文件上传模式：</b>

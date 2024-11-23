@@ -9,12 +9,13 @@ import { fetcher } from '~/lib/utils/fetcher'
 import useSWR from 'swr'
 import ExifView from '~/components/ExifView'
 import { Switch } from '~/components/ui/switch'
+import LivePhoto from '~/components/LivePhoto.tsx'
 
 export default function ImageView() {
   const { imageView, imageViewData, setImageView, setImageViewData } = useButtonStore(
     (state) => state,
   )
-  const { data, isLoading } = useSWR('/api/v1/copyrights/get', fetcher)
+  const { data } = useSWR('/api/v1/copyrights/get', fetcher)
 
   const fieldNames = { label: 'name', value: 'id' }
 
@@ -33,15 +34,19 @@ export default function ImageView() {
         }
       }}
     >
-      <SheetContent side="left" className="overflow-y-auto scrollbar-hide">
+      <SheetContent side="left" className="w-full overflow-y-auto scrollbar-hide">
         <SheetHeader>
           <SheetTitle>{imageViewData.title}</SheetTitle>
         </SheetHeader>
         <div className="mt-4 space-y-2">
-          <img
-            src={imageViewData.preview_url || imageViewData.url}
-            alt={imageViewData.detail}
-          />
+          {imageViewData?.type === 1 ?
+            <img
+              src={imageViewData.preview_url || imageViewData.url}
+              alt={imageViewData.detail}
+            />
+            :
+            <LivePhoto url={imageViewData.preview_url || imageViewData.url} videoUrl={imageViewData.video_url} />
+          }
           {imageViewData?.labels &&
             <div className="space-x-1">
               {imageViewData?.labels.map((tag: string) => (
