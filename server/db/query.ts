@@ -39,27 +39,6 @@ export async function fetchAlbumsList() {
   return findAll;
 }
 
-export async function fetchAlbumsListAndNotDefault() {
-  const findAll = await db.albums.findMany({
-    where: {
-      del: 0
-    },
-    orderBy: [
-      {
-        sort: 'desc',
-      },
-      {
-        createdAt: 'desc',
-      },
-      {
-        updatedAt: 'desc'
-      }
-    ]
-  })
-
-  return findAll;
-}
-
 export async function fetchServerImagesListByAlbum(pageNum: number, album: string) {
   if (album === 'all') {
     album = ''
