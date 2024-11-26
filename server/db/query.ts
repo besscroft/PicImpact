@@ -1,22 +1,12 @@
 'use server'
 
-import { db } from '~/server/lib/db'
+import {db} from '~/server/lib/db'
 
-export async function fetchS3Info() {
-  const findConfig = await db.configs.findMany({
+export async function fetchConfigsByKeys(keys: string[]) {
+  return await db.configs.findMany({
     where: {
       config_key: {
-        in: [
-          'accesskey_id',
-          'accesskey_secret',
-          'region',
-          'endpoint',
-          'bucket',
-          'storage_folder',
-          'force_path_style',
-          's3_cdn',
-          's3_cdn_url'
-        ]
+        in: keys
       }
     },
     select: {
@@ -25,55 +15,7 @@ export async function fetchS3Info() {
       config_value: true,
       detail: true
     }
-  })
-
-  return findConfig;
-}
-
-export async function fetchR2Info() {
-  const findConfig = await db.configs.findMany({
-    where: {
-      config_key: {
-        in: [
-          'r2_accesskey_id',
-          'r2_accesskey_secret',
-          'r2_endpoint',
-          'r2_bucket',
-          'r2_storage_folder',
-          'r2_public_domain'
-        ]
-      }
-    },
-    select: {
-      id: true,
-      config_key: true,
-      config_value: true,
-      detail: true
-    }
-  })
-
-  return findConfig;
-}
-
-export async function fetchAListInfo() {
-  const findConfig = await db.configs.findMany({
-    where: {
-      config_key: {
-        in: [
-          'alist_url',
-          'alist_token'
-        ]
-      }
-    },
-    select: {
-      id: true,
-      config_key: true,
-      config_value: true,
-      detail: true
-    }
-  })
-
-  return findConfig;
+  });
 }
 
 export async function fetchAlbumsList() {
@@ -489,23 +431,6 @@ export async function fetchSecretKey() {
   const find = await db.configs.findFirst({
     where: {
       config_key: 'secret_key'
-    },
-    select: {
-      id: true,
-      config_key: true,
-      config_value: true
-    }
-  })
-
-  return find
-}
-
-export async function fetchCustomInfo() {
-  const find = await db.configs.findMany({
-    where: {
-      config_key: {
-        in: ['custom_title', 'custom_favicon_url', 'custom_author', 'rss_feed_id', 'rss_user_id']
-      }
     },
     select: {
       id: true,

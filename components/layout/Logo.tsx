@@ -1,10 +1,12 @@
 import Image from 'next/image'
 import favicon from '~/public/favicon.svg'
 import Link from 'next/link'
-import { fetchCustomInfo } from '~/server/db/query'
+import { fetchConfigsByKeys } from '~/server/db/query'
 
 export default async function Logo() {
-  const data = await fetchCustomInfo()
+  const data = await fetchConfigsByKeys([
+    'custom_favicon_url',
+  ])
 
   return (
     <Link href="/" className="select-none">

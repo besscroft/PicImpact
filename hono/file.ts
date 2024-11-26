@@ -1,5 +1,5 @@
 import 'server-only'
-import { fetchAListInfo, fetchS3Info, fetchR2Info } from '~/server/db/query'
+import { fetchConfigsByKeys } from '~/server/db/query'
 import { getClient } from '~/server/lib/s3'
 import { getR2Client } from '~/server/lib/r2'
 import { PutObjectCommand } from '@aws-sdk/client-s3'
@@ -16,7 +16,17 @@ app.post('/upload', async (c) => {
   const mountPath = formData.get('mountPath') || ''
 
   if (storage && storage.toString() === 's3') {
-    const findConfig = await fetchS3Info();
+    const findConfig = await fetchConfigsByKeys([
+      'accesskey_id',
+      'accesskey_secret',
+      'region',
+      'endpoint',
+      'bucket',
+      'storage_folder',
+      'force_path_style',
+      's3_cdn',
+      's3_cdn_url'
+    ]);
     const bucket = findConfig.find((item: any) => item.config_key === 'bucket')?.config_value || '';
     const storageFolder = findConfig.find((item: any) => item.config_key === 'storage_folder')?.config_value || '';
     const endpoint = findConfig.find((item: any) => item.config_key === 'endpoint')?.config_value || '';
@@ -76,7 +86,14 @@ app.post('/upload', async (c) => {
       }`
     })
   } else if (storage && storage.toString() === 'r2') {
-    const findConfig = await fetchR2Info();
+    const findConfig = await fetchConfigsByKeys([
+      'r2_accesskey_id',
+      'r2_accesskey_secret',
+      'r2_endpoint',
+      'r2_bucket',
+      'r2_storage_folder',
+      'r2_public_domain'
+    ]);
     const r2Bucket = findConfig.find((item: any) => item.config_key === 'r2_bucket')?.config_value || '';
     const r2StorageFolder = findConfig.find((item: any) => item.config_key === 'r2_storage_folder')?.config_value || '';
     const r2Endpoint = findConfig.find((item: any) => item.config_key === 'r2_endpoint')?.config_value || '';
@@ -114,7 +131,10 @@ app.post('/upload', async (c) => {
       }`
     })
   } else {
-    const findConfig = await fetchAListInfo()
+    const findConfig = await fetchConfigsByKeys([
+      'alist_url',
+      'alist_token'
+    ])
     const alistToken = findConfig.find((item: any) => item.config_key === 'alist_token')?.config_value || '';
     const alistUrl = findConfig.find((item: any) => item.config_key === 'alist_url')?.config_value || '';
     const filePath = encodeURIComponent(`${mountPath && mountPath.toString() === '/' ? '' : mountPath}${
