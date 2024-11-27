@@ -1,6 +1,6 @@
 'use server'
 
-import {db} from '~/server/lib/db'
+import { db } from '~/server/lib/db'
 
 export async function fetchConfigsByKeys(keys: string[]) {
   return await db.configs.findMany({
