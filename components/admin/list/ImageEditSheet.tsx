@@ -3,7 +3,6 @@
 import { useButtonStore } from '~/app/providers/button-store-Providers'
 import { ImageServerHandleProps, ImageType } from '~/types'
 import { useSWRInfiniteServerHook } from '~/hooks/useSWRInfiniteServerHook'
-import { Select } from 'antd'
 import React, { useState } from 'react'
 import { toast } from 'sonner'
 import { fetcher } from '~/lib/utils/fetcher'
@@ -12,7 +11,8 @@ import { Switch } from '~/components/ui/switch'
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '~/components/ui/sheet'
 import { ReloadIcon } from '@radix-ui/react-icons'
 import { Button } from '~/components/ui/button'
-
+import MultipleSelector, { Option } from '~/components/ui/origin/multiselect.tsx'
+import { Tag, TagInput } from 'emblor'
 
 export default function ImageEditSheet(props : Readonly<ImageServerHandleProps & { pageNum: number } & { album: string }>) {
   const { pageNum, album, ...restProps } = props
@@ -21,7 +21,8 @@ export default function ImageEditSheet(props : Readonly<ImageServerHandleProps &
     (state) => state,
   )
   const [loading, setLoading] = useState(false)
-  const { data, isLoading } = useSWR('/api/v1/copyrights/get', fetcher)
+  const { data} = useSWR('/api/v1/copyrights/get', fetcher)
+  const [activeTagIndex, setActiveTagIndex] = useState<number | null>(null);
 
   async function submit() {
     if (!image.url) {
@@ -55,8 +56,6 @@ export default function ImageEditSheet(props : Readonly<ImageServerHandleProps &
       setLoading(false)
     }
   }
-
-  const fieldNames = { label: 'name', value: 'id' }
 
   return (
     <Sheet
@@ -222,24 +221,43 @@ export default function ImageEditSheet(props : Readonly<ImageServerHandleProps &
               className="mt-1 w-full border-none p-0 focus:border-transparent focus:outline-none focus:ring-0 sm:text-sm"
             />
           </label>
-          <Select
-            className="!block"
-            mode="multiple"
-            placeholder="选择版权信息"
-            defaultValue={image.copyrights}
-            fieldNames={fieldNames}
+          <MultipleSelector
+            commandProps={{
+              label: "选择版权信息",
+            }}
             options={data}
-            onChange={(value, option: any) => {
-              setImageEditData({...image, copyrights: value})
+            value={!image.copyrights ? [] : image.copyrights.map((item: any) => {
+              const found = data?.find((element: any) => element.value === item)
+              return {
+                label: found?.label || '',
+                value: item
+              }
+            })}
+            placeholder="选择版权信息"
+            emptyIndicator={<p className="text-center text-sm">暂未选择版权信息</p>}
+            onChange={(options: Option[]) => {
+              const values = options.map(option => option.value)
+              setImageEditData({...image, copyrights: values})
             }}
           />
-          <Select
-            mode="tags"
-            value={image.labels}
-            style={{width: '100%'}}
+          <TagInput
+            tags={!image.labels ? [] : image.labels.map((label: string) => ({ id: Math.floor(Math.random() * 1000), text: label }))}
+            setTags={(newTags: any) => {
+              setImageEditData({...image, labels: newTags?.map((label: Tag) => label.text)})
+            }}
             placeholder="请输入图片索引标签，如：猫猫，不要输入特殊字符。"
-            onChange={(value: any) => setImageEditData({...image, labels: value})}
-            options={[]}
+            styleClasses={{
+              inlineTagsContainer:
+                "border-input rounded-lg bg-background shadow-sm shadow-black/5 transition-shadow focus-within:border-ring focus-within:outline-none focus-within:ring-[3px] focus-within:ring-ring/20 p-1 gap-1",
+              input: "w-full min-w-[80px] focus-visible:outline-none shadow-none px-2 h-7",
+              tag: {
+                body: "h-7 relative bg-background border border-input hover:bg-background rounded-md font-medium text-xs ps-2 pe-7",
+                closeButton:
+                  "absolute -inset-y-px -end-px p-0 rounded-e-lg flex size-7 transition-colors outline-0 focus-visible:outline focus-visible:outline-2 focus-visible:outline-ring/70 text-muted-foreground/80 hover:text-foreground",
+              },
+            }}
+            activeTagIndex={activeTagIndex}
+            setActiveTagIndex={setActiveTagIndex}
           />
           <div className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
             <div className="flex flex-col gap-1">

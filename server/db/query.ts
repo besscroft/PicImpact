@@ -52,20 +52,18 @@ export async function fetchServerImagesListByAlbum(pageNum: number, album: strin
           image.*,
           albums.name AS album_name,
           albums.id AS album_value,
-          (
-              SELECT json_agg(row_to_json(t))
-              FROM (
-                  SELECT copyright.id
-                  FROM "public"."copyrights" AS copyright
-                      INNER JOIN "public"."images_copyright_relation" AS icrelation
-                          ON copyright.id = icrelation."copyrightId"
-                      INNER JOIN "public"."images" AS image_child
-                          ON icrelation."imageId" = image_child."id"
-                  WHERE copyright.del = 0
-                      AND image_child.del = 0
-                      AND image.id = image_child.id
-              ) t
-          ) AS copyrights
+          COALESCE((
+              SELECT json_agg(copyright.id)
+              FROM "public"."copyrights" AS copyright
+              INNER JOIN "public"."images_copyright_relation" AS icrelation
+                  ON copyright.id = icrelation."copyrightId"
+              INNER JOIN "public"."images" AS image_child
+                  ON icrelation."imageId" = image_child."id"
+              WHERE copyright.del = 0
+              AND image_child.del = 0
+              AND image.id = image_child.id
+          ),
+          '[]'::json) AS copyrights
       FROM 
           "public"."images" AS image
       INNER JOIN "public"."images_albums_relation" AS relation
@@ -89,20 +87,18 @@ export async function fetchServerImagesListByAlbum(pageNum: number, album: strin
         image.*,
         albums.name AS album_name,
         albums.id AS album_value,
-        (
-            SELECT json_agg(row_to_json(t))
-            FROM (
-                SELECT copyright.id
-                FROM "public"."copyrights" AS copyright
-                INNER JOIN "public"."images_copyright_relation" AS icrelation
-                    ON copyright.id = icrelation."copyrightId"
-                INNER JOIN "public"."images" AS image_child
-                    ON icrelation."imageId" = image_child."id"
+        COALESCE((
+            SELECT json_agg(copyright.id)  -- 直接聚合 copyright.id，而不是整行
+            FROM "public"."copyrights" AS copyright
+            INNER JOIN "public"."images_copyright_relation" AS icrelation
+                ON copyright.id = icrelation."copyrightId"
+            INNER JOIN "public"."images" AS image_child
+                ON icrelation."imageId" = image_child."id"
             WHERE copyright.del = 0
             AND image_child.del = 0
             AND image.id = image_child.id
-            ) t
-        ) AS copyrights
+        ),
+        '[]'::json) AS copyrights
     FROM 
         "public"."images" AS image
     LEFT JOIN "public"."images_albums_relation" AS relation

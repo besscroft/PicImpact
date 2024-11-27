@@ -49,6 +49,7 @@
     "crypto-js": "^4.2.0",
     "cuid": "^3.0.0",
     "dayjs": "^1.11.13",
+    "emblor": "^1.4.6",
     "exifreader": "^4.25.0",
     "framer-motion": "^11.11.17",
     "heic2any": "^0.0.4",
