@@ -55,7 +55,7 @@ export default function MasonryItem() {
     data: MasonryViewData,
   }
 
-  async function loadingHandle(handle: string) {
+  const loadingHandle = React.useCallback(async (handle: string) => {
     const idx = MasonryViewDataList.findIndex((item: ImageType) => MasonryViewData.id === item.id)
     if (handle === 'next' && idx === MasonryViewDataList.length - 1) {
       setMasonryViewData(MasonryViewDataList[0] || MasonryViewData)
@@ -67,7 +67,8 @@ export default function MasonryItem() {
         setMasonryViewData(next || MasonryViewData)
       }
     }
-  }
+  }, [MasonryViewData, MasonryViewDataList, setMasonryViewData]);
+  
 
   async function downloadImg() {
     setDownload(true)
@@ -92,6 +93,23 @@ export default function MasonryItem() {
       setDownload(false)
     }
   }
+
+  React.useEffect(() => {
+    const handleKey = (e: KeyboardEvent) => {
+      if (MasonryView) {
+        if (e.key === "ArrowLeft") {
+          loadingHandle("prev");
+        } else if (e.key === "ArrowRight") {
+          loadingHandle("next");
+        }
+      }
+    };
+
+    document.addEventListener("keydown", handleKey);
+    return () => {
+      document.removeEventListener("keydown", handleKey);
+    };
+  }, [MasonryView, loadingHandle]);
 
   return (
     <Dialog
