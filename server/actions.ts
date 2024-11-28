@@ -2,7 +2,7 @@
 
 import { signIn, signOut } from '~/server/auth'
 import { queryAuthSecret, queryAuthStatus } from '~/server/db/query'
-import * as OTPAuth from "otpauth"
+import * as OTPAuth from 'otpauth'
 
 export async function authenticate(
   email: string, password: string, token: string

@@ -1,12 +1,12 @@
 import 'server-only'
-import { fetchAlbumsListAndNotDefault } from '~/server/db/query'
+import { fetchAlbumsList } from '~/server/db/query'
 import { deleteAlbum, insertAlbums, updateAlbum, updateAlbumShow } from '~/server/db/operate'
 import { Hono } from 'hono'
 
 const app = new Hono()
 
 app.get('/get', async (c) => {
-  const data = await fetchAlbumsListAndNotDefault();
+  const data = await fetchAlbumsList();
   return c.json(data)
 })
 

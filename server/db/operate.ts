@@ -1,13 +1,13 @@
 'use server'
 
 import { db } from '~/server/lib/db'
-import { AlbumType, ImageType, CopyrightType } from '~/types'
+import { AlbumType, CopyrightType, ImageType } from '~/types'
 
 export async function insertAlbums(album: AlbumType) {
   if (!album.sort || album.sort < 0) {
     album.sort = 0
   }
-  const resultRow = await db.albums.create({
+  return await db.albums.create({
     data: {
       name: album.name,
       album_value: album.album_value,
@@ -17,11 +17,10 @@ export async function insertAlbums(album: AlbumType) {
       del: 0
     }
   })
-  return resultRow
 }
 
 export async function deleteAlbum(id: string) {
-  const resultRow = await db.albums.update({
+  return await db.albums.update({
     where: {
       id: id
     },
@@ -30,7 +29,6 @@ export async function deleteAlbum(id: string) {
       updatedAt: new Date(),
     }
   })
-  return resultRow
 }
 
 export async function updateAlbum(album: AlbumType) {
@@ -71,7 +69,7 @@ export async function updateAlbum(album: AlbumType) {
 }
 
 export async function insertCopyright(copyright: CopyrightType) {
-  const resultRow = await db.copyright.create({
+  return await db.copyright.create({
     data: {
       name: copyright.name,
       social_name: copyright.social_name,
@@ -83,11 +81,10 @@ export async function insertCopyright(copyright: CopyrightType) {
       del: 0
     }
   })
-  return resultRow
 }
 
 export async function deleteCopyright(id: string) {
-  const resultRow = await db.copyright.update({
+  return await db.copyright.update({
     where: {
       id: id
     },
@@ -96,7 +93,6 @@ export async function deleteCopyright(id: string) {
       updatedAt: new Date(),
     }
   })
-  return resultRow
 }
 
 export async function updateCopyright(copyright: CopyrightType) {
@@ -254,7 +250,7 @@ export async function updateImage(image: ImageType) {
 }
 
 export async function updatePassword(userId: string, newPassword: string) {
-  const resultRow = await db.user.update({
+  return await db.user.update({
     where: {
       id: userId
     },
@@ -262,11 +258,10 @@ export async function updatePassword(userId: string, newPassword: string) {
       password: newPassword
     }
   })
-  return resultRow
 }
 
 export async function updateS3Config(configs: any) {
-  const resultRow = await db.$executeRaw`
+  return await db.$executeRaw`
     UPDATE "public"."configs"
     SET config_value = CASE
        WHEN config_key = 'accesskey_id' THEN ${configs.accesskeyId}
@@ -283,11 +278,10 @@ export async function updateS3Config(configs: any) {
         updated_at = NOW()
     WHERE config_key IN ('accesskey_id', 'accesskey_secret', 'region', 'endpoint', 'bucket', 'storage_folder', 'force_path_style', 's3_cdn', 's3_cdn_url');
   `
-  return resultRow
 }
 
 export async function updateR2Config(configs: any) {
-  const resultRow = await db.$executeRaw`
+  return await db.$executeRaw`
     UPDATE "public"."configs"
     SET config_value = CASE
        WHEN config_key = 'r2_accesskey_id' THEN ${configs.r2AccesskeyId}
@@ -301,11 +295,10 @@ export async function updateR2Config(configs: any) {
         updated_at = NOW()
     WHERE config_key IN ('r2_accesskey_id', 'r2_accesskey_secret', 'r2_endpoint', 'r2_bucket', 'r2_storage_folder', 'r2_public_domain');
   `
-  return resultRow
 }
 
 export async function updateAListConfig(configs: any) {
-  const resultRow = await db.$executeRaw`
+  return await db.$executeRaw`
     UPDATE "public"."configs"
     SET config_value = CASE
        WHEN config_key = 'alist_url' THEN ${configs.alistUrl}
@@ -315,11 +308,10 @@ export async function updateAListConfig(configs: any) {
         updated_at = NOW()
     WHERE config_key IN ('alist_url', 'alist_token');
   `
-  return resultRow
 }
 
 export async function updateImageShow(id: string, show: number) {
-  const resultRow = await db.images.update({
+  return await db.images.update({
     where: {
       id: id
     },
@@ -328,7 +320,6 @@ export async function updateImageShow(id: string, show: number) {
       updatedAt: new Date()
     }
   })
-  return resultRow
 }
 
 export async function updateImageAlbum(imageId: string, albumId: string) {
@@ -356,7 +347,7 @@ export async function updateImageAlbum(imageId: string, albumId: string) {
 }
 
 export async function updateAlbumShow(id: string, show: number) {
-  const resultRow = await db.albums.update({
+  return await db.albums.update({
     where: {
       id: id
     },
@@ -365,11 +356,10 @@ export async function updateAlbumShow(id: string, show: number) {
       updatedAt: new Date()
     }
   })
-  return resultRow
 }
 
 export async function updateCopyrightShow(id: string, show: number) {
-  const resultRow = await db.copyright.update({
+  return await db.copyright.update({
     where: {
       id: id
     },
@@ -378,7 +368,6 @@ export async function updateCopyrightShow(id: string, show: number) {
       updatedAt: new Date()
     }
   })
-  return resultRow
 }
 
 export async function updateCustomInfo(title: string, customFaviconUrl: string, customAuthor: string, feedId: string, userId: string) {
@@ -432,7 +421,7 @@ export async function updateCustomInfo(title: string, customFaviconUrl: string, 
 }
 
 export async function saveAuthTemplateSecret(token: string) {
-  const resultRow = await db.configs.update({
+  await db.configs.update({
     where: {
       config_key: 'auth_temp_secret'
     },

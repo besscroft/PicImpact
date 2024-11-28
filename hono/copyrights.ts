@@ -12,7 +12,11 @@ const app = new Hono()
 
 app.get('/get', async (c) => {
   const data = await fetchCopyrightList()
-  return c.json(data)
+  if (Array.isArray(data)) {
+    const result = data.map((item) => ({ label: item.name, value: item.id }))
+    return c.json(result)
+  }
+  return c.json([])
 })
 
 app.post('/add', async (c) => {

@@ -27,6 +27,11 @@ export default function About() {
       url: 'https://github.com/hexgu',
       avatar: 'https://avatars.githubusercontent.com/u/85490069?v=4'
     },
+    {
+      name: 'xcsoft',
+      url: 'https://github.com/soxft',
+      avatar: 'https://avatars.githubusercontent.com/u/42080379?v=4'
+    },
   ]
   return (
     <div className="flex flex-col space-y-2 h-full flex-1 w-full mx-auto items-center p-2">
@@ -53,7 +58,7 @@ export default function About() {
           />
         </svg>
 
-        <p className="whitespace-nowrap text-sm">v2.0.4</p>
+        <p className="whitespace-nowrap text-sm">v2.0.5</p>
       </span>
       <span>PicImpact 是一个摄影师专用的摄影作品展示网站，基于 Next.js + Hono.js 开发。</span>
       <div className="flex flex-col w-full">

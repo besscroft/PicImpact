@@ -1,9 +1,14 @@
 import 'server-only'
 import RSS from 'rss'
-import { fetchCustomInfo, getRSSImages } from '~/server/db/query'
+import { fetchConfigsByKeys, getRSSImages } from '~/server/db/query'
 
 export async function GET(request: Request) {
-  const data = await fetchCustomInfo()
+  const data = await fetchConfigsByKeys([
+    'custom_title',
+    'custom_author',
+    'rss_feed_id',
+    'rss_user_id'
+  ])
 
   const url = new URL(request.url);
 

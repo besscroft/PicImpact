@@ -7,7 +7,7 @@ import { ProgressBarProviders } from '~/app/providers/progress-bar-providers'
 import { ButtonStoreProvider } from '~/app/providers/button-store-Providers'
 
 import '~/style/globals.css'
-import { fetchCustomInfo } from '~/server/db/query'
+import { fetchConfigsByKeys } from '~/server/db/query'
 
 type Props = {
   params: { id: string }
@@ -19,7 +19,10 @@ export async function generateMetadata(
   parent: ResolvingMetadata
 ): Promise<Metadata> {
 
-  const data = await fetchCustomInfo()
+  const data = await fetchConfigsByKeys([
+    'custom_title',
+    'custom_favicon_url'
+  ])
 
   return {
     title: data?.find((item: any) => item.config_key === 'custom_title')?.config_value || 'PicImpact',

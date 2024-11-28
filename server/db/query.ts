@@ -2,21 +2,11 @@
 
 import { db } from '~/server/lib/db'
 
-export async function fetchS3Info() {
-  const findConfig = await db.configs.findMany({
+export async function fetchConfigsByKeys(keys: string[]) {
+  return await db.configs.findMany({
     where: {
       config_key: {
-        in: [
-          'accesskey_id',
-          'accesskey_secret',
-          'region',
-          'endpoint',
-          'bucket',
-          'storage_folder',
-          'force_path_style',
-          's3_cdn',
-          's3_cdn_url'
-        ]
+        in: keys
       }
     },
     select: {
@@ -25,59 +15,11 @@ export async function fetchS3Info() {
       config_value: true,
       detail: true
     }
-  })
-
-  return findConfig;
-}
-
-export async function fetchR2Info() {
-  const findConfig = await db.configs.findMany({
-    where: {
-      config_key: {
-        in: [
-          'r2_accesskey_id',
-          'r2_accesskey_secret',
-          'r2_endpoint',
-          'r2_bucket',
-          'r2_storage_folder',
-          'r2_public_domain'
-        ]
-      }
-    },
-    select: {
-      id: true,
-      config_key: true,
-      config_value: true,
-      detail: true
-    }
-  })
-
-  return findConfig;
-}
-
-export async function fetchAListInfo() {
-  const findConfig = await db.configs.findMany({
-    where: {
-      config_key: {
-        in: [
-          'alist_url',
-          'alist_token'
-        ]
-      }
-    },
-    select: {
-      id: true,
-      config_key: true,
-      config_value: true,
-      detail: true
-    }
-  })
-
-  return findConfig;
+  });
 }
 
 export async function fetchAlbumsList() {
-  const findAll = await db.albums.findMany({
+  return await db.albums.findMany({
     where: {
       del: 0
     },
@@ -92,30 +34,7 @@ export async function fetchAlbumsList() {
         updatedAt: 'desc'
       }
     ]
-  })
-
-  return findAll;
-}
-
-export async function fetchAlbumsListAndNotDefault() {
-  const findAll = await db.albums.findMany({
-    where: {
-      del: 0
-    },
-    orderBy: [
-      {
-        sort: 'desc',
-      },
-      {
-        createdAt: 'desc',
-      },
-      {
-        updatedAt: 'desc'
-      }
-    ]
-  })
-
-  return findAll;
+  });
 }
 
 export async function fetchServerImagesListByAlbum(pageNum: number, album: string) {
@@ -126,25 +45,23 @@ export async function fetchServerImagesListByAlbum(pageNum: number, album: strin
     pageNum = 1
   }
   if (album && album !== '') {
-    const findAll = await db.$queryRaw`
+    return await db.$queryRaw`
       SELECT 
           image.*,
           albums.name AS album_name,
           albums.id AS album_value,
-          (
-              SELECT json_agg(row_to_json(t))
-              FROM (
-                  SELECT copyright.id
-                  FROM "public"."copyrights" AS copyright
-                      INNER JOIN "public"."images_copyright_relation" AS icrelation
-                          ON copyright.id = icrelation."copyrightId"
-                      INNER JOIN "public"."images" AS image_child
-                          ON icrelation."imageId" = image_child."id"
-                  WHERE copyright.del = 0
-                      AND image_child.del = 0
-                      AND image.id = image_child.id
-              ) t
-          ) AS copyrights
+          COALESCE((
+              SELECT json_agg(copyright.id)
+              FROM "public"."copyrights" AS copyright
+              INNER JOIN "public"."images_copyright_relation" AS icrelation
+                  ON copyright.id = icrelation."copyrightId"
+              INNER JOIN "public"."images" AS image_child
+                  ON icrelation."imageId" = image_child."id"
+              WHERE copyright.del = 0
+              AND image_child.del = 0
+              AND image.id = image_child.id
+          ),
+          '[]'::json) AS copyrights
       FROM 
           "public"."images" AS image
       INNER JOIN "public"."images_albums_relation" AS relation
@@ -159,29 +76,25 @@ export async function fetchServerImagesListByAlbum(pageNum: number, album: strin
           albums.album_value = ${album}
       ORDER BY image.sort DESC, image.created_at DESC, image.updated_at DESC
       LIMIT 8 OFFSET ${(pageNum - 1) * 8}
-    `
-
-    return findAll;
+    `;
   }
-  const findAll = await db.$queryRaw`
+  return await db.$queryRaw`
     SELECT 
         image.*,
         albums.name AS album_name,
         albums.id AS album_value,
-        (
-            SELECT json_agg(row_to_json(t))
-            FROM (
-                SELECT copyright.id
-                FROM "public"."copyrights" AS copyright
-                INNER JOIN "public"."images_copyright_relation" AS icrelation
-                    ON copyright.id = icrelation."copyrightId"
-                INNER JOIN "public"."images" AS image_child
-                    ON icrelation."imageId" = image_child."id"
+        COALESCE((
+            SELECT json_agg(copyright.id)  -- 直接聚合 copyright.id，而不是整行
+            FROM "public"."copyrights" AS copyright
+            INNER JOIN "public"."images_copyright_relation" AS icrelation
+                ON copyright.id = icrelation."copyrightId"
+            INNER JOIN "public"."images" AS image_child
+                ON icrelation."imageId" = image_child."id"
             WHERE copyright.del = 0
             AND image_child.del = 0
             AND image.id = image_child.id
-            ) t
-        ) AS copyrights
+        ),
+        '[]'::json) AS copyrights
     FROM 
         "public"."images" AS image
     LEFT JOIN "public"."images_albums_relation" AS relation
@@ -192,9 +105,7 @@ export async function fetchServerImagesListByAlbum(pageNum: number, album: strin
         image.del = 0
     ORDER BY image.sort DESC, image.created_at DESC, image.updated_at DESC 
     LIMIT 8 OFFSET ${(pageNum - 1) * 8}
-  `
-
-  return findAll;
+  `;
 }
 
 export async function fetchServerImagesPageTotalByAlbum(album: string) {
@@ -248,7 +159,7 @@ export async function fetchClientImagesListByAlbum(pageNum: number, album: strin
   if (pageNum < 1) {
     pageNum = 1
   }
-  const findAll = await db.$queryRaw`
+  return await db.$queryRaw`
     SELECT 
         image.*,
         albums.name AS album_name,
@@ -293,9 +204,7 @@ export async function fetchClientImagesListByAlbum(pageNum: number, album: strin
         albums.album_value = ${album}
     ORDER BY image.sort DESC, image.created_at DESC, image.updated_at DESC
     LIMIT 16 OFFSET ${(pageNum - 1) * 16}
-  `
-
-  return findAll;
+  `;
 }
 
 export async function fetchClientImagesPageTotalByAlbum(album: string) {
@@ -330,7 +239,7 @@ export async function fetchClientImagesListByTag(pageNum: number, tag: string) {
   if (pageNum < 1) {
     pageNum = 1
   }
-  const findAll = await db.$queryRaw`
+  return await db.$queryRaw`
     SELECT 
         image.*,
         albums.name AS album_name,
@@ -368,8 +277,7 @@ export async function fetchClientImagesListByTag(pageNum: number, tag: string) {
         image.labels::jsonb @> ${JSON.stringify([tag])}::jsonb
     ORDER BY image.sort DESC, image.created_at DESC, image.updated_at DESC
     LIMIT 16 OFFSET ${(pageNum - 1) * 16}
-  `
-  return findAll;
+  `;
 }
 
 export async function fetchClientImagesPageTotalByTag(tag: string) {
@@ -401,7 +309,7 @@ export async function fetchClientImagesPageTotalByTag(tag: string) {
 }
 
 export async function fetchAlbumsShow() {
-  const findAll = await db.albums.findMany({
+  return await db.albums.findMany({
     where: {
       del: 0,
       show: 0
@@ -411,36 +319,17 @@ export async function fetchAlbumsShow() {
         sort: 'desc'
       }
     ]
-  })
-
-  return findAll;
+  });
 }
 
 export async function fetchImagesAnalysis() {
-  const total = await db.images.count({
-    where: {
-      del: 0
-    },
-  });
-
-  const showTotal = await db.images.count({
-    where: {
-      del: 0,
-      show: 0
-    },
-  })
-
-  const crTotal = await db.copyright.count({
-    where: {
-      del: 0
-    }
-  })
-
-  const tagsTotal = await db.albums.count({
-    where: {
-      del: 0
-    },
-  })
+  const counts = await db.$queryRaw<[{ images_total: number, images_show: number, cr_total: number, tags_total: number }]>`
+    SELECT 
+      (SELECT COUNT(*) FROM "public"."images" WHERE del = 0) as images_total,
+      (SELECT COUNT(*) FROM "public"."images" WHERE del = 0 AND show = 0) as images_show,
+      (SELECT COUNT(*) FROM "public"."copyrights" WHERE del = 0) as cr_total,
+      (SELECT COUNT(*) FROM "public"."albums" WHERE del = 0) as tags_total
+  `;
 
   const result = await db.$queryRaw`
     SELECT
@@ -468,25 +357,24 @@ export async function fetchImagesAnalysis() {
   result.show_total = Number(result.show_total)
 
   return {
-    total,
-    showTotal,
-    crTotal,
-    tagsTotal,
+    total: Number(counts[0].images_total),
+    showTotal: Number(counts[0].images_show),
+    crTotal: Number(counts[0].cr_total),
+    tagsTotal: Number(counts[0].tags_total),
     result
   }
 }
 
 export async function fetchUserById(userId: string) {
-  const findUser = await db.user.findUnique({
+  return await db.user.findUnique({
     where: {
       id: userId
     }
   })
-  return findUser
 }
 
 export async function fetchSecretKey() {
-  const find = await db.configs.findFirst({
+  return await db.configs.findFirst({
     where: {
       config_key: 'secret_key'
     },
@@ -496,29 +384,10 @@ export async function fetchSecretKey() {
       config_value: true
     }
   })
-
-  return find
-}
-
-export async function fetchCustomInfo() {
-  const find = await db.configs.findMany({
-    where: {
-      config_key: {
-        in: ['custom_title', 'custom_favicon_url', 'custom_author', 'rss_feed_id', 'rss_user_id']
-      }
-    },
-    select: {
-      id: true,
-      config_key: true,
-      config_value: true
-    }
-  })
-
-  return find
 }
 
 export async function fetchCopyrightList() {
-  const findAll = await db.copyright.findMany({
+  return await db.copyright.findMany({
     where: {
       del: 0,
     },
@@ -530,13 +399,11 @@ export async function fetchCopyrightList() {
         updatedAt: 'desc'
       }
     ]
-  })
-
-  return findAll;
+  });
 }
 
 export async function fetchImageByIdAndAuth(id: string) {
-  const findAll = await db.$queryRaw`
+  return await db.$queryRaw`
     SELECT
         "images".*
     FROM
@@ -555,13 +422,11 @@ export async function fetchImageByIdAndAuth(id: string) {
         "albums".show = 0
     AND
         "images".id = ${id}
-  `
-
-  return findAll;
+  `;
 }
 
 export async function queryAuthStatus() {
-  const find = await db.configs.findFirst({
+  return await db.configs.findFirst({
     where: {
       config_key: 'auth_enable'
     },
@@ -570,13 +435,11 @@ export async function queryAuthStatus() {
       config_key: true,
       config_value: true
     }
-  })
-
-  return find;
+  });
 }
 
 export async function queryAuthTemplateSecret() {
-  const find = await db.configs.findFirst({
+  return await db.configs.findFirst({
     where: {
       config_key: 'auth_temp_secret'
     },
@@ -585,13 +448,11 @@ export async function queryAuthTemplateSecret() {
       config_key: true,
       config_value: true
     }
-  })
-
-  return find;
+  });
 }
 
 export async function queryAuthSecret() {
-  const find = await db.configs.findFirst({
+  return await db.configs.findFirst({
     where: {
       config_key: 'auth_secret'
     },
@@ -600,14 +461,12 @@ export async function queryAuthSecret() {
       config_key: true,
       config_value: true
     }
-  })
-
-  return find;
+  });
 }
 
 export async function getRSSImages() {
   // 每个相册取最新 10 张照片
-  const find = await db.$queryRaw`
+  return await db.$queryRaw`
     WITH RankedImages AS (
     SELECT
       i.*,
@@ -626,7 +485,5 @@ export async function getRSSImages() {
     SELECT *
     FROM RankedImages
     WHERE rn <= 10;
-  `
-
-  return find;
+  `;
 }

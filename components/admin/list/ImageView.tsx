@@ -4,20 +4,18 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle } from '~/components/ui/sh
 import { useButtonStore } from '~/app/providers/button-store-Providers'
 import { DataProps, ImageType } from '~/types'
 import React from 'react'
-import { Select } from 'antd'
 import { fetcher } from '~/lib/utils/fetcher'
 import useSWR from 'swr'
 import ExifView from '~/components/ExifView'
 import { Switch } from '~/components/ui/switch'
 import LivePhoto from '~/components/LivePhoto.tsx'
+import MultipleSelector from '~/components/ui/origin/multiselect.tsx'
 
 export default function ImageView() {
   const { imageView, imageViewData, setImageView, setImageViewData } = useButtonStore(
     (state) => state,
   )
   const { data } = useSWR('/api/v1/copyrights/get', fetcher)
-
-  const fieldNames = { label: 'name', value: 'id' }
 
   const props: DataProps = {
     data: imageViewData,
@@ -141,14 +139,22 @@ export default function ImageView() {
               className="mt-1 w-full border-none p-0 focus:border-transparent focus:outline-none focus:ring-0 sm:text-sm"
             />
           </label>
-          <Select
-            className="!block"
-            mode="multiple"
-            placeholder="暂未选择版权信息"
-            disabled
-            defaultValue={imageViewData?.copyrights}
-            fieldNames={fieldNames}
+          <MultipleSelector
+            commandProps={{
+              label: "选择版权信息",
+            }}
             options={data}
+            disabled
+            hidePlaceholderWhenSelected
+            value={!imageViewData.copyrights ? [] : imageViewData.copyrights.map((item: any) => {
+              const found = data?.find((element: any) => element.value === item)
+              return {
+                label: found?.label || '',
+                value: item
+              }
+            })}
+            placeholder="选择版权信息"
+            emptyIndicator={<p className="text-center text-sm">暂未选择版权信息</p>}
           />
           <div className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
             <div className="flex flex-col gap-1">

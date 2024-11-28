@@ -22,6 +22,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '~/components/ui/dialog'
+import { Label } from '~/components/ui/label.tsx'
 
 export default function ImageBatchDeleteSheet(props : Readonly<ImageServerHandleProps & { dataProps: DataProps } & { pageNum: number } & { album: string }>) {
   const { dataProps, pageNum, album, ...restProps } = props
@@ -29,7 +30,6 @@ export default function ImageBatchDeleteSheet(props : Readonly<ImageServerHandle
   const { imageBatchDelete, setImageBatchDelete } = useButtonStore(
     (state) => state,
   )
-  const [isOpen, setIsOpen] = useState(false)
   const [loading, setLoading] = useState(false)
   const [data, setData] = useState([] as any[])
 
@@ -55,7 +55,6 @@ export default function ImageBatchDeleteSheet(props : Readonly<ImageServerHandle
       toast.error('删除失败！')
     } finally {
       setLoading(false)
-      setIsOpen(false)
     }
   }
 
@@ -78,8 +77,11 @@ export default function ImageBatchDeleteSheet(props : Readonly<ImageServerHandle
         <div className="space-y-2">
           {
             dataProps.data && dataProps.data.map((item: ImageType) => (
-              <div key={item.id} className="flex flex-row items-center justify-start space-x-3 space-y-0 rounded-md border p-4 shadow">
+              <div
+                key={item.id}
+                className="relative flex w-full items-start gap-2 rounded-lg border border-input p-4 shadow-sm shadow-black/5 has-[[data-state=checked]]:border-ring">
                 <Checkbox
+                  className="order-1 after:absolute after:inset-0"
                   checked={data?.includes(item.id)}
                   onCheckedChange={(checked) => {
                     return checked
@@ -91,16 +93,18 @@ export default function ImageBatchDeleteSheet(props : Readonly<ImageServerHandle
                       )
                   }}
                 />
-                <Avatar>
-                  <AvatarImage src={item.preview_url || item.preview_url} alt="avatar"/>
-                  <AvatarFallback>CN</AvatarFallback>
-                </Avatar>
-                <div className="space-y-1 leading-none">
-                  <div>
-                    {item.id.substring(0, 16) + '...'}
-                  </div>
-                  <div>
-                    {item.title ? item.title.length > 16 ? item.title.substring(0, 16) + '...' : item.title : 'N&A'}
+                <div className="flex grow items-center gap-3">
+                  <Avatar>
+                    <AvatarImage src={item.preview_url || item.preview_url} alt="avatar"/>
+                    <AvatarFallback>CN</AvatarFallback>
+                  </Avatar>
+                  <div className="grid gap-2">
+                    <Label htmlFor="checkbox-15">
+                      {item.id.substring(0, 16) + '...'}
+                    </Label>
+                    <p id="checkbox-15-description" className="text-xs text-muted-foreground">
+                      {item.title ? item.title.length > 16 ? item.title.substring(0, 20) + '...' : item.title : 'N&A'}
+                    </p>
                   </div>
                 </div>
               </div>
@@ -109,14 +113,7 @@ export default function ImageBatchDeleteSheet(props : Readonly<ImageServerHandle
           <Dialog>
             <DialogTrigger asChild>
               <Button
-                onClick={() => {
-                  if (data.length === 0) {
-                    toast.warning('请选择要删除的图片')
-                    return
-                  } else {
-                    setIsOpen(true)
-                  }
-                }}
+                disabled={data.length === 0}
                 aria-label="更新"
               >
                 删除

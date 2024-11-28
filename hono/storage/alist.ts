@@ -1,17 +1,23 @@
 import 'server-only'
-import { fetchAListInfo } from '~/server/db/query'
+import { fetchConfigsByKeys } from '~/server/db/query'
 
 import { Hono } from 'hono'
 
 const app = new Hono()
 
 app.get('/info', async (c) => {
-  const data = await fetchAListInfo();
+  const data = await fetchConfigsByKeys([
+    'alist_url',
+    'alist_token'
+  ]);
   return c.json(data)
 })
 
 app.get('/storages', async (c) => {
-  const findConfig = await fetchAListInfo()
+  const findConfig = await fetchConfigsByKeys([
+    'alist_url',
+    'alist_token'
+  ])
   const alistToken = findConfig.find((item: any) => item.config_key === 'alist_token')?.config_value || '';
   const alistUrl = findConfig.find((item: any) => item.config_key === 'alist_url')?.config_value || '';
 

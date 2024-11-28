@@ -1,5 +1,5 @@
 import 'server-only'
-import { fetchCustomInfo, fetchR2Info, fetchS3Info, fetchSecretKey, fetchUserById } from '~/server/db/query'
+import { fetchConfigsByKeys, fetchSecretKey, fetchUserById } from '~/server/db/query'
 import { Config } from '~/types'
 import { updateAListConfig, updateCustomInfo, updatePassword, updateR2Config, updateS3Config } from '~/server/db/operate'
 import { auth } from '~/server/auth'
@@ -9,17 +9,40 @@ import { Hono } from 'hono'
 const app = new Hono()
 
 app.get('/get-custom-info', async (c) => {
-  const data = await fetchCustomInfo();
+  const data = await fetchConfigsByKeys([
+    'custom_title',
+    'custom_favicon_url',
+    'custom_author',
+    'rss_feed_id',
+    'rss_user_id'
+  ]);
   return c.json(data)
 })
 
 app.get('/r2-info', async (c) => {
-  const data = await fetchR2Info();
+  const data = await fetchConfigsByKeys([
+    'r2_accesskey_id',
+    'r2_accesskey_secret',
+    'r2_endpoint',
+    'r2_bucket',
+    'r2_storage_folder',
+    'r2_public_domain'
+  ]);
   return c.json(data)
 })
 
 app.get('/s3-info', async (c) => {
-  const data = await fetchS3Info();
+  const data = await fetchConfigsByKeys([
+    'accesskey_id',
+    'accesskey_secret',
+    'region',
+    'endpoint',
+    'bucket',
+    'storage_folder',
+    'force_path_style',
+    's3_cdn',
+    's3_cdn_url'
+  ]);
   return c.json(data)
 })
 
