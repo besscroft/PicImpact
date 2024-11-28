@@ -162,7 +162,6 @@ PicImpact 欢迎各种贡献，包括但不限于改进，新功能，文档和�
   - [Next.js](https://github.com/vercel/next.js)
   - [Hono.js](https://github.com/honojs/hono)
 - UI 框架：
-  - [Next UI](https://github.com/nextui-org/nextui)
   - [Radix](https://www.radix-ui.com/)
   - [shadcn/ui](https://ui.shadcn.com/)
 - 更多组件参见 package.json
