@@ -54,6 +54,7 @@ export default function MasonryItem() {
   const props: DataProps = {
     data: MasonryViewData,
   }
+  const tabsListRef = React.useRef<HTMLDivElement>(null);
 
   const loadingHandle = React.useCallback(async (handle: string) => {
     const idx = MasonryViewDataList.findIndex((item: ImageType) => MasonryViewData.id === item.id)
@@ -96,6 +97,10 @@ export default function MasonryItem() {
 
   React.useEffect(() => {
     const handleKey = (e: KeyboardEvent) => {
+      if (tabsListRef.current && tabsListRef.current.contains(e.target as Node)) {
+        return;
+      }
+
       if (MasonryView) {
         if (e.key === "ArrowLeft") {
           loadingHandle("prev");
@@ -171,7 +176,7 @@ export default function MasonryItem() {
                 </Button>
               </div>
             }
-            <Tabs defaultValue="detail" className="w-full" aria-label="图片预览选择项">
+            <Tabs defaultValue="detail" className="w-full" ref={tabsListRef} aria-label="图片预览选择项">
               <TabsList className="grid w-full grid-cols-3">
                 <TabsTrigger value="detail">
                   <div className="flex items-center space-x-2 select-none">
