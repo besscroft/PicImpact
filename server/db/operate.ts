@@ -14,6 +14,8 @@ export async function insertAlbums(album: AlbumType) {
       detail: album.detail,
       sort: album.sort,
       show: album.show,
+      allow_download: album.allow_download,
+      license: album.license,
       del: 0
     }
   })
@@ -54,6 +56,8 @@ export async function updateAlbum(album: AlbumType) {
         detail: album.detail,
         sort: album.sort,
         show: album.show,
+        allow_download: album.allow_download,
+        license: album.license,
         updatedAt: new Date(),
       }
     })

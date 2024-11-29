@@ -164,6 +164,8 @@ export async function fetchClientImagesListByAlbum(pageNum: number, album: strin
         image.*,
         albums.name AS album_name,
         albums.id AS album_value,
+        albums.allow_download AS album_allow_download,
+        albums.license AS album_license,
         (
             SELECT json_agg(row_to_json(t))
             FROM (
@@ -244,6 +246,8 @@ export async function fetchClientImagesListByTag(pageNum: number, tag: string) {
         image.*,
         albums.name AS album_name,
         albums.id AS album_value,
+        albums.allow_download AS album_allow_download,
+        albums.license AS album_license,
         (
             SELECT json_agg(row_to_json(t))
             FROM (
@@ -405,7 +409,9 @@ export async function fetchCopyrightList() {
 export async function fetchImageByIdAndAuth(id: string) {
   return await db.$queryRaw`
     SELECT
-        "images".*
+        "images".*,
+        "albums".allow_download AS album_allow_download,
+        "albums".license AS album_license
     FROM
         "images"
     INNER JOIN "images_albums_relation"
