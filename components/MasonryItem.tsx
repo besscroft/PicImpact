@@ -207,7 +207,7 @@ export default function MasonryItem() {
                 <div className="flex flex-col space-y-2">
                   <div className="flex space-x-2">
                   {
-                    MasonryViewData.album_allow_download === 1 &&
+                    MasonryViewData.album_allow_download === 0 &&
                       <Button
                         onClick={async () => {
                           try {
@@ -248,7 +248,7 @@ export default function MasonryItem() {
                       分享
                     </Button>
                     {
-                      MasonryViewData.album_allow_download === 1 &&
+                      MasonryViewData.album_allow_download === 0 &&
                         <Button
                           onClick={() => downloadImg()}
                           disabled={download}

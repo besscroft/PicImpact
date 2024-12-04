@@ -154,9 +154,9 @@ export default function AlbumEditSheet(props : Readonly<HandleProps>) {
               </div>
             </div>
             <Switch
-              checked={album?.allow_download === 1}
+              checked={album?.allow_download === 0}
               onCheckedChange={(value) => {
-                setAlbumEditData({...album, allow_download: value ? 1 : 0})
+                setAlbumEditData({...album, allow_download: value ? 0 : 1})
               }}
             />
           </div>
