@@ -131,6 +131,35 @@ export default function AlbumEditSheet(props : Readonly<HandleProps>) {
               className="mt-1 w-full border-none p-0 focus:border-transparent focus:outline-none focus:ring-0 sm:text-sm"
             />
           </label>
+          <label
+            htmlFor="detail"
+            className="block overflow-hidden rounded-md border border-gray-200 px-3 py-2 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600"
+          >
+            <span className="text-xs font-medium text-gray-700"> 许可协议 </span>
+
+          <input
+              type="text"
+              id="detail"
+              value={album?.license}
+              placeholder="CC BY-NC-SA 4.0"
+              onChange={(e) => setAlbumEditData({...album, license: e.target.value})}
+              className="mt-1 w-full border-none p-0 focus:border-transparent focus:outline-none focus:ring-0 sm:text-sm"
+            />
+          </label>
+          <div className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
+            <div className="flex flex-col gap-1">
+              <div className="text-medium">允许下载</div>
+              <div className="text-tiny text-default-400">
+                是否显示下载/复制按钮。
+              </div>
+            </div>
+            <Switch
+              checked={album?.allow_download === 1}
+              onCheckedChange={(value) => {
+                setAlbumEditData({...album, allow_download: value ? 1 : 0})
+              }}
+            />
+          </div>
           <div className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
             <div className="flex flex-col gap-1">
               <div className="text-medium">显示状态</div>

@@ -12,6 +12,7 @@ import {
   Crosshair,
   Timer,
   CircleGauge,
+  CircleAlert,
   ExternalLink
 } from 'lucide-react'
 import * as React from 'react'
@@ -54,6 +55,7 @@ export default function MasonryItem() {
   const props: DataProps = {
     data: MasonryViewData,
   }
+  const tabsListRef = React.useRef<HTMLDivElement>(null);
 
   const loadingHandle = React.useCallback(async (handle: string) => {
     const idx = MasonryViewDataList.findIndex((item: ImageType) => MasonryViewData.id === item.id)
@@ -73,7 +75,12 @@ export default function MasonryItem() {
   async function downloadImg() {
     setDownload(true)
     try {
-      toast.warning('开始下载，原图较大，请耐心等待！', { duration: 1500 })
+      let msg = '开始下载，原图较大，请耐心等待！'
+      if (MasonryViewData.album_license != null) {
+        msg += '图片版权归作者所有, 分享转载需遵循 ' + MasonryViewData.album_license + ' 许可协议！'
+      }
+      
+      toast.warning(msg, { duration: 1500 })
       await fetch(`/api/open/get-image-blob?imageUrl=${MasonryViewData.url}`)
         .then((response) => response.blob())
         .then((blob) => {
@@ -96,6 +103,10 @@ export default function MasonryItem() {
 
   React.useEffect(() => {
     const handleKey = (e: KeyboardEvent) => {
+      if (tabsListRef.current && tabsListRef.current.contains(e.target as Node)) {
+        return;
+      }
+
       if (MasonryView) {
         if (e.key === "ArrowLeft") {
           loadingHandle("prev");
@@ -171,7 +182,7 @@ export default function MasonryItem() {
                 </Button>
               </div>
             }
-            <Tabs defaultValue="detail" className="w-full" aria-label="图片预览选择项">
+            <Tabs defaultValue="detail" className="w-full" ref={tabsListRef} aria-label="图片预览选择项">
               <TabsList className="grid w-full grid-cols-3">
                 <TabsTrigger value="detail">
                   <div className="flex items-center space-x-2 select-none">
@@ -195,23 +206,30 @@ export default function MasonryItem() {
               <TabsContent value="detail">
                 <div className="flex flex-col space-y-2">
                   <div className="flex space-x-2">
-                    <Button
-                      onClick={async () => {
-                        try {
-                          const url = MasonryViewData.url
-                          // @ts-ignore
-                          await navigator.clipboard.writeText(url);
-                          toast.success('复制图片链接成功！', {duration: 500})
-                        } catch (error) {
-                          toast.error('复制图片链接失败！', {duration: 500})
-                        }
-                      }}
-                      variant="outline"
-                      className="active:scale-95 duration-200 ease-in-out"
-                    >
-                      <CopyIcon />
-                      复制
-                    </Button>
+                  {
+                    MasonryViewData.album_allow_download === 1 &&
+                      <Button
+                        onClick={async () => {
+                          try {
+                            const url = MasonryViewData.url
+                            // @ts-ignore
+                            await navigator.clipboard.writeText(url);
+                            let msg = '复制图片链接成功！'
+                            if (MasonryViewData.album_license != null) {
+                              msg = '图片版权归作者所有, 分享转载需遵循 ' + MasonryViewData.album_license + ' 许可协议！'
+                            }
+                            toast.success(msg, {duration: 1500})
+                          } catch (error) {
+                            toast.error('复制图片链接失败！', {duration: 500})
+                          }
+                        }}
+                        variant="outline"
+                        className="active:scale-95 duration-200 ease-in-out"
+                      >
+                        <CopyIcon />
+                        复制
+                      </Button>
+                  }
                     <Button
                       onClick={async () => {
                         try {
@@ -229,16 +247,32 @@ export default function MasonryItem() {
                       <LinkIcon />
                       分享
                     </Button>
-                    <Button
-                      onClick={() => downloadImg()}
-                      disabled={download}
-                      variant="outline"
-                      className="active:scale-95 duration-200 ease-in-out"
-                    >
-                      {download ? <ReloadIcon className="mr-2 h-4 w-4 animate-spin"/> : <DownloadIcon />}
-                      下载
-                    </Button>
+                    {
+                      MasonryViewData.album_allow_download === 1 &&
+                        <Button
+                          onClick={() => downloadImg()}
+                          disabled={download}
+                          variant="outline"
+                          className="active:scale-95 duration-200 ease-in-out"
+                        >
+                          {download ? <ReloadIcon className="mr-2 h-4 w-4 animate-spin"/> : <DownloadIcon />}
+                          下载
+                        </Button>
+                    }
                   </div>
+                  {
+                    MasonryViewData.album_allow_download === 0 && (
+                      <Card className="py-4 show-up-motion">
+                      <div className="pb-0 pt-2 px-4 flex-col items-start">
+                        <div className="flex items-center space-x-1">
+                          <CircleAlert size={20}/>
+                          <p className="text-tiny uppercase font-bold select-none">转载提示</p>
+                        </div>
+                        <h4 className="font-bold text-large">本作品由作者版权所有，未经授权禁止转载、下载及使用。</h4>
+                      </div>
+                    </Card>
+                    )
+                  }
                   {MasonryViewData?.exif?.model && MasonryViewData?.exif?.f_number
                     && MasonryViewData?.exif?.exposure_time && MasonryViewData?.exif?.focal_length
                     && MasonryViewData?.exif?.iso_speed_rating && MasonryViewData?.exif?.make &&
