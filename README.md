@@ -32,15 +32,6 @@ PicImpact 是一个摄影师专用的摄影作品展示网站，基于 Next.js +
 - 基于 prisma 的自动初始化数据库和数据迁移，简化部署流程。
 - 支持 Vercel 部署、Node.js 部署、Docker 等容器化部署，当然 k8s 也支持。
 
-### TODO 
-
-- [ ] 单独的存储管理功能（不会影响现有功能，属于扩展）。
-- [x] RSS 支持，能够使用 Follow 订阅。
-- [ ] Web Analytics 支持。
-- [ ] OneDrive 支持。
-
-> 会抽空进行开发与维护，也欢迎 PR!
-
 ### 如何部署
 
 你可以点击下面的按钮来一键部署到 Vercel，**然后将 `Build Command` 设置为 `pnpm run build:vercel`**，也可以 Fork 项目后手动部署到任何支持的平台。
@@ -77,9 +68,23 @@ docker run -d --name picimpact \
 
 ### 存储配置
 
-暂时提供了 AWS S3 API、Cloudflare R2、AList API 支持，您在部署成功后，可以去 `设置` -> `存储` 进行管理。
+> 暂时提供了 AWS S3 API、Cloudflare R2、AList API 支持，您在部署成功后，可以去 `设置` -> `存储` 进行管理。
+> 
+> 原则上优先支持 Cloudflare R2 和 AWS S3 API。
 
 我比较推荐 Cloudflare R2，算是很良心的了，流量免费。
+
+- Cloudflare R2 配置
+
+| Key                 | 备注                                                                       |
+|---------------------|--------------------------------------------------------------------------|
+| r2_accesskey_id     | Cloudflare AccessKey_ID                                                  |
+| r2_accesskey_secret | Cloudflare AccessKey_Secret                                              |
+| r2_endpoint         | Cloudflare Endpoint 地域节点，如：`https://<ACCOUNT_ID>.r2.cloudflarestorage.com` |
+| r2_bucket           | Cloudflare Bucket 存储桶名称，如：`picimpact`                                      |
+| r2_storage_folder   | 存储文件夹(Cloudflare R2)，严格格式，如：`picimpact` 或 `picimpact/images` ，填 `/` 或者不填表示根路径  |
+| r2_public_domain    | Cloudflare R2 自定义域（公开访问）                                                 |
+
 
 - AWS S3 配置
 
@@ -94,17 +99,6 @@ docker run -d --name picimpact \
 | force_path_style   | 是否强制客户端对桶使用路径式寻址，默认 `false`，如您使用 minio 作为 s3 存储，需要设置为 `true`     |
 | s3_cdn   | 是否启用 S3 CDN 模式，路径将返回 cdn 地址，默认 false。                            |
 | s3_cdn_url   | cdn 地址，如：`https://cdn.example.com`                               |
-
-- Cloudflare R2 配置
-
-| Key                 | 备注                                                                       |
-|---------------------|--------------------------------------------------------------------------|
-| r2_accesskey_id     | Cloudflare AccessKey_ID                                                  |
-| r2_accesskey_secret | Cloudflare AccessKey_Secret                                              |
-| r2_endpoint         | Cloudflare Endpoint 地域节点，如：`https://<ACCOUNT_ID>.r2.cloudflarestorage.com` |
-| r2_bucket           | Cloudflare Bucket 存储桶名称，如：`picimpact`                                      |
-| r2_storage_folder   | 存储文件夹(Cloudflare R2)，严格格式，如：`picimpact` 或 `picimpact/images` ，填 `/` 或者不填表示根路径  |
-| r2_public_domain    | Cloudflare R2 自定义域（公开访问）                                                 |
 
 - AList API 配置
 
@@ -133,11 +127,11 @@ pnpm run dev
 
 PicImpact 欢迎各种贡献，包括但不限于改进，新功能，文档和代码改进，问题和错误报告。
 
-`v1` 分支目前仅维护和修复 bug。
+`v1` 目前停止维护。
 
 `v2` 分支开发下一个版本，同时接受 `PR`！
 
-> 有需求和建议都可以提，有空的话我会处理，但受限于 Next / SSR 的⌈局限性⌋，很多功能的设计上可能会有取舍。
+> 有需求和建议都可以提，有空的话我会处理，但受限于 Next / SSR 的⌈局限性⌋，以及照顾移动端使用体验，很多功能的设计上可能会有取舍。
 
 ### 隐私安全
 
