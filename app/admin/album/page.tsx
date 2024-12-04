@@ -1,6 +1,6 @@
 import { fetchAlbumsList } from '~/server/db/query'
 import AlbumList from '~/components/admin/album/AlbumList'
-import RefreshButton from '~/components/RefreshButton'
+import RefreshButton from '~/components/album/RefreshButton'
 import { HandleProps } from '~/types'
 import React from 'react'
 import AlbumAddSheet from '~/components/admin/album/AlbumAddSheet'

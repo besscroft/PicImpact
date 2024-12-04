@@ -6,10 +6,10 @@ import { DataProps, ImageType } from '~/types'
 import React from 'react'
 import { fetcher } from '~/lib/utils/fetcher'
 import useSWR from 'swr'
-import ExifView from '~/components/ExifView'
+import ExifView from '~/components/album/ExifView'
 import { Switch } from '~/components/ui/switch'
-import LivePhoto from '~/components/LivePhoto.tsx'
-import MultipleSelector from '~/components/ui/origin/multiselect.tsx'
+import LivePhoto from '~/components/album/LivePhoto'
+import MultipleSelector from '~/components/ui/origin/multiselect'
 
 export default function ImageView() {
   const { imageView, imageViewData, setImageView, setImageViewData } = useButtonStore(

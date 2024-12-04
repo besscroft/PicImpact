@@ -3,7 +3,7 @@ import { HandleProps } from '~/types'
 import React from 'react'
 import CopyrightList from '~/components/admin/copyright/CopyrightList'
 import CopyrightAddButton from '~/components/admin/copyright/CopyrightAddButton'
-import RefreshButton from '~/components/RefreshButton'
+import RefreshButton from '~/components/album/RefreshButton'
 import CopyrightAddSheet from '~/components/admin/copyright/CopyrightAddSheet'
 import CopyrightEditSheet from '~/components/admin/copyright/CopyrightEditSheet'
 

@@ -17,7 +17,7 @@ import {
 } from 'lucide-react'
 import * as React from 'react'
 import { useRouter } from 'next-nprogress-bar'
-import ExifView from '~/components/ExifView'
+import ExifView from '~/components/album/ExifView'
 import { toast } from 'sonner'
 import { usePathname } from 'next/navigation'
 import useSWR from 'swr'
@@ -40,7 +40,7 @@ import { DownloadIcon } from '~/components/icons/download'
 import { LinkIcon } from '~/components/icons/link'
 import { ArrowLeftIcon } from '~/components/icons/arrow-left'
 import { ArrowRightIcon } from '~/components/icons/arrow-right'
-import LivePhoto from '~/components/LivePhoto.tsx'
+import LivePhoto from '~/components/album/LivePhoto'
 
 dayjs.extend(customParseFormat)
 
@@ -207,7 +207,7 @@ export default function MasonryItem() {
                 <div className="flex flex-col space-y-2">
                   <div className="flex space-x-2">
                   {
-                    MasonryViewData.album_allow_download === 1 &&
+                    MasonryViewData.album_allow_download === 0 &&
                       <Button
                         onClick={async () => {
                           try {
@@ -248,7 +248,7 @@ export default function MasonryItem() {
                       分享
                     </Button>
                     {
-                      MasonryViewData.album_allow_download === 1 &&
+                      MasonryViewData.album_allow_download === 0 &&
                         <Button
                           onClick={() => downloadImg()}
                           disabled={download}
