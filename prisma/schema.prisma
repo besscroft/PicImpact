@@ -118,6 +118,8 @@ model Albums {
   detail               String?                @db.Text
   show                 Int                    @default(1) @db.SmallInt
   sort                 Int                    @default(0) @db.SmallInt
+  allow_download       Int                    @default(1) @db.SmallInt
+  license              String?                @db.Text
   createdAt            DateTime               @default(now()) @map("created_at") @db.Timestamp()
   updatedAt            DateTime?              @updatedAt @map("updated_at") @db.Timestamp()
   del                  Int                    @default(0) @db.SmallInt
