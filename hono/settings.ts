@@ -14,7 +14,10 @@ app.get('/get-custom-info', async (c) => {
     'custom_favicon_url',
     'custom_author',
     'rss_feed_id',
-    'rss_user_id'
+    'rss_user_id',
+    'preview_max_width_limit',
+    'preview_max_width_limit_switch',
+    'preview_quality',
   ]);
   return c.json(data)
 })
@@ -88,9 +91,18 @@ app.put('/update-s3-info', async (c) => {
 })
 
 app.put('/update-custom-info', async (c) => {
-  const query = await c.req.json()
+  const query = await c.req.json() satisfies {
+    title: string
+    customFaviconUrl: string
+    customAuthor: string
+    feedId: string
+    userId: string
+    enablePreviewImageMaxWidthLimit: boolean
+    previewImageMaxWidth: number
+    previewQuality: number
+  }
   try {
-    await updateCustomInfo(query.title, query.customFaviconUrl, query.customAuthor, query.feedId, query.userId);
+    await updateCustomInfo(query);
     return c.json({
       code: 200,
       message: '更新成功！'

@@ -6,6 +6,7 @@ import { fetcher } from '~/lib/utils/fetcher'
 import { toast } from 'sonner'
 import { ReloadIcon } from '@radix-ui/react-icons'
 import { Button } from '~/components/ui/button'
+import { Switch } from '~/components/ui/switch'
 
 export default function Preferences() {
   const [title, setTitle] = useState('')
@@ -14,10 +15,23 @@ export default function Preferences() {
   const [feedId, setFeedId] = useState('')
   const [userId, setUserId] = useState('')
   const [loading, setLoading] = useState(false)
+  const [previewImageMaxWidth, setPreviewImageMaxWidth] = useState('0')
+  const [enablePreviewImageMaxWidthLimit, setPreviewImageMaxWidthLimitEnabled] = useState(false)
+  const [previewQualityInput, setPreviewQualityInput] = useState('0.2')
 
-  const { data, isValidating, isLoading } = useSWR('/api/v1/settings/get-custom-info', fetcher)
+  const { data, isValidating, isLoading } = useSWR<{ config_key: string, config_value: string }[]>('/api/v1/settings/get-custom-info', fetcher)
 
   async function updateInfo() {
+    const maxWidth = parseInt(previewImageMaxWidth)
+    if (isNaN(maxWidth) || maxWidth < 0) {
+      toast.error('预览图最大宽度限制不能小于 0')
+      return
+    }
+    const previewQuality = parseFloat(previewQualityInput)
+    if (isNaN(previewQuality) || previewQuality <= 0 || previewQuality > 1) {
+      toast.error('预览图压缩质量只支持0-1，大于0')
+      return
+    }
     try {
       setLoading(true)
       await fetch('/api/v1/settings/update-custom-info', {
@@ -31,6 +45,9 @@ export default function Preferences() {
           customAuthor: customAuthor,
           feedId: feedId,
           userId: userId,
+          enablePreviewImageMaxWidthLimit,
+          previewImageMaxWidth: maxWidth,
+          previewQuality,
         }),
       }).then(res => res.json())
       toast.success('修改成功！')
@@ -42,11 +59,14 @@ export default function Preferences() {
   }
 
   useEffect(() => {
-    setTitle(data?.find((item: any) => item.config_key === 'custom_title')?.config_value || '')
-    setCustomFaviconUrl(data?.find((item: any) => item.config_key === 'custom_favicon_url')?.config_value || '')
-    setCustomAuthor(data?.find((item: any) => item.config_key === 'custom_author')?.config_value || '')
-    setFeedId(data?.find((item: any) => item.config_key === 'rss_feed_id')?.config_value || '')
-    setUserId(data?.find((item: any) => item.config_key === 'rss_user_id')?.config_value || '')
+    setTitle(data?.find((item) => item.config_key === 'custom_title')?.config_value || '')
+    setCustomFaviconUrl(data?.find((item) => item.config_key === 'custom_favicon_url')?.config_value || '')
+    setCustomAuthor(data?.find((item) => item.config_key === 'custom_author')?.config_value || '')
+    setFeedId(data?.find((item) => item.config_key === 'rss_feed_id')?.config_value || '')
+    setUserId(data?.find((item) => item.config_key === 'rss_user_id')?.config_value || '')
+    setPreviewImageMaxWidth(data?.find((item) => item.config_key === 'preview_max_width_limit')?.config_value?.toString() || '0')
+    setPreviewImageMaxWidthLimitEnabled(data?.find((item) => item.config_key === 'preview_max_width_limit_switch')?.config_value === '1')
+    setPreviewQualityInput(data?.find((item) => item.config_key === 'preview_quality')?.config_value || '0.2')
   }, [data])
 
   return (
@@ -131,6 +151,55 @@ export default function Preferences() {
           className="mt-1 w-full border-none p-0 focus:border-transparent focus:outline-none focus:ring-0 sm:text-sm"
         />
       </label>
+      <label
+        htmlFor="previewQuality"
+        className="w-full sm:w-64 block overflow-hidden rounded-md border border-gray-200 px-3 py-2 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600"
+      >
+        <span className="text-xs font-medium text-gray-700"> 预览图压缩质量(0-1，大于0) </span>
+
+        <input
+          type="text"
+          id="userId"
+          disabled={isValidating || isLoading}
+          value={previewQualityInput}
+          placeholder="请输入预览图压缩质量"
+          onChange={(e) => setPreviewQualityInput(e.target.value)}
+          className="mt-1 w-full border-none p-0 focus:border-transparent focus:outline-none focus:ring-0 sm:text-sm"
+        />
+      </label>
+      <div className="flex gap-4">
+      <label
+        htmlFor="enableMaxWidthLimit"
+        className="w-full sm:w-64 block overflow-hidden rounded-md border border-gray-200 px-3 py-2 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600"
+      >
+        <span className="text-xs font-medium text-gray-700"> 预览图最大尺寸限制开关 </span>
+        <div>
+        <Switch
+          id="enableMaxWidthLimit"
+          disabled={isValidating || isLoading}
+          checked={enablePreviewImageMaxWidthLimit}
+          onCheckedChange={checked => {
+            setPreviewImageMaxWidthLimitEnabled(checked)
+          }}
+        />
+        </div>
+      </label>
+      <label
+        htmlFor="maxWidth"
+        className="w-full sm:w-64 block overflow-hidden rounded-md border border-gray-200 px-3 py-2 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600"
+      >
+        <span className="text-xs font-medium text-gray-700"> 预览图最大宽度(正整数) </span>
+        <input
+          type="text"
+          id="maxWidth"
+          disabled={isValidating || isLoading}
+          value={previewImageMaxWidth}
+          placeholder="请输入预览图最大宽度限制，正整数"
+          onChange={(e) => setPreviewImageMaxWidth(e.target.value)}
+          className="mt-1 w-full border-none p-0 focus:border-transparent focus:outline-none focus:ring-0 sm:text-sm"
+        />
+      </label>
+      </div>
       <div className="flex w-full sm:w-64 items-center justify-center space-x-1">
         <Button
           variant="outline"

@@ -53,6 +53,11 @@ export default function FileUpload() {
   )
 
   const { data, isLoading } = useSWR('/api/v1/albums/get', fetcher)
+  const { data: configs } = useSWR<{ config_key: string, config_value: string }[]>('/api/v1/settings/get-custom-info', fetcher)
+
+  const previewImageMaxWidthLimitSwitchOn = configs?.find(config => config.config_key === 'preview_max_width_limit_switch')?.config_value === '1'
+  const previewImageMaxWidthLimit = parseInt(configs?.find(config => config.config_key === 'preview_max_width_limit')?.config_value || '0')
+  const previewCompressQuality = parseFloat(configs?.find(config => config.config_key === 'preview_quality')?.config_value || '0.2')
 
   async function loadExif(file: any, outputBuffer: any, flag: boolean) {
     try {
@@ -401,9 +406,10 @@ export default function FileUpload() {
 
   async function uploadPreviewImage(option: any, type: string, url: string, flag: boolean, outputBuffer: any) {
     new Compressor(flag ? outputBuffer : option.file, {
-      quality: 0.2,
+      quality: previewCompressQuality,
       checkOrientation: false,
       mimeType: 'image/webp',
+      maxWidth: previewImageMaxWidthLimitSwitchOn && previewImageMaxWidthLimit > 0 ? previewImageMaxWidthLimit : undefined,
       async success(compressedFile) {
         if (compressedFile instanceof File) {
           const res = await uploadFile(compressedFile, type)
@@ -484,9 +490,10 @@ export default function FileUpload() {
       outputBuffer.name = fileName + '.jpg'
       // @ts-ignore
       new Compressor(outputBuffer, {
-        quality: 0.2,
+        quality: previewCompressQuality,
         checkOrientation: false,
         mimeType: 'image/jpeg',
+        maxWidth: previewImageMaxWidthLimitSwitchOn && previewImageMaxWidthLimit > 0 ? previewImageMaxWidthLimit : undefined,
         async success(compressedFile) {
           if (compressedFile instanceof File) {
             await uploadFile(compressedFile, album).then(async (res) => {

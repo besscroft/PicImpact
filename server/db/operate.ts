@@ -374,7 +374,26 @@ export async function updateCopyrightShow(id: string, show: number) {
   })
 }
 
-export async function updateCustomInfo(title: string, customFaviconUrl: string, customAuthor: string, feedId: string, userId: string) {
+export async function updateCustomInfo(payload: {
+  title: string
+  customFaviconUrl: string
+  customAuthor: string
+  feedId: string
+  userId: string
+  enablePreviewImageMaxWidthLimit?: boolean
+  previewImageMaxWidth?: number
+  previewQuality?: number
+}) {
+  const {
+    title,
+    customFaviconUrl,
+    customAuthor,
+    feedId,
+    userId,
+    enablePreviewImageMaxWidthLimit,
+    previewImageMaxWidth,
+    previewQuality,
+  } = payload
   await db.$transaction(async (tx) => {
     await tx.configs.update({
       where: {
@@ -421,6 +440,39 @@ export async function updateCustomInfo(title: string, customFaviconUrl: string, 
         updatedAt: new Date()
       }
     })
+    if (typeof enablePreviewImageMaxWidthLimit === 'boolean') {
+      await tx.configs.update({
+        where: {
+          config_key: 'preview_max_width_limit_switch'
+        },
+        data: {
+          config_value: enablePreviewImageMaxWidthLimit ? '1' : '0',
+          updatedAt: new Date(),
+        }
+      })
+    }
+    if (typeof previewImageMaxWidth === 'number' && previewImageMaxWidth > 0) {
+      await tx.configs.update({
+        where: {
+          config_key: 'preview_max_width_limit'
+        },
+        data: {
+          config_value: previewImageMaxWidth.toString(),
+          updatedAt: new Date(),
+        }
+      })
+    }
+    if (typeof previewQuality === 'number' && previewQuality > 0) {
+      await tx.configs.update({
+        where: {
+          config_key: 'preview_quality'
+        },
+        data: {
+          config_value: previewQuality.toString(),
+          updatedAt: new Date(),
+        }
+      })
+    }
   })
 }
 
