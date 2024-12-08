@@ -43,6 +43,9 @@ export async function register() {
             { config_key: 'custom_author', config_value: '', detail: '网站归属者名称' },
             { config_key: 'rss_feed_id', config_value: '', detail: 'Follow feedId' },
             { config_key: 'rss_user_id', config_value: '', detail: 'Follow userId' },
+            { config_key: 'preview_max_width_limit', config_value: '0', detail: '预览图最大宽度限制' },
+            { config_key: 'preview_max_width_limit_switch', config_value: '0', detail: '预览图最大宽度限制开关' },
+            { config_key: 'preview_quality', config_value: '0.2', detail: '预览图压缩质量' },
           ],
           skipDuplicates: true,
         })
