@@ -1,0 +1,27 @@
+name: eslint
+
+on: [push, pull_request]
+
+jobs:
+  eslint:
+    name: Next Lint
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout PicImpact
+        uses: actions/checkout@v4
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "pnpm"
+
+      - name: Install dependencies
+        run: pnpm i --frozen-lockfile
+
+      - name: Run ESLint
+        run: pnpm run lint
