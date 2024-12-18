@@ -11,6 +11,9 @@ jobs:
       - name: Checkout PicImpact
         uses: actions/checkout@v4
 
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
