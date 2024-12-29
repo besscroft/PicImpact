@@ -27,6 +27,7 @@ export type ButtonState = {
   uploadHelp: boolean
   imageBatchDelete: boolean
   searchOpen: boolean
+  loginHelp: boolean
 }
 
 export type ButtonActions = {
@@ -54,6 +55,7 @@ export type ButtonActions = {
   setUploadHelp: (uploadHelp: boolean) => void
   setImageBatchDelete: (imageBatchDelete: boolean) => void
   setSearchOpen: (searchOpen: boolean) => void
+  setLoginHelp: (loginHelp: boolean) => void
 }
 
 export type ButtonStore = ButtonState & ButtonActions
@@ -84,6 +86,7 @@ export const initButtonStore = (): ButtonState => {
     uploadHelp: false,
     imageBatchDelete: false,
     searchOpen: false,
+    loginHelp: false,
   }
 }
 
@@ -112,6 +115,7 @@ export const defaultInitState: ButtonState = {
   uploadHelp: false,
   imageBatchDelete: false,
   searchOpen: false,
+  loginHelp: false,
 }
 
 export const createButtonStore = (
@@ -192,6 +196,9 @@ export const createButtonStore = (
         })),
         setSearchOpen: (searchOpenValue) => set(() => ({
           searchOpen: searchOpenValue,
+        })),
+        setLoginHelp: (loginHelpValue) => set(() => ({
+          loginHelp: loginHelpValue,
         })),
       }),
       {

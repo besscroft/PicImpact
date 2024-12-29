@@ -33,7 +33,7 @@ export default function Authenticator() {
   const [uri, setUri] = useState('')
   const [secret, setSecret] = useState('')
   const [deleteLoading, setDeleteLoading] = useState(false)
-  const { data, isValidating, isLoading, mutate } = useSWR('/api/open/get-auth-status', fetcher,
+  const { data, isValidating, mutate } = useSWR('/api/open/get-auth-status', fetcher,
     {
       revalidateOnFocus: false,
       revalidateIfStale: false,
