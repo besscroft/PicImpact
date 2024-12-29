@@ -23,6 +23,9 @@ import {
 } from '~/components/ui/table'
 
 export default function CardList(props: Readonly<DataProps>) {
+
+  console.log(props)
+
   return (
     <div className="flex flex-col space-y-2">
       <div className="w-full grid grid-cols-1 gap-4 lg:grid-cols-3 lg:gap-6">
@@ -33,10 +36,20 @@ export default function CardList(props: Readonly<DataProps>) {
             </CardHeader>
             <CardContent className="flex flex-col p2 space-y-4">
               <span className="font-light">照片数据</span>
-              <span className="text-xl font-semibold"><Counter targetValue={props.data?.total || 0}/>张</span>
+              <span className="text-xl font-semibold">
+                {props.data?.total && props.data?.total !== 0 ?
+                  <Counter targetValue={props.data?.total}/> : 0
+                }
+                张
+              </span>
               <span className="font-light">显示照片</span>
-              <span className="text-xl font-semibold"><Counter targetValue={props.data?.showTotal || 0}/>张</span>
-              <Progress value={props.data?.showTotal / props.data?.total * 100 || 0} className="w-full h-2"/>
+              <span className="text-xl font-semibold">
+                {props.data?.showTotal && props.data?.showTotal !== 0 ?
+                  <Counter targetValue={props.data?.showTotal}/> : 0
+                }
+                张
+              </span>
+              <Progress value={(props.data?.showTotal ?? 0) / (props.data?.total ?? 1) * 100} className="w-full h-2"/>
             </CardContent>
           </Card>
         </AnimatedBorderTrail>
@@ -47,9 +60,19 @@ export default function CardList(props: Readonly<DataProps>) {
             </CardHeader>
             <CardContent className="flex flex-col p2 space-y-4">
               <span className="font-light">相册数据</span>
-              <span className="text-xl font-semibold"><Counter targetValue={props.data?.tagsTotal || 0}/>个</span>
+              <span className="text-xl font-semibold">
+                {props.data?.tagsTotal && props.data?.tagsTotal !== 0 ?
+                  <Counter targetValue={props.data?.tagsTotal}/> : 0
+                }
+                个
+              </span>
               <span className="font-light">版权数据</span>
-              <span className="text-xl font-semibold"><Counter targetValue={props.data?.crTotal || 0}/>个</span>
+              <span className="text-xl font-semibold">
+                {props.data?.crTotal && props.data?.crTotal !== 0 ?
+                  <Counter targetValue={props.data?.crTotal}/> : 0
+                }
+                个
+              </span>
             </CardContent>
           </Card>
         </AnimatedBorderTrail>
