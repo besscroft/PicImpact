@@ -46,6 +46,7 @@ import {
 } from '~/components/ui/select'
 import { SquarePenIcon } from '~/components/icons/square-pen'
 import { DeleteIcon } from '~/components/icons/delete'
+import { useTranslations } from 'next-intl'
 
 export default function ListProps(props : Readonly<ImageServerHandleProps>) {
   const [pageNum, setPageNum] = useState(1)
@@ -61,6 +62,7 @@ export default function ListProps(props : Readonly<ImageServerHandleProps>) {
     (state) => state,
   )
   const { data: albums, isLoading: albumsLoading } = useSWR('/api/v1/albums/get', fetcher)
+  const t = useTranslations()
 
   const dataProps: DataProps = {
     data: data,
@@ -139,12 +141,12 @@ export default function ListProps(props : Readonly<ImageServerHandleProps>) {
             }}
           >
             <SelectTrigger>
-              <SelectValue placeholder="请选择相册" />
+              <SelectValue placeholder={t('List.selectAlbum')} />
             </SelectTrigger>
             <SelectContent>
               <SelectGroup>
-                <SelectLabel>相册</SelectLabel>
-                <SelectItem value="all">全部</SelectItem>
+                <SelectLabel>{t('Words.album')}</SelectLabel>
+                <SelectItem value="all">{t('Words.all')}</SelectItem>
                 {albums?.map((album: AlbumType) => (
                   <SelectItem key={album.album_value} value={album.album_value}>
                     {album.name}
@@ -158,7 +160,7 @@ export default function ListProps(props : Readonly<ImageServerHandleProps>) {
           <Button
             variant="outline"
             size="icon"
-            aria-label="帮助"
+            aria-label={t('Button.help')}
             onClick={() => setImageHelp(true)}
           >
             <CircleHelpIcon />
@@ -166,7 +168,7 @@ export default function ListProps(props : Readonly<ImageServerHandleProps>) {
           <Button
             variant="outline"
             size="icon"
-            aria-label="批量删除"
+            aria-label={t('Button.batchDelete')}
             onClick={() => setImageBatchDelete(true)}
           >
             <DeleteIcon />
@@ -179,10 +181,10 @@ export default function ListProps(props : Readonly<ImageServerHandleProps>) {
               await totalMutate()
               await mutate()
             }}
-            aria-label="刷新"
+            aria-label={t('Button.refresh')}
           >
             {isLoading && <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />}
-            刷新
+            {t('Button.refresh')}
           </Button>
         </div>
       </div>
@@ -196,8 +198,8 @@ export default function ListProps(props : Readonly<ImageServerHandleProps>) {
                 </PopoverTrigger>
                 <PopoverContent>
                   <div className="px-1 py-2 select-none">
-                    <div className="text-small font-bold">相册</div>
-                    <div className="text-tiny">图片在对应的相册上显示</div>
+                    <div className="text-small font-bold">{t('Words.album')}</div>
+                    <div className="text-tiny">{t('List.albumDisplay')}</div>
                   </div>
                 </PopoverContent>
               </Popover>
@@ -209,7 +211,7 @@ export default function ListProps(props : Readonly<ImageServerHandleProps>) {
                     setImageViewData(image)
                     setImageView(true)
                   }}
-                  aria-label="查看图片"
+                  aria-label={t('List.viewImage')}
                 >
                   <ScanSearch size={20} />
                 </Button>
@@ -235,8 +237,8 @@ export default function ListProps(props : Readonly<ImageServerHandleProps>) {
                   </PopoverTrigger>
                   <PopoverContent>
                     <div className="px-1 py-2 select-none">
-                      <div className="text-small font-bold">排序</div>
-                      <div className="text-tiny">规则为从高到低</div>
+                      <div className="text-small font-bold">{t('Words.sort')}</div>
+                      <div className="text-tiny">{t('List.rule')}</div>
                     </div>
                   </PopoverContent>
                 </Popover>
@@ -251,14 +253,14 @@ export default function ListProps(props : Readonly<ImageServerHandleProps>) {
                         setImage(image)
                         setImageAlbum(image.album_value)
                       }}
-                      aria-label="绑定相册"
+                      aria-label={t('List.bindAlbum')}
                     >
                       <Replace size={20} />
                     </Button>
                   </AlertDialogTrigger>
                   <AlertDialogContent>
                     <AlertDialogHeader>
-                      <AlertDialogTitle>相册绑定</AlertDialogTitle>
+                      <AlertDialogTitle>{t('List.bindAlbum')}</AlertDialogTitle>
                     </AlertDialogHeader>
                     <Select
                       defaultValue={imageAlbum}
@@ -270,11 +272,11 @@ export default function ListProps(props : Readonly<ImageServerHandleProps>) {
                       }}
                     >
                       <SelectTrigger>
-                        <SelectValue placeholder="请选择相册" />
+                        <SelectValue placeholder={t('List.selectAlbum')} />
                       </SelectTrigger>
                       <SelectContent>
                         <SelectGroup>
-                          <SelectLabel>相册</SelectLabel>
+                          <SelectLabel>{t('Words.album')}</SelectLabel>
                           {albums?.map((album: AlbumType) => (
                             <SelectItem key={album.id} value={album.id}>
                               {album.name}
@@ -287,14 +289,14 @@ export default function ListProps(props : Readonly<ImageServerHandleProps>) {
                       <AlertDialogCancel onClick={() => {
                         setImage({} as ImageType)
                         setImageAlbum('')
-                      }}>取消</AlertDialogCancel>
+                      }}>{t('Button.canal')}</AlertDialogCancel>
                       <AlertDialogAction
                         disabled={updateImageAlbumLoading}
                         onClick={() => updateImageAlbum()}
-                        aria-label="更新"
+                        aria-label={t('Button.update')}
                       >
                         {updateImageAlbumLoading && <ReloadIcon className="mr-2 h-4 w-4 animate-spin"/>}
-                        更新
+                        {t('Button.update')}
                       </AlertDialogAction>
                     </AlertDialogFooter>
                   </AlertDialogContent>
@@ -306,7 +308,7 @@ export default function ListProps(props : Readonly<ImageServerHandleProps>) {
                     setImageEditData(image)
                     setImageEdit(true)
                   }}
-                  aria-label="编辑图片"
+                  aria-label={t('List.editImage')}
                 >
                   <SquarePenIcon />
                 </Button>

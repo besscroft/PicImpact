@@ -1,0 +1,102 @@
+{
+  "Words": {
+    "album": "アルバム",
+    "storage": "ストレージ",
+    "all": "すべて",
+    "sort": "並べ替え"
+  },
+  "Login": {
+    "title": "歓迎ログイン",
+    "email": "メール",
+    "password": "パスワード",
+    "login": "ログイン",
+    "forget": "パスワードをお忘れですか？",
+    "otp": "二要素認証コード",
+    "goHome": "ホームに戻る",
+    "logout": "ログアウト"
+  },
+  "Link": {
+    "home": "ホーム",
+    "dashboard": "ダッシュボード",
+    "upload": "アップロード",
+    "list": "画像維持",
+    "album": "アルバム管理",
+    "copyright": "著作権管理",
+    "about": "について",
+    "settings": "設定",
+    "preferences": "優先設定",
+    "password": "パスワード変更",
+    "storages": "ストレージ設定",
+    "authenticator": "二要素認証"
+  },
+  "Tips": {
+    "noImg": "画像なし"
+  },
+  "Button": {
+    "login": "ログイン",
+    "language": "言語を切り替える",
+    "light": "⌈白夜⌋に切り替える",
+    "dark": "⌈常夜⌋に切り替える",
+    "issue": "フィードバック | 提案",
+    "submit": "提出",
+    "reset": "リセット",
+    "add": "追加",
+    "help": "ヘルプ",
+    "batchDelete": "批量削除",
+    "refresh": "更新",
+    "update": "更新",
+    "canal": "キャンセル"
+  },
+  "Dashboard": {
+    "picData": "写真データ",
+    "picShow": "写真を表示",
+    "bisData": "ビジネスデータ",
+    "albumData": "アルバムデータ",
+    "copyrightData": "著作権データ",
+    "how": "どう感じますか？",
+    "starTip": "プロジェクトが良いと思われる場合",
+    "issueTip": "バグのフィードバックや提案がある場合",
+    "count": "枚数/枚",
+    "show": "表示/枚",
+    "zhang": "枚",
+    "ge": "個"
+  },
+  "Upload": {
+    "simple": "単一ファイルアップロード",
+    "livephoto": "LivePhoto アップロード",
+    "multiple": "複数ファイルアップロード",
+    "manualUpload": "手動アップロード",
+    "uploadTips1": "クリックしてファイルをアップロードするか、ここにファイルをドラッグ＆ドロップしてください",
+    "uploadTips2": "Vercel などのプラットフォームの無料サブスクリプションでは、アップロードサイズが6Mに制限されています。",
+    "uploadTips3": "LivePhoto ビデオをアップロード",
+    "title": "画像タイトル",
+    "inputTitle": "画像タイトルを入力",
+    "url": "画像URL",
+    "previewUrl": "プレビュー画像URL",
+    "videoUrl": "LivePhoto ビデオURL",
+    "width": "画像幅 px",
+    "height": "画像高さ px",
+    "lon": "経度",
+    "lat": "緯度",
+    "inputLon": "経度を入力",
+    "inputLat": "緯度を入力",
+    "detail": "説明",
+    "inputDetail": "説明を入力してください",
+    "indexTag": "画像インデックスタグを入力してください。例：猫、特殊文字は入力しないでください。",
+    "selectUploadMode": "アップロード方法を選択してください。デフォルトは単一ファイルアップロードです。",
+    "selectStorage": "ストレージを選択してください",
+    "selectAlbum": "アルバムを選択してください",
+    "selectAlistDirectory": "Alist ディレクトリを選択してください",
+    "alistDirectory": "Alist ディレクトリ",
+    "alternativeUpload": "あまり推奨されませんが、この方法も提供されています。"
+  },
+  "List": {
+    "viewImage": "画像を表示",
+    "editImage": "画像を編集",
+    "albumDisplay": "画像は対応するアルバムに表示されます",
+    "selectAlbum": "アルバムを選択してください",
+    "bindAlbum": "アルバムをバインド",
+    "rule": "高い順から低い順",
+    "pleaseSelectAlbum": "アルバムを選択してください"
+  }
+}

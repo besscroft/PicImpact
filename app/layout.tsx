@@ -9,6 +9,9 @@ import { ButtonStoreProvider } from '~/app/providers/button-store-Providers'
 import '~/style/globals.css'
 import { fetchConfigsByKeys } from '~/server/db/query'
 
+import { NextIntlClientProvider } from 'next-intl'
+import { getLocale, getMessages } from 'next-intl/server'
+
 type Props = {
   params: { id: string }
   searchParams: { [key: string]: string | string[] | undefined }
@@ -30,25 +33,32 @@ export async function generateMetadata(
   }
 }
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+
+  const locale = await getLocale()
+
+  const messages = await getMessages()
+
   return (
-    <html lang="en" className="overflow-y-auto scrollbar-hide" suppressHydrationWarning>
-      <body>
-        <SessionProviders>
-          <ButtonStoreProvider>
-            <ThemeProvider>
-              <ToasterProviders />
-              <ProgressBarProviders>
-                {children}
-              </ProgressBarProviders>
-            </ThemeProvider>
-          </ButtonStoreProvider>
-        </SessionProviders>
-      </body>
+    <html className="overflow-y-auto scrollbar-hide" lang={locale} suppressHydrationWarning>
+    <body>
+    <SessionProviders>
+      <NextIntlClientProvider messages={messages}>
+        <ButtonStoreProvider>
+          <ThemeProvider>
+            <ToasterProviders/>
+            <ProgressBarProviders>
+              {children}
+            </ProgressBarProviders>
+          </ThemeProvider>
+        </ButtonStoreProvider>
+      </NextIntlClientProvider>
+    </SessionProviders>
+    </body>
     </html>
   );
 }

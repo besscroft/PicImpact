@@ -1,0 +1,102 @@
+{
+  "Words": {
+    "album": "相簿",
+    "storage": "儲存",
+    "all": "全部",
+    "sort": "排序"
+  },
+  "Login": {
+    "title": "歡迎登入",
+    "email": "電子郵件",
+    "password": "密碼", 
+    "login": "登入",
+    "forget": "忘記密碼了？",
+    "otp": "雙因素口令",
+    "goHome": "返回首頁",
+    "logout": "登出"
+  },
+  "Link": {
+    "home": "首頁",
+    "dashboard": "控制台",
+    "upload": "上傳",
+    "list": "圖片維護",
+    "album": "相簿管理",
+    "copyright": "版權管理",
+    "about": "關於",
+    "settings": "設定",
+    "preferences": "首選項",
+    "password": "密碼修改",
+    "storages": "儲存配置",
+    "authenticator": "雙因素驗證"
+  },
+  "Tips": {
+    "noImg": "暫無圖片"
+  },
+  "Button": {
+    "login": "登入",
+    "language": "切換語言",
+    "light": "切換至⌈白夜⌋",
+    "dark": "切換至⌈常夜⌋",
+    "issue": "反饋 | 建議",
+    "submit": "提交",
+    "reset": "重置",
+    "add": "新增",
+    "help": "幫助",
+    "batchDelete": "批量刪除",
+    "refresh": "刷新",
+    "update": "更新",
+    "canal": "取消"
+  },
+  "Dashboard": {
+    "picData": "照片數據",
+    "picShow": "顯示照片",
+    "bisData": "業務數據",
+    "albumData": "相簿數據",
+    "copyrightData": "版權數據",
+    "how": "感覺如何？",
+    "starTip": "如果您覺得專案不錯",
+    "issueTip": "如果您有 Bug 反饋和建議",
+    "count": "數量/張",
+    "show": "顯示/張",
+    "zhang": "張",
+    "ge": "個"
+  },
+  "Upload": {
+    "simple": "單檔案上傳",
+    "livephoto": "LivePhoto 上傳",
+    "multiple": "多檔案上傳",
+    "manualUpload": "手動上傳",
+    "uploadTips1": "點擊上傳檔案或拖拽檔案到這裡",
+    "uploadTips2": "Vercel 等平台 Free 訂閱限制上傳大小 6M。",
+    "uploadTips3": "上傳 LivePhoto 視頻",
+    "title": "圖片標題",
+    "inputTitle": "輸入圖片標題",
+    "url": "圖片地址",
+    "previewUrl": "預覽圖片地址",
+    "videoUrl": "LivePhoto 視頻地址",
+    "width": "圖片寬度 px",
+    "height": "圖片高度 px",
+    "lon": "經度",
+    "lat": "緯度",
+    "inputLon": "輸入經度",
+    "inputLat": "輸入緯度",
+    "detail": "描述",
+    "inputDetail": "請輸入描述",
+    "indexTag": "請輸入圖片索引標籤，如：貓貓，不要輸入特殊字符。",
+    "selectUploadMode": "請選擇上傳方式，默認單檔案上傳",
+    "selectStorage": "請選擇儲存",
+    "selectAlbum": "請選擇相簿",
+    "selectAlistDirectory": "請選擇 Alist 目錄",
+    "alistDirectory": "Alist 目錄",
+    "alternativeUpload": "雖然不太推薦，但還是提供了這麼個方式。"
+  },
+  "List": {
+    "viewImage": "查看圖片",
+    "editImage": "編輯圖片",
+    "albumDisplay": "圖片在對應的相簿上顯示",
+    "selectAlbum": "請選擇相簿",
+    "bindAlbum": "綁定相簿",
+    "rule": "從高到低",
+    "pleaseSelectAlbum": "請選擇相簿"
+  }
+}

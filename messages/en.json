@@ -1,0 +1,102 @@
+{
+  "Words": {
+    "album": "Album",
+    "storage": "Storage",
+    "all": "All",
+    "sort": "Sort"
+  },
+  "Login": {
+    "title": "Welcome Login",
+    "email": "Email",
+    "password": "Password",
+    "login": "Login", 
+    "forget": "Forgot password?",
+    "otp": "Two-factor Authentication Code",
+    "goHome": "Back to Home",
+    "logout": "Logout"
+  },
+  "Link": {
+    "home": "Home",
+    "dashboard": "Dashboard",
+    "upload": "Upload",
+    "list": "Image Maintenance",
+    "album": "Album Management",
+    "copyright": "Copyright Management",
+    "about": "About",
+    "settings": "Settings",
+    "preferences": "Preferences",
+    "password": "Password Modification",
+    "storages": "Storage Configuration",
+    "authenticator": "Two-factor Authentication"
+  },
+  "Tips": {
+    "noImg": "No Image"
+  },
+  "Button": {
+    "login": "Login",
+    "language": "Switch Language",
+    "light": "Switch to ⌈White Night⌋",
+    "dark": "Switch to ⌈Dark Night⌋", 
+    "issue": "Feedback | Suggestions",
+    "submit": "Submit",
+    "reset": "Reset",
+    "add": "Add",
+    "help": "Help",
+    "batchDelete": "Batch Delete",
+    "refresh": "Refresh",
+    "update": "Update",
+    "canal": "Cancel"
+  },
+  "Dashboard": {
+    "picData": "Photo Data",
+    "picShow": "Show Photos",
+    "bisData": "Business Data",
+    "albumData": "Album Data",
+    "copyrightData": "Copyright Data",
+    "how": "How do you feel?",
+    "starTip": "If you think this project is good",
+    "issueTip": "If you have bug feedback or suggestions",
+    "count": "Count/Photos",
+    "show": "Show/Photos",
+    "zhang": "Photos",
+    "ge": "Items"
+  },
+  "Upload": {
+    "simple": "Single File Upload",
+    "livephoto": "LivePhoto Upload", 
+    "multiple": "Multiple Files Upload",
+    "manualUpload": "Manual Upload",
+    "uploadTips1": "Click to upload file or drag file here",
+    "uploadTips2": "Vercel and other platforms Free subscription limit upload size to 6M.",
+    "uploadTips3": "Upload LivePhoto video",
+    "title": "Image Title",
+    "inputTitle": "Enter Image Title",
+    "url": "Image URL",
+    "previewUrl": "Preview Image URL",
+    "videoUrl": "LivePhoto Video URL",
+    "width": "Image Width px",
+    "height": "Image Height px",
+    "lon": "Longitude", 
+    "lat": "Latitude",
+    "inputLon": "Enter Longitude",
+    "inputLat": "Enter Latitude",
+    "detail": "Description",
+    "inputDetail": "Please enter description",
+    "indexTag": "Please enter image index tag, e.g., cat, do not enter special characters.",
+    "selectUploadMode": "Please select upload mode, default is single file upload",
+    "selectStorage": "Please select storage",
+    "selectAlbum": "Please select album",
+    "selectAlistDirectory": "Please select Alist directory",
+    "alistDirectory": "Alist directory",
+    "alternativeUpload": "Although not recommended, this method is still provided."
+  },
+  "List": {
+    "viewImage": "View Image",
+    "editImage": "Edit Image",
+    "albumDisplay": "Images will be displayed in the corresponding album",
+    "selectAlbum": "Please select an album",
+    "bindAlbum": "Bind Album",
+    "rule": "From high to low",
+    "pleaseSelectAlbum": "Please select an album"
+  }
+}
