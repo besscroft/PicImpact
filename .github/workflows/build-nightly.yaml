@@ -1,13 +1,12 @@
 name: Dev Docker Multi-arch Image CI & CD
 
 on:
-  push:
-    branches:
-      - v2
+  schedule:
+    - cron: "0 22 * * *" # Runs at 10 PM UTC every day
 
 jobs:
   build:
-    name: Running Compile Next Multi-arch Docker Dev Image
+    name: Running Compile Next Multi-arch Docker Nightly Image
     runs-on: ubuntu-latest
     steps:
       - name: Checkout PicImpact
@@ -25,7 +24,7 @@ jobs:
       - name: Set up Docker Buildx
         id: set_up_buildx
         uses: docker/setup-buildx-action@v3
-      - name: Build and push dev
+      - name: Build and push main
         id: docker_build
         uses: docker/build-push-action@v5
         with:
@@ -33,4 +32,4 @@ jobs:
           file: ./Dockerfile
           platforms: linux/amd64,linux/arm64
           push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/picimpact:dev
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/picimpact:nightly
