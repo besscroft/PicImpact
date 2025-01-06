@@ -124,6 +124,7 @@ model Albums {
   updatedAt            DateTime?              @updatedAt @map("updated_at") @db.Timestamp()
   del                  Int                    @default(0) @db.SmallInt
   imagesAlbumsRelation ImagesAlbumsRelation[]
+  image_sorting        Int                    @default(1) @db.SmallInt
 
   @@map("albums")
 }

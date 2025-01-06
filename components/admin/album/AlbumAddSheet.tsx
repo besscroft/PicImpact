@@ -9,6 +9,7 @@ import { useSWRHydrated } from '~/hooks/useSWRHydrated'
 import { ReloadIcon } from '@radix-ui/react-icons'
 import { Button } from '~/components/ui/button'
 import { Switch } from '~/components/ui/switch'
+import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from '~/components/ui/select'
 
 export default function AlbumAddSheet(props : Readonly<HandleProps>) {
   const { isLoading, mutate, error } = useSWRHydrated(props)
@@ -164,6 +165,30 @@ export default function AlbumAddSheet(props : Readonly<HandleProps>) {
                   setData({...data, show: value ? 0 : 1})
                 }}
               />
+            </div>
+            <div className="flex flex-col gap-1 rounded-lg border p-3 shadow-sm">
+              <div className="text-medium">相册内图片排序规则</div>
+              <Select
+                value={typeof data.image_sorting === 'number' ? data.image_sorting.toString() : '1'}
+                onValueChange={(value) => {
+                  setData({
+                    ...data,
+                    image_sorting: parseInt(value),
+                  })
+                }}
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="选择排序规则" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectGroup>
+                    <SelectItem value="1">上传时间从新到旧</SelectItem>
+                    <SelectItem value="2">拍摄时间从新到旧</SelectItem>
+                    <SelectItem value="3">上传时间从旧到新</SelectItem>
+                    <SelectItem value="4">拍摄时间从旧到新</SelectItem>
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
             </div>
             <Button
               disabled={loading}

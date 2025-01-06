@@ -16,7 +16,8 @@ export async function insertAlbums(album: AlbumType) {
       show: album.show,
       allow_download: album.allow_download,
       license: album.license,
-      del: 0
+      del: 0,
+      image_sorting: album.image_sorting,
     }
   })
 }
@@ -59,6 +60,7 @@ export async function updateAlbum(album: AlbumType) {
         allow_download: album.allow_download,
         license: album.license,
         updatedAt: new Date(),
+        image_sorting: album.image_sorting,
       }
     })
     await tx.imagesAlbumsRelation.updateMany({
@@ -149,7 +151,7 @@ export async function insertImage(image: ImageType) {
         type: image.type,
         show: 1,
         sort: image.sort,
-        del: 0
+        del: 0,
       }
     })
 
