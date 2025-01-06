@@ -1,5 +1,6 @@
 'use server'
 
+import { Prisma } from '@prisma/client';
 import { db } from '~/server/lib/db'
 
 export async function fetchConfigsByKeys(keys: string[]) {
@@ -155,17 +156,35 @@ export async function fetchServerImagesPageTotalByAlbum(album: string) {
   return Number(pageTotal[0].total) ?? 0
 }
 
+const ALBUM_IMAGE_SORTING_ORDER = [
+  null,
+  'image.created_at DESC, image.updated_at DESC',
+  'COALESCE(TO_TIMESTAMP(image.exif->>\'data_time\', \'YYYY:MM:DD HH24:MI:SS\'), \'1970-01-01 00:00:00\') DESC, image.created_at DESC, image.updated_at DESC',
+  'image.created_at ASC, image.updated_at ASC',
+  'COALESCE(TO_TIMESTAMP(image.exif->>\'data_time\', \'YYYY:MM:DD HH24:MI:SS\'), \'1970-01-01 00:00:00\') ASC, image.created_at ASC, image.updated_at ASC',
+]
+
 export async function fetchClientImagesListByAlbum(pageNum: number, album: string) {
   if (pageNum < 1) {
     pageNum = 1
   }
-  return await db.$queryRaw`
+  const albumData = await db.albums.findFirst({
+    where: {
+      album_value: album
+    }
+  })
+  let orderBy = Prisma.sql(['image.sort DESC, image.created_at DESC, image.updated_at DESC'])
+  if (albumData && albumData.image_sorting && ALBUM_IMAGE_SORTING_ORDER[albumData.image_sorting]) {
+    orderBy = Prisma.sql([`image.sort DESC, ${ALBUM_IMAGE_SORTING_ORDER[albumData.image_sorting]}`])
+  }
+  const data = await db.$queryRaw`
     SELECT 
         image.*,
         albums.name AS album_name,
         albums.id AS album_value,
         albums.allow_download AS album_allow_download,
         albums.license AS album_license,
+        albums.image_sorting AS album_image_sorting,
         (
             SELECT json_agg(row_to_json(t))
             FROM (
@@ -204,9 +223,10 @@ export async function fetchClientImagesListByAlbum(pageNum: number, album: strin
         albums.show = 0
     AND
         albums.album_value = ${album}
-    ORDER BY image.sort DESC, image.created_at DESC, image.updated_at DESC
+    ORDER BY ${orderBy}
     LIMIT 16 OFFSET ${(pageNum - 1) * 16}
   `;
+  return data;
 }
 
 export async function fetchClientImagesPageTotalByAlbum(album: string) {
