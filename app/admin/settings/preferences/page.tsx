@@ -7,6 +7,7 @@ import { toast } from 'sonner'
 import { ReloadIcon } from '@radix-ui/react-icons'
 import { Button } from '~/components/ui/button'
 import { Switch } from '~/components/ui/switch'
+import { useTranslations } from 'next-intl'
 
 export default function Preferences() {
   const [title, setTitle] = useState('')
@@ -18,6 +19,7 @@ export default function Preferences() {
   const [previewImageMaxWidth, setPreviewImageMaxWidth] = useState('0')
   const [enablePreviewImageMaxWidthLimit, setPreviewImageMaxWidthLimitEnabled] = useState(false)
   const [previewQualityInput, setPreviewQualityInput] = useState('0.2')
+  const t = useTranslations()
 
   const { data, isValidating, isLoading } = useSWR<{ config_key: string, config_value: string }[]>('/api/v1/settings/get-custom-info', fetcher)
 
@@ -75,14 +77,14 @@ export default function Preferences() {
         htmlFor="title"
         className="w-full sm:w-64 block overflow-hidden rounded-md border border-gray-200 px-3 py-2 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600"
       >
-        <span className="text-xs font-medium text-gray-700"> 网站标题 </span>
+        <span className="text-xs font-medium text-gray-700">{t('Preferences.webSiteTitle')}</span>
 
         <input
           type="text"
           id="title"
           disabled={isValidating || isLoading}
           value={title || ''}
-          placeholder="请输入网站标题。"
+          placeholder={t('Preferences.inputWebSiteTitle')}
           onChange={(e) => setTitle(e.target.value)}
           className="mt-1 w-full border-none p-0 focus:border-transparent focus:outline-none focus:ring-0 sm:text-sm"
         />
@@ -98,7 +100,7 @@ export default function Preferences() {
           id="customFaviconUrl"
           disabled={isValidating || isLoading}
           value={customFaviconUrl || ''}
-          placeholder="请输入 favicon 地址"
+          placeholder={t('Preferences.favicon')}
           onChange={(e) => setCustomFaviconUrl(e.target.value)}
           className="mt-1 w-full border-none p-0 focus:border-transparent focus:outline-none focus:ring-0 sm:text-sm"
         />
@@ -107,14 +109,14 @@ export default function Preferences() {
         htmlFor="customAuthor"
         className="w-full sm:w-64 block overflow-hidden rounded-md border border-gray-200 px-3 py-2 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600"
       >
-        <span className="text-xs font-medium text-gray-700"> 网站归属者名称 </span>
+        <span className="text-xs font-medium text-gray-700">{t('Preferences.webAuthor')}</span>
 
         <input
           type="text"
           id="customAuthor"
           disabled={isValidating || isLoading}
           value={customAuthor || ''}
-          placeholder="请输入网站归属者名称。"
+          placeholder={t('Preferences.inputWebAuthor')}
           onChange={(e) => setCustomAuthor(e.target.value)}
           className="mt-1 w-full border-none p-0 focus:border-transparent focus:outline-none focus:ring-0 sm:text-sm"
         />
@@ -130,7 +132,7 @@ export default function Preferences() {
           id="feedId"
           disabled={isValidating || isLoading}
           value={feedId || ''}
-          placeholder="请输入 RSS feedId"
+          placeholder={t('Preferences.inputFeedId')}
           onChange={(e) => setFeedId(e.target.value)}
           className="mt-1 w-full border-none p-0 focus:border-transparent focus:outline-none focus:ring-0 sm:text-sm"
         />
@@ -146,7 +148,7 @@ export default function Preferences() {
           id="userId"
           disabled={isValidating || isLoading}
           value={userId || ''}
-          placeholder="请输入 RSS userId"
+          placeholder={t('Preferences.inputUserId')}
           onChange={(e) => setUserId(e.target.value)}
           className="mt-1 w-full border-none p-0 focus:border-transparent focus:outline-none focus:ring-0 sm:text-sm"
         />
@@ -155,14 +157,14 @@ export default function Preferences() {
         htmlFor="previewQuality"
         className="w-full sm:w-64 block overflow-hidden rounded-md border border-gray-200 px-3 py-2 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600"
       >
-        <span className="text-xs font-medium text-gray-700"> 预览图压缩质量(0-1，大于0) </span>
+        <span className="text-xs font-medium text-gray-700">{t('Preferences.previewQuality')}</span>
 
         <input
           type="text"
-          id="userId"
+          id="previewQuality"
           disabled={isValidating || isLoading}
           value={previewQualityInput}
-          placeholder="请输入预览图压缩质量"
+          placeholder={t('Preferences.inputPreviewQuality')}
           onChange={(e) => setPreviewQualityInput(e.target.value)}
           className="mt-1 w-full border-none p-0 focus:border-transparent focus:outline-none focus:ring-0 sm:text-sm"
         />
@@ -172,7 +174,7 @@ export default function Preferences() {
         htmlFor="enableMaxWidthLimit"
         className="w-full sm:w-64 block overflow-hidden rounded-md border border-gray-200 px-3 py-2 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600"
       >
-        <span className="text-xs font-medium text-gray-700"> 预览图最大尺寸限制开关 </span>
+        <span className="text-xs font-medium text-gray-700">{t('Preferences.enableMaxWidthLimit')}</span>
         <div>
         <Switch
           id="enableMaxWidthLimit"
@@ -188,13 +190,13 @@ export default function Preferences() {
         htmlFor="maxWidth"
         className="w-full sm:w-64 block overflow-hidden rounded-md border border-gray-200 px-3 py-2 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600"
       >
-        <span className="text-xs font-medium text-gray-700"> 预览图最大宽度(正整数) </span>
+        <span className="text-xs font-medium text-gray-700">{t('Preferences.maxWidth')}</span>
         <input
           type="text"
           id="maxWidth"
           disabled={isValidating || isLoading}
           value={previewImageMaxWidth}
-          placeholder="请输入预览图最大宽度限制，正整数"
+          placeholder={t('Preferences.inputMaxWidth')}
           onChange={(e) => setPreviewImageMaxWidth(e.target.value)}
           className="mt-1 w-full border-none p-0 focus:border-transparent focus:outline-none focus:ring-0 sm:text-sm"
         />
@@ -205,10 +207,10 @@ export default function Preferences() {
           variant="outline"
           disabled={loading || isValidating}
           onClick={() => updateInfo()}
-          aria-label="提交"
+          aria-label={t("Button.submit")}
         >
           {loading && <ReloadIcon className="mr-2 h-4 w-4 animate-spin"/>}
-          提交
+          {t("Button.submit")}
         </Button>
       </div>
     </div>

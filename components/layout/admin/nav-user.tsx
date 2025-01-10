@@ -2,6 +2,7 @@
 
 import {
   ChevronsUpDown,
+  Languages,
   LogOut,
   MoonStar,
   SunMedium,
@@ -16,7 +17,11 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
+  DropdownMenuPortal,
   DropdownMenuSeparator,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from '~/components/ui/dropdown-menu'
 import {
@@ -29,11 +34,15 @@ import { useSession } from 'next-auth/react'
 import { loginOut } from '~/server/actions'
 import { useTheme } from 'next-themes'
 import * as React from 'react'
+import { setUserLocale } from '~/lib/utils/locale.ts'
+import { useTranslations } from 'next-intl'
 
 export function NavUser() {
   const { isMobile } = useSidebar()
   const { theme, setTheme } = useTheme()
-  const { data: session, status } = useSession()
+  const { data: session} = useSession()
+  const t = useTranslations()
+
   const iconClasses = 'text-xl text-default-500 pointer-events-none flex-shrink-0'
 
   return (
@@ -46,7 +55,7 @@ export function NavUser() {
               className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
             >
               <Avatar className="h-8 w-8 rounded-lg">
-                <AvatarImage src={session?.user?.image} alt={session?.user?.name} />
+                <AvatarImage src={session?.user?.image!} alt={session?.user?.name!} />
                 <AvatarFallback className="rounded-lg">CN</AvatarFallback>
               </Avatar>
               <div className="grid flex-1 text-left text-sm leading-tight">
@@ -65,7 +74,7 @@ export function NavUser() {
             <DropdownMenuLabel className="p-0 font-normal">
               <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                 <Avatar className="h-8 w-8 rounded-lg">
-                  <AvatarImage src={session?.user?.image} alt={session?.user?.name} />
+                  <AvatarImage src={session?.user?.image!} alt={session?.user?.name!} />
                   <AvatarFallback className="rounded-lg">CN</AvatarFallback>
                 </Avatar>
                 <div className="grid flex-1 text-left text-sm leading-tight">
@@ -79,6 +88,17 @@ export function NavUser() {
               {theme === 'light' ? <MoonStar size={20} className={iconClasses} /> : <SunMedium size={20} className={iconClasses} />}
               <span>{ theme === 'light' ? '切换至⌈常夜⌋' : '切换至⌈白夜⌋' }</span>
             </DropdownMenuItem>
+            <DropdownMenuSub>
+              <DropdownMenuSubTrigger><Languages size={20} className={iconClasses} />{t('Button.language')}</DropdownMenuSubTrigger>
+              <DropdownMenuPortal>
+                <DropdownMenuSubContent>
+                  <DropdownMenuItem className="cursor-pointer" onClick={() => setUserLocale('zh')}>简体中文</DropdownMenuItem>
+                  <DropdownMenuItem className="cursor-pointer" onClick={() => setUserLocale('zh-TW')}>繁體中文</DropdownMenuItem>
+                  <DropdownMenuItem className="cursor-pointer" onClick={() => setUserLocale('en')}>English</DropdownMenuItem>
+                  <DropdownMenuItem className="cursor-pointer" onClick={() => setUserLocale('ja')}>日本語</DropdownMenuItem>
+                </DropdownMenuSubContent>
+              </DropdownMenuPortal>
+            </DropdownMenuSub>
             <DropdownMenuItem className="cursor-pointer" onClick={async () => {
               try {
                 await loginOut()

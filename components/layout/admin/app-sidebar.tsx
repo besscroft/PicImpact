@@ -31,70 +31,73 @@ import {
   SidebarRail,
 } from '~/components/ui/sidebar'
 import { useRouter } from 'next-nprogress-bar'
-
-const data = {
-  navMain: [
-    {
-      title: "控制台",
-      url: "/admin",
-      icon: SquareTerminal,
-    },
-    {
-      title: "上传",
-      url: "/admin/upload",
-      icon: ImageUp,
-    },
-    {
-      title: "图片维护",
-      url: "/admin/list",
-      icon: Image,
-    },
-    {
-      title: "相册管理",
-      url: "/admin/album",
-      icon: Milestone,
-    },
-    {
-      title: "版权管理",
-      url: "/admin/copyright",
-      icon: Copyright,
-    },
-    {
-      title: "关于",
-      url: "/admin/about",
-      icon: Info,
-    },
-  ],
-  projects: {
-    title: '设置',
-    items: [
-      {
-        name: "首选项",
-        url: "/admin/settings/preferences",
-        icon: Frame,
-      },
-      {
-        name: "密码修改",
-        url: "/admin/settings/password",
-        icon: RectangleEllipsis ,
-      },
-      {
-        name: "存储配置",
-        url: "/admin/settings/storages",
-        icon: ServerCog,
-      },
-      {
-        name: "双因素验证",
-        url: "/admin/settings/authenticator",
-        icon: ShieldCheck,
-      },
-    ],
-  },
-}
+import { useTranslations } from 'next-intl'
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const router = useRouter()
+  const t = useTranslations()
+
   const iconClasses = 'text-xl text-default-500 pointer-events-none flex-shrink-0'
+
+  const data = {
+    navMain: [
+      {
+        title: t('Link.dashboard'),
+        url: "/admin",
+        icon: SquareTerminal,
+      },
+      {
+        title: t('Link.upload'),
+        url: "/admin/upload",
+        icon: ImageUp,
+      },
+      {
+        title: t('Link.list'),
+        url: "/admin/list",
+        icon: Image,
+      },
+      {
+        title: t('Link.album'),
+        url: "/admin/album",
+        icon: Milestone,
+      },
+      {
+        title: t('Link.copyright'),
+        url: "/admin/copyright",
+        icon: Copyright,
+      },
+      {
+        title: t('Link.about'),
+        url: "/admin/about",
+        icon: Info,
+      },
+    ],
+    projects: {
+      title: t('Link.settings'),
+      items: [
+        {
+          name: t('Link.preferences'),
+          url: "/admin/settings/preferences",
+          icon: Frame,
+        },
+        {
+          name: t('Link.password'),
+          url: "/admin/settings/password",
+          icon: RectangleEllipsis,
+        },
+        {
+          name: t('Link.storages'),
+          url: "/admin/settings/storages",
+          icon: ServerCog,
+        },
+        {
+          name: t('Link.authenticator'),
+          url: "/admin/settings/authenticator",
+          icon: ShieldCheck,
+        },
+      ],
+    },
+  }
 
   return (
     <Sidebar collapsible="icon" {...props}>
@@ -109,7 +112,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             <SidebarMenuItem>
               <SidebarMenuButton onClick={() => router.push('/')}>
                 <Earth size={20} className={iconClasses} />
-                <span>回到首页</span>
+                <span>{t('Login.goHome')}</span>
               </SidebarMenuButton>
             </SidebarMenuItem>
           </SidebarMenu>
