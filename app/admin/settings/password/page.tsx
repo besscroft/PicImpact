@@ -14,9 +14,11 @@ import {
 } from '~/components/ui/form'
 import { ReloadIcon } from '@radix-ui/react-icons'
 import { Button } from '~/components/ui/button'
+import { useTranslations } from 'next-intl'
 
 export default function PassWord() {
   const [loading, setLoading] = useState(false)
+  const t = useTranslations()
 
   const FormSchema = z.object({
     onePassword: z.string()
@@ -101,12 +103,12 @@ export default function PassWord() {
                   htmlFor="onePassword"
                   className="w-full sm:w-64 block overflow-hidden rounded-md border border-gray-200 px-3 py-2 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600"
                 >
-                  <span className="text-xs font-medium text-gray-700"> 旧密码 </span>
+                  <span className="text-xs font-medium text-gray-700">{t('Password.onePassword')}</span>
 
                   <input
                     type="password"
                     id="onePassword"
-                    placeholder="请输入旧密码。"
+                    placeholder={t('Password.inputOldPassword')}
                     {...field}
                     className="mt-1 w-full border-none p-0 focus:border-transparent focus:outline-none focus:ring-0 sm:text-sm"
                   />
@@ -126,12 +128,12 @@ export default function PassWord() {
                   htmlFor="twoPassword"
                   className="w-full sm:w-64 block overflow-hidden rounded-md border border-gray-200 px-3 py-2 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600"
                 >
-                  <span className="text-xs font-medium text-gray-700"> 新密码 </span>
+                  <span className="text-xs font-medium text-gray-700">{t('Password.twoPassword')}</span>
 
                   <input
                     type="password"
                     id="twoPassword"
-                    placeholder="请输入新密码。"
+                    placeholder={t('Password.inputTwoPassword')}
                     {...field}
                     className="mt-1 w-full border-none p-0 focus:border-transparent focus:outline-none focus:ring-0 sm:text-sm"
                   />
@@ -151,12 +153,12 @@ export default function PassWord() {
                   htmlFor="threePassword"
                   className="w-full sm:w-64 block overflow-hidden rounded-md border border-gray-200 px-3 py-2 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600"
                 >
-                  <span className="text-xs font-medium text-gray-700"> 确认密码 </span>
+                  <span className="text-xs font-medium text-gray-700">{t('Password.threePassword')}</span>
 
                   <input
                     type="password"
                     id="threePassword"
-                    placeholder="请输入确认密码。"
+                    placeholder={t('Password.inputThreePassword')}
                     {...field}
                     className="mt-1 w-full border-none p-0 focus:border-transparent focus:outline-none focus:ring-0 sm:text-sm"
                   />
@@ -166,9 +168,15 @@ export default function PassWord() {
             </FormItem>
           )}
         />
-        <Button variant="outline" className="cursor-pointer" type="submit" disabled={loading}>
+        <Button
+          variant="outline"
+          className="cursor-pointer"
+          type="submit"
+          disabled={loading}
+          aria-label={t("Button.submit")}
+        >
           {loading && <ReloadIcon className="mr-2 h-4 w-4 animate-spin"/>}
-          提交
+          {t("Button.submit")}
         </Button>
       </form>
     </Form>

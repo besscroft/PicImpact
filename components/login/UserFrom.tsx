@@ -26,12 +26,14 @@ import { Input } from '~/components/ui/input'
 import { Label } from '~/components/ui/label'
 import { useButtonStore } from '~/app/providers/button-store-Providers.tsx'
 import LoginHelpSheet from '~/components/login/LoginHelpSheet.tsx'
+import { useTranslations } from 'next-intl'
 
 export const UserFrom = ({
   className,
   ...props
 }: React.ComponentPropsWithoutRef<"div">) => {
   const router = useRouter()
+  const t = useTranslations()
 
   const [isLoading, setIsLoading] = useState<boolean>(false)
 
@@ -63,13 +65,13 @@ export const UserFrom = ({
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card>
         <CardHeader className="text-center">
-          <CardTitle className="text-xl select-none">欢迎登录</CardTitle>
+          <CardTitle className="text-xl select-none">{t('Login.title')}</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="grid gap-6">
             <div className="grid gap-6">
               <div className="grid gap-2">
-                <Label htmlFor="email" className="select-none">邮箱</Label>
+                <Label htmlFor="email" className="select-none">{t('Login.email')}</Label>
                 <Input
                   id="email"
                   type="email"
@@ -81,12 +83,12 @@ export const UserFrom = ({
               </div>
               <div className="grid gap-2">
                 <div className="flex items-center">
-                  <Label htmlFor="password" className="select-none">密码</Label>
+                  <Label htmlFor="password" className="select-none">{t('Login.password')}</Label>
                   <div
                     onClick={() => setLoginHelp(true)}
                     className="ml-auto text-sm underline-offset-4 hover:underline select-none cursor-pointer"
                   >
-                    忘记密码了吗?
+                    {t('Login.forget')}
                   </div>
                 </div>
                 <Input
@@ -101,7 +103,7 @@ export const UserFrom = ({
                 data?.data?.auth_enable === 'true' &&
                   <div className="grid gap-2">
                     <div className="flex items-center select-none">
-                      <div>双因素口令</div>
+                      <div>{t('Login.otp')}</div>
                     </div>
                     <div className="mx-auto">
                       <InputOTP
@@ -152,16 +154,16 @@ export const UserFrom = ({
                     setIsLoading(false)
                   }
                 }}
-                aria-label="登录"
+                aria-label={t('Login.login')}
               >
-                {isLoading && <ReloadIcon className="mr-2 h-4 w-4 animate-spin"/>} 登录
+                {isLoading && <ReloadIcon className="mr-2 h-4 w-4 animate-spin"/>}{t('Login.login')}
               </Button>
               <Button
                 className="w-full select-none"
                 onClick={() => router.push('/')}
-                aria-label="返回首页"
+                aria-label={t('Login.goHome')}
               >
-                返回首页
+                {t('Login.goHome')}
               </Button>
             </div>
           </div>

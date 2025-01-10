@@ -26,6 +26,7 @@ import { CircleHelpIcon } from '~/components/icons/circle-help'
 import { ImagePlus } from 'lucide-react'
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from '~/components/ui/sheet.tsx'
 import { Tag, TagInput } from 'emblor'
+import { useTranslations } from 'next-intl'
 
 export default function FileUpload() {
   const [alistStorage, setAlistStorage] = useState([])
@@ -51,6 +52,7 @@ export default function FileUpload() {
   const { setUploadHelp } = useButtonStore(
     (state) => state,
   )
+  const t = useTranslations()
 
   const { data, isLoading } = useSWR('/api/v1/albums/get', fetcher)
   const { data: configs } = useSWR<{ config_key: string, config_value: string }[]>('/api/v1/settings/get-custom-info', fetcher)
@@ -570,18 +572,18 @@ export default function FileUpload() {
             }}
           >
             <SelectTrigger>
-              <SelectValue placeholder="请选择上传方式，默认单文件上传"/>
+              <SelectValue placeholder={t('Upload.selectUploadMode')} />
             </SelectTrigger>
             <SelectContent>
               <SelectGroup>
                 <SelectItem key="singleton" value="singleton">
-                  单文件上传
+                  {t('Upload.simple')}
                 </SelectItem>
                 <SelectItem key="livephoto" value="livephoto">
-                  LivePhoto 上传
+                  {t('Upload.livephoto')}
                 </SelectItem>
                 <SelectItem key="multiple" value="multiple">
-                  多文件上传
+                  {t('Upload.multiple')}
                 </SelectItem>
               </SelectGroup>
             </SelectContent>
@@ -591,7 +593,7 @@ export default function FileUpload() {
           <Button
             variant="outline"
             size="icon"
-            aria-label="新增"
+            aria-label={t('Button.add')}
             onClick={() => setCustomUpload(true)}
           >
             <ImagePlus />
@@ -599,7 +601,7 @@ export default function FileUpload() {
           <Button
             variant="outline"
             size="icon"
-            aria-label="帮助"
+            aria-label={t('Button.help')}
             onClick={() => setUploadHelp(true)}
           >
             <CircleHelpIcon />
@@ -609,20 +611,20 @@ export default function FileUpload() {
               variant="outline"
               disabled={loading}
               onClick={() => submit()}
-              aria-label="提交"
+              aria-label={t('Button.submit')}
             >
               {loading && <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />}
-              提交
+              {t('Button.submit')}
             </Button>
             :
             <Button
               variant="outline"
               disabled={loading}
               onClick={() => onRemoveFile()}
-              aria-label="重置"
+              aria-label={t('Button.reset')}
             >
               {loading && <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />}
-              重置
+              {t('Button.reset')}
             </Button>
           }
         </div>
@@ -642,11 +644,11 @@ export default function FileUpload() {
               }}
             >
               <SelectTrigger>
-                <SelectValue placeholder="请选择存储" />
+                <SelectValue placeholder={t('Upload.selectStorage')} />
               </SelectTrigger>
               <SelectContent>
                 <SelectGroup>
-                  <SelectLabel>相册</SelectLabel>
+                  <SelectLabel>{t('Words.album')}</SelectLabel>
                   {storages?.map((storage: any) => (
                     <SelectItem key={storage.value} value={storage.value}>
                       {storage.label}
@@ -663,11 +665,11 @@ export default function FileUpload() {
               }}
             >
               <SelectTrigger>
-                <SelectValue placeholder="请选择相册" />
+                <SelectValue placeholder={t('Upload.selectAlbum')} />
               </SelectTrigger>
               <SelectContent>
                 <SelectGroup>
-                  <SelectLabel>相册</SelectLabel>
+                  <SelectLabel>{t('Words.album')}</SelectLabel>
                   {data?.map((album: AlbumType) => (
                     <SelectItem key={album.album_value} value={album.album_value}>
                       {album.name}
@@ -688,11 +690,11 @@ export default function FileUpload() {
                 }}
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="请选择Alist目录" />
+                  <SelectValue placeholder={t('Upload.selectAlistDirectory')} />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectGroup>
-                    <SelectLabel>Alist目录</SelectLabel>
+                    <SelectLabel>{t('Upload.alistDirectory')}</SelectLabel>
                     {alistStorage?.map((storage: any) => (
                       <SelectItem key={storage?.mount_path} value={storage?.mount_path}>
                         {storage?.mount_path}
@@ -713,9 +715,9 @@ export default function FileUpload() {
             }}
           >
             <Dragger {...props}>
-              <p className="ant-upload-text">点击上传文件或拖拽文件到这里</p>
+              <p className="ant-upload-text">{t('Upload.uploadTips1')}</p>
               <p className="ant-upload-hint">
-                Vercel 等平台 Free 订阅限制上传大小 6M。
+                {t('Upload.uploadTips2')}
               </p>
             </Dragger>
           </ConfigProvider>
@@ -734,9 +736,9 @@ export default function FileUpload() {
                   }}
                 >
                   <Dragger {...videoProps}>
-                    <p className="ant-upload-text">上传 LivePhoto 视频</p>
+                    <p className="ant-upload-text">{t('Upload.uploadTips3')}</p>
                     <p className="ant-upload-hint">
-                      Vercel 等平台 Free 订阅限制上传大小 6M。
+                      {t('Upload.uploadTips2')}
                     </p>
                   </Dragger>
                 </ConfigProvider>
@@ -746,13 +748,13 @@ export default function FileUpload() {
                   htmlFor="title"
                   className="block overflow-hidden rounded-md border border-gray-200 px-3 py-2 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600"
                 >
-                  <span className="text-xs font-medium text-gray-700"> 图片标题 </span>
+                  <span className="text-xs font-medium text-gray-700"> {t('Upload.title')} </span>
 
                   <input
                     type="text"
                     id="title"
                     value={title}
-                    placeholder="输入图片标题"
+                    placeholder={t('Upload.inputTitle')}
                     onChange={(e) => setTitle(e.target.value)}
                     className="mt-1 w-full border-none p-0 focus:border-transparent focus:outline-none focus:ring-0 sm:text-sm"
                   />
@@ -761,7 +763,7 @@ export default function FileUpload() {
                   htmlFor="url"
                   className="block overflow-hidden rounded-md border border-gray-200 px-3 py-2 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600"
                 >
-                  <span className="text-xs font-medium text-gray-700"> 图片地址 </span>
+                  <span className="text-xs font-medium text-gray-700"> {t('Upload.url')} </span>
 
                   <input
                     type="text"
@@ -776,7 +778,7 @@ export default function FileUpload() {
                     htmlFor="previewUrl"
                     className="block overflow-hidden rounded-md border border-gray-200 px-3 py-2 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600"
                   >
-                    <span className="text-xs font-medium text-gray-700"> 预览图片地址 </span>
+                    <span className="text-xs font-medium text-gray-700"> {t('Upload.previewUrl')} </span>
 
                     <input
                       type="text"
@@ -792,7 +794,7 @@ export default function FileUpload() {
                     htmlFor="videoUrl"
                     className="block overflow-hidden rounded-md border border-gray-200 px-3 py-2 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600"
                   >
-                    <span className="text-xs font-medium text-gray-700"> LivePhoto 视频地址 </span>
+                    <span className="text-xs font-medium text-gray-700"> {t('Upload.videoUrl')} </span>
 
                     <input
                       type="text"
@@ -808,7 +810,7 @@ export default function FileUpload() {
                     htmlFor="width"
                     className="w-full block overflow-hidden rounded-md border border-gray-200 px-3 py-2 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600"
                   >
-                    <span className="text-xs font-medium text-gray-700"> 图片宽度 px </span>
+                    <span className="text-xs font-medium text-gray-700"> {t('Upload.width')} </span>
 
                     <input
                       type="number"
@@ -823,7 +825,7 @@ export default function FileUpload() {
                     htmlFor="height"
                     className="w-full block overflow-hidden rounded-md border border-gray-200 px-3 py-2 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600"
                   >
-                    <span className="text-xs font-medium text-gray-700"> 图片高度 px </span>
+                    <span className="text-xs font-medium text-gray-700"> {t('Upload.height')} </span>
 
                     <input
                       type="number"
@@ -840,13 +842,13 @@ export default function FileUpload() {
                     htmlFor="lon"
                     className="w-full block overflow-hidden rounded-md border border-gray-200 px-3 py-2 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600"
                   >
-                    <span className="text-xs font-medium text-gray-700"> 经度 </span>
+                    <span className="text-xs font-medium text-gray-700"> {t('Upload.lon')} </span>
 
                     <input
                       type="text"
                       id="lon"
                       value={lon}
-                      placeholder="输入经度"
+                      placeholder={t('Upload.inputLon')}
                       onChange={(e) => setLon(e.target.value)}
                       className="mt-1 w-full border-none p-0 focus:border-transparent focus:outline-none focus:ring-0 sm:text-sm"
                     />
@@ -855,13 +857,13 @@ export default function FileUpload() {
                     htmlFor="lat"
                     className="w-full block overflow-hidden rounded-md border border-gray-200 px-3 py-2 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600"
                   >
-                    <span className="text-xs font-medium text-gray-700"> 纬度 </span>
+                    <span className="text-xs font-medium text-gray-700"> {t('Upload.lat')} </span>
 
                     <input
                       type="text"
                       id="lat"
                       value={lat}
-                      placeholder="输入经度"
+                      placeholder={t('Upload.inputLat')}
                       onChange={(e) => setLat(e.target.value)}
                       className="mt-1 w-full border-none p-0 focus:border-transparent focus:outline-none focus:ring-0 sm:text-sm"
                     />
@@ -871,13 +873,13 @@ export default function FileUpload() {
                   htmlFor="detail"
                   className="block overflow-hidden rounded-md border border-gray-200 px-3 py-2 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600"
                 >
-                  <span className="text-xs font-medium text-gray-700"> 描述 </span>
+                  <span className="text-xs font-medium text-gray-700"> {t('Upload.detail')} </span>
 
                   <input
                     type="text"
                     id="detail"
                     value={detail}
-                    placeholder="请输入描述"
+                    placeholder={t('Upload.inputDetail')}
                     onChange={(e) => setDetail(e.target.value)}
                     className="mt-1 w-full border-none p-0 focus:border-transparent focus:outline-none focus:ring-0 sm:text-sm"
                   />
@@ -887,7 +889,7 @@ export default function FileUpload() {
                   setTags={(newTags: any) => {
                     setImageLabels(newTags?.map((label: Tag) => label.text))
                   }}
-                  placeholder="请输入图片索引标签，如：猫猫，不要输入特殊字符。"
+                  placeholder={t('Upload.indexTag')}
                   styleClasses={{
                     inlineTagsContainer:
                       "border-input rounded-lg bg-background shadow-sm shadow-black/5 transition-shadow focus-within:border-ring focus-within:outline-none focus-within:ring-[3px] focus-within:ring-ring/20 p-1 gap-1",
@@ -921,10 +923,10 @@ export default function FileUpload() {
         <SheetContent side="left" className="w-full overflow-y-auto scrollbar-hide space-y-2"
                       onInteractOutside={(event: any) => event.preventDefault()}>
           <SheetHeader>
-            <SheetTitle>手动上传</SheetTitle>
+            <SheetTitle>{t('Upload.manualUpload')}</SheetTitle>
             <SheetDescription className="space-y-2">
               <p>
-                虽然不太推荐，但还是提供了这么个方式。
+                {t('Upload.alternativeUpload')}
               </p>
             </SheetDescription>
           </SheetHeader>
@@ -942,11 +944,11 @@ export default function FileUpload() {
                 }}
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="请选择存储"/>
+                  <SelectValue placeholder={t('Upload.selectStorage')}/>
                 </SelectTrigger>
                 <SelectContent>
                   <SelectGroup>
-                    <SelectLabel>相册</SelectLabel>
+                    <SelectLabel>{t('Words.storage')}</SelectLabel>
                     {storages?.map((storage: any) => (
                       <SelectItem key={storage.value} value={storage.value}>
                         {storage.label}
@@ -963,11 +965,11 @@ export default function FileUpload() {
                 }}
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="请选择相册"/>
+                  <SelectValue placeholder={t('Upload.selectAlbum')}/>
                 </SelectTrigger>
                 <SelectContent>
                   <SelectGroup>
-                    <SelectLabel>相册</SelectLabel>
+                    <SelectLabel>{t('Words.album')}</SelectLabel>
                     {data?.map((album: AlbumType) => (
                       <SelectItem key={album.album_value} value={album.album_value}>
                         {album.name}
@@ -988,11 +990,11 @@ export default function FileUpload() {
                   }}
                 >
                   <SelectTrigger>
-                    <SelectValue placeholder="请选择Alist目录"/>
+                    <SelectValue placeholder={t('Upload.selectAlistDirectory')}/>
                   </SelectTrigger>
                   <SelectContent>
                     <SelectGroup>
-                      <SelectLabel>Alist目录</SelectLabel>
+                      <SelectLabel>{t('Upload.alistDirectory')}</SelectLabel>
                       {alistStorage?.map((storage: any) => (
                         <SelectItem key={storage?.mount_path} value={storage?.mount_path}>
                           {storage?.mount_path}
@@ -1009,13 +1011,13 @@ export default function FileUpload() {
               htmlFor="title"
               className="block overflow-hidden rounded-md border border-gray-200 px-3 py-2 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600"
             >
-              <span className="text-xs font-medium text-gray-700"> 图片标题 </span>
+              <span className="text-xs font-medium text-gray-700">{t('Upload.title')}</span>
 
               <input
                 type="text"
                 id="title"
                 value={title}
-                placeholder="输入图片标题"
+                placeholder={t('Upload.inputTitle')}
                 onChange={(e) => setTitle(e.target.value)}
                 className="mt-1 w-full border-none p-0 focus:border-transparent focus:outline-none focus:ring-0 sm:text-sm"
               />
@@ -1024,7 +1026,7 @@ export default function FileUpload() {
               htmlFor="url"
               className="block overflow-hidden rounded-md border border-gray-200 px-3 py-2 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600"
             >
-              <span className="text-xs font-medium text-gray-700"> 图片地址 </span>
+              <span className="text-xs font-medium text-gray-700">{t('Upload.url')}</span>
 
               <input
                 type="text"
@@ -1039,7 +1041,7 @@ export default function FileUpload() {
                 htmlFor="width"
                 className="w-full block overflow-hidden rounded-md border border-gray-200 px-3 py-2 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600"
               >
-                <span className="text-xs font-medium text-gray-700"> 图片宽度 px </span>
+                <span className="text-xs font-medium text-gray-700">{t('Upload.width')}</span>
 
                 <input
                   type="number"
@@ -1054,7 +1056,7 @@ export default function FileUpload() {
                 htmlFor="height"
                 className="w-full block overflow-hidden rounded-md border border-gray-200 px-3 py-2 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600"
               >
-                <span className="text-xs font-medium text-gray-700"> 图片高度 px </span>
+                <span className="text-xs font-medium text-gray-700">{t('Upload.height')}</span>
 
                 <input
                   type="number"
@@ -1071,13 +1073,13 @@ export default function FileUpload() {
                 htmlFor="lon"
                 className="w-full block overflow-hidden rounded-md border border-gray-200 px-3 py-2 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600"
               >
-                <span className="text-xs font-medium text-gray-700"> 经度 </span>
+                <span className="text-xs font-medium text-gray-700">{t('Upload.lon')}</span>
 
                 <input
                   type="text"
                   id="lon"
                   value={lon}
-                  placeholder="输入经度"
+                  placeholder={t('Upload.inputLon')}
                   onChange={(e) => setLon(e.target.value)}
                   className="mt-1 w-full border-none p-0 focus:border-transparent focus:outline-none focus:ring-0 sm:text-sm"
                 />
@@ -1086,13 +1088,13 @@ export default function FileUpload() {
                 htmlFor="lat"
                 className="w-full block overflow-hidden rounded-md border border-gray-200 px-3 py-2 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600"
               >
-                <span className="text-xs font-medium text-gray-700"> 纬度 </span>
+                <span className="text-xs font-medium text-gray-700">{t('Upload.lat')}</span>
 
                 <input
                   type="text"
                   id="lat"
                   value={lat}
-                  placeholder="输入经度"
+                  placeholder={t('Upload.inputLat')}
                   onChange={(e) => setLat(e.target.value)}
                   className="mt-1 w-full border-none p-0 focus:border-transparent focus:outline-none focus:ring-0 sm:text-sm"
                 />
@@ -1102,13 +1104,13 @@ export default function FileUpload() {
               htmlFor="detail"
               className="block overflow-hidden rounded-md border border-gray-200 px-3 py-2 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600"
             >
-              <span className="text-xs font-medium text-gray-700"> 描述 </span>
+              <span className="text-xs font-medium text-gray-700">{t('Upload.detail')}</span>
 
               <input
                 type="text"
                 id="detail"
                 value={detail}
-                placeholder="请输入描述"
+                placeholder={t('Upload.inputDetail')}
                 onChange={(e) => setDetail(e.target.value)}
                 className="mt-1 w-full border-none p-0 focus:border-transparent focus:outline-none focus:ring-0 sm:text-sm"
               />
@@ -1118,7 +1120,7 @@ export default function FileUpload() {
               setTags={(newTags: any) => {
                 setImageLabels(newTags?.map((label: Tag) => label.text))
               }}
-              placeholder="请输入图片索引标签，如：猫猫，不要输入特殊字符。"
+              placeholder={t('Upload.indexTag')}
               styleClasses={{
                 inlineTagsContainer:
                   "border-input rounded-lg bg-background shadow-sm shadow-black/5 transition-shadow focus-within:border-ring focus-within:outline-none focus-within:ring-[3px] focus-within:ring-ring/20 p-1 gap-1",
@@ -1137,10 +1139,10 @@ export default function FileUpload() {
             variant="outline"
             disabled={loading}
             onClick={() => customSubmit()}
-            aria-label="提交"
+            aria-label={t('Button.submit')}
           >
             {loading && <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />}
-            提交
+            {t('Button.submit')}
           </Button>
         </SheetContent>
       </Sheet>

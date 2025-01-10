@@ -6,7 +6,7 @@ import { loginOut } from '~/server/actions'
 import { useSession } from 'next-auth/react'
 import { useEffect, useState } from 'react'
 import { useTheme } from 'next-themes'
-import { Home, MonitorDot, SunMedium, MoonStar, Github, LogOut, LogIn } from 'lucide-react'
+import { Home, MonitorDot, SunMedium, MoonStar, Github, LogOut, LogIn, Languages } from 'lucide-react'
 import {
   Avatar,
   AvatarFallback,
@@ -16,15 +16,22 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuPortal,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from '~/components/ui/dropdown-menu'
+import { setUserLocale } from '~/lib/utils/locale.ts'
+import { useTranslations } from 'next-intl'
 
 export const DropMenu = () => {
   const router = useRouter()
   const pathname = usePathname()
-  const { data: session, status } = useSession()
+  const { data: session} = useSession()
   const [mounted, setMounted] = useState(false)
   const { theme, setTheme } = useTheme()
+  const t = useTranslations()
 
   const iconClasses = 'text-xl text-default-500 pointer-events-none flex-shrink-0'
 
@@ -55,7 +62,7 @@ export const DropMenu = () => {
                   onClick={() => router.push('/')}
                   className="cursor-pointer"
                 >
-                  <Home size={20} className={iconClasses} />首页
+                  <Home size={20} className={iconClasses} />{t('Link.home')}
                 </DropdownMenuItem>
                 :
                 <DropdownMenuItem
@@ -63,9 +70,20 @@ export const DropMenu = () => {
                   onClick={() => router.push('/admin')}
                   className="cursor-pointer"
                 >
-                  <MonitorDot size={20} className={iconClasses} />控制台
+                  <MonitorDot size={20} className={iconClasses} />{t('Link.dashboard')}
                 </DropdownMenuItem>
             }
+            <DropdownMenuSub>
+              <DropdownMenuSubTrigger><Languages size={20} className={iconClasses} />{t('Button.language')}</DropdownMenuSubTrigger>
+              <DropdownMenuPortal>
+                <DropdownMenuSubContent>
+                  <DropdownMenuItem className="cursor-pointer" onClick={() => setUserLocale('zh')}>简体中文</DropdownMenuItem>
+                  <DropdownMenuItem className="cursor-pointer" onClick={() => setUserLocale('zh-TW')}>繁體中文</DropdownMenuItem>
+                  <DropdownMenuItem className="cursor-pointer" onClick={() => setUserLocale('en')}>English</DropdownMenuItem>
+                  <DropdownMenuItem className="cursor-pointer" onClick={() => setUserLocale('ja')}>日本語</DropdownMenuItem>
+                </DropdownMenuSubContent>
+              </DropdownMenuPortal>
+            </DropdownMenuSub>
             <DropdownMenuItem
               key="loginOut"
               onClick={async () => {
@@ -80,7 +98,7 @@ export const DropMenu = () => {
               }}
               className="cursor-pointer"
             >
-              <LogOut size={20} className={iconClasses} />退出登录
+              <LogOut size={20} className={iconClasses} />{t('Login.logout')}
             </DropdownMenuItem>
             <DropdownMenuItem
               key="theme"
@@ -88,7 +106,7 @@ export const DropMenu = () => {
               className="cursor-pointer"
             >
               {theme === 'light' ? <MoonStar size={20} className={iconClasses} /> : <SunMedium size={20} className={iconClasses} />}
-              { theme === 'light' ? '切换至⌈常夜⌋' : '切换至⌈白夜⌋' }
+              { theme === 'light' ? t('Button.dark') : t('Button.light') }
             </DropdownMenuItem>
             <DropdownMenuItem
               key="github"
@@ -105,15 +123,26 @@ export const DropMenu = () => {
               onClick={() => router.push('/login')}
               className="cursor-pointer"
             >
-              <LogIn size={20} className={iconClasses} />登录
+              <LogIn size={20} className={iconClasses} />{t('Button.login')}
             </DropdownMenuItem>
+            <DropdownMenuSub>
+              <DropdownMenuSubTrigger><Languages size={20} className={iconClasses} />{t('Button.language')}</DropdownMenuSubTrigger>
+              <DropdownMenuPortal>
+                <DropdownMenuSubContent>
+                  <DropdownMenuItem className="cursor-pointer" onClick={() => setUserLocale('zh')}>简体中文</DropdownMenuItem>
+                  <DropdownMenuItem className="cursor-pointer" onClick={() => setUserLocale('zh-TW')}>繁體中文</DropdownMenuItem>
+                  <DropdownMenuItem className="cursor-pointer" onClick={() => setUserLocale('en')}>English</DropdownMenuItem>
+                  <DropdownMenuItem className="cursor-pointer" onClick={() => setUserLocale('ja')}>日本語</DropdownMenuItem>
+                </DropdownMenuSubContent>
+              </DropdownMenuPortal>
+            </DropdownMenuSub>
             <DropdownMenuItem
               key="theme"
               onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
               className="cursor-pointer"
             >
               {theme === 'light' ? <MoonStar size={20} className={iconClasses} /> : <SunMedium size={20} className={iconClasses} />}
-              { theme === 'light' ? '切换至⌈常夜⌋' : '切换至⌈白夜⌋' }
+              { theme === 'light' ? t('Button.dark') : t('Button.light') }
             </DropdownMenuItem>
             <DropdownMenuItem
               key="github"

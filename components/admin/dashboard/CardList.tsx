@@ -20,61 +20,64 @@ import {
   TableHeader,
   TableRow,
 } from '~/components/ui/table'
+import { useTranslations } from 'next-intl'
 
 export default function CardList(props: Readonly<DataProps>) {
+  const t = useTranslations()
+
   return (
     <div className="flex flex-col space-y-2">
       <div className="w-full grid grid-cols-1 gap-4 lg:grid-cols-3 lg:gap-6">
         <Card className="h-full w-full border">
           <CardHeader>
-            <CardTitle>照片数据</CardTitle>
+            <CardTitle>{t('Dashboard.picData')}</CardTitle>
           </CardHeader>
           <CardContent className="flex flex-col p2 space-y-4">
-            <span className="font-light">照片数据</span>
+            <span className="font-light">{t('Dashboard.picData')}</span>
             <span className="text-xl font-semibold">
                 {props.data?.total && props.data?.total !== 0 ?
                   <Counter targetValue={props.data?.total}/> : 0
                 }
-              张
+              {t('Dashboard.zhang')}
               </span>
-            <span className="font-light">显示照片</span>
+            <span className="font-light">{t('Dashboard.picShow')}</span>
             <span className="text-xl font-semibold">
                 {props.data?.showTotal && props.data?.showTotal !== 0 ?
                   <Counter targetValue={props.data?.showTotal}/> : 0
                 }
-              张
+              {t('Dashboard.zhang')}
               </span>
             <Progress value={(props.data?.showTotal ?? 0) / (props.data?.total ?? 1) * 100} className="w-full h-2"/>
           </CardContent>
         </Card>
         <Card className="h-full w-full border">
           <CardHeader>
-            <CardTitle>业务数据</CardTitle>
+            <CardTitle>{t('Dashboard.bisData')}</CardTitle>
           </CardHeader>
           <CardContent className="flex flex-col p2 space-y-4">
-            <span className="font-light">相册数据</span>
+            <span className="font-light">{t('Dashboard.albumData')}</span>
             <span className="text-xl font-semibold">
                 {props.data?.tagsTotal && props.data?.tagsTotal !== 0 ?
                   <Counter targetValue={props.data?.tagsTotal}/> : 0
                 }
-              个
+              {t('Dashboard.ge')}
               </span>
-            <span className="font-light">版权数据</span>
+            <span className="font-light">{t('Dashboard.copyrightData')}</span>
             <span className="text-xl font-semibold">
                 {props.data?.crTotal && props.data?.crTotal !== 0 ?
                   <Counter targetValue={props.data?.crTotal}/> : 0
                 }
-              个
+              {t('Dashboard.ge')}
               </span>
           </CardContent>
         </Card>
         <Card className="h-full w-full border">
           <CardHeader>
-            <CardTitle>感觉如何？</CardTitle>
+            <CardTitle>{t('Dashboard.how')}</CardTitle>
           </CardHeader>
           <CardContent className="flex flex-col space-y-2">
               <span className="flex items-center">
-                <span className="pr-6">如果您觉得项目不错</span>
+                <span className="pr-6">{t('Dashboard.starTip')}</span>
                 <span className="h-px flex-1 bg-black"></span>
               </span>
             <Link href="https://github.com/besscroft/PicImpact" target="_blank">
@@ -83,12 +86,12 @@ export default function CardList(props: Readonly<DataProps>) {
               </Button>
             </Link>
             <span className="flex items-center">
-              <span className="pr-6">如果您有 Bug 反馈和建议</span>
+              <span className="pr-6">{t('Dashboard.issueTip')}</span>
               <span className="h-px flex-1 bg-black"></span>
               </span>
             <Link href="https://github.com/besscroft/PicImpact/issues/new" target="_blank">
               <Button variant="outline">
-                <MessageSquareHeart size={20} className="mr-1"/> 反馈 | 建议
+                <MessageSquareHeart size={20} className="mr-1"/>{t('Button.issue')}
               </Button>
             </Link>
           </CardContent>
@@ -97,9 +100,9 @@ export default function CardList(props: Readonly<DataProps>) {
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>相册</TableHead>
-            <TableHead>数量/张</TableHead>
-            <TableHead>显示/张</TableHead>
+            <TableHead>{t('Words.album')}</TableHead>
+            <TableHead>{t('Dashboard.count')}</TableHead>
+            <TableHead>{t('Dashboard.show')}</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>

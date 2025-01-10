@@ -11,6 +11,7 @@ import { useSearchParams } from 'next/navigation'
 import BlurImage from '~/components/album/BlurImage'
 import { useButtonStore } from '~/app/providers/button-store-Providers'
 import { FloatButton } from 'antd'
+import { useTranslations } from 'next-intl'
 
 import 'react-photo-album/masonry.css'
 import { ReloadIcon } from '@radix-ui/react-icons'
@@ -40,6 +41,7 @@ export default function Masonry(props : Readonly<ImageHandleProps>) {
     })
   const dataList = data ? [].concat(...data) : [];
   const searchParams = useSearchParams()
+  const t = useTranslations()
 
   const { setMasonryView, setMasonryViewData } = useButtonStore(
     (state) => state,
@@ -103,7 +105,7 @@ export default function Masonry(props : Readonly<ImageHandleProps>) {
             >
               加载更多
             </Button>
-            : '暂无图片'
+            : t('Tips.noImg')
         }
       </div>
       <FloatButton.BackTop />
