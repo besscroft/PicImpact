@@ -3,7 +3,9 @@
     "album": "Album",
     "storage": "Storage",
     "all": "All",
-    "sort": "Sort"
+    "sort": "Sort",
+    "type": "Type",
+    "default": "Default"
   },
   "Login": {
     "title": "Welcome Login",
@@ -30,7 +32,8 @@
     "authenticator": "Two-factor Authentication"
   },
   "Tips": {
-    "noImg": "No Image"
+    "noImg": "No images",
+    "reallyDelete": "Are you sure you want to delete?"
   },
   "Button": {
     "login": "Login",
@@ -45,7 +48,9 @@
     "batchDelete": "Batch Delete",
     "refresh": "Refresh",
     "update": "Update",
-    "canal": "Cancel"
+    "canal": "Cancel",
+    "delete": "Delete",
+    "yesDelete": "Confirm deletion"
   },
   "Dashboard": {
     "picData": "Photo Data",
@@ -98,5 +103,45 @@
     "bindAlbum": "Bind Album",
     "rule": "From high to low",
     "pleaseSelectAlbum": "Please select an album"
+  },
+  "Album": {
+    "router": "Router",
+    "routerDetail": "Accessible primary path",
+    "noTips": "No introduction available",
+    "editAlbum": "Edit Album",
+    "deleteAlbum": "Delete Album",
+    "albumId": "Album ID",
+    "albumName": "Album Name",
+    "albumRouter": "Album Router"
+  },
+  "Copyright": {
+    "social": "Social Media",
+    "external": "External Link",
+    "editCopyright": "Edit Copyright",
+    "deleteCopyright": "Delete Copyright",
+    "copyrightId": "Copyright ID",
+    "copyrightName": "Copyright Name"
+  },
+  "Preferences": {
+    "webSiteTitle": "Website Title",
+    "inputWebSiteTitle": "Please enter the website title.",
+    "favicon": "Please enter the favicon URL.",
+    "webAuthor": "Website Author Name",
+    "inputWebAuthor": "Please enter the website author name.",
+    "inputFeedId": "Please enter the RSS feed ID.",
+    "inputUserId": "Please enter the RSS user ID.",
+    "previewQuality": "Preview Image Compression Quality (0-1]",
+    "inputPreviewQuality": "Please enter the preview image compression quality.",
+    "enableMaxWidthLimit": "Enable Maximum Width Limit for Preview Images",
+    "maxWidth": "Maximum Width for Preview Images (positive integer)",
+    "inputMaxWidth": "Please enter the maximum width limit for preview images, a positive integer."
+  },
+  "Password": {
+    "onePassword": "Old Password",
+    "inputOldPassword": "Please enter the old password.",
+    "twoPassword": "New Password",
+    "inputTwoPassword": "Please enter the new password.",
+    "threePassword": "Confirm Password",
+    "inputThreePassword": "Please enter the confirmation password."
   }
 }

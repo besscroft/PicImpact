@@ -3,7 +3,9 @@
     "album": "相册",
     "storage": "存储",
     "all": "全部",
-    "sort": "排序"
+    "sort": "排序",
+    "type": "类型",
+    "default": "默认"
   },
   "Login": {
     "title": "欢迎登录",
@@ -30,7 +32,8 @@
     "authenticator": "双因素验证"
   },
   "Tips": {
-    "noImg": "暂无图片"
+    "noImg": "暂无图片",
+    "reallyDelete": "确定删除？"
   },
   "Button": {
     "login": "登录",
@@ -45,7 +48,9 @@
     "batchDelete": "批量删除",
     "refresh": "刷新",
     "update": "更新",
-    "canal": "取消"
+    "canal": "取消",
+    "delete": "删除",
+    "yesDelete": "确认删除"
   },
   "Dashboard": {
     "picData": "照片数据",
@@ -98,5 +103,45 @@
     "bindAlbum": "绑定相册",
     "rule": "从高到低",
     "pleaseSelectAlbum": "请选择相册"
+  },
+  "Album": {
+    "router": "路由",
+    "routerDetail": "可以访问的一级路径",
+    "noTips": "没有介绍",
+    "editAlbum": "编辑相册",
+    "deleteAlbum": "删除相册",
+    "albumId": "相册 ID",
+    "albumName": "相册名称",
+    "albunRouter": "相册路由"
+  },
+  "Copyright": {
+    "social": "社交媒体",
+    "external": "外链",
+    "editCopyright": "编辑版权",
+    "deleteCopyright": "删除版权",
+    "copyrightId": "版权 ID",
+    "copyrightName": "版权名称"
+  },
+  "Preferences": {
+    "webSiteTitle": "网站标题",
+    "inputWebSiteTitle": "请输入网站标题。",
+    "favicon": "请输入 favicon 地址",
+    "webAuthor": "网站归属者名称",
+    "inputWebAuthor": "请输入网站归属者名称。",
+    "inputFeedId": "请输入 RSS feedId",
+    "inputUserId": "请输入 RSS userId",
+    "previewQuality": "预览图压缩质量 (0-1]",
+    "inputPreviewQuality": "请输入预览图压缩质量",
+    "enableMaxWidthLimit": "预览图最大尺寸限制开关",
+    "maxWidth": "预览图最大宽度(正整数)",
+    "inputMaxWidth": "请输入预览图最大宽度限制，正整数"
+  },
+  "Password": {
+    "onePassword": "旧密码",
+    "inputOldPassword": "请输入旧密码。",
+    "twoPassword": "新密码",
+    "inputTwoPassword": "请输入新密码。",
+    "threePassword": "确认密码",
+    "inputThreePassword": "请输入确认密码。"
   }
 }

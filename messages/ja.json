@@ -3,7 +3,9 @@
     "album": "アルバム",
     "storage": "ストレージ",
     "all": "すべて",
-    "sort": "並べ替え"
+    "sort": "ソート",
+    "type": "タイプ",
+    "default": "デフォルト"
   },
   "Login": {
     "title": "歓迎ログイン",
@@ -30,7 +32,8 @@
     "authenticator": "二要素認証"
   },
   "Tips": {
-    "noImg": "画像なし"
+    "noImg": "画像がありません",
+    "reallyDelete": "本当に削除しますか？"
   },
   "Button": {
     "login": "ログイン",
@@ -45,7 +48,9 @@
     "batchDelete": "批量削除",
     "refresh": "更新",
     "update": "更新",
-    "canal": "キャンセル"
+    "canal": "キャンセル",
+    "delete": "削除",
+    "yesDelete": "削除を確認"
   },
   "Dashboard": {
     "picData": "写真データ",
@@ -98,5 +103,45 @@
     "bindAlbum": "アルバムをバインド",
     "rule": "高い順から低い順",
     "pleaseSelectAlbum": "アルバムを選択してください"
+  },
+  "Album": {
+    "router": "ルーター",
+    "routerDetail": "アクセス可能な一次パス",
+    "noTips": "紹介はありません",
+    "editAlbum": "アルバムを編集",
+    "deleteAlbum": "アルバムを削除",
+    "albumId": "アルバム ID",
+    "albumName": "アルバム名",
+    "albumRouter": "アルバムルーター"
+  },
+  "Copyright": {
+    "social": "ソーシャルメディア",
+    "external": "外部リンク",
+    "editCopyright": "著作権を編集",
+    "deleteCopyright": "著作権を削除",
+    "copyrightId": "著作権 ID",
+    "copyrightName": "著作権名"
+  },
+  "Preferences": {
+    "webSiteTitle": "ウェブサイトのタイトル",
+    "inputWebSiteTitle": "ウェブサイトのタイトルを入力してください。",
+    "favicon": "faviconのURLを入力してください。",
+    "webAuthor": "ウェブサイトの所有者名",
+    "inputWebAuthor": "ウェブサイトの所有者名を入力してください。",
+    "inputFeedId": "RSS feedIdを入力してください。",
+    "inputUserId": "RSS userIdを入力してください。",
+    "previewQuality": "プレビュー画像の圧縮品質 (0-1]",
+    "inputPreviewQuality": "プレビュー画像の圧縮品質を入力してください。",
+    "enableMaxWidthLimit": "プレビュー画像の最大幅制限スイッチ",
+    "maxWidth": "プレビュー画像の最大幅（正の整数）",
+    "inputMaxWidth": "プレビュー画像の最大幅制限を入力してください（正の整数）"
+  },
+  "Password": {
+    "onePassword": "旧パスワード",
+    "inputOldPassword": "旧パスワードを入力してください。",
+    "twoPassword": "新パスワード",
+    "inputTwoPassword": "新パスワードを入力してください。",
+    "threePassword": "確認パスワード",
+    "inputThreePassword": "確認パスワードを入力してください。"
   }
 }

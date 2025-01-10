@@ -3,7 +3,9 @@
     "album": "相簿",
     "storage": "儲存",
     "all": "全部",
-    "sort": "排序"
+    "sort": "排序",
+    "type": "類型",
+    "default": "預設"
   },
   "Login": {
     "title": "歡迎登入",
@@ -30,7 +32,8 @@
     "authenticator": "雙因素驗證"
   },
   "Tips": {
-    "noImg": "暫無圖片"
+    "noImg": "暫無圖片",
+    "reallyDelete": "確定刪除？"
   },
   "Button": {
     "login": "登入",
@@ -45,7 +48,9 @@
     "batchDelete": "批量刪除",
     "refresh": "刷新",
     "update": "更新",
-    "canal": "取消"
+    "canal": "取消",
+    "delete": "刪除",
+    "yesDelete": "確定刪除"
   },
   "Dashboard": {
     "picData": "照片數據",
@@ -98,5 +103,45 @@
     "bindAlbum": "綁定相簿",
     "rule": "從高到低",
     "pleaseSelectAlbum": "請選擇相簿"
+  },
+  "Album": {
+    "router": "路由",
+    "routerDetail": "可以訪問的一级路徑",
+    "noTips": "沒有介紹",
+    "editAlbum": "編輯相簿",
+    "deleteAlbum": "刪除相簿",
+    "albumId": "相簿 ID",
+    "albumName": "相簿名稱",
+    "albumRouter": "相簿路由"
+  },
+  "Copyright": {
+    "social": "社交媒體",
+    "external": "外鏈",
+    "editCopyright": "編輯版權",
+    "deleteCopyright": "刪除版權",
+    "copyrightId": "版權 ID",
+    "copyrightName": "版權名稱"
+  },
+  "Preferences": {
+    "webSiteTitle": "網站標題",
+    "inputWebSiteTitle": "請輸入網站標題。",
+    "favicon": "請輸入 favicon 地址",
+    "webAuthor": "網站歸屬者名稱",
+    "inputWebAuthor": "請輸入網站歸屬者名稱。",
+    "inputFeedId": "請輸入 RSS feedId",
+    "inputUserId": "請輸入 RSS userId",
+    "previewQuality": "預覽圖壓縮品質 (0-1]",
+    "inputPreviewQuality": "請輸入預覽圖壓縮品質",
+    "enableMaxWidthLimit": "預覽圖最大尺寸限制開關",
+    "maxWidth": "預覽圖最大寬度(正整數)",
+    "inputMaxWidth": "請輸入預覽圖最大寬度限制，正整數"
+  },
+  "Password": {
+    "onePassword": "舊密碼",
+    "inputOldPassword": "請輸入舊密碼。",
+    "twoPassword": "新密碼",
+    "inputTwoPassword": "請輸入新密碼。",
+    "threePassword": "確認密碼",
+    "inputThreePassword": "請輸入確認密碼。"
   }
 }
