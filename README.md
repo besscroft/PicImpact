@@ -74,38 +74,109 @@ docker run -d --name picimpact \
 
 我比较推荐 Cloudflare R2，算是很良心的了，流量免费。
 
-- Cloudflare R2 配置
+- Cloudflare R2 配置<details><summary>查看详情</summary>
+  <table>
+    <thead>
+      <tr>
+        <th>Key</th>
+        <th>备注</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>r2_accesskey_id</td>
+        <td>Cloudflare AccessKey_ID</td>
+      </tr>
+      <tr>
+        <td>r2_accesskey_secret</td>
+        <td>Cloudflare AccessKey_Secret</td>
+      </tr>
+      <tr>
+        <td>r2_endpoint</td>
+        <td>Cloudflare Endpoint 地域节点，如：<b>https://{ACCOUNT_ID}.r2.cloudflarestorage.com</b></td>
+      </tr>
+      <tr>
+        <td>r2_bucket</td>
+        <td>Cloudflare Bucket 存储桶名称，如：<b>picimpact</b></td>
+      </tr>
+      <tr>
+        <td>r2_storage_folder</td>
+        <td>存储文件夹(Cloudflare R2)，严格格式，如：<b>picimpact</b> 或 <b>picimpact/images</b> ，填 <b>/</b> 或者不填表示根路径</td>
+      </tr>
+      <tr>
+        <td>r2_public_domain</td>
+        <td>Cloudflare R2 自定义域（公开访问）</td>
+      </tr>
+    </tbody>
+  </table></details>
 
-| Key                 | 备注                                                                       |
-|---------------------|--------------------------------------------------------------------------|
-| r2_accesskey_id     | Cloudflare AccessKey_ID                                                  |
-| r2_accesskey_secret | Cloudflare AccessKey_Secret                                              |
-| r2_endpoint         | Cloudflare Endpoint 地域节点，如：`https://<ACCOUNT_ID>.r2.cloudflarestorage.com` |
-| r2_bucket           | Cloudflare Bucket 存储桶名称，如：`picimpact`                                      |
-| r2_storage_folder   | 存储文件夹(Cloudflare R2)，严格格式，如：`picimpact` 或 `picimpact/images` ，填 `/` 或者不填表示根路径  |
-| r2_public_domain    | Cloudflare R2 自定义域（公开访问）                                                 |
+- AWS S3 配置<details><summary>查看详情</summary>
+  <table>
+    <thead>
+      <tr>
+        <th>Key</th>
+        <th>备注</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>accesskey_id</td>
+        <td>阿里 OSS / AWS S3 AccessKey_ID</td>
+      </tr>
+      <tr>
+        <td>accesskey_secret</td>
+        <td>阿里 OSS / AWS S3 AccessKey_Secret</td>
+      </tr>
+      <tr>
+        <td>region</td>
+        <td>阿里 OSS / AWS S3 Region 地域，如：<b>oss-cn-hongkong</b></td>
+      </tr>
+      <tr>
+        <td>endpoint</td>
+        <td>阿里 OSS / AWS S3 Endpoint 地域节点，如：<b>oss-cn-hongkong.aliyuncs.com</b></td>
+      </tr>
+      <tr>
+        <td>bucket</td>
+        <td>阿里 OSS / AWS S3 Bucket 存储桶名称，如：<b>picimpact</b></td>
+      </tr>
+      <tr>
+        <td>storage_folder</td>
+        <td>存储文件夹(S3)，严格格式，如：<b>picimpact</b> 或 <b>picimpact/images</b> ，填 <b>/</b> 或者不填表示根路径</td>
+      </tr>
+      <tr>
+        <td>force_path_style</td>
+        <td>是否强制客户端对桶使用路径式寻址，默认 <b>false</b>，如您使用 minio 作为 s3 存储，需要设置为 <b>true</b></td>
+      </tr>
+      <tr>
+        <td>s3_cdn</td>
+        <td>是否启用 S3 CDN 模式，路径将返回 cdn 地址，默认 false。</td>
+      </tr>
+      <tr>
+        <td>s3_cdn_url</td>
+        <td>cdn 地址，如：<b>https://cdn.example.com</b></td>
+      </tr>
+    </tbody>
+  </table></details>
 
-
-- AWS S3 配置
-
-| Key              | 备注                                                               |
-|------------------|------------------------------------------------------------------|
-| accesskey_id     | 阿里 OSS / AWS S3 AccessKey_ID                                     |
-| accesskey_secret | 阿里 OSS / AWS S3 AccessKey_Secret                                 |
-| region           | 阿里 OSS / AWS S3 Region 地域，如：`oss-cn-hongkong`                    |
-| endpoint         | 阿里 OSS / AWS S3 Endpoint 地域节点，如：`oss-cn-hongkong.aliyuncs.com`   |
-| bucket           | 阿里 OSS / AWS S3 Bucket 存储桶名称，如：`picimpact`                       |
-| storage_folder   | 存储文件夹(S3)，严格格式，如：`picimpact` 或 `picimpact/images` ，填 `/` 或者不填表示根路径 |
-| force_path_style   | 是否强制客户端对桶使用路径式寻址，默认 `false`，如您使用 minio 作为 s3 存储，需要设置为 `true`     |
-| s3_cdn   | 是否启用 S3 CDN 模式，路径将返回 cdn 地址，默认 false。                            |
-| s3_cdn_url   | cdn 地址，如：`https://cdn.example.com`                               |
-
-- AList API 配置
-
-| Key         | 备注                                   |
-|-------------|--------------------------------------|
-| alist_token | alist 令牌                             |
-| alist_url   | AList 地址，如：https://alist.example.com |
+- AList API 配置<details><summary>查看详情</summary>
+  <table>
+    <thead>
+      <tr>
+        <th>Key</th>
+        <th>备注</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>alist_token</td>
+        <td>alist 令牌</td>
+      </tr>
+      <tr>
+        <td>alist_url</td>
+        <td>AList 地址，如：<b>https://alist.example.com</b></td>
+      </tr>
+    </tbody>
+  </table></details>
 
 ### 本地开发
 
