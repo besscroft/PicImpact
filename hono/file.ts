@@ -157,13 +157,13 @@ app.post('/upload', async (c) => {
         body: JSON.stringify({path: decodeURIComponent(filePath)})
       }).then((res) => res.json())
       if (res?.code === 200) {
-        return Response.json({code: 200, message: '文件上传成功！', data: res?.data.raw_url})
+        return Response.json({code: 200, message: 'Success', data: res?.data.raw_url})
       } else {
-        return Response.json({code: 500, message: '文件路径获取失败！', data: null})
+        return Response.json({code: 500, message: 'Failed to retrieve file path', data: null})
       }
     }
   }
-  return Response.json({code: 500, message: '文件上传失败！', data: null})
+  return Response.json({code: 500, message: 'Failed', data: null})
 })
 
 export default app

@@ -23,7 +23,7 @@ app.get('/get-seed-secret', async (c) => {
 
     return c.json({
       code: 200,
-      message: '令牌颁发成功！',
+      message: 'Success',
       data: {
         uri: totp.toString(),
         secret: secret.base32
@@ -31,7 +31,7 @@ app.get('/get-seed-secret', async (c) => {
     })
   } catch (e) {
     console.log(e)
-    return c.json({ code: 500, message: '令牌颁发失败！' })
+    return c.json({ code: 500, message: 'Failed' })
   }
 })
 
@@ -52,22 +52,22 @@ app.post('/validate', async (c) => {
     if (delta === 0) {
       // @ts-ignore
       await saveAuthSecret('true', secret?.config_value)
-      return c.json({ code: 200, message: '设置成功！' })
+      return c.json({ code: 200, message: 'Success' })
     }
-    return c.json({ code: 500, message: '设置失败！' })
+    return c.json({ code: 500, message: 'Failed' })
   } catch (e) {
     console.log(e)
-    return c.json({ code: 500, message: '设置失败！' })
+    return c.json({ code: 500, message: 'Failed' })
   }
 })
 
 app.delete('/remove', async (c) => {
   try {
     await deleteAuthSecret();
-    return c.json({ code: 200, message: '移除成功！' })
+    return c.json({ code: 200, message: 'Success' })
   } catch (e) {
     console.log(e)
-    return c.json({ code: 500, message: '移除失败！' })
+    return c.json({ code: 500, message: 'Failed' })
   }
 })
 
