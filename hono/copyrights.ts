@@ -23,10 +23,10 @@ app.post('/add', async (c) => {
   const copyright = await c.req.json()
   try {
     await insertCopyright(copyright);
-    return c.json({ code: 200, message: '新增成功！' })
+    return c.json({ code: 200, message: 'Success' })
   } catch (e) {
     console.log(e)
-    return c.json({ code: 500, message: '新增失败！' })
+    return c.json({ code: 500, message: 'Failed' })
   }
 })
 
@@ -40,10 +40,10 @@ app.put('/update', async (c) => {
   const copyright = await c.req.json()
   try {
     await updateCopyright(copyright);
-    return c.json({ code: 200, message: '更新成功！' })
+    return c.json({ code: 200, message: 'Success' })
   } catch (e) {
     console.log(e)
-    return c.json({ code: 500, message: '更新失败！' })
+    return c.json({ code: 500, message: 'Failed' })
   }
 })
 

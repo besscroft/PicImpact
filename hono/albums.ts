@@ -15,15 +15,15 @@ app.post('/add', async (c) => {
   if (album.album_value && album.album_value.charAt(0) !== '/') {
     return c.json({
       code: 500,
-      message: '路由必须以 / 开头！'
+      message: 'The route must start with /'
     })
   }
   try {
     await insertAlbums(album);
-    return c.json({ code: 200, message: '新增成功！' })
+    return c.json({ code: 200, message: 'Success' })
   } catch (e) {
     console.log(e)
-    return c.json({ code: 500, message: '新增失败！' })
+    return c.json({ code: 500, message: 'Failed' })
   }
 })
 
@@ -32,15 +32,15 @@ app.put('/update', async (c) => {
   if (album.album_value && album.album_value.charAt(0) !== '/') {
     return c.json({
       code: 500,
-      message: '路由必须以 / 开头！'
+      message: 'The route must start with /'
     })
   }
   try {
     await updateAlbum(album);
-    return c.json({ code: 200, message: '更新成功！' })
+    return c.json({ code: 200, message: 'Success' })
   } catch (e) {
     console.log(e)
-    return c.json({ code: 500, message: '更新失败！' })
+    return c.json({ code: 500, message: 'Failed' })
   }
 })
 

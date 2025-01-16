@@ -105,12 +105,12 @@ app.put('/update-custom-info', async (c) => {
     await updateCustomInfo(query);
     return c.json({
       code: 200,
-      message: '更新成功！'
+      message: 'Success'
     })
   } catch (e) {
     return Response.json({
       code: 500,
-      message: '更新失败！'
+      message: 'Failed'
     })
   }
 })
@@ -123,7 +123,7 @@ app.put('/update-password', async (c) => {
   if (!secretKey || !secretKey.config_value) {
     return Response.json({
       code: 500,
-      message: '更新失败！'
+      message: 'Failed'
     })
   }
   const hashedOldPassword = CryptoJS.HmacSHA512(pwd.oldPassword, secretKey?.config_value).toString()
@@ -134,19 +134,19 @@ app.put('/update-password', async (c) => {
       await updatePassword(user?.id, hashedNewPassword);
       return c.json({
         code: 200,
-        message: '更新成功！'
+        message: 'Success'
       })
     } else {
       return c.json({
         code: 500,
-        message: '旧密码不匹配！'
+        message: 'Old password does not match'
       })
     }
   } catch (e) {
     console.log(e)
     return c.json({
       code: 500,
-      message: '更新失败！'
+      message: 'Failed'
     })
   }
 })

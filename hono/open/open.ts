@@ -10,14 +10,14 @@ app.get('/get-auth-status', async (c) => {
 
     return c.json({
       code: 200,
-      message: '获取双因素状态成功！',
+      message: 'Successfully retrieved two-factor status',
       data: {
         auth_enable: data?.config_value
       }
     })
   } catch (e) {
     console.log(e)
-    return c.json({ code: 500, message: '获取双因素状态失败！' })
+    return c.json({ code: 500, message: 'Failed to retrieve two-factor status' })
   }
 })
 
@@ -34,9 +34,9 @@ app.get('/get-image-by-id', async (c) => {
   const id = searchParams.get('id')
   const data = await fetchImageByIdAndAuth(String(id));
   if (data && data?.length > 0) {
-    return c.json({ code: 200, message: '图片数据获取成功！', data: data })
+    return c.json({ code: 200, message: 'Image data retrieved successfully', data: data })
   } else {
-    return c.json({ code: 500, message: '图片不存在或未公开展示！' })
+    return c.json({ code: 500, message: 'The image does not exist or is not publicly displayed' })
   }
 })
 

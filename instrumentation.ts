@@ -3,6 +3,7 @@ import { PrismaClient } from '@prisma/client'
 export async function register() {
   try {
     if (process.env.NEXT_RUNTIME === 'edge') {
+      console.warn('Prisma support for edge is not yet fully developed.')
       return
     }
     const prisma = new PrismaClient()
@@ -55,12 +56,12 @@ export async function register() {
           ON CONFLICT (album_value) DO NOTHING;
         `
       })
-      console.log('初始化完毕！')
+      console.log('action boot completed.')
       await prisma.$disconnect()
     } else {
-      console.error('数据库初始化失败，请检查您的连接信息！')
+      console.error('Database initialization failed, please check your connection information.')
     }
   } catch (e) {
-    console.error('初始化失败，请您先尝试排查问题，如无法解决请携带日志去提交反馈：https://github.com/besscroft/PicImpact/issues', e)
+    console.error('Initialization failed. Please try to troubleshoot the issue first. If you cannot resolve it, please carry the logs and submit feedback at: https://github.com/besscroft/PicImpact/issues.', e)
   }
 }
