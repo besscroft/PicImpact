@@ -86,7 +86,7 @@ export function NavUser() {
             <DropdownMenuSeparator />
             <DropdownMenuItem className="cursor-pointer" onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}>
               {theme === 'light' ? <MoonStar size={20} className={iconClasses} /> : <SunMedium size={20} className={iconClasses} />}
-              <span>{ theme === 'light' ? '切换至⌈常夜⌋' : '切换至⌈白夜⌋' }</span>
+              <span>{ theme === 'light' ? t("Button.dark") : t('Button.light') }</span>
             </DropdownMenuItem>
             <DropdownMenuSub>
               <DropdownMenuSubTrigger><Languages size={20} className={iconClasses} />{t('Button.language')}</DropdownMenuSubTrigger>
@@ -110,7 +110,7 @@ export function NavUser() {
               }
             }}>
               <LogOut />
-              退出登录
+              {t('Login.logout')}
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

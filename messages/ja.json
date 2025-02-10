@@ -28,6 +28,7 @@
     "settings": "設定",
     "preferences": "優先設定",
     "password": "パスワード変更",
+    "account": "アカウント設定",
     "storages": "ストレージ設定",
     "authenticator": "二要素認証"
   },
@@ -143,5 +144,13 @@
     "inputTwoPassword": "新パスワードを入力してください。",
     "threePassword": "確認パスワード",
     "inputThreePassword": "確認パスワードを入力してください。"
+  },
+  "Account": {
+    "email": "メール",
+    "inputEmail": "新しいメールアドレスを入力してください。",
+    "username": "ユーザー名",
+    "inputUsername": "新しいユーザー名を入力してください。",
+    "avatar": "アバター",
+    "inputAvatar": "アバターをアップロードしてください"
   }
 }
