@@ -24,6 +24,7 @@
     "list": "图片维护",
     "album": "相册管理",
     "copyright": "版权管理",
+    "account": "账户设置",
     "about": "关于",
     "settings": "设置",
     "preferences": "首选项",
@@ -143,5 +144,13 @@
     "inputTwoPassword": "请输入新密码。",
     "threePassword": "确认密码",
     "inputThreePassword": "请输入确认密码。"
+  },
+  "Account": {
+    "email": "邮箱",
+    "inputEmail": "请输入新的邮箱地址。",
+    "username": "用户名",
+    "inputUsername": "请输入新的用户名。",
+    "avatar": "头像",
+    "inputAvatar": "请输入新的头像地址。"
   }
 }

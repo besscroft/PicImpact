@@ -81,6 +81,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           icon: Frame,
         },
         {
+          name: t('Link.account'),
+          url: "/admin/settings/account",
+          icon: ShieldCheck,
+        },
+        {
           name: t('Link.password'),
           url: "/admin/settings/password",
           icon: RectangleEllipsis,
