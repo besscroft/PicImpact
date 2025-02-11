@@ -28,6 +28,7 @@
     "settings": "Settings",
     "preferences": "Preferences",
     "password": "Password Modification",
+    "account": "Account Settings",
     "storages": "Storage Configuration",
     "authenticator": "Two-factor Authentication"
   },
@@ -143,5 +144,13 @@
     "inputTwoPassword": "Please enter the new password.",
     "threePassword": "Confirm Password",
     "inputThreePassword": "Please enter the confirmation password."
+  },
+  "Account": {
+    "email": "Email",
+    "inputEmail": "Please enter the new email address.",
+    "username": "Username",
+    "inputUsername": "Please enter the new username.",
+    "avatar": "Avatar",
+    "inputAvatar": "Please enter the avatar URL."
   }
 }

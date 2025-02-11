@@ -28,6 +28,7 @@
     "settings": "設定",
     "preferences": "首選項",
     "password": "密碼修改",
+    "account": "帳戶設定",
     "storages": "儲存配置",
     "authenticator": "雙因素驗證"
   },
@@ -143,5 +144,13 @@
     "inputTwoPassword": "請輸入新密碼。",
     "threePassword": "確認密碼",
     "inputThreePassword": "請輸入確認密碼。"
+  },
+  "Account": {
+    "email": "電子郵件",
+    "inputEmail": "請輸入新的電子郵件地址。",
+    "username": "用戶名",
+    "inputUsername": "請輸入新的用戶名。",
+    "avatar": "頭像",
+    "inputAvatar": "請輸入新的頭像地址。"
   }
 }
