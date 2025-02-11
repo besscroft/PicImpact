@@ -230,6 +230,7 @@ export async function updateImage(image: ImageType) {
         detail: image.detail,
         sort: image.sort,
         show: image.show,
+        star: image.star,
         width: image.width,
         height: image.height,
         lat: image.lat,
