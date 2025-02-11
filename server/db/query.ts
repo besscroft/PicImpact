@@ -280,6 +280,8 @@ export async function fetchClientImagesPageTotalByAlbum(album: string) {
             image.del = 0
         AND
             image.show = 0
+        AND
+            image.star = 0
     ) AS unique_images;
   `
     // @ts-ignore
