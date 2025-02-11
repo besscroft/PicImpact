@@ -41,10 +41,6 @@ export default function AlbumList(props : Readonly<HandleProps>) {
   async function deleteAlbum() {
     setDeleteLoading(true)
     if (!album.id) return
-    if (album.album_value === '/') {
-      toast.warning('/ 路由不允许被删除！')
-      return
-    }
     try {
       const res = await fetch(`/api/v1/albums/delete/${album.id}`, {
         method: 'DELETE',
@@ -63,10 +59,6 @@ export default function AlbumList(props : Readonly<HandleProps>) {
   }
 
   async function updateAlbumShow(id: string, album_value: string, show: number) {
-    if (album_value === '/' && show === 1) {
-      toast.warning('/ 路由不允许设置为不显示！')
-      return
-    }
     try {
       setUpdateAlbumId(id)
       setUpdateAlbumLoading(true)
@@ -142,47 +134,44 @@ export default function AlbumList(props : Readonly<HandleProps>) {
               >
                 <SquarePenIcon />
               </Button>
-              {
-                album.album_value !== '/' &&
-                <Dialog onOpenChange={(value) => {
-                  if (!value) {
-                    setAlbum({} as AlbumType)
-                  }
-                }}>
-                  <DialogTrigger asChild>
+              <Dialog onOpenChange={(value) => {
+                if (!value) {
+                  setAlbum({} as AlbumType)
+                }
+              }}>
+                <DialogTrigger asChild>
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    onClick={() => {
+                      setAlbum(album)
+                    }}
+                    aria-label={t('Album.deleteAlbum')}
+                  >
+                    <DeleteIcon />
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="sm:max-w-[425px]">
+                  <DialogHeader>
+                    <DialogTitle>{t('Tips.reallyDelete')}</DialogTitle>
+                  </DialogHeader>
+                  <div>
+                    <p>{t('Album.albumId')}：{album.id}</p>
+                    <p>{t('Album.albumName')}：{album.name}</p>
+                    <p>{t('Album.albumRouter')}：{album.album_value}</p>
+                  </div>
+                  <DialogFooter>
                     <Button
-                      variant="outline"
-                      size="icon"
-                      onClick={() => {
-                        setAlbum(album)
-                      }}
-                      aria-label={t('Album.deleteAlbum')}
+                      disabled={deleteLoading}
+                      onClick={() => deleteAlbum()}
+                      aria-label={t('Button.yesDelete')}
                     >
-                      <DeleteIcon />
+                      {deleteLoading && <ReloadIcon className="mr-2 h-4 w-4 animate-spin"/>}
+                      {t('Button.delete')}
                     </Button>
-                  </DialogTrigger>
-                  <DialogContent className="sm:max-w-[425px]">
-                    <DialogHeader>
-                      <DialogTitle>{t('Tips.reallyDelete')}</DialogTitle>
-                    </DialogHeader>
-                    <div>
-                      <p>{t('Album.albumId')}：{album.id}</p>
-                      <p>{t('Album.albumName')}：{album.name}</p>
-                      <p>{t('Album.albumRouter')}：{album.album_value}</p>
-                    </div>
-                    <DialogFooter>
-                      <Button
-                        disabled={deleteLoading}
-                        onClick={() => deleteAlbum()}
-                        aria-label={t('Button.yesDelete')}
-                      >
-                        {deleteLoading && <ReloadIcon className="mr-2 h-4 w-4 animate-spin"/>}
-                        {t('Button.delete')}
-                      </Button>
-                    </DialogFooter>
-                  </DialogContent>
-                </Dialog>
-              }
+                  </DialogFooter>
+                </DialogContent>
+              </Dialog>
             </div>
           </CardFooter>
         </Card>
