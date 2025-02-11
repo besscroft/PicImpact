@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "images" ADD COLUMN     "star" SMALLINT NOT NULL DEFAULT 1;

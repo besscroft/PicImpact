@@ -21,7 +21,7 @@ export default async function Header() {
       <div className="justify-start">
         <Logo/>
       </div>
-      <div className="hidden sm:flex gap-1 flex-1 select-none justify-center">
+      <div className="hidden sm:flex gap-1 flex-1 select-none justify-center w-full">
         <HeaderLink {...props} />
       </div>
       <div className="flex sm:hidden flex-1"></div>
