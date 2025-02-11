@@ -266,8 +266,9 @@ export async function updatePassword(userId: string, newPassword: string) {
   })
 }
 export async function updateUserInfo(userId: string, updates: {
-  username?: string,
-  email?: string
+  name?: string,
+  email?: string,
+  image?: string,
 }) {
   const updateQuery = Object.entries(updates)
     .filter(([_, value]) => value !== undefined)
