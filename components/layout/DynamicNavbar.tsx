@@ -2,7 +2,7 @@ import VaulDrawer from '~/components/layout/VaulDrawer'
 import { DropMenu } from '~/components/layout/DropMenu'
 import { fetchAlbumsShow } from '~/server/db/query'
 import { DataProps } from '~/types'
-import Language from '~/components/layout/Language.tsx'
+import AlbumDrawer from '~/components/layout/AlbumDrawer'
 
 export default async function DynamicNavbar() {
   const getData = async () => {
@@ -19,8 +19,8 @@ export default async function DynamicNavbar() {
   return (
     <>
       <div className="flex space-x-2 sm:hidden">
-        <Language />
-        <VaulDrawer {...props} />
+        <AlbumDrawer {...props} />
+        <VaulDrawer />
       </div>
       <div className="hidden sm:flex space-x-2">
         <DropMenu/>

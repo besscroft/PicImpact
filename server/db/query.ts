@@ -1,6 +1,6 @@
 'use server'
 
-import { Prisma } from '@prisma/client';
+import { Prisma } from '@prisma/client'
 import { db } from '~/server/lib/db'
 
 export async function fetchConfigsByKeys(keys: string[]) {
@@ -165,8 +165,47 @@ const ALBUM_IMAGE_SORTING_ORDER = [
 ]
 
 export async function fetchClientImagesListByAlbum(pageNum: number, album: string) {
+  console.log('number1', pageNum, album)
   if (pageNum < 1) {
     pageNum = 1
+  }
+  if (album === '/') {
+    return await db.$queryRaw`
+    SELECT 
+        image.*,
+        (
+            SELECT json_agg(row_to_json(t))
+            FROM (
+                SELECT copyright.*
+                FROM "public"."copyrights" AS copyright
+                INNER JOIN "public"."images_copyright_relation" AS icrelation
+                    ON copyright.id = icrelation."copyrightId"
+                INNER JOIN "public"."images" AS image_child
+                    ON icrelation."imageId" = image_child."id"
+                WHERE copyright.del = 0
+                AND image_child.del = 0
+                AND copyright.show = 0
+                AND copyright.default = 1
+                AND image.id = image_child.id
+                UNION
+                SELECT copyright.*
+                FROM "public"."copyrights" AS copyright
+                WHERE copyright.del = 0
+                AND copyright.show = 0
+                AND copyright.default = 0
+            ) t
+        ) AS copyrights
+    FROM 
+        "public"."images" AS image
+    WHERE
+        image.del = 0
+    AND
+        image.show = 0
+    AND
+        image.star = 0
+    ORDER BY image.created_at DESC, image.updated_at DESC
+    LIMIT 16 OFFSET ${(pageNum - 1) * 16}
+  `;
   }
   const albumData = await db.albums.findFirst({
     where: {
@@ -177,7 +216,7 @@ export async function fetchClientImagesListByAlbum(pageNum: number, album: strin
   if (albumData && albumData.image_sorting && ALBUM_IMAGE_SORTING_ORDER[albumData.image_sorting]) {
     orderBy = Prisma.sql([`image.sort DESC, ${ALBUM_IMAGE_SORTING_ORDER[albumData.image_sorting]}`])
   }
-  const data = await db.$queryRaw`
+  return await db.$queryRaw`
     SELECT 
         image.*,
         albums.name AS album_name,
@@ -226,10 +265,26 @@ export async function fetchClientImagesListByAlbum(pageNum: number, album: strin
     ORDER BY ${orderBy}
     LIMIT 16 OFFSET ${(pageNum - 1) * 16}
   `;
-  return data;
 }
 
 export async function fetchClientImagesPageTotalByAlbum(album: string) {
+  if (album === '/') {
+    const pageTotal = await db.$queryRaw`
+    SELECT COALESCE(COUNT(1),0) AS total
+    FROM (
+        SELECT DISTINCT ON (image.id)
+           image.id
+        FROM
+           "public"."images" AS image
+        WHERE
+            image.del = 0
+        AND
+            image.show = 0
+    ) AS unique_images;
+  `
+    // @ts-ignore
+    return Number(pageTotal[0].total) > 0 ? Math.ceil(Number(pageTotal[0].total) / 16) : 0
+  }
   const pageTotal = await db.$queryRaw`
     SELECT COALESCE(COUNT(1),0) AS total
     FROM (

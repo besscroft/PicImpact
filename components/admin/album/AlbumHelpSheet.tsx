@@ -32,6 +32,9 @@ export default function AlbumHelpSheet() {
             <p>
               注意，如果您将⌈相册⌋设置为⌈禁用状态⌋，那么未登录时无法以任何方式获取该⌈相册⌋下的图片信息。
             </p>
+            <p>
+              相册启用数量大于 3 时，将会在导航栏中显示相册列表。
+            </p>
           </SheetDescription>
         </SheetHeader>
       </SheetContent>
