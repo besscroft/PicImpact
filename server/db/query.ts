@@ -165,11 +165,21 @@ const ALBUM_IMAGE_SORTING_ORDER = [
 ]
 
 export async function fetchClientImagesListByAlbum(pageNum: number, album: string) {
-  console.log('number1', pageNum, album)
   if (pageNum < 1) {
     pageNum = 1
   }
-  if (album === '/') {
+  const customIndexStyle = await db.configs.findUnique({
+    where: {
+      config_key: 'custom_index_style',
+    },
+    select: {
+      id: true,
+      config_key: true,
+      config_value: true,
+      detail: true
+    }
+  });
+  if (customIndexStyle?.config_value === '1' && album === '/') {
     return await db.$queryRaw`
     SELECT 
         image.*,
@@ -268,7 +278,18 @@ export async function fetchClientImagesListByAlbum(pageNum: number, album: strin
 }
 
 export async function fetchClientImagesPageTotalByAlbum(album: string) {
-  if (album === '/') {
+  const customIndexStyle = await db.configs.findUnique({
+    where: {
+      config_key: 'custom_index_style',
+    },
+    select: {
+      id: true,
+      config_key: true,
+      config_value: true,
+      detail: true
+    }
+  });
+  if (customIndexStyle?.config_value === '1' && album === '/') {
     const pageTotal = await db.$queryRaw`
     SELECT COALESCE(COUNT(1),0) AS total
     FROM (
