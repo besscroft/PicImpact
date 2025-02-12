@@ -414,7 +414,10 @@ export async function fetchAlbumsShow() {
   return await db.albums.findMany({
     where: {
       del: 0,
-      show: 0
+      show: 0,
+      album_value: {
+        not: '/'
+      }
     },
     orderBy: [
       {
