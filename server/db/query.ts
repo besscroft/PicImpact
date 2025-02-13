@@ -212,7 +212,7 @@ export async function fetchClientImagesListByAlbum(pageNum: number, album: strin
     AND
         image.show = 0
     AND
-        image.star = 0
+        image.show_on_mainpage = 0
     ORDER BY image.created_at DESC, image.updated_at DESC
     LIMIT 16 OFFSET ${(pageNum - 1) * 16}
   `;
@@ -302,7 +302,7 @@ export async function fetchClientImagesPageTotalByAlbum(album: string) {
         AND
             image.show = 0
         AND
-            image.star = 0
+            image.show_on_mainpage = 0
     ) AS unique_images;
   `
     // @ts-ignore
