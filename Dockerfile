@@ -37,7 +37,7 @@ ENV NODE_ENV production
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
 
-COPY --from=runner-base /app/node_modules ./node_modules
+COPY --from=runner-base --chown=nextjs:nodejs /app/node_modules ./node_modules
 COPY --from=builder /app/public ./public
 COPY ./prisma ./prisma
 COPY ./script.sh ./script.sh
