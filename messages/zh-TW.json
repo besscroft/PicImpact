@@ -135,7 +135,10 @@
     "inputPreviewQuality": "請輸入預覽圖壓縮品質",
     "enableMaxWidthLimit": "預覽圖最大尺寸限制開關",
     "maxWidth": "預覽圖最大寬度(正整數)",
-    "inputMaxWidth": "請輸入預覽圖最大寬度限制，正整數"
+    "inputMaxWidth": "請輸入預覽圖最大寬度限制，正整數",
+    "indexStyleSelect": "選擇首頁模式",
+    "indexStyleDefault": "預設相簿模式",
+    "indexStyleStar": "精選圖片模式"
   },
   "Password": {
     "onePassword": "舊密碼",

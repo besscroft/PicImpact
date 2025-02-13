@@ -72,7 +72,7 @@ export type ImageType = {
   detail: string;
   type: number;
   show: number;
-  star: number;
+  show_on_mainpage: number;
   sort: number;
   album_name: string;
   album_value: string;

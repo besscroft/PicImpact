@@ -230,7 +230,7 @@ export async function updateImage(image: ImageType) {
         detail: image.detail,
         sort: image.sort,
         show: image.show,
-        star: image.star,
+        show_on_mainpage: image.show_on_mainpage,
         width: image.width,
         height: image.height,
         lat: image.lat,
@@ -400,6 +400,7 @@ export async function updateCustomInfo(payload: {
   customAuthor: string
   feedId: string
   userId: string
+  customIndexStyle: number
   enablePreviewImageMaxWidthLimit?: boolean
   previewImageMaxWidth?: number
   previewQuality?: number
@@ -410,6 +411,7 @@ export async function updateCustomInfo(payload: {
     customAuthor,
     feedId,
     userId,
+    customIndexStyle,
     enablePreviewImageMaxWidthLimit,
     previewImageMaxWidth,
     previewQuality,
@@ -457,6 +459,15 @@ export async function updateCustomInfo(payload: {
       },
       data: {
         config_value: userId,
+        updatedAt: new Date()
+      }
+    })
+    await tx.configs.update({
+      where: {
+        config_key: 'custom_index_style'
+      },
+      data: {
+        config_value: customIndexStyle.toString(),
         updatedAt: new Date()
       }
     })

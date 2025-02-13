@@ -135,7 +135,10 @@
     "inputPreviewQuality": "请输入预览图压缩质量",
     "enableMaxWidthLimit": "预览图最大尺寸限制开关",
     "maxWidth": "预览图最大宽度(正整数)",
-    "inputMaxWidth": "请输入预览图最大宽度限制，正整数"
+    "inputMaxWidth": "请输入预览图最大宽度限制，正整数",
+    "indexStyleSelect": "选择首页模式",
+    "indexStyleDefault": "默认相册模式",
+    "indexStyleStar": "精选图片模式"
   },
   "Password": {
     "onePassword": "旧密码",

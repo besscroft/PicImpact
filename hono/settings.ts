@@ -15,6 +15,7 @@ app.get('/get-custom-info', async (c) => {
     'custom_author',
     'rss_feed_id',
     'rss_user_id',
+    'custom_index_style',
     'preview_max_width_limit',
     'preview_max_width_limit_switch',
     'preview_quality',
@@ -108,6 +109,7 @@ app.put('/update-custom-info', async (c) => {
     customAuthor: string
     feedId: string
     userId: string
+    customIndexStyle: number
     enablePreviewImageMaxWidthLimit: boolean
     previewImageMaxWidth: number
     previewQuality: number
