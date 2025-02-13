@@ -47,9 +47,15 @@ export async function register() {
             { config_key: 'preview_max_width_limit', config_value: '0', detail: '预览图最大宽度限制' },
             { config_key: 'preview_max_width_limit_switch', config_value: '0', detail: '预览图最大宽度限制开关' },
             { config_key: 'preview_quality', config_value: '0.2', detail: '预览图压缩质量' },
+            { config_key: 'custom_index_style', config_value: '0', detail: '首页风格：0->默认相册模式；1->精选图片模式' },
           ],
           skipDuplicates: true,
         })
+        await tx.$executeRaw`
+          INSERT INTO "public"."albums" (id, name, album_value, detail, show, sort)
+            VALUES (${cuid()}, '首页', '/', '首页路由默认会初始化，但您可以选择使用方式。', 1, 0)
+          ON CONFLICT (album_value) DO NOTHING;
+        `
       })
       console.log('action boot completed.')
       await prisma.$disconnect()

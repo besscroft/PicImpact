@@ -263,7 +263,7 @@ export default function ImageEditSheet(props : Readonly<ImageServerHandleProps &
             <div className="flex flex-col gap-1">
               <div className="text-medium">显示状态</div>
               <div className="text-tiny text-default-400">
-                是否需要在显示图片
+                是否需要显示图片
               </div>
             </div>
             <Switch
@@ -275,12 +275,12 @@ export default function ImageEditSheet(props : Readonly<ImageServerHandleProps &
             <div className="flex flex-col gap-1">
               <div className="text-medium">首页显示状态</div>
               <div className="text-tiny text-default-400">
-                是否需要在首页显示图片
+                是否需要在首页显示图片，仅在精选图片模式下生效
               </div>
             </div>
             <Switch
-              checked={image?.star === 0}
-              onCheckedChange={(value) => setImageEditData({...image, star: value ? 0 : 1})}
+              checked={image?.show_on_mainpage === 0}
+              onCheckedChange={(value) => setImageEditData({...image, show_on_mainpage: value ? 0 : 1})}
             />
           </div>
           <Button

@@ -88,7 +88,7 @@ model Images {
   detail                  String?                   @db.Text
   type                    Int                       @default(1) @db.SmallInt
   show                    Int                       @default(1) @db.SmallInt
-  star                    Int                       @default(1) @db.SmallInt
+  show_on_mainpage        Int                       @default(1) @db.SmallInt
   sort                    Int                       @default(0) @db.SmallInt
   createdAt               DateTime                  @default(now()) @map("created_at") @db.Timestamp()
   updatedAt               DateTime?                 @updatedAt @map("updated_at") @db.Timestamp()

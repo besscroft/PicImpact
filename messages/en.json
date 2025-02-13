@@ -135,7 +135,10 @@
     "inputPreviewQuality": "Please enter the preview image compression quality.",
     "enableMaxWidthLimit": "Enable Maximum Width Limit for Preview Images",
     "maxWidth": "Maximum Width for Preview Images (positive integer)",
-    "inputMaxWidth": "Please enter the maximum width limit for preview images, a positive integer."
+    "inputMaxWidth": "Please enter the maximum width limit for preview images, a positive integer.",
+    "indexStyleSelect": "Select Homepage Style",
+    "indexStyleDefault": "Default Album Style",
+    "indexStyleStar": "Featured Image Style"
   },
   "Password": {
     "onePassword": "Old Password",

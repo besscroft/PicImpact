@@ -17,7 +17,7 @@ RUN apk add --no-cache libc6-compat
 
 WORKDIR /app
 
-RUN npm install -g corepack@latest && corepack enable pnpm && pnpm add prisma @prisma/client
+RUN npm install -g corepack@latest && corepack enable pnpm && pnpm add prisma@5.22.0 @prisma/client@5.22.0
 
 FROM base AS builder
 
@@ -37,7 +37,7 @@ ENV NODE_ENV production
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
 
-COPY --from=runner-base /app/node_modules ./node_modules
+COPY --from=runner-base --chown=nextjs:nodejs /app/node_modules ./node_modules
 COPY --from=builder /app/public ./public
 COPY ./prisma ./prisma
 COPY ./script.sh ./script.sh

@@ -165,11 +165,21 @@ const ALBUM_IMAGE_SORTING_ORDER = [
 ]
 
 export async function fetchClientImagesListByAlbum(pageNum: number, album: string) {
-  console.log('number1', pageNum, album)
   if (pageNum < 1) {
     pageNum = 1
   }
-  if (album === '/') {
+  const customIndexStyle = await db.configs.findUnique({
+    where: {
+      config_key: 'custom_index_style',
+    },
+    select: {
+      id: true,
+      config_key: true,
+      config_value: true,
+      detail: true
+    }
+  });
+  if (customIndexStyle?.config_value === '1' && album === '/') {
     return await db.$queryRaw`
     SELECT 
         image.*,
@@ -202,7 +212,7 @@ export async function fetchClientImagesListByAlbum(pageNum: number, album: strin
     AND
         image.show = 0
     AND
-        image.star = 0
+        image.show_on_mainpage = 0
     ORDER BY image.created_at DESC, image.updated_at DESC
     LIMIT 16 OFFSET ${(pageNum - 1) * 16}
   `;
@@ -268,7 +278,18 @@ export async function fetchClientImagesListByAlbum(pageNum: number, album: strin
 }
 
 export async function fetchClientImagesPageTotalByAlbum(album: string) {
-  if (album === '/') {
+  const customIndexStyle = await db.configs.findUnique({
+    where: {
+      config_key: 'custom_index_style',
+    },
+    select: {
+      id: true,
+      config_key: true,
+      config_value: true,
+      detail: true
+    }
+  });
+  if (customIndexStyle?.config_value === '1' && album === '/') {
     const pageTotal = await db.$queryRaw`
     SELECT COALESCE(COUNT(1),0) AS total
     FROM (
@@ -281,7 +302,7 @@ export async function fetchClientImagesPageTotalByAlbum(album: string) {
         AND
             image.show = 0
         AND
-            image.star = 0
+            image.show_on_mainpage = 0
     ) AS unique_images;
   `
     // @ts-ignore
@@ -393,7 +414,10 @@ export async function fetchAlbumsShow() {
   return await db.albums.findMany({
     where: {
       del: 0,
-      show: 0
+      show: 0,
+      album_value: {
+        not: '/'
+      }
     },
     orderBy: [
       {
