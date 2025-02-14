@@ -27,6 +27,8 @@ import { Label } from '~/components/ui/label'
 import { useButtonStore } from '~/app/providers/button-store-Providers.tsx'
 import LoginHelpSheet from '~/components/login/LoginHelpSheet.tsx'
 import { useTranslations } from 'next-intl'
+import { signIn } from 'next-auth/react'
+import { validate2FA } from '~/server/actions'
 
 export const UserFrom = ({
   className,
@@ -59,6 +61,51 @@ export const UserFrom = ({
       .safeParse({ email, password });
 
     return parsedCredentials;
+  }
+
+  const handleLogin = async () => {
+    setIsLoading(true)
+
+    try {
+      const parsedCredentials = zHandle()
+      if (!parsedCredentials.success) {
+        toast.error('请检查您的账号密码格式！')
+        return
+      }
+
+      const { email, password } = parsedCredentials.data
+
+      // 首先验证2FA (如果启用的话)
+      if (data?.data?.auth_enable === 'true') {
+        const is2FAValid = await validate2FA(token)
+        if (!is2FAValid) {
+          toast.error('双因素口令验证失败！')
+          return
+        }
+      }
+
+      // 进行实际的登录
+      const result = await signIn('Credentials', {
+        email,
+        password,
+        redirect: false,
+      })
+
+      if (result?.error) {
+        toast.error('账号或密码错误！')
+        return
+      }
+
+      toast.success('登录成功！')
+      setTimeout(() => {
+        location.replace('/admin')
+      }, 1000)
+    } catch (e) {
+      console.error(e)
+      toast.error('登录过程中出现错误，请稍后重试')
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   return (
@@ -132,28 +179,7 @@ export const UserFrom = ({
                 type="submit"
                 className="w-full select-none"
                 disabled={(data?.data?.auth_enable === 'true' && token.length !== 6) || email.length === 0 || password.length < 6}
-                onClick={async () => {
-                  setIsLoading(true)
-
-                  try {
-                    const parsedCredentials = zHandle()
-                    if (parsedCredentials.success) {
-                      const {email, password} = parsedCredentials.data;
-                      await authenticate(email, password, token)
-                      toast.success('登录成功！')
-                      setTimeout(() => {
-                        location.replace('/admin')
-                      }, 1000);
-                    } else {
-                      toast.error('请检查您的账号密码！')
-                    }
-                  } catch (e) {
-                    console.log(e)
-                    toast.error(e?.message)
-                  } finally {
-                    setIsLoading(false)
-                  }
-                }}
+                onClick={handleLogin}
                 aria-label={t('Login.login')}
               >
                 {isLoading && <ReloadIcon className="mr-2 h-4 w-4 animate-spin"/>}{t('Login.login')}
