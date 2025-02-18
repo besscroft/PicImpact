@@ -138,7 +138,8 @@
     "inputMaxWidth": "プレビュー画像の最大幅制限を入力してください（正の整数）",
     "indexStyleSelect": "ホームページスタイルを選択",
     "indexStyleDefault": "デフォルトアルバムスタイル",
-    "indexStyleStar": "おすすめ画像スタイル"
+    "indexStyleStar": "おすすめ画像スタイル",
+    "customIndexDownloadEnable": "ホームページのコピー・ダウンロードボタンの表示（おすすめモードで有効）"
   },
   "Password": {
     "onePassword": "旧パスワード",

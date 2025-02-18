@@ -401,6 +401,7 @@ export async function updateCustomInfo(payload: {
   feedId: string
   userId: string
   customIndexStyle: number
+  customIndexDownloadEnable: boolean
   enablePreviewImageMaxWidthLimit?: boolean
   previewImageMaxWidth?: number
   previewQuality?: number
@@ -412,6 +413,7 @@ export async function updateCustomInfo(payload: {
     feedId,
     userId,
     customIndexStyle,
+    customIndexDownloadEnable,
     enablePreviewImageMaxWidthLimit,
     previewImageMaxWidth,
     previewQuality,
@@ -469,6 +471,15 @@ export async function updateCustomInfo(payload: {
       data: {
         config_value: customIndexStyle.toString(),
         updatedAt: new Date()
+      }
+    })
+    await tx.configs.update({
+      where: {
+        config_key: 'custom_index_download_enable'
+      },
+      data: {
+        config_value: customIndexDownloadEnable ? 'true' : 'false',
+        updatedAt: new Date(),
       }
     })
     if (typeof enablePreviewImageMaxWidthLimit === 'boolean') {

@@ -19,6 +19,7 @@ export default function Preferences() {
   const [loading, setLoading] = useState(false)
   const [customIndexStyle, setCustomIndexStyle] = useState('')
   const [previewImageMaxWidth, setPreviewImageMaxWidth] = useState('0')
+  const [customIndexDownloadEnable, setCustomIndexDownloadEnable] = useState(false)
   const [enablePreviewImageMaxWidthLimit, setPreviewImageMaxWidthLimitEnabled] = useState(false)
   const [previewQualityInput, setPreviewQualityInput] = useState('0.2')
   const t = useTranslations()
@@ -50,6 +51,7 @@ export default function Preferences() {
           feedId: feedId,
           userId: userId,
           customIndexStyle: customIndexStyle,
+          customIndexDownloadEnable: customIndexDownloadEnable,
           enablePreviewImageMaxWidthLimit,
           previewImageMaxWidth: maxWidth,
           previewQuality,
@@ -70,6 +72,7 @@ export default function Preferences() {
     setFeedId(data?.find((item) => item.config_key === 'rss_feed_id')?.config_value || '')
     setUserId(data?.find((item) => item.config_key === 'rss_user_id')?.config_value || '')
     setCustomIndexStyle(data?.find((item) => item.config_key === 'custom_index_style')?.config_value || '0')
+    setCustomIndexDownloadEnable(data?.find((item) => item.config_key === 'custom_index_download_enable')?.config_value.toString() === 'true' || false)
     setPreviewImageMaxWidth(data?.find((item) => item.config_key === 'preview_max_width_limit')?.config_value?.toString() || '0')
     setPreviewImageMaxWidthLimitEnabled(data?.find((item) => item.config_key === 'preview_max_width_limit_switch')?.config_value === '1')
     setPreviewQualityInput(data?.find((item) => item.config_key === 'preview_quality')?.config_value || '0.2')
@@ -184,38 +187,54 @@ export default function Preferences() {
           className="mt-1 w-full border-none p-0 focus:border-transparent focus:outline-none focus:ring-0 sm:text-sm"
         />
       </label>
-      <div className="flex gap-4">
       <label
-        htmlFor="enableMaxWidthLimit"
+        htmlFor="customIndexDownloadEnable"
         className="w-full sm:w-64 block overflow-hidden rounded-md border border-gray-200 px-3 py-2 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600"
       >
-        <span className="text-xs font-medium text-gray-700">{t('Preferences.enableMaxWidthLimit')}</span>
+        <span className="text-xs font-medium text-gray-700">{t('Preferences.customIndexDownloadEnable')}</span>
         <div>
-        <Switch
-          id="enableMaxWidthLimit"
-          disabled={isValidating || isLoading}
-          checked={enablePreviewImageMaxWidthLimit}
-          onCheckedChange={checked => {
-            setPreviewImageMaxWidthLimitEnabled(checked)
-          }}
-        />
+          <Switch
+            id="customIndexDownloadEnable"
+            disabled={isValidating || isLoading}
+            checked={customIndexDownloadEnable}
+            onCheckedChange={checked => {
+              setCustomIndexDownloadEnable(checked)
+            }}
+          />
         </div>
       </label>
-      <label
-        htmlFor="maxWidth"
-        className="w-full sm:w-64 block overflow-hidden rounded-md border border-gray-200 px-3 py-2 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600"
-      >
-        <span className="text-xs font-medium text-gray-700">{t('Preferences.maxWidth')}</span>
-        <input
-          type="text"
-          id="maxWidth"
-          disabled={isValidating || isLoading}
-          value={previewImageMaxWidth}
-          placeholder={t('Preferences.inputMaxWidth')}
-          onChange={(e) => setPreviewImageMaxWidth(e.target.value)}
-          className="mt-1 w-full border-none p-0 focus:border-transparent focus:outline-none focus:ring-0 sm:text-sm"
-        />
-      </label>
+      <div className="flex gap-4">
+        <label
+          htmlFor="enableMaxWidthLimit"
+          className="w-full sm:w-64 block overflow-hidden rounded-md border border-gray-200 px-3 py-2 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600"
+        >
+          <span className="text-xs font-medium text-gray-700">{t('Preferences.enableMaxWidthLimit')}</span>
+          <div>
+          <Switch
+            id="enableMaxWidthLimit"
+            disabled={isValidating || isLoading}
+            checked={enablePreviewImageMaxWidthLimit}
+            onCheckedChange={checked => {
+              setPreviewImageMaxWidthLimitEnabled(checked)
+            }}
+          />
+          </div>
+        </label>
+        <label
+          htmlFor="maxWidth"
+          className="w-full sm:w-64 block overflow-hidden rounded-md border border-gray-200 px-3 py-2 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600"
+        >
+          <span className="text-xs font-medium text-gray-700">{t('Preferences.maxWidth')}</span>
+          <input
+            type="text"
+            id="maxWidth"
+            disabled={isValidating || isLoading}
+            value={previewImageMaxWidth}
+            placeholder={t('Preferences.inputMaxWidth')}
+            onChange={(e) => setPreviewImageMaxWidth(e.target.value)}
+            className="mt-1 w-full border-none p-0 focus:border-transparent focus:outline-none focus:ring-0 sm:text-sm"
+          />
+        </label>
       </div>
       <div className="flex w-full sm:w-64 items-center justify-center space-x-1">
         <Button
