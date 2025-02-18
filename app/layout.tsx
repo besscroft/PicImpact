@@ -11,6 +11,7 @@ import { fetchConfigsByKeys } from '~/server/db/query'
 
 import { NextIntlClientProvider } from 'next-intl'
 import { getLocale, getMessages } from 'next-intl/server'
+import { ConfigStoreProvider } from '~/app/providers/config-store-Providers'
 
 type Props = {
   params: { id: string }
@@ -48,14 +49,16 @@ export default async function RootLayout({
     <body>
     <SessionProviders>
       <NextIntlClientProvider messages={messages}>
-        <ButtonStoreProvider>
-          <ThemeProvider>
-            <ToasterProviders/>
-            <ProgressBarProviders>
-              {children}
-            </ProgressBarProviders>
-          </ThemeProvider>
-        </ButtonStoreProvider>
+        <ConfigStoreProvider>
+          <ButtonStoreProvider>
+            <ThemeProvider>
+              <ToasterProviders/>
+              <ProgressBarProviders>
+                {children}
+              </ProgressBarProviders>
+            </ThemeProvider>
+          </ButtonStoreProvider>
+        </ConfigStoreProvider>
       </NextIntlClientProvider>
     </SessionProviders>
     </body>
