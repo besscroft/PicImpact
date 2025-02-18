@@ -18,6 +18,7 @@ export type ImageHandleProps = {
   args: string
   album: string
   totalHandle: (tag: string) => any
+  configHandle: () => any
 }
 
 export type LinkProps = {

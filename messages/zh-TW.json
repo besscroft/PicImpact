@@ -138,7 +138,8 @@
     "inputMaxWidth": "請輸入預覽圖最大寬度限制，正整數",
     "indexStyleSelect": "選擇首頁模式",
     "indexStyleDefault": "預設相簿模式",
-    "indexStyleStar": "精選圖片模式"
+    "indexStyleStar": "精選圖片模式",
+    "customIndexDownloadEnable": "首頁複製下載按鈕顯示（精選模式生效）"
   },
   "Password": {
     "onePassword": "舊密碼",

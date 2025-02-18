@@ -138,7 +138,8 @@
     "inputMaxWidth": "Please enter the maximum width limit for preview images, a positive integer.",
     "indexStyleSelect": "Select Homepage Style",
     "indexStyleDefault": "Default Album Style",
-    "indexStyleStar": "Featured Image Style"
+    "indexStyleStar": "Featured Image Style",
+    "customIndexDownloadEnable": "Show Copy/Download Button on Homepage (Effective in Featured Mode)"
   },
   "Password": {
     "onePassword": "Old Password",

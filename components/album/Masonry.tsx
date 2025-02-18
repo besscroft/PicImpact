@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useEffect } from 'react'
-import { ImageHandleProps, ImageType } from '~/types'
+import { HandleProps, ImageHandleProps, ImageType } from '~/types'
 import { MasonryPhotoAlbum, RenderImageContext, RenderImageProps } from 'react-photo-album'
 import { useSWRPageTotalHook } from '~/hooks/useSWRPageTotalHook'
 import useSWRInfinite from 'swr/infinite'
@@ -16,6 +16,8 @@ import { useTranslations } from 'next-intl'
 import 'react-photo-album/masonry.css'
 import { ReloadIcon } from '@radix-ui/react-icons'
 import { Button } from '~/components/ui/button'
+import { useSWRHydrated } from '~/hooks/useSWRHydrated'
+import {useConfigStore} from "~/app/providers/config-store-Providers.tsx";
 
 function renderNextImage(
   { alt = '', title, sizes }: RenderImageProps,
@@ -39,6 +41,11 @@ export default function Masonry(props : Readonly<ImageHandleProps>) {
       revalidateIfStale: false,
       revalidateOnReconnect: false,
     })
+  const configProps: HandleProps = {
+    handle: props.configHandle,
+    args: 'system-config',
+  }
+  const { data: configData } = useSWRHydrated(configProps)
   const dataList = data ? [].concat(...data) : [];
   const searchParams = useSearchParams()
   const t = useTranslations()
@@ -46,6 +53,16 @@ export default function Masonry(props : Readonly<ImageHandleProps>) {
   const { setMasonryView, setMasonryViewData } = useButtonStore(
     (state) => state,
   )
+  const { setCustomIndexDownloadEnable } = useConfigStore(
+    (state) => state,
+  )
+
+  useEffect(() => {
+    if (configData && !isLoading) {
+      const value = configData?.find((item: any) => item.config_key === 'custom_index_download_enable')?.config_value
+      setCustomIndexDownloadEnable(value.toString() === 'true')
+    }
+  }, configData)
 
   useEffect(() => {
     const fetchData = async (id: string) => {

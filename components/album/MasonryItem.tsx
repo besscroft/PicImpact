@@ -41,6 +41,7 @@ import { LinkIcon } from '~/components/icons/link'
 import { ArrowLeftIcon } from '~/components/icons/arrow-left'
 import { ArrowRightIcon } from '~/components/icons/arrow-right'
 import LivePhoto from '~/components/album/LivePhoto'
+import {useConfigStore} from "~/app/providers/config-store-Providers.tsx";
 
 dayjs.extend(customParseFormat)
 
@@ -50,7 +51,10 @@ export default function MasonryItem() {
   const { MasonryView, MasonryViewData, MasonryViewDataList, setMasonryView, setMasonryViewData } = useButtonStore(
     (state) => state,
   )
-  const {data: download = false, mutate: setDownload} = useSWR(['masonry/download', MasonryViewData.url], null)
+  const { customIndexDownloadEnable } = useConfigStore(
+    (state) => state
+  )
+  const { data: download = false, mutate: setDownload } = useSWR(['masonry/download', MasonryViewData.url], null)
 
   const props: DataProps = {
     data: MasonryViewData,
@@ -207,7 +211,7 @@ export default function MasonryItem() {
                 <div className="flex flex-col space-y-2">
                   <div className="flex space-x-2">
                   {
-                    MasonryViewData.album_allow_download === 0 &&
+                    (MasonryViewData.album_allow_download === 0 || customIndexDownloadEnable) &&
                       <Button
                         onClick={async () => {
                           try {
@@ -248,7 +252,7 @@ export default function MasonryItem() {
                       分享
                     </Button>
                     {
-                      MasonryViewData.album_allow_download === 0 &&
+                      (MasonryViewData.album_allow_download === 0 || customIndexDownloadEnable) &&
                         <Button
                           onClick={() => downloadImg()}
                           disabled={download}
