@@ -1,12 +1,10 @@
 'use server'
 
-import { signIn, signOut } from '~/server/auth'
+import { signOut } from '~/server/auth'
 import { queryAuthSecret, queryAuthStatus } from '~/server/db/query'
 import * as OTPAuth from 'otpauth'
 
-export async function authenticate(
-  email: string, password: string, token: string
-) {
+export async function validate2FA(token: string) {
   try {
     const enable = await queryAuthStatus();
     if (enable?.config_value === 'true') {
@@ -22,40 +20,16 @@ export async function authenticate(
       });
       let delta = totp.validate({ token: token, window: 1 })
       if (delta === 0) {
-        try {
-          await signIn('Credentials', {
-            email: email,
-            password: password,
-            redirect: false,
-          });
-        } catch (e) {
-          throw new Error('登录失败！')
-        }
-      } else {
-        throw new Error('双因素口令验证失败！')
+        return true;
       }
-    } else {
-      try {
-        await signIn('Credentials', {
-          email: email,
-          password: password,
-          redirect: false,
-        });
-      } catch (e) {
-        throw new Error('登录失败！')
-      }
+      return false;
     }
+    return true; // 如果2FA未启用，直接返回true
   } catch (error) {
-    throw error
+    throw error;
   }
 }
 
 export async function loginOut() {
-  try {
-    await signOut({
-      redirect: false,
-    });
-  } catch (error) {
-    throw error;
-  }
+  await signOut({ redirect: true, redirectTo: '/login' })
 }
