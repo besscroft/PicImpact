@@ -113,7 +113,7 @@
     "deleteAlbum": "删除相册",
     "albumId": "相册 ID",
     "albumName": "相册名称",
-    "albunRouter": "相册路由"
+    "albumRouter": "相册路由"
   },
   "Copyright": {
     "social": "社交媒体",
