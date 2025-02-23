@@ -3,7 +3,6 @@
 import React, { useState } from 'react'
 import { useRouter } from 'next-nprogress-bar'
 import { toast } from 'sonner'
-import { authenticate } from '~/server/actions'
 import { SafeParseReturnType, z } from 'zod'
 import {
   InputOTP,
