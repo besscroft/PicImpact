@@ -30,7 +30,7 @@ export const DropMenu = () => {
   const pathname = usePathname()
   const { data: session} = useSession()
   const [mounted, setMounted] = useState(false)
-  const { theme, setTheme } = useTheme()
+  const { resolvedTheme, setTheme } = useTheme()
   const t = useTranslations()
 
   const iconClasses = 'text-xl text-default-500 pointer-events-none flex-shrink-0'
@@ -102,11 +102,11 @@ export const DropMenu = () => {
             </DropdownMenuItem>
             <DropdownMenuItem
               key="theme"
-              onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
+              onClick={() => setTheme(resolvedTheme === 'light' ? 'dark' : 'light')}
               className="cursor-pointer"
             >
-              {theme === 'light' ? <MoonStar size={20} className={iconClasses} /> : <SunMedium size={20} className={iconClasses} />}
-              { theme === 'light' ? t('Button.dark') : t('Button.light') }
+              {resolvedTheme === 'light' ? <MoonStar size={20} className={iconClasses} /> : <SunMedium size={20} className={iconClasses} />}
+              { resolvedTheme === 'light' ? t('Button.dark') : t('Button.light') }
             </DropdownMenuItem>
             <DropdownMenuItem
               key="github"
@@ -138,11 +138,11 @@ export const DropMenu = () => {
             </DropdownMenuSub>
             <DropdownMenuItem
               key="theme"
-              onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
+              onClick={() => setTheme(resolvedTheme === 'light' ? 'dark' : 'light')}
               className="cursor-pointer"
             >
-              {theme === 'light' ? <MoonStar size={20} className={iconClasses} /> : <SunMedium size={20} className={iconClasses} />}
-              { theme === 'light' ? t('Button.dark') : t('Button.light') }
+              {resolvedTheme === 'light' ? <MoonStar size={20} className={iconClasses} /> : <SunMedium size={20} className={iconClasses} />}
+              { resolvedTheme === 'light' ? t('Button.dark') : t('Button.light') }
             </DropdownMenuItem>
             <DropdownMenuItem
               key="github"

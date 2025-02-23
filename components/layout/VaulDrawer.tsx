@@ -20,7 +20,7 @@ export default function VaulDrawer() {
   const { data: session, status } = useSession()
   const router = useRouter()
   const pathname = usePathname()
-  const { theme, setTheme } = useTheme()
+  const { resolvedTheme, setTheme } = useTheme()
 
   const iconClasses = 'text-xl text-default-500 pointer-events-none flex-shrink-0'
 
@@ -54,11 +54,11 @@ export default function VaulDrawer() {
                       </div>
                       <div
                         key="theme"
-                        onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
+                        onClick={() => setTheme(resolvedTheme === 'light' ? 'dark' : 'light')}
                       >
                         <div className={closeClasses}>
-                          {theme === 'light' ? <MoonStar size={20} className={iconClasses} /> : <SunMedium size={20} className={iconClasses} />}
-                          <p>{ theme === 'light' ? '切换至⌈常夜⌋' : '切换至⌈白夜⌋' }</p>
+                          {resolvedTheme === 'light' ? <MoonStar size={20} className={iconClasses} /> : <SunMedium size={20} className={iconClasses} />}
+                          <p>{ resolvedTheme === 'light' ? '切换至⌈常夜⌋' : '切换至⌈白夜⌋' }</p>
                         </div>
                       </div>
                       <div key="loginOut">
@@ -92,11 +92,11 @@ export default function VaulDrawer() {
                       </div>
                       <div
                         key="theme"
-                        onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
+                        onClick={() => setTheme(resolvedTheme === 'light' ? 'dark' : 'light')}
                       >
                         <Drawer.Close className={closeClasses}>
-                          {theme === 'light' ? <MoonStar size={20} className={iconClasses} /> : <SunMedium size={20} className={iconClasses} />}
-                          <p>{ theme === 'light' ? '切换至⌈常夜⌋' : '切换至⌈白夜⌋' }</p>
+                          {resolvedTheme === 'light' ? <MoonStar size={20} className={iconClasses} /> : <SunMedium size={20} className={iconClasses} />}
+                          <p>{ resolvedTheme === 'light' ? '切换至⌈常夜⌋' : '切换至⌈白夜⌋' }</p>
                         </Drawer.Close>
                       </div>
                       <div
