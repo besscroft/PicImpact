@@ -39,7 +39,7 @@ import { useTranslations } from 'next-intl'
 
 export function NavUser() {
   const { isMobile } = useSidebar()
-  const { theme, setTheme } = useTheme()
+  const { resolvedTheme, setTheme } = useTheme()
   const { data: session} = useSession()
   const t = useTranslations()
 
@@ -84,9 +84,9 @@ export function NavUser() {
               </div>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuItem className="cursor-pointer" onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}>
-              {theme === 'light' ? <MoonStar size={20} className={iconClasses} /> : <SunMedium size={20} className={iconClasses} />}
-              <span>{ theme === 'light' ? t("Button.dark") : t('Button.light') }</span>
+            <DropdownMenuItem className="cursor-pointer" onClick={() => setTheme(resolvedTheme === 'light' ? 'dark' : 'light')}>
+              {resolvedTheme === 'light' ? <MoonStar size={20} className={iconClasses} /> : <SunMedium size={20} className={iconClasses} />}
+              <span>{ resolvedTheme === 'light' ? t("Button.dark") : t('Button.light') }</span>
             </DropdownMenuItem>
             <DropdownMenuSub>
               <DropdownMenuSubTrigger><Languages size={20} className={iconClasses} />{t('Button.language')}</DropdownMenuSubTrigger>
