@@ -26,10 +26,13 @@ export default function BlurImage({ photo, dataList }: { photo: any, dataList: a
         }}
         onLoad={() => setLoaded(true)}
         className={cn(
-          "duration-700 ease-[cubic-bezier(0.4, 0, 0.2, 1)] group-hover:opacity-75 cursor-pointer transition-all will-change-transform hover:scale-[1.01]",
+          "duration-300 ease-out group-hover:opacity-75 cursor-pointer",
+          "will-change-[transform,opacity]",
+          "hover:scale-[1.02] active:scale-[0.98]",
+          "transition-[transform,opacity]",
           {
-            'opacity-100 scale-100 blur-0': loaded,
-            'opacity-0 scale-95 blur-sm': !loaded,
+            'translate-y-0 opacity-100 scale-100 blur-0': loaded,
+            'translate-y-4 opacity-0 scale-95 blur-sm': !loaded,
           }
         )}
       />
