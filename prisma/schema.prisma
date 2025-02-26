@@ -97,6 +97,7 @@ model Images {
   ImagesCopyrightRelation ImagesCopyrightRelation[]
 
   @@map("images")
+
 }
 
 // 配置表
