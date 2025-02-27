@@ -1,5 +1,7 @@
 export type DataProps = {
   data: any
+  customFoldAlbumEnable: boolean
+  customFoldAlbumCount: number
 }
 
 export type HandleProps = {

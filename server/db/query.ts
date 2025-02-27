@@ -427,6 +427,29 @@ export async function fetchAlbumsShow() {
   });
 }
 
+export async function fetchAlbumsShowOptions() {
+  const data = await db.configs.findFirst({
+    where: {
+      config_key: 'custom_fold_album_enable'
+    },
+    select: {
+      config_value: true
+    }
+  })
+  const countData = await db.configs.findFirst({
+    where: {
+      config_key: 'custom_fold_album_count'
+    },
+    select: {
+      config_value: true
+    }
+  })
+  return {
+    enabled: data?.config_value === 'true',
+    count: parseInt(countData?.config_value || '6')
+  }
+}
+
 export async function fetchImagesAnalysis() {
   const counts = await db.$queryRaw<[{ images_total: number, images_show: number, cr_total: number, tags_total: number }]>`
     SELECT 

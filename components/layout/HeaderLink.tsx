@@ -21,7 +21,7 @@ export default function HeaderLink(props: Readonly<DataProps>) {
   const pathname = usePathname()
   const router = useRouter()
   const t = useTranslations()
-
+  
   return (
     <NavigationMenu>
       <NavigationMenuList className="space-x-2">
@@ -40,7 +40,7 @@ export default function HeaderLink(props: Readonly<DataProps>) {
             {t('Link.home')}
           </Button>
         </NavigationMenuItem>
-        {Array.isArray(props.data) && props.data.length > 3 ? (
+        {Array.isArray(props.data) && (props.customFoldAlbumEnable && props.data.length > props.customFoldAlbumCount) ? (
           <NavigationMenuItem className={pathname !== '/' ? 'border-b-2 border-green-400' : ''}>
             <NavigationMenuTrigger>相册</NavigationMenuTrigger>
             <NavigationMenuContent>
