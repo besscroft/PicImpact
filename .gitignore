@@ -17,3 +17,4 @@ dist
 
 # nextjs --experimental-https cert file
 certificates
+.vscode/
