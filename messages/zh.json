@@ -65,7 +65,10 @@
     "count": "数量/张",
     "show": "显示/张",
     "zhang": "张",
-    "ge": "个"
+    "ge": "个",
+    "cameraStats": "拍摄设备统计",
+    "camera": "相机",
+    "lens": "镜头"
   },
   "Upload": {
     "simple": "单文件上传",

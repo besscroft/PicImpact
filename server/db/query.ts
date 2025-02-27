@@ -459,6 +459,16 @@ export async function fetchImagesAnalysis() {
       (SELECT COUNT(*) FROM "public"."albums" WHERE del = 0) as tags_total
   `;
 
+  const cameraStats = await db.$queryRaw`
+    SELECT COUNT(*) as count, 
+      COALESCE(exif->>'model', 'Unknown') as camera,
+      COALESCE(exif->>'lens_model', 'Unknown') as lens
+    FROM "public"."images"
+    WHERE del = 0
+    GROUP BY camera, lens
+    ORDER BY count DESC
+  `;
+
   const result = await db.$queryRaw`
     SELECT
         albums.name AS name,
@@ -489,6 +499,7 @@ export async function fetchImagesAnalysis() {
     showTotal: Number(counts[0].images_show),
     crTotal: Number(counts[0].cr_total),
     tagsTotal: Number(counts[0].tags_total),
+    cameraStats,
     result
   }
 }
