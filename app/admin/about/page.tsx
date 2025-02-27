@@ -68,7 +68,7 @@ export default function About() {
           />
         </svg>
 
-        <p className="whitespace-nowrap text-sm">v2.1.3</p>
+        <p className="whitespace-nowrap text-sm">v2.1.4</p>
       </span>
       <span>PicImpact 是一个摄影师专用的摄影作品展示网站，基于 Next.js + Hono.js 开发。</span>
       <div className="flex flex-col w-full">
