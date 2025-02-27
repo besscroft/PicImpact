@@ -137,9 +137,11 @@
     "maxWidth": "プレビュー画像の最大幅（正の整数）",
     "inputMaxWidth": "プレビュー画像の最大幅制限を入力してください（正の整数）",
     "indexStyleSelect": "ホームページスタイルを選択",
-    "indexStyleDefault": "デフォルトアルバムスタイル",
-    "indexStyleStar": "おすすめ画像スタイル",
-    "customIndexDownloadEnable": "ホームページのコピー・ダウンロードボタンの表示（おすすめモードで有効）"
+    "indexStyleDefault": "デフォルトアルバムモード",
+    "indexStyleStar": "精選画像モード",
+    "customIndexDownloadEnable": "ホームページのコピー/ダウンロードボタンを表示（精選モードで有効）",
+    "customFoldAlbumEnable": "アルバムの自動折りたたみを有効にする",
+    "customFoldAlbumCount": "自動折りたたみアルバム数"
   },
   "Password": {
     "onePassword": "旧パスワード",

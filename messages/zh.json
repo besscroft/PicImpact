@@ -139,7 +139,9 @@
     "indexStyleSelect": "选择首页模式",
     "indexStyleDefault": "默认相册模式",
     "indexStyleStar": "精选图片模式",
-    "customIndexDownloadEnable": "首页复制下载按钮显示（精选模式生效）"
+    "customIndexDownloadEnable": "首页复制下载按钮显示（精选模式生效）",
+    "customFoldAlbumEnable": "是否开启自动折叠相册",
+    "customFoldAlbumCount": "自动折叠相册数量"
   },
   "Password": {
     "onePassword": "旧密码",

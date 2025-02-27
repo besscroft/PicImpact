@@ -16,6 +16,8 @@ app.get('/get-custom-info', async (c) => {
     'rss_feed_id',
     'rss_user_id',
     'custom_index_style',
+    'custom_fold_album_enable',
+    'custom_fold_album_count',
     'custom_index_download_enable',
     'preview_max_width_limit',
     'preview_max_width_limit_switch',
