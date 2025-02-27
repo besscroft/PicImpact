@@ -1,5 +1,5 @@
 export type DataProps = {
-  data: AlbumType[]
+  data: any
   customFoldAlbumEnable: boolean
   customFoldAlbumCount: number
 }
