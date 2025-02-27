@@ -65,7 +65,10 @@
     "count": "Count/Photos",
     "show": "Show/Photos",
     "zhang": "Photos",
-    "ge": "Items"
+    "ge": "Items",
+    "cameraStats": "Camera Equipment Statistics",
+    "camera": "Camera",
+    "lens": "Lens"
   },
   "Upload": {
     "simple": "Single File Upload",

@@ -65,7 +65,10 @@
     "count": "枚数/枚",
     "show": "表示/枚",
     "zhang": "枚",
-    "ge": "個"
+    "ge": "個",
+    "cameraStats": "撮影機器の統計",
+    "camera": "カメラ",
+    "lens": "レンズ"
   },
   "Upload": {
     "simple": "単一ファイルアップロード",

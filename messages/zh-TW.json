@@ -65,7 +65,10 @@
     "count": "數量/張",
     "show": "顯示/張",
     "zhang": "張",
-    "ge": "個"
+    "ge": "個",
+    "cameraStats": "拍攝設備統計",
+    "camera": "相機",
+    "lens": "鏡頭"
   },
   "Upload": {
     "simple": "單檔案上傳",

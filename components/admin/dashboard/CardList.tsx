@@ -21,6 +21,7 @@ import {
   TableRow,
 } from '~/components/ui/table'
 import { useTranslations } from 'next-intl'
+import { ScrollArea } from "~/components/ui/scroll-area"
 
 export default function CardList(props: Readonly<DataProps>) {
   const t = useTranslations()
@@ -94,6 +95,38 @@ export default function CardList(props: Readonly<DataProps>) {
                 <MessageSquareHeart size={20} className="mr-1"/>{t('Button.issue')}
               </Button>
             </Link>
+          </CardContent>
+        </Card>
+        <Card className="h-full w-full border">
+          <CardHeader>
+            <CardTitle>{t('Dashboard.cameraStats')}</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ScrollArea className="h-[300px] w-full">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>{t('Dashboard.camera')}</TableHead>
+                    <TableHead>{t('Dashboard.lens')}</TableHead>
+                    <TableHead className="text-right">{t('Dashboard.count')}</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {props.data?.cameraStats?.map((stat: any, index: number) => (
+                    <TableRow key={index}>
+                      <TableCell>{stat.camera}</TableCell>
+                      <TableCell>{stat.lens}</TableCell>
+                      <TableCell className="text-right font-normal">
+                        <Counter 
+                          targetValue={Number(stat.count)}
+                          fontStyle="text-sm font-normal text-foreground"
+                        />
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </ScrollArea>
           </CardContent>
         </Card>
       </div>

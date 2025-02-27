@@ -31,6 +31,12 @@ interface CounterProps {
    * Additional classes for the counter.
    */
   className?: string;
+
+  /**
+   * Font style classes for the counter.
+   * @default "text-4xl font-bold text-foreground"
+   */
+  fontStyle?: string;
 }
 
 export const Formatter = {
@@ -45,6 +51,7 @@ export default function Counter({
   direction = "up",
   delay = 0,
   className,
+  fontStyle = "text-4xl font-bold text-foreground",
 }: CounterProps) {
   const ref = useRef<HTMLSpanElement>(null);
   const isGoingUp = direction === "up";
@@ -77,5 +84,5 @@ export default function Counter({
     });
   }, [springValue, format]);
 
-  return <span ref={ref} className={cn("text-4xl font-bold text-foreground", className)} />;
+  return <span ref={ref} className={cn(fontStyle, className)} />;
 }
