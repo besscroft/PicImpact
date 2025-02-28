@@ -2,7 +2,7 @@ import Logo from '~/components/layout/Logo'
 import DynamicNavbar from '~/components/layout/DynamicNavbar'
 import HeaderLink from '~/components/layout/HeaderLink'
 import { fetchAlbumsShow,fetchAlbumsShowOptions } from '~/server/db/query'
-import { DataProps } from '~/types'
+import { AlbumDataProps } from '~/types'
 
 export default async function Header() {
   const getData = async () => {
@@ -18,7 +18,7 @@ export default async function Header() {
   const data = await getData()
   const customFoldAlbumEnable = await getCustomFoldAlbumEnable()
 
-  const props: DataProps = {
+  const props: AlbumDataProps = {
     data: data,
     customFoldAlbumEnable: customFoldAlbumEnable.enabled,
     customFoldAlbumCount: customFoldAlbumEnable.count

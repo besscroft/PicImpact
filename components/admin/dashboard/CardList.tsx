@@ -8,7 +8,7 @@ import {
 } from '~/components/ui/card'
 import { Button } from '~/components/ui/button'
 import { Progress } from '~/components/ui/progress'
-import { DataProps } from '~/types'
+import { AnalysisDataProps } from '~/types'
 import Link from 'next/link'
 import { MessageSquareHeart, Star } from 'lucide-react'
 import Counter from '~/components/animata/text/counter'
@@ -23,7 +23,7 @@ import {
 import { useTranslations } from 'next-intl'
 import { ScrollArea } from "~/components/ui/scroll-area"
 
-export default function CardList(props: Readonly<DataProps>) {
+export default function CardList(props: Readonly<AnalysisDataProps>) {
   const t = useTranslations()
 
   return (

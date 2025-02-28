@@ -2,7 +2,7 @@
 
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '~/components/ui/sheet'
 import { useButtonStore } from '~/app/providers/button-store-Providers'
-import { DataProps, ImageType } from '~/types'
+import { ImageDataProps, ImageType } from '~/types'
 import React from 'react'
 import { fetcher } from '~/lib/utils/fetcher'
 import useSWR from 'swr'
@@ -17,7 +17,7 @@ export default function ImageView() {
   )
   const { data } = useSWR('/api/v1/copyrights/get', fetcher)
 
-  const props: DataProps = {
+  const props: ImageDataProps = {
     data: imageViewData,
   }
 

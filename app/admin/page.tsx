@@ -1,6 +1,6 @@
 import { fetchImagesAnalysis } from '~/server/db/query'
 import CardList from '~/components/admin/dashboard/CardList'
-import { DataProps } from '~/types'
+import { AnalysisDataProps } from '~/types'
 
 export default async function Admin() {
   const getData = async (): Promise<{
@@ -8,6 +8,11 @@ export default async function Admin() {
     showTotal: number
     crTotal: number
     tagsTotal: number
+    cameraStats: Array<{
+      camera: string;
+      lens: string;
+      count: number;
+    }>;
     result: any[]
   }> => {
     'use server'
@@ -17,7 +22,7 @@ export default async function Admin() {
 
   const data = await getData()
 
-  const props: DataProps = {
+  const props: AnalysisDataProps = {
     data: data,
   }
 

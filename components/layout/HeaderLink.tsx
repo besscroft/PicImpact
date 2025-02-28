@@ -1,9 +1,8 @@
 'use client'
 
-import { AlbumType } from '~/types'
+import { AlbumType, AlbumDataProps } from '~/types'
 import { usePathname } from 'next/navigation'
 import { useRouter } from 'next-nprogress-bar'
-import { DataProps } from '~/types'
 import { useTranslations } from 'next-intl'
 import {
   NavigationMenu,
@@ -17,7 +16,7 @@ import { cn } from '~/lib/utils'
 import React from 'react'
 import { Button } from '~/components/ui/button'
 
-export default function HeaderLink(props: Readonly<DataProps>) {
+export default function HeaderLink(props: Readonly<AlbumDataProps>) {
   const pathname = usePathname()
   const router = useRouter()
   const t = useTranslations()

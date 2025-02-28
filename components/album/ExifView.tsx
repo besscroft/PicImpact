@@ -10,13 +10,13 @@ import {
 } from "~/components/ui/table"
 import { Card } from '~/components/ui/card'
 import React from 'react'
-import { DataProps } from '~/types'
+import { ImageDataProps } from '~/types'
 import dayjs from 'dayjs'
 import customParseFormat from 'dayjs/plugin/customParseFormat'
 
 dayjs.extend(customParseFormat)
 
-export default function ExifView(props: Readonly<DataProps>) {
+export default function ExifView(props: Readonly<ImageDataProps>) {
   return (
     <Card className="show-up-motion">
       <Table aria-label="照片 Exif 信息">
