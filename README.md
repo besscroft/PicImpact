@@ -8,13 +8,9 @@ PicImpact
   <img src="https://img.shields.io/github/repo-size/besscroft/PicImpact?style=flat-square&color=328657" alt="存储库大小">
 </p>
 
-<p align="center">
-    <img src=picimpact.jpg width=384 />
-</p>
+PicImpact 是一个支持自部署的摄影师专用的摄影作品展示网站，基于 Next.js + Hono.js 开发。
 
-PicImpact 是一个摄影师专用的摄影作品展示网站，基于 Next.js + Hono.js 开发。
-
-> 注：这是个很艰难的决定，v2 版本与 v1 版本不兼容，您需要重新配置数据库。[迁移脚本](./scripts/migrate/)
+> v2 版本与 v1 版本不兼容，如果您跨版本升级，您需要重新配置数据库。[迁移脚本](./scripts/migrate/)
 
 ### 功能特性
 
@@ -36,6 +32,8 @@ PicImpact 是一个摄影师专用的摄影作品展示网站，基于 Next.js +
 
 你可以点击下面的按钮来一键部署到 Vercel，**然后将 `Build Command` 设置为 `pnpm run build:vercel`**，也可以 Fork 项目后手动部署到任何支持的平台。
 
+> 我们推荐当新版本发布时您再进行版本更新！
+
 <a href="https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fbesscroft%2FPicImpact&env=DATABASE_URL,AUTH_SECRET"><img src="https://vercel.com/button" alt="Deploy with Vercel"/></a>
 
 | Key          | 备注                                                                                           |
@@ -45,8 +43,7 @@ PicImpact 是一个摄影师专用的摄影作品展示网站，基于 Next.js +
 
 默认账号：`admin@qq.com`，默认密码：`666666`，**登录后请先去设置里面修改密码！**
 
-> 部署就是这么简单，只需要您准备一个干净的数据库就行！
-> 除了容器化部署方式外，其它的部署方式都需要执行 `pnpm run prisma:deploy` 来完成 prisma 迁移。
+> 请根据您的数据库供应商来填写正确的数据库 `connect url`。
 >
 > 如果是 Vercel 部署，直接将 `Build Command` 设置为 `pnpm run build:vercel` 即可。
 >
@@ -72,7 +69,7 @@ docker run -d --name picimpact \
 > 
 > 原则上优先支持 Cloudflare R2 和 AWS S3 API。
 
-我比较推荐 Cloudflare R2，算是很良心的了，流量免费。
+推荐使用 Cloudflare R2，流量免费。
 
 - Cloudflare R2 配置<details><summary>查看详情</summary>
   <table>
