@@ -1,6 +1,6 @@
 'use client'
 
-import { DataProps, ImageServerHandleProps, ImageType } from '~/types'
+import { ImageListDataProps, ImageServerHandleProps, ImageType } from '~/types'
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '~/components/ui/sheet'
 import React, { useState } from 'react'
 import { useButtonStore } from '~/app/providers/button-store-Providers'
@@ -24,7 +24,7 @@ import {
 } from '~/components/ui/dialog'
 import { Label } from '~/components/ui/label.tsx'
 
-export default function ImageBatchDeleteSheet(props : Readonly<ImageServerHandleProps & { dataProps: DataProps } & { pageNum: number } & { album: string }>) {
+export default function ImageBatchDeleteSheet(props : Readonly<ImageServerHandleProps & { dataProps: ImageListDataProps } & { pageNum: number } & { album: string }>) {
   const { dataProps, pageNum, album, ...restProps } = props
   const { mutate } = useSWRInfiniteServerHook(restProps, pageNum, album)
   const { imageBatchDelete, setImageBatchDelete } = useButtonStore(

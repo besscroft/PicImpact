@@ -1,5 +1,5 @@
-export type DataProps = {
-  data: any
+export type AlbumDataProps = {
+  data: AlbumType[]
   customFoldAlbumEnable: boolean
   customFoldAlbumCount: number
 }
@@ -33,12 +33,15 @@ export type AlbumType = {
   id: string;
   name: string;
   album_value: string;
-  detail: string;
+  detail: string | null;
   show: number;
   sort: number;
   allow_download: number;
-  license: string;
+  license: string | null;
   image_sorting: number;
+  del?: number;
+  createdAt?: Date;
+  updatedAt?: Date | null;
 }
 
 export type ExifType = {
@@ -101,4 +104,36 @@ export type Config = {
   config_key: string;
   config_value: string;
   detail: string;
+}
+
+export type AlbumListProps = {
+  data: AlbumType[]
+}
+
+export type ImageDataProps = {
+  data: ImageType
+}
+
+export type ImageListDataProps = {
+  data: ImageType[]
+}
+
+export type AnalysisDataProps = {
+  data: {
+    total: number;
+    showTotal: number;
+    crTotal: number;
+    tagsTotal: number;
+    cameraStats: Array<{
+      camera: string;
+      lens: string;
+      count: number;
+    }>;
+    result: Array<{
+      name: string;
+      value: string;
+      total: number;
+      show_total: number;
+    }>;
+  }
 }

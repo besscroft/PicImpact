@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useState } from 'react'
-import { DataProps, ImageServerHandleProps, ImageType, AlbumType } from '~/types'
+import { ImageListDataProps, ImageServerHandleProps, ImageType, AlbumType } from '~/types'
 import { useSWRInfiniteServerHook } from '~/hooks/useSWRInfiniteServerHook'
 import { useSWRPageTotalServerHook } from '~/hooks/useSWRPageTotalServerHook'
 import { ConfigProvider, Pagination } from 'antd'
@@ -64,7 +64,7 @@ export default function ListProps(props : Readonly<ImageServerHandleProps>) {
   const { data: albums, isLoading: albumsLoading } = useSWR('/api/v1/albums/get', fetcher)
   const t = useTranslations()
 
-  const dataProps: DataProps = {
+  const dataProps: ImageListDataProps = {
     data: data,
   }
 

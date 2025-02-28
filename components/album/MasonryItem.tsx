@@ -1,7 +1,7 @@
 'use client'
 
 import { useButtonStore } from '~/app/providers/button-store-Providers'
-import { CopyrightType, DataProps, ImageType } from '~/types'
+import { CopyrightType, ImageType, ImageDataProps } from '~/types'
 import {
   Aperture,
   Camera,
@@ -56,7 +56,7 @@ export default function MasonryItem() {
   )
   const { data: download = false, mutate: setDownload } = useSWR(['masonry/download', MasonryViewData.url], null)
 
-  const props: DataProps = {
+  const props: ImageDataProps = {
     data: MasonryViewData,
   }
   const tabsListRef = React.useRef<HTMLDivElement>(null);

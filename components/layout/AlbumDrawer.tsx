@@ -2,12 +2,12 @@
 
 import {BookImage, Home, Images} from 'lucide-react'
 import { Drawer } from 'vaul'
-import { AlbumType, DataProps } from '~/types'
+import { AlbumType, AlbumListProps } from '~/types'
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next-nprogress-bar'
 import { usePathname } from 'next/navigation'
 
-export default function AlbumDrawer(props: Readonly<DataProps>) {
+export default function AlbumDrawer(props: Readonly<AlbumListProps>) {
   const { data: session } = useSession()
   const router = useRouter()
   const pathname = usePathname()

@@ -1,7 +1,7 @@
 import VaulDrawer from '~/components/layout/VaulDrawer'
 import { DropMenu } from '~/components/layout/DropMenu'
 import { fetchAlbumsShow } from '~/server/db/query'
-import { DataProps } from '~/types'
+import { AlbumListProps } from '~/types'
 import AlbumDrawer from '~/components/layout/AlbumDrawer'
 
 export default async function DynamicNavbar() {
@@ -12,7 +12,7 @@ export default async function DynamicNavbar() {
 
   const data = await getData()
 
-  const props: DataProps = {
+  const props: AlbumListProps = {
     data: data
   }
 
