@@ -5,6 +5,7 @@
   "packageManager": "pnpm@9.7.1",
   "scripts": {
     "dev:server": "next dev",
+    "dev:turbopack": "next dev --turbopack",
     "dev:prisma": "pnpm run prisma:dev && pnpm run prisma:generate",
     "build": "next build",
     "build:vercel": "pnpm run prisma:deploy && npx prisma generate && next build",
