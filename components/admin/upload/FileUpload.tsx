@@ -23,8 +23,6 @@ import {
   SelectValue,
 } from '~/components/ui/select'
 import { CircleHelpIcon } from '~/components/icons/circle-help'
-import { ImagePlus } from 'lucide-react'
-import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from '~/components/ui/sheet.tsx'
 import { Tag, TagInput } from 'emblor'
 import { useTranslations } from 'next-intl'
 
@@ -47,7 +45,6 @@ export default function FileUpload() {
   const [detail, setDetail] = useState('')
   const [imageLabels, setImageLabels] = useState([] as string[])
   const [mode, setMode] = useState('singleton')
-  const [customUpload, setCustomUpload] = useState(false)
   const [activeTagIndex, setActiveTagIndex] = useState<number | null>(null);
   const { setUploadHelp } = useButtonStore(
     (state) => state,
@@ -129,58 +126,6 @@ export default function FileUpload() {
       }
     } catch (e) {
       console.log(e)
-    }
-  }
-
-  async function customSubmit() {
-    try {
-      setLoading(true)
-      if (!url || url === '') {
-        toast.warning('请先填写图片地址！')
-        return
-      }
-      if (album === '') {
-        toast.warning('请先选择相册！')
-        return
-      }
-      if (!height || height <= 0) {
-        toast.warning('图片高度不能为空且必须大于 0！')
-        return
-      }
-      if (!width || width <= 0) {
-        toast.warning('图片宽度不能为空且必须大于 0！')
-        return
-      }
-      const data = {
-        album: album,
-        url: url,
-        title: title,
-        labels: imageLabels,
-        detail: detail,
-        width: width,
-        height: height,
-        lat: lat,
-        type: 1,
-        lon: lon,
-      } as ImageType
-      const res = await fetch('/api/v1/images/add', {
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        method: 'post',
-        // @ts-ignore
-        body: JSON.stringify(data),
-      }).then(res => res.json())
-      if (res?.code === 200) {
-        toast.success('保存成功！')
-      } else {
-        toast.error('保存失败！')
-      }
-    } catch (e) {
-      console.log(e)
-      toast.error('保存失败！')
-    } finally {
-      setLoading(false)
     }
   }
 
@@ -593,14 +538,6 @@ export default function FileUpload() {
           <Button
             variant="outline"
             size="icon"
-            aria-label={t('Button.add')}
-            onClick={() => setCustomUpload(true)}
-          >
-            <ImagePlus />
-          </Button>
-          <Button
-            variant="outline"
-            size="icon"
             aria-label={t('Button.help')}
             onClick={() => setUploadHelp(true)}
           >
@@ -724,7 +661,7 @@ export default function FileUpload() {
         </div>
         <div>
           {
-            url && url !== '' && mode !== 'multiple' && !customUpload &&
+            url && url !== '' && mode !== 'multiple' &&
             <>
               {
                 mode === 'livephoto' &&
@@ -909,243 +846,6 @@ export default function FileUpload() {
         </div>
       </div>
       <FileUploadHelpSheet/>
-      <Sheet
-        defaultOpen={false}
-        open={customUpload}
-        onOpenChange={async (open: boolean) => {
-          if (!open) {
-            setCustomUpload(false)
-            await onRemoveFile()
-          }
-        }}
-        modal={false}
-      >
-        <SheetContent side="left" className="w-full overflow-y-auto scrollbar-hide space-y-2"
-                      onInteractOutside={(event: any) => event.preventDefault()}>
-          <SheetHeader>
-            <SheetTitle>{t('Upload.manualUpload')}</SheetTitle>
-            <SheetDescription className="space-y-2">
-              <p>
-                {t('Upload.alternativeUpload')}
-              </p>
-            </SheetDescription>
-          </SheetHeader>
-          <div className="flex justify-between space-x-2">
-            <div className="flex w-full justify-between space-x-1">
-              <Select
-                defaultValue={storage}
-                onValueChange={async (value: string) => {
-                  setStorage(value)
-                  if (value === 'alist') {
-                    getAlistStorage()
-                  } else {
-                    setStorageSelect(false)
-                  }
-                }}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder={t('Upload.selectStorage')}/>
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectGroup>
-                    <SelectLabel>{t('Words.storage')}</SelectLabel>
-                    {storages?.map((storage: any) => (
-                      <SelectItem key={storage.value} value={storage.value}>
-                        {storage.label}
-                      </SelectItem>
-                    ))}
-                  </SelectGroup>
-                </SelectContent>
-              </Select>
-              <Select
-                disabled={isLoading}
-                defaultValue={album}
-                onValueChange={async (value: string) => {
-                  setAlbum(value)
-                }}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder={t('Upload.selectAlbum')}/>
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectGroup>
-                    <SelectLabel>{t('Words.album')}</SelectLabel>
-                    {data?.map((album: AlbumType) => (
-                      <SelectItem key={album.album_value} value={album.album_value}>
-                        {album.name}
-                      </SelectItem>
-                    ))}
-                  </SelectGroup>
-                </SelectContent>
-              </Select>
-            </div>
-            {
-              storageSelect && alistStorage?.length > 0 &&
-              <div className="w-full">
-                <Select
-                  disabled={isLoading}
-                  defaultValue={album}
-                  onValueChange={async (value: string) => {
-                    setAlistMountPath(value)
-                  }}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder={t('Upload.selectAlistDirectory')}/>
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectGroup>
-                      <SelectLabel>{t('Upload.alistDirectory')}</SelectLabel>
-                      {alistStorage?.map((storage: any) => (
-                        <SelectItem key={storage?.mount_path} value={storage?.mount_path}>
-                          {storage?.mount_path}
-                        </SelectItem>
-                      ))}
-                    </SelectGroup>
-                  </SelectContent>
-                </Select>
-              </div>
-            }
-          </div>
-          <div className="w-full mt-2 space-y-2">
-            <label
-              htmlFor="title"
-              className="block overflow-hidden rounded-md border border-gray-200 px-3 py-2 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600"
-            >
-              <span className="text-xs font-medium text-gray-700">{t('Upload.title')}</span>
-
-              <input
-                type="text"
-                id="title"
-                value={title}
-                placeholder={t('Upload.inputTitle')}
-                onChange={(e) => setTitle(e.target.value)}
-                className="mt-1 w-full border-none p-0 focus:border-transparent focus:outline-none focus:ring-0 sm:text-sm"
-              />
-            </label>
-            <label
-              htmlFor="url"
-              className="block overflow-hidden rounded-md border border-gray-200 px-3 py-2 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600"
-            >
-              <span className="text-xs font-medium text-gray-700">{t('Upload.url')}</span>
-
-              <input
-                type="text"
-                id="url"
-                value={url}
-                onChange={(e) => setUrl(e.target.value)}
-                className="mt-1 w-full border-none p-0 focus:border-transparent focus:outline-none focus:ring-0 sm:text-sm"
-              />
-            </label>
-            <div className="flex items-center space-x-1 w-full">
-              <label
-                htmlFor="width"
-                className="w-full block overflow-hidden rounded-md border border-gray-200 px-3 py-2 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600"
-              >
-                <span className="text-xs font-medium text-gray-700">{t('Upload.width')}</span>
-
-                <input
-                  type="number"
-                  id="width"
-                  value={width}
-                  placeholder="0"
-                  onChange={(e) => setWidth(Number(e.target.value))}
-                  className="mt-1 w-full border-none p-0 focus:border-transparent focus:outline-none focus:ring-0 sm:text-sm"
-                />
-              </label>
-              <label
-                htmlFor="height"
-                className="w-full block overflow-hidden rounded-md border border-gray-200 px-3 py-2 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600"
-              >
-                <span className="text-xs font-medium text-gray-700">{t('Upload.height')}</span>
-
-                <input
-                  type="number"
-                  id="height"
-                  value={height}
-                  placeholder="0"
-                  onChange={(e) => setHeight(Number(e.target.value))}
-                  className="mt-1 w-full border-none p-0 focus:border-transparent focus:outline-none focus:ring-0 sm:text-sm"
-                />
-              </label>
-            </div>
-            <div className="flex items-center space-x-1 w-full">
-              <label
-                htmlFor="lon"
-                className="w-full block overflow-hidden rounded-md border border-gray-200 px-3 py-2 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600"
-              >
-                <span className="text-xs font-medium text-gray-700">{t('Upload.lon')}</span>
-
-                <input
-                  type="text"
-                  id="lon"
-                  value={lon}
-                  placeholder={t('Upload.inputLon')}
-                  onChange={(e) => setLon(e.target.value)}
-                  className="mt-1 w-full border-none p-0 focus:border-transparent focus:outline-none focus:ring-0 sm:text-sm"
-                />
-              </label>
-              <label
-                htmlFor="lat"
-                className="w-full block overflow-hidden rounded-md border border-gray-200 px-3 py-2 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600"
-              >
-                <span className="text-xs font-medium text-gray-700">{t('Upload.lat')}</span>
-
-                <input
-                  type="text"
-                  id="lat"
-                  value={lat}
-                  placeholder={t('Upload.inputLat')}
-                  onChange={(e) => setLat(e.target.value)}
-                  className="mt-1 w-full border-none p-0 focus:border-transparent focus:outline-none focus:ring-0 sm:text-sm"
-                />
-              </label>
-            </div>
-            <label
-              htmlFor="detail"
-              className="block overflow-hidden rounded-md border border-gray-200 px-3 py-2 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600"
-            >
-              <span className="text-xs font-medium text-gray-700">{t('Upload.detail')}</span>
-
-              <input
-                type="text"
-                id="detail"
-                value={detail}
-                placeholder={t('Upload.inputDetail')}
-                onChange={(e) => setDetail(e.target.value)}
-                className="mt-1 w-full border-none p-0 focus:border-transparent focus:outline-none focus:ring-0 sm:text-sm"
-              />
-            </label>
-            <TagInput
-              tags={!imageLabels ? [] as any : imageLabels.map((label: string) => ({ id: Math.floor(Math.random() * 1000), text: label }))}
-              setTags={(newTags: any) => {
-                setImageLabels(newTags?.map((label: Tag) => label.text))
-              }}
-              placeholder={t('Upload.indexTag')}
-              styleClasses={{
-                inlineTagsContainer:
-                  "border-input rounded-lg bg-background shadow-sm shadow-black/5 transition-shadow focus-within:border-ring focus-within:outline-none focus-within:ring-[3px] focus-within:ring-ring/20 p-1 gap-1",
-                input: "w-full min-w-[80px] focus-visible:outline-none shadow-none px-2 h-7",
-                tag: {
-                  body: "h-7 relative bg-background border border-input hover:bg-background rounded-md font-medium text-xs ps-2 pe-7",
-                  closeButton:
-                    "absolute -inset-y-px -end-px p-0 rounded-e-lg flex size-7 transition-colors outline-0 focus-visible:outline focus-visible:outline-2 focus-visible:outline-ring/70 text-muted-foreground/80 hover:text-foreground",
-                },
-              }}
-              activeTagIndex={activeTagIndex}
-              setActiveTagIndex={setActiveTagIndex}
-            />
-          </div>
-          <Button
-            variant="outline"
-            disabled={loading}
-            onClick={() => customSubmit()}
-            aria-label={t('Button.submit')}
-          >
-            {loading && <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />}
-            {t('Button.submit')}
-          </Button>
-        </SheetContent>
-      </Sheet>
     </div>
   )
 }
