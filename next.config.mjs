@@ -7,7 +7,9 @@ const nextConfig = {
   output: "standalone",
   reactStrictMode: true,
   compiler: {
-    removeConsole: process.env.NODE_ENV === "production",
+    removeConsole: {
+      exclude: ['error'],
+    },
   },
   serverExternalPackages: ['pg'],
   eslint: {
