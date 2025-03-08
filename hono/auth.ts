@@ -3,6 +3,7 @@ import { queryAuthTemplateSecret } from '~/server/db/query'
 import * as OTPAuth from 'otpauth'
 import { deleteAuthSecret, saveAuthSecret, saveAuthTemplateSecret } from '~/server/db/operate'
 import { Hono } from 'hono'
+import { HTTPException } from 'hono/http-exception'
 
 const app = new Hono()
 
@@ -30,8 +31,7 @@ app.get('/get-seed-secret', async (c) => {
       }
     })
   } catch (e) {
-    console.log(e)
-    return c.json({ code: 500, message: 'Failed' })
+    throw new HTTPException(500, { message: 'Failed', cause: e })
   }
 })
 
@@ -56,8 +56,7 @@ app.post('/validate', async (c) => {
     }
     return c.json({ code: 500, message: 'Failed' })
   } catch (e) {
-    console.log(e)
-    return c.json({ code: 500, message: 'Failed' })
+    throw new HTTPException(500, { message: 'Failed', cause: e })
   }
 })
 
@@ -66,8 +65,7 @@ app.delete('/remove', async (c) => {
     await deleteAuthSecret();
     return c.json({ code: 200, message: 'Success' })
   } catch (e) {
-    console.log(e)
-    return c.json({ code: 500, message: 'Failed' })
+    throw new HTTPException(500, { message: 'Failed', cause: e })
   }
 })
 

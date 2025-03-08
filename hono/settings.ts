@@ -5,6 +5,7 @@ import { updateAListConfig, updateCustomInfo, updatePassword, updateR2Config, up
 import { auth } from '~/server/auth'
 import CryptoJS from 'crypto-js'
 import { Hono } from 'hono'
+import { HTTPException } from 'hono/http-exception'
 
 const app = new Hono()
 
@@ -125,10 +126,7 @@ app.put('/update-custom-info', async (c) => {
       message: 'Success'
     })
   } catch (e) {
-    return Response.json({
-      code: 500,
-      message: 'Failed'
-    })
+    throw new HTTPException(500, { message: 'Failed', cause: e })
   }
 })
 
@@ -138,10 +136,7 @@ app.put('/update-password', async (c) => {
   const daUser = await fetchUserById(user?.id)
   const secretKey = await fetchSecretKey()
   if (!secretKey || !secretKey.config_value) {
-    return Response.json({
-      code: 500,
-      message: 'Failed'
-    })
+    throw new HTTPException(500, { message: 'Failed', cause: e })
   }
   const hashedOldPassword = CryptoJS.HmacSHA512(pwd.oldPassword, secretKey?.config_value).toString()
 
@@ -160,11 +155,7 @@ app.put('/update-password', async (c) => {
       })
     }
   } catch (e) {
-    console.log(e)
-    return c.json({
-      code: 500,
-      message: 'Failed'
-    })
+    throw new HTTPException(500, { message: 'Failed', cause: e })
   }
 })
 
@@ -190,10 +181,7 @@ app.put('/update-user-info', async (c) => {
       message: 'Success'
     })
   } catch (e) {
-    return c.json({
-      code: 500,
-      message: 'Failed'
-    })
+    throw new HTTPException(500, { message: 'Failed', cause: e })
   }
 })
 

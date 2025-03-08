@@ -4,6 +4,7 @@ import { getClient } from '~/server/lib/s3'
 import { getR2Client } from '~/server/lib/r2'
 import { PutObjectCommand } from '@aws-sdk/client-s3'
 import { Hono } from 'hono'
+import { HTTPException } from 'hono/http-exception'
 
 const app = new Hono()
 
@@ -159,11 +160,11 @@ app.post('/upload', async (c) => {
       if (res?.code === 200) {
         return Response.json({code: 200, message: 'Success', data: res?.data.raw_url})
       } else {
-        return Response.json({code: 500, message: 'Failed to retrieve file path', data: null})
+        throw new HTTPException(500, { message: 'Failed to retrieve file path' })
       }
     }
   }
-  return Response.json({code: 500, message: 'Failed', data: null})
+  throw new HTTPException(500, { message: 'Failed', cause: e })
 })
 
 export default app
