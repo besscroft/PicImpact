@@ -61,7 +61,6 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         token.image = user.image
       }
       if(trigger == "update" && session) {
-        console.log('update')
         token.name = session.user.name;
         token.email = session.user.email;
         token.image = session.user.image;

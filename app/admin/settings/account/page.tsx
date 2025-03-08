@@ -34,7 +34,6 @@ export default function Preferences() {
       }).then(res => res.json())
       toast.success('修改成功！')
     } catch (e) {
-      console.log(e)
       toast.error('修改失败！')
     } finally {
       setLoading(false)

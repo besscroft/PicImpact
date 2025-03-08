@@ -106,7 +106,7 @@ export default function FileUpload() {
         setLon('')
       }
     } catch (e) {
-      console.log(e)
+      console.error(e)
     }
     try {
       const reader = new FileReader();
@@ -125,7 +125,7 @@ export default function FileUpload() {
         reader.readAsDataURL(file);
       }
     } catch (e) {
-      console.log(e)
+      console.error(e)
     }
   }
 
@@ -177,7 +177,6 @@ export default function FileUpload() {
         toast.error('保存失败！')
       }
     } catch (e) {
-      console.log(e)
       toast.error('保存失败！')
     } finally {
       setLoading(false)
@@ -343,11 +342,11 @@ export default function FileUpload() {
           };
           reader.readAsDataURL(file);
         } catch (e) {
-          console.log(e)
+          console.error(e)
         }
       }
     } catch (e) {
-      console.log(e)
+      console.error(e)
     }
   }
 
@@ -384,7 +383,6 @@ export default function FileUpload() {
         }
       },
       error(err) {
-        console.log(err.message);
         toast.error('预览图片上传失败！')
       },
     })
@@ -410,7 +408,7 @@ export default function FileUpload() {
             await uploadPreviewImage(option, album + '/preview', res?.data, flag, outputBuffer)
           }
         } catch (e) {
-          console.log(e)
+          console.error(e)
           option.onSuccess(option.file)
         }
         await loadExif(option.file, outputBuffer, flag)

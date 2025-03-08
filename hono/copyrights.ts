@@ -7,6 +7,7 @@ import {
 } from '~/server/db/operate'
 import { fetchCopyrightList } from '~/server/db/query'
 import { Hono } from 'hono'
+import { HTTPException } from 'hono/http-exception'
 
 const app = new Hono()
 
@@ -25,8 +26,7 @@ app.post('/add', async (c) => {
     await insertCopyright(copyright);
     return c.json({ code: 200, message: 'Success' })
   } catch (e) {
-    console.log(e)
-    return c.json({ code: 500, message: 'Failed' })
+    throw new HTTPException(500, { message: 'Failed', cause: e })
   }
 })
 
@@ -42,8 +42,7 @@ app.put('/update', async (c) => {
     await updateCopyright(copyright);
     return c.json({ code: 200, message: 'Success' })
   } catch (e) {
-    console.log(e)
-    return c.json({ code: 500, message: 'Failed' })
+    throw new HTTPException(500, { message: 'Failed', cause: e })
   }
 })
 
