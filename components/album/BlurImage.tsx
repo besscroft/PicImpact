@@ -37,8 +37,8 @@ export default function BlurImage({ photo, dataList }: { photo: any, dataList: a
         photo.type === 2 &&
         <div className="absolute top-2 left-2 p-5 rounded-full">
           <svg xmlns="http://www.w3.org/2000/svg" className="absolute bottom-3 right-3 text-white opacity-75 z-10"
-               width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
-               stroke-linecap="round" stroke-linejoin="round">
+               width="24" height="24" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" fill="none"
+               strokeLinecap="round" strokeLinejoin="round">
             <path stroke="none" fill="none"></path>
             <circle cx="12" cy="12" r="1"></circle>
             <circle cx="12" cy="12" r="5"></circle>
