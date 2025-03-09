@@ -70,7 +70,7 @@ export default function VaulDrawer() {
                                 location.replace('/login')
                               }, 1000);
                             } catch (e) {
-                              console.log(e)
+                              console.error(e)
                             }
                           }}
                           className={closeClasses}

@@ -80,7 +80,6 @@ export default function Masonry(props : Readonly<ImageHandleProps>) {
           toast.warning(res.message)
         }
       } catch (error) {
-        console.log(error)
         toast.error('图片获取错误，请重试！')
       }
     };
