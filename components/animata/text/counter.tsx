@@ -37,6 +37,12 @@ interface CounterProps {
    * @default "text-4xl font-bold text-foreground"
    */
   fontStyle?: string;
+
+  /**
+   * Whether to animate the counter.
+   * @default true
+   */
+  animated?: boolean;
 }
 
 export const Formatter = {
@@ -52,6 +58,7 @@ export default function Counter({
   delay = 0,
   className,
   fontStyle = "text-4xl font-bold text-foreground",
+  animated = true,
 }: CounterProps) {
   const ref = useRef<HTMLSpanElement>(null);
   const isGoingUp = direction === "up";
@@ -64,6 +71,14 @@ export default function Counter({
   const isInView = useInView(ref, { margin: "0px", once: true });
 
   useEffect(() => {
+    if (!animated) {
+      // If animation is disabled, immediately set the content to the target value
+      if (ref.current) {
+        ref.current.textContent = format(targetValue);
+      }
+      return;
+    }
+
     if (!isInView) {
       return;
     }
@@ -73,16 +88,18 @@ export default function Counter({
     }, delay);
 
     return () => clearTimeout(timer);
-  }, [isInView, delay, isGoingUp, targetValue, motionValue]);
+  }, [isInView, delay, isGoingUp, targetValue, motionValue, animated, format]);
 
   useEffect(() => {
+    if (!animated) return; // Skip animation subscription if animation is disabled
+    
     springValue.on("change", (value) => {
       if (ref.current) {
         // @ts-ignore
         ref.current.textContent = format ? format(value) : value;
       }
     });
-  }, [springValue, format]);
+  }, [springValue, format, animated]);
 
   return <span ref={ref} className={cn(fontStyle, className)} />;
 }
