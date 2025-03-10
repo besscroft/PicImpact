@@ -120,6 +120,7 @@ export default function CardList(props: Readonly<AnalysisDataProps>) {
                         <Counter 
                           targetValue={Number(stat.count)}
                           fontStyle="text-sm font-normal text-foreground"
+                          animated={false}
                         />
                       </TableCell>
                     </TableRow>
