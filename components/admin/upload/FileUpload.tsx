@@ -9,8 +9,6 @@ import { fetcher } from '~/lib/utils/fetcher'
 import { ExifType, AlbumType, ImageType } from '~/types'
 import ExifReader from 'exifreader'
 import Compressor from 'compressorjs'
-import { useButtonStore } from '~/app/providers/button-store-Providers'
-import FileUploadHelpSheet from '~/components/admin/upload/FileUploadHelpSheet'
 import { ReloadIcon } from '@radix-ui/react-icons'
 import { Button } from '~/components/ui/button'
 import {
@@ -22,7 +20,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '~/components/ui/select'
-import { CircleHelpIcon } from '~/components/icons/circle-help'
 import { Tag, TagInput } from 'emblor'
 import { useTranslations } from 'next-intl'
 
@@ -46,9 +43,6 @@ export default function FileUpload() {
   const [imageLabels, setImageLabels] = useState([] as string[])
   const [mode, setMode] = useState('singleton')
   const [activeTagIndex, setActiveTagIndex] = useState<number | null>(null);
-  const { setUploadHelp } = useButtonStore(
-    (state) => state,
-  )
   const t = useTranslations()
 
   const { data, isLoading } = useSWR('/api/v1/albums/get', fetcher)
@@ -533,14 +527,6 @@ export default function FileUpload() {
           </Select>
         </div>
         <div className="flex items-center space-x-1">
-          <Button
-            variant="outline"
-            size="icon"
-            aria-label={t('Button.help')}
-            onClick={() => setUploadHelp(true)}
-          >
-            <CircleHelpIcon />
-          </Button>
           {mode !== 'multiple'
             ? <Button
               variant="outline"
@@ -843,7 +829,6 @@ export default function FileUpload() {
           }
         </div>
       </div>
-      <FileUploadHelpSheet/>
     </div>
   )
 }

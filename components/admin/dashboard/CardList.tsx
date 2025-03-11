@@ -10,7 +10,7 @@ import { Button } from '~/components/ui/button'
 import { Progress } from '~/components/ui/progress'
 import { AnalysisDataProps } from '~/types'
 import Link from 'next/link'
-import { MessageSquareHeart, Star } from 'lucide-react'
+import { MessageSquareHeart, Star, Send } from 'lucide-react'
 import Counter from '~/components/animata/text/counter'
 import {
   Table,
@@ -93,6 +93,12 @@ export default function CardList(props: Readonly<AnalysisDataProps>) {
             <Link href="https://github.com/besscroft/PicImpact/issues/new" target="_blank">
               <Button variant="outline">
                 <MessageSquareHeart size={20} className="mr-1"/>{t('Button.issue')}
+              </Button>
+            </Link>
+            <Link href="https://ziyume.com/docs/pic" target="_blank">
+              <Button variant="link">
+                <Send />
+                文档
               </Button>
             </Link>
           </CardContent>
