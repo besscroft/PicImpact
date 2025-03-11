@@ -6,14 +6,12 @@ import { useSWRInfiniteServerHook } from '~/hooks/useSWRInfiniteServerHook'
 import { useSWRPageTotalServerHook } from '~/hooks/useSWRPageTotalServerHook'
 import { ConfigProvider, Pagination } from 'antd'
 import { ArrowDown10, ScanSearch, Replace } from 'lucide-react'
-import { CircleHelpIcon } from '~/components/icons/circle-help'
 import { toast } from 'sonner'
 import { useButtonStore } from '~/app/providers/button-store-Providers'
 import ImageEditSheet from '~/components/admin/list/ImageEditSheet'
 import ImageView from '~/components/admin/list/ImageView'
 import { fetcher } from '~/lib/utils/fetcher'
 import useSWR from 'swr'
-import ImageHelpSheet from '~/components/admin/list/ImageHelpSheet'
 import ListImage from '~/components/admin/list/ListImage'
 import ImageBatchDeleteSheet from '~/components/admin/list/ImageBatchDeleteSheet'
 import { Button } from '~/components/ui/button'
@@ -58,7 +56,7 @@ export default function ListProps(props : Readonly<ImageServerHandleProps>) {
   const [updateShowLoading, setUpdateShowLoading] = useState(false)
   const [updateImageAlbumLoading, setUpdateImageAlbumLoading] = useState(false)
   const [updateShowId, setUpdateShowId] = useState('')
-  const { setImageEdit, setImageEditData, setImageView, setImageViewData, setImageHelp, setImageBatchDelete } = useButtonStore(
+  const { setImageEdit, setImageEditData, setImageView, setImageViewData, setImageBatchDelete } = useButtonStore(
     (state) => state,
   )
   const { data: albums, isLoading: albumsLoading } = useSWR('/api/v1/albums/get', fetcher)
@@ -157,14 +155,6 @@ export default function ListProps(props : Readonly<ImageServerHandleProps>) {
           </Select>
         </div>
         <div className="flex items-center space-x-1">
-          <Button
-            variant="outline"
-            size="icon"
-            aria-label={t('Button.help')}
-            onClick={() => setImageHelp(true)}
-          >
-            <CircleHelpIcon />
-          </Button>
           <Button
             variant="outline"
             size="icon"
@@ -339,7 +329,6 @@ export default function ListProps(props : Readonly<ImageServerHandleProps>) {
       </ConfigProvider>
       <ImageEditSheet {...{...props, pageNum, album}} />
       <ImageView />
-      <ImageHelpSheet />
       <ImageBatchDeleteSheet {...{...props, dataProps, pageNum, album}} />
     </div>
   )

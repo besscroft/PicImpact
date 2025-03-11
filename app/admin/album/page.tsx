@@ -6,8 +6,6 @@ import React from 'react'
 import AlbumAddSheet from '~/components/admin/album/AlbumAddSheet'
 import AlbumAddButton from '~/components/admin/album/AlbumAddButton'
 import AlbumEditSheet from '~/components/admin/album/AlbumEditSheet'
-import AlbumHelpSheet from '~/components/admin/album/AlbumHelpSheet'
-import AlbumHelp from '~/components/admin/album/AlbumHelp'
 
 export default async function List() {
 
@@ -30,7 +28,6 @@ export default async function List() {
           </div>
         </div>
         <div className="flex items-center space-x-2">
-          <AlbumHelp />
           <AlbumAddButton />
           <RefreshButton {...props} />
         </div>
@@ -38,7 +35,6 @@ export default async function List() {
       <AlbumList {...props} />
       <AlbumAddSheet {...props} />
       <AlbumEditSheet {...props} />
-      <AlbumHelpSheet />
     </div>
   )
 }

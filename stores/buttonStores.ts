@@ -22,9 +22,6 @@ export type ButtonState = {
   MasonryView: boolean
   MasonryViewData: ImageType
   MasonryViewDataList: ImageType[]
-  albumHelp: boolean
-  imageHelp: boolean
-  uploadHelp: boolean
   imageBatchDelete: boolean
   searchOpen: boolean
   loginHelp: boolean
@@ -50,9 +47,6 @@ export type ButtonActions = {
   setMasonryView: (masonryView: boolean) => void
   setMasonryViewData: (masonryViewData: ImageType) => void
   setMasonryViewDataList: (masonryViewDataList: ImageType[]) => void
-  setAlbumHelp: (albumHelp: boolean) => void
-  setImageHelp: (imageHelp: boolean) => void
-  setUploadHelp: (uploadHelp: boolean) => void
   setImageBatchDelete: (imageBatchDelete: boolean) => void
   setSearchOpen: (searchOpen: boolean) => void
   setLoginHelp: (loginHelp: boolean) => void
@@ -81,9 +75,6 @@ export const initButtonStore = (): ButtonState => {
     MasonryView: false,
     MasonryViewData: {} as ImageType,
     MasonryViewDataList: [] as ImageType[],
-    albumHelp: false,
-    imageHelp: false,
-    uploadHelp: false,
     imageBatchDelete: false,
     searchOpen: false,
     loginHelp: false,
@@ -110,9 +101,6 @@ export const defaultInitState: ButtonState = {
   MasonryView: false,
   MasonryViewData: {} as ImageType,
   MasonryViewDataList: [] as ImageType[],
-  albumHelp: false,
-  imageHelp: false,
-  uploadHelp: false,
   imageBatchDelete: false,
   searchOpen: false,
   loginHelp: false,
@@ -181,15 +169,6 @@ export const createButtonStore = (
         })),
         setMasonryViewDataList: (masonryViewDataListValue) => set(() => ({
           MasonryViewDataList: masonryViewDataListValue,
-        })),
-        setAlbumHelp: (albumHelpValue) => set(() => ({
-          albumHelp: albumHelpValue,
-        })),
-        setImageHelp: (imageHelpValue) => set(() => ({
-          imageHelp: imageHelpValue,
-        })),
-        setUploadHelp: (uploadHelpValue) => set(() => ({
-          uploadHelp: uploadHelpValue,
         })),
         setImageBatchDelete: (imageBatchDeleteValue) => set(() => ({
           imageBatchDelete: imageBatchDeleteValue,
