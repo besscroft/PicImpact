@@ -26,7 +26,7 @@ WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
-RUN AUTH_SECRET=pic-impact export NODE_OPTIONS=--openssl-legacy-provider && npm install -g corepack@latest && corepack enable pnpm && pnpm run prisma:generate && pnpm run build
+RUN AUTH_SECRET=pic-impact export NODE_OPTIONS=--openssl-legacy-provider && npm install -g corepack@latest && corepack enable pnpm && pnpm run prisma:generate && NEXT_TEST_USE_RSPACK=1 NEXT_RSPACK=1 pnpm run build
 
 FROM base AS runner
 
