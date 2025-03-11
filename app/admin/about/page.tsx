@@ -1,57 +1,26 @@
-'use client'
-
 import favicon from '~/public/favicon.svg'
 import Image from 'next/image'
-import { ExternalLink, Github } from 'lucide-react'
 import Link from 'next/link'
-import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-} from '~/components/ui/avatar'
+import { fetchContributors } from '~/lib/github/get-contributors'
+import { EvervaultCard, Icon } from '~/components/animata/card/evervault-card'
 
-export default function About() {
-  const contributors = [
-    {
-      name: 'Bess Croft',
-      url: 'https://github.com/besscroft',
-      avatar: 'https://avatars.githubusercontent.com/u/33775809?v=4'
-    },
-    {
-      name: 'Nadeshiko Manju',
-      url: 'https://github.com/Zheaoli',
-      avatar: 'https://avatars.githubusercontent.com/u/7054676?v=4'
-    },
-    {
-      name: '仙姑本咕',
-      url: 'https://github.com/hexgu',
-      avatar: 'https://avatars.githubusercontent.com/u/85490069?v=4'
-    },
-    {
-      name: 'xcsoft',
-      url: 'https://github.com/soxft',
-      avatar: 'https://avatars.githubusercontent.com/u/42080379?v=4'
-    },
-    {
-      name: 'Cheng Gu',
-      url: 'https://github.com/gucheen',
-      avatar: 'https://avatars.githubusercontent.com/u/1382472?v=4'
-    },
-    {
-      name: 'LiBr',
-      url: 'https://github.com/lbr77',
-      avatar: 'https://avatars.githubusercontent.com/u/53066066?v=4'
-    },
-  ]
+export default async function About() {
+  const contributors = await fetchContributors('besscroft', 'PicImpact');
+
   return (
-    <div className="flex flex-col space-y-2 h-full flex-1 w-full mx-auto items-center p-2">
-      <Image
-        className="my-4"
-        src={favicon}
-        alt="Logo"
-        width={64}
-        height={64}
-      />
+    <div className="flex flex-col space-y-4 h-full flex-1 w-full mx-auto items-center p-2">
+      <Link
+        href="https://github.com/besscroft/PicImpact"
+        target="_blank"
+      >
+        <Image
+          className="my-4"
+          src={favicon}
+          alt="Logo"
+          width={64}
+          height={64}
+        />
+      </Link>
       <span className="inline-flex items-center justify-center rounded-full bg-emerald-100 px-2.5 py-0.5 text-emerald-700">
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -68,56 +37,59 @@ export default function About() {
           />
         </svg>
 
-        <p className="whitespace-nowrap text-sm">v2.1.4</p>
+        <p className="whitespace-nowrap text-sm">v2.2.0</p>
       </span>
       <span>PicImpact 是一个摄影师专用的摄影作品展示网站，基于 Next.js + Hono.js 开发。</span>
-      <div className="flex flex-col w-full">
-        <Link
-          className="flex items-center w-full p-2 hover:bg-slate-100 dark:hover:text-black"
-          href="https://github.com/besscroft/PicImpact"
-          target="_blank"
-        >
-          <Github/>
-          <span className="flex-1 px-2">GitHub</span>
-          <ExternalLink/>
-        </Link>
-      </div>
-      <div className="flex flex-col w-full">
-        <span>Contributors</span>
+      <div className="grid grid-cols-1 gap-2 md:grid-cols-2 md:gap-4 lg:grid-cols-3 lg:gap-6 xl:grid-cols-4 xl:gap-8">
         {
           contributors.map((item: any) => {
             return (
-              <Link
-                key={item.name}
-                className="flex items-center w-full p-2 hover:bg-slate-100 dark:hover:text-black"
-                href={item.url}
-                target="_blank"
+              <div
+                key={item.login}
+                className="border border-black/[0.2] dark:border-white/[0.2] flex flex-col items-start w-full mx-auto p-4 relative"
               >
-                <Avatar>
-                  <AvatarImage src={item.avatar} alt="avatar"/>
-                  <AvatarFallback>CN</AvatarFallback>
-                </Avatar>
-                <span className="flex-1 px-2">{item.name}</span>
-                <ExternalLink/>
-              </Link>
+                <Icon className="absolute h-6 w-6 -top-3 -left-3 dark:text-white text-black" />
+                <Icon className="absolute h-6 w-6 -bottom-3 -left-3 dark:text-white text-black" />
+                <Icon className="absolute h-6 w-6 -top-3 -right-3 dark:text-white text-black" />
+                <Icon className="absolute h-6 w-6 -bottom-3 -right-3 dark:text-white text-black" />
+
+                <EvervaultCard text={item.avatar_url} />
+
+                <h2 className="dark:text-white text-black mt-4 text-lg font-light">
+                  {item.login}
+                </h2>
+                <Link
+                  href={item.html_url}
+                  target="_blank"
+                >
+                  <p className="select-none text-sm border font-light dark:border-white/[0.2] border-black/[0.2] rounded-full mt-4 text-black dark:text-white px-2 py-0.5">
+                    Follow
+                  </p>
+                </Link>
+              </div>
             )
           })
         }
-      </div>
-      <div className="flex flex-col w-full">
-        <span>支持项目</span>
-        <Link
-          className="flex items-center w-full p-2 hover:bg-slate-100 dark:hover:text-black"
-          href="https://afdian.com/a/besscroft"
-          target="_blank"
-        >
-          <Avatar>
-            <AvatarImage src="https://pic1.afdiancdn.com/default/avatar/avatar-purple.png" alt="afdian"/>
-            <AvatarFallback>CN</AvatarFallback>
-          </Avatar>
-          <span className="flex-1 px-2">爱发电</span>
-          <ExternalLink/>
-        </Link>
+        <div className="border border-black/[0.2] dark:border-white/[0.2] flex flex-col items-start w-full mx-auto p-4 relative">
+          <Icon className="absolute h-6 w-6 -top-3 -left-3 dark:text-white text-black" />
+          <Icon className="absolute h-6 w-6 -bottom-3 -left-3 dark:text-white text-black" />
+          <Icon className="absolute h-6 w-6 -top-3 -right-3 dark:text-white text-black" />
+          <Icon className="absolute h-6 w-6 -bottom-3 -right-3 dark:text-white text-black" />
+
+          <EvervaultCard text="https://pic1.afdiancdn.com/default/avatar/avatar-purple.png" />
+
+          <h2 className="dark:text-white text-black mt-4 text-lg font-light">
+            欢迎通过爱发电赞助！
+          </h2>
+          <Link
+            href="https://afdian.com/a/besscroft"
+            target="_blank"
+          >
+            <p className="select-none text-sm border font-light dark:border-white/[0.2] border-black/[0.2] rounded-full mt-4 text-black dark:text-white px-2 py-0.5">
+              点击赞助
+            </p>
+          </Link>
+        </div>
       </div>
     </div>
   )
