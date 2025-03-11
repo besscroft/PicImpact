@@ -1,4 +1,4 @@
-name: Dev Docker Multi-arch Image CI & CD
+name: Nightly Docker Multi-arch Image CI & CD
 
 on:
   schedule:

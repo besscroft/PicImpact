@@ -1,9 +1,6 @@
-name: Dev Docker Multi-arch Image CI & CD
+name: Push And PR Docker Multi-arch Image CI & CD
 
-on:
-  push:
-    branches:
-      - v2
+on: [ push, pull_request ]
 
 jobs:
   build:
