@@ -62,7 +62,7 @@ export default async function About() {
                   href={item.html_url}
                   target="_blank"
                 >
-                  <p className="text-sm border font-light dark:border-white/[0.2] border-black/[0.2] rounded-full mt-4 text-black dark:text-white px-2 py-0.5">
+                  <p className="select-none text-sm border font-light dark:border-white/[0.2] border-black/[0.2] rounded-full mt-4 text-black dark:text-white px-2 py-0.5">
                     Follow
                   </p>
                 </Link>
@@ -85,7 +85,7 @@ export default async function About() {
             href="https://afdian.com/a/besscroft"
             target="_blank"
           >
-            <p className="text-sm border font-light dark:border-white/[0.2] border-black/[0.2] rounded-full mt-4 text-black dark:text-white px-2 py-0.5">
+            <p className="select-none text-sm border font-light dark:border-white/[0.2] border-black/[0.2] rounded-full mt-4 text-black dark:text-white px-2 py-0.5">
               点击赞助
             </p>
           </Link>
