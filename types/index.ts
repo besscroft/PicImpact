@@ -76,7 +76,7 @@ export type ImageType = {
   lat: string;
   album: string;
   detail: string;
-  type: number;
+  type: number; // type: 图片类型为 1，livephoto 类型为 2
   show: number;
   show_on_mainpage: number;
   sort: number;

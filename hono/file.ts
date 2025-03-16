@@ -17,7 +17,7 @@ app.post('/upload', async (c) => {
   if (storage) {
     switch (storage.toString()) {
       case 's3':
-        return await s3Upload(file, storage, type, mountPath)
+        return await s3Upload(file, type)
           .then((result: string) => {
             return Response.json({
               code: 200, data: result
@@ -27,7 +27,7 @@ app.post('/upload', async (c) => {
             throw new HTTPException(500, { message: 'Failed', cause: e })
           })
       case 'r2':
-        return await r2Upload(file, storage, type, mountPath)
+        return await r2Upload(file, type)
           .then((result: string) => {
             return Response.json({
               code: 200, data: result
@@ -37,7 +37,7 @@ app.post('/upload', async (c) => {
             throw new HTTPException(500, { message: 'Failed', cause: e })
           })
       case 'alist':
-        return await alistUpload(file, storage, type, mountPath)
+        return await alistUpload(file, type, mountPath)
           .then((result: string) => {
             return Response.json({
               code: 200, data: result
