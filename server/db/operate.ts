@@ -18,6 +18,7 @@ export async function insertAlbums(album: AlbumType) {
       license: album.license,
       del: 0,
       image_sorting: album.image_sorting,
+      random_show: album.randomShow,
     }
   })
 }
@@ -61,6 +62,7 @@ export async function updateAlbum(album: AlbumType) {
         license: album.license,
         updatedAt: new Date(),
         image_sorting: album.image_sorting,
+        random_show: album.randomShow,
       }
     })
     await tx.imagesAlbumsRelation.updateMany({

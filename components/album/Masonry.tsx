@@ -47,6 +47,7 @@ export default function Masonry(props : Readonly<ImageHandleProps>) {
   }
   const { data: configData } = useSWRHydrated(configProps)
   const dataList = data ? [].concat(...data) : [];
+  const processedDataList = props.randomShow ? [...dataList].sort(() => Math.random() - 0.5) : dataList;
   const searchParams = useSearchParams()
   const t = useTranslations()
 
@@ -98,19 +99,19 @@ export default function Masonry(props : Readonly<ImageHandleProps>) {
           return 4;
         }}
         photos={
-          dataList?.map((item: ImageType) => ({
+          processedDataList?.map((item: ImageType) => ({
             src: item.preview_url || item.url,
             alt: item.detail,
             ...item
           })) || []
         }
-        render={{image: (...args) => renderNextImage(...args, dataList)}}
+        render={{image: (...args) => renderNextImage(...args, processedDataList)}}
       />
       <div className="flex items-center justify-center my-4">
         {
           isValidating ?
             <ReloadIcon className="mr-2 h-4 w-4 animate-spin"/>
-            : dataList.length > 0 ?
+            : processedDataList.length > 0 ?
           size < pageTotal &&
             <Button
               disabled={isLoading}

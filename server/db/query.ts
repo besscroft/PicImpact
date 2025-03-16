@@ -20,7 +20,7 @@ export async function fetchConfigsByKeys(keys: string[]) {
 }
 
 export async function fetchAlbumsList() {
-  return await db.albums.findMany({
+  const albums = await db.albums.findMany({
     where: {
       del: 0
     },
@@ -36,6 +36,12 @@ export async function fetchAlbumsList() {
       }
     ]
   });
+  
+  // Map random_show to randomShow
+  return albums.map(album => ({
+    ...album,
+    randomShow: album.random_show
+  }));
 }
 
 export async function fetchServerImagesListByAlbum(pageNum: number, album: string) {
@@ -183,6 +189,12 @@ export async function fetchClientImagesListByAlbum(pageNum: number, album: strin
     return await db.$queryRaw`
     SELECT 
         image.*,
+        albums.name AS album_name,
+        albums.id AS album_value,
+        albums.allow_download AS album_allow_download,
+        albums.license AS album_license,
+        albums.image_sorting AS album_image_sorting,
+        albums.random_show AS album_random_show,
         (
             SELECT json_agg(row_to_json(t))
             FROM (
@@ -207,12 +219,18 @@ export async function fetchClientImagesListByAlbum(pageNum: number, album: strin
         ) AS copyrights
     FROM 
         "public"."images" AS image
+    INNER JOIN "public"."images_albums_relation" AS relation
+        ON image.id = relation."imageId"
+    INNER JOIN "public"."albums" AS albums
+        ON relation.album_value = albums.album_value
     WHERE
         image.del = 0
     AND
         image.show = 0
     AND
         image.show_on_mainpage = 0
+    AND
+        albums.album_value = '/'
     ORDER BY image.created_at DESC, image.updated_at DESC
     LIMIT 16 OFFSET ${(pageNum - 1) * 16}
   `;

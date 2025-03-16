@@ -175,6 +175,20 @@ export default function AlbumEditSheet(props : Readonly<HandleProps>) {
               }}
             />
           </div>
+          <div className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
+            <div className="flex flex-col gap-1">
+              <div className="text-medium">随机排序</div>
+              <div className="text-tiny text-default-400">
+                开启后，每次加载相册时会随机打乱图片顺序。
+              </div>
+            </div>
+            <Switch
+              checked={album?.randomShow === 1}
+              onCheckedChange={(value) => {
+                setAlbumEditData({...album, randomShow: value ? 1 : 0})
+              }}
+            />
+          </div>
           <div className="flex flex-col gap-1 rounded-lg border p-3 shadow-sm">
               <div className="text-medium">相册内图片排序规则</div>
               <Select
