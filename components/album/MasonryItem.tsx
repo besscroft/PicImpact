@@ -17,9 +17,9 @@ import {
 } from 'lucide-react'
 import * as React from 'react'
 import { useRouter } from 'next-nprogress-bar'
+import { useSearchParams, usePathname } from 'next/navigation'
 import ExifView from '~/components/album/ExifView'
 import { toast } from 'sonner'
-import { usePathname } from 'next/navigation'
 import useSWR from 'swr'
 import dayjs from 'dayjs'
 import customParseFormat from 'dayjs/plugin/customParseFormat'
@@ -48,6 +48,7 @@ dayjs.extend(customParseFormat)
 export default function MasonryItem() {
   const router = useRouter()
   const pathname = usePathname()
+  const searchParams = useSearchParams()
   const { MasonryView, MasonryViewData, MasonryViewDataList, setMasonryView, setMasonryViewData } = useButtonStore(
     (state) => state,
   )
@@ -134,6 +135,10 @@ export default function MasonryItem() {
         if (!open) {
           setMasonryView(false)
           setMasonryViewData({} as ImageType)
+          const id = searchParams.get('id')
+          if (id && id !== '') {
+            router.push(pathname)
+          }
         }
       }}
     >
