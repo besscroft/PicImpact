@@ -14,7 +14,7 @@ import { HTTPException } from 'hono/http-exception'
  * @param mountPath 挂载路径
  * @return {Promise<string>} 返回文件路径
  */
-export async function s3Upload(file: any, storage: string | any, type: string | any, mountPath: string | any) {
+export async function s3Upload(file: any, type: string | any) {
   const findConfig = await fetchConfigsByKeys([
     'accesskey_id',
     'accesskey_secret',
@@ -86,7 +86,7 @@ export async function s3Upload(file: any, storage: string | any, type: string | 
  * @param mountPath 挂载路径
  * @return {Promise<string>} 返回文件路径
  */
-export async function r2Upload(file: any, storage: string | any, type: string | any, mountPath: string | any) {
+export async function r2Upload(file: any, type: string | any) {
   const findConfig = await fetchConfigsByKeys([
     'r2_accesskey_id',
     'r2_accesskey_secret',
@@ -137,7 +137,7 @@ export async function r2Upload(file: any, storage: string | any, type: string | 
  * @param mountPath 挂载路径
  * @return {Promise<string>} 返回文件路径
  */
-export async function alistUpload(file: any, storage: string | any, type: string | any, mountPath: string | any) {
+export async function alistUpload(file: any, type: string | any, mountPath: string | any) {
   const findConfig = await fetchConfigsByKeys([
     'alist_url',
     'alist_token'
