@@ -31,7 +31,7 @@ function renderNextImage(
 
 export default function Masonry(props : Readonly<ImageHandleProps>) {
   const { data: pageTotal } = useSWRPageTotalHook(props)
-  const { data, error, isLoading, isValidating, size, setSize } = useSWRInfinite((index) => {
+  const { data, isLoading, isValidating, size, setSize } = useSWRInfinite((index) => {
     return [`client-${props.args}-${index}-${props.album}`, index]
     },
     ([_, index]) => {
