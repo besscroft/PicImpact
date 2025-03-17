@@ -23,6 +23,7 @@ app.get('/get-custom-info', async (c) => {
     'preview_max_width_limit',
     'preview_max_width_limit_switch',
     'preview_quality',
+    'custom_index_random_show',
   ]);
   return c.json(data)
 })
@@ -44,10 +45,10 @@ app.get("/get-user-info", async (c) => {
   const data = await fetchUserById(user?.id);
   
   return c.json({
-    id: data.id,
-    name: data.name,
-    email: data.email,
-    image: data.image
+    id: data?.id,
+    name: data?.name,
+    email: data?.email,
+    image: data?.image
   })
 })
 app.get('/s3-info', async (c) => {
@@ -118,6 +119,9 @@ app.put('/update-custom-info', async (c) => {
     enablePreviewImageMaxWidthLimit: boolean
     previewImageMaxWidth: number
     previewQuality: number
+    customFoldAlbumEnable: boolean
+    customFoldAlbumCount: number
+    customIndexRandomShow: boolean
   }
   try {
     await updateCustomInfo(query);

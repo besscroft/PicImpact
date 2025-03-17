@@ -24,6 +24,7 @@ export default function Preferences() {
   const [previewQualityInput, setPreviewQualityInput] = useState('0.2')
   const [customFoldAlbumEnable, setCustomFoldAlbumEnable] = useState(false)
   const [customFoldAlbumCount, setCustomFoldAlbumCount] = useState('6')
+  const [customIndexRandomShow, setCustomIndexRandomShow] = useState(false)
   const t = useTranslations()
 
   const { data, isValidating, isLoading } = useSWR<{ config_key: string, config_value: string }[]>('/api/v1/settings/get-custom-info', fetcher)
@@ -59,6 +60,7 @@ export default function Preferences() {
           previewQuality,
           customFoldAlbumEnable: customFoldAlbumEnable,
           customFoldAlbumCount: customFoldAlbumCount,
+          customIndexRandomShow: customIndexRandomShow,
         }),
       }).then(res => res.json())
       toast.success('修改成功！')
@@ -82,6 +84,7 @@ export default function Preferences() {
     setPreviewQualityInput(data?.find((item) => item.config_key === 'preview_quality')?.config_value || '0.2')
     setCustomFoldAlbumEnable(data?.find((item) => item.config_key === 'custom_fold_album_enable')?.config_value.toString() === 'true' || false)
     setCustomFoldAlbumCount(data?.find((item) => item.config_key === 'custom_fold_album_count')?.config_value || '6')
+    setCustomIndexRandomShow(data?.find((item) => item.config_key === 'custom_index_random_show')?.config_value.toString() === 'true' || false)
   }, [data])
 
   return (
@@ -254,6 +257,22 @@ export default function Preferences() {
             checked={customFoldAlbumEnable}
             onCheckedChange={checked => {
               setCustomFoldAlbumEnable(checked)
+            }}
+          />
+        </div>
+      </label>
+      <label
+        htmlFor="customIndexRandomShow"
+        className="w-full sm:w-64 block overflow-hidden rounded-md border border-gray-200 px-3 py-2 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600"
+      >
+        <span className="text-xs font-medium text-gray-700">{t('Preferences.customIndexRandomShow')}</span>
+        <div>
+          <Switch
+            id="customIndexRandomShow"
+            disabled={isValidating || isLoading}
+            checked={customIndexRandomShow}
+            onCheckedChange={checked => {
+              setCustomIndexRandomShow(checked)
             }}
           />
         </div>

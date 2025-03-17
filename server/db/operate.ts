@@ -403,12 +403,13 @@ export async function updateCustomInfo(payload: {
   feedId: string
   userId: string
   customIndexStyle: number
+  customIndexDownloadEnable: boolean
+  enablePreviewImageMaxWidthLimit: boolean
+  previewImageMaxWidth: number
+  previewQuality: number
   customFoldAlbumEnable: boolean
   customFoldAlbumCount: number
-  customIndexDownloadEnable: boolean
-  enablePreviewImageMaxWidthLimit?: boolean
-  previewImageMaxWidth?: number
-  previewQuality?: number
+  customIndexRandomShow: boolean
 }) {
   const {
     title,
@@ -423,6 +424,7 @@ export async function updateCustomInfo(payload: {
     enablePreviewImageMaxWidthLimit,
     previewImageMaxWidth,
     previewQuality,
+    customIndexRandomShow,
   } = payload
   await db.$transaction(async (tx) => {
     await tx.configs.update({
@@ -494,6 +496,15 @@ export async function updateCustomInfo(payload: {
       },
       data: {
         config_value: customFoldAlbumCount.toString(),
+        updatedAt: new Date()
+      }
+    })
+    await tx.configs.update({
+      where: {
+        config_key: 'custom_index_random_show'
+      },
+      data: {
+        config_value: customIndexRandomShow.toString(),
         updatedAt: new Date()
       }
     })
