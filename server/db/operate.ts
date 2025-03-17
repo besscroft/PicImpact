@@ -18,6 +18,7 @@ export async function insertAlbums(album: AlbumType) {
       license: album.license,
       del: 0,
       image_sorting: album.image_sorting,
+      random_show: album.randomShow,
     }
   })
 }
@@ -61,6 +62,7 @@ export async function updateAlbum(album: AlbumType) {
         license: album.license,
         updatedAt: new Date(),
         image_sorting: album.image_sorting,
+        random_show: album.randomShow,
       }
     })
     await tx.imagesAlbumsRelation.updateMany({
@@ -401,12 +403,13 @@ export async function updateCustomInfo(payload: {
   feedId: string
   userId: string
   customIndexStyle: number
+  customIndexDownloadEnable: boolean
+  enablePreviewImageMaxWidthLimit: boolean
+  previewImageMaxWidth: number
+  previewQuality: number
   customFoldAlbumEnable: boolean
   customFoldAlbumCount: number
-  customIndexDownloadEnable: boolean
-  enablePreviewImageMaxWidthLimit?: boolean
-  previewImageMaxWidth?: number
-  previewQuality?: number
+  customIndexRandomShow: boolean
 }) {
   const {
     title,
@@ -421,6 +424,7 @@ export async function updateCustomInfo(payload: {
     enablePreviewImageMaxWidthLimit,
     previewImageMaxWidth,
     previewQuality,
+    customIndexRandomShow,
   } = payload
   await db.$transaction(async (tx) => {
     await tx.configs.update({
@@ -492,6 +496,15 @@ export async function updateCustomInfo(payload: {
       },
       data: {
         config_value: customFoldAlbumCount.toString(),
+        updatedAt: new Date()
+      }
+    })
+    await tx.configs.update({
+      where: {
+        config_key: 'custom_index_random_show'
+      },
+      data: {
+        config_value: customIndexRandomShow.toString(),
         updatedAt: new Date()
       }
     })

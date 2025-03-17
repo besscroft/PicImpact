@@ -144,7 +144,8 @@
     "indexStyleStar": "Featured Image Style",
     "customIndexDownloadEnable": "Show Copy/Download Button on Homepage (Effective in Featured Mode)",
     "customFoldAlbumEnable": "Enable Auto-fold Albums",
-    "customFoldAlbumCount": "Auto-fold Albums Count"
+    "customFoldAlbumCount": "Auto-fold Albums Count",
+    "customIndexRandomShow": "Enable Random Display on Homepage"
   },
   "Password": {
     "onePassword": "Old Password",

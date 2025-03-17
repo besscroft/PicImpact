@@ -20,7 +20,7 @@ export async function fetchConfigsByKeys(keys: string[]) {
 }
 
 export async function fetchAlbumsList() {
-  return await db.albums.findMany({
+  const albums = await db.albums.findMany({
     where: {
       del: 0
     },
@@ -36,6 +36,12 @@ export async function fetchAlbumsList() {
       }
     ]
   });
+  
+  // Map random_show to randomShow
+  return albums.map(album => ({
+    ...album,
+    randomShow: album.random_show
+  }));
 }
 
 export async function fetchServerImagesListByAlbum(pageNum: number, album: string) {

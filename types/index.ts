@@ -21,6 +21,7 @@ export type ImageHandleProps = {
   album: string
   totalHandle: (tag: string) => any
   configHandle: () => any
+  randomShow?: boolean
 }
 
 export type LinkProps = {
@@ -39,6 +40,7 @@ export type AlbumType = {
   allow_download: number;
   license: string | null;
   image_sorting: number;
+  randomShow: number;
   del?: number;
   createdAt?: Date;
   updatedAt?: Date | null;

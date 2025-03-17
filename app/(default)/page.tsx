@@ -16,16 +16,20 @@ export default async function Home() {
   const getConfig = async () => {
     'use server'
     return await fetchConfigsByKeys([
-      'custom_index_download_enable'
+      'custom_index_random_show'
     ])
   }
+
+  const configData = await getConfig()
+  const value = configData[0]?.config_value ?? 'false'
 
   const props: ImageHandleProps = {
     handle: getData,
     args: 'getImages-client',
     album: '/',
     totalHandle: getPageTotal,
-    configHandle: getConfig
+    configHandle: getConfig,
+    randomShow: value === 'true'
   }
 
   return (

@@ -17,7 +17,7 @@ import 'react-photo-album/masonry.css'
 import { ReloadIcon } from '@radix-ui/react-icons'
 import { Button } from '~/components/ui/button'
 import { useSWRHydrated } from '~/hooks/useSWRHydrated'
-import {useConfigStore} from "~/app/providers/config-store-Providers.tsx";
+import { useConfigStore } from '~/app/providers/config-store-Providers'
 
 function renderNextImage(
   { alt = '', title, sizes }: RenderImageProps,
@@ -31,7 +31,7 @@ function renderNextImage(
 
 export default function Masonry(props : Readonly<ImageHandleProps>) {
   const { data: pageTotal } = useSWRPageTotalHook(props)
-  const { data, error, isLoading, isValidating, size, setSize } = useSWRInfinite((index) => {
+  const { data, isLoading, isValidating, size, setSize } = useSWRInfinite((index) => {
     return [`client-${props.args}-${index}-${props.album}`, index]
     },
     ([_, index]) => {
@@ -47,6 +47,7 @@ export default function Masonry(props : Readonly<ImageHandleProps>) {
   }
   const { data: configData } = useSWRHydrated(configProps)
   const dataList = data ? [].concat(...data) : [];
+  const processedDataList = props.randomShow ? [...dataList].sort(() => Math.random() - 0.5) : dataList;
   const searchParams = useSearchParams()
   const t = useTranslations()
 
@@ -60,7 +61,7 @@ export default function Masonry(props : Readonly<ImageHandleProps>) {
   useEffect(() => {
     if (configData && !isLoading) {
       const value = configData?.find((item: any) => item.config_key === 'custom_index_download_enable')?.config_value
-      setCustomIndexDownloadEnable(value.toString() === 'true')
+      setCustomIndexDownloadEnable(value?.toString() === 'true')
     }
   }, [configData])
 
@@ -98,19 +99,19 @@ export default function Masonry(props : Readonly<ImageHandleProps>) {
           return 4;
         }}
         photos={
-          dataList?.map((item: ImageType) => ({
+          processedDataList?.map((item: ImageType) => ({
             src: item.preview_url || item.url,
             alt: item.detail,
             ...item
           })) || []
         }
-        render={{image: (...args) => renderNextImage(...args, dataList)}}
+        render={{image: (...args) => renderNextImage(...args, processedDataList)}}
       />
       <div className="flex items-center justify-center my-4">
         {
           isValidating ?
             <ReloadIcon className="mr-2 h-4 w-4 animate-spin"/>
-            : dataList.length > 0 ?
+            : processedDataList.length > 0 ?
           size < pageTotal &&
             <Button
               disabled={isLoading}
