@@ -51,6 +51,7 @@ export async function register() {
             { config_key: 'custom_index_download_enable', config_value: 'false', detail: '是否启用首页下载' },
             { config_key: 'custom_fold_album_enable', config_value: 'false', detail: '是否启用相册折叠' },
             { config_key: 'custom_fold_album_count', config_value: '6', detail: '相册折叠数量' },
+            { config_key: 'custom_index_random_show', config_value: 'false', detail: '是否启用首页随机排列' },
           ],
           skipDuplicates: true,
         })

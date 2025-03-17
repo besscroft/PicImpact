@@ -1,5 +1,5 @@
 import Masonry from '~/components/album/Masonry'
-import { fetchClientImagesListByAlbum, fetchClientImagesPageTotalByAlbum, fetchConfigsByKeys, fetchAlbumsList } from '~/server/db/query'
+import { fetchClientImagesListByAlbum, fetchClientImagesPageTotalByAlbum, fetchConfigsByKeys } from '~/server/db/query'
 import { ImageHandleProps } from '~/types'
 
 export default async function Home() {
@@ -16,12 +16,12 @@ export default async function Home() {
   const getConfig = async () => {
     'use server'
     return await fetchConfigsByKeys([
-      'custom_index_download_enable'
+      'custom_index_random_show'
     ])
   }
 
-  const albumData = await fetchAlbumsList()
-  const currentAlbum = albumData.find(a => a.album_value === '/')
+  const configData = await getConfig()
+  const value = configData[0]?.config_value ?? 'false'
 
   const props: ImageHandleProps = {
     handle: getData,
@@ -29,7 +29,7 @@ export default async function Home() {
     album: '/',
     totalHandle: getPageTotal,
     configHandle: getConfig,
-    randomShow: currentAlbum?.randomShow === 1
+    randomShow: value === 'true'
   }
 
   return (
