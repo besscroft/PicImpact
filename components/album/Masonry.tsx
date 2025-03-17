@@ -17,7 +17,7 @@ import 'react-photo-album/masonry.css'
 import { ReloadIcon } from '@radix-ui/react-icons'
 import { Button } from '~/components/ui/button'
 import { useSWRHydrated } from '~/hooks/useSWRHydrated'
-import {useConfigStore} from "~/app/providers/config-store-Providers.tsx";
+import { useConfigStore } from '~/app/providers/config-store-Providers'
 
 function renderNextImage(
   { alt = '', title, sizes }: RenderImageProps,
@@ -61,7 +61,7 @@ export default function Masonry(props : Readonly<ImageHandleProps>) {
   useEffect(() => {
     if (configData && !isLoading) {
       const value = configData?.find((item: any) => item.config_key === 'custom_index_download_enable')?.config_value
-      setCustomIndexDownloadEnable(value.toString() === 'true')
+      setCustomIndexDownloadEnable(value?.toString() === 'true')
     }
   }, [configData])
 
