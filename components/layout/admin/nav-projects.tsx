@@ -7,6 +7,7 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  useSidebar,
 } from '~/components/ui/sidebar'
 import { usePathname } from 'next/navigation'
 import { useRouter } from 'next-nprogress-bar'
@@ -26,6 +27,7 @@ export function NavProjects({
   const router = useRouter()
   const pathname = usePathname()
   const buttonClasses = 'active:scale-95 duration-200 ease-in-out'
+  const { setOpenMobile } = useSidebar()
 
   return (
     <SidebarGroup className="group-data-[collapsible=icon]:hidden">
@@ -33,7 +35,14 @@ export function NavProjects({
       <SidebarMenu>
         {projects?.items.map((item) => (
           <SidebarMenuItem key={item.name}>
-            <SidebarMenuButton className={buttonClasses} asChild isActive={pathname === item.url} onClick={() => router.push(item.url)}>
+            <SidebarMenuButton
+              className={buttonClasses}
+              asChild
+              isActive={pathname === item.url}
+              onClick={() => {
+                setOpenMobile(false)
+                router.push(item.url)
+              }}>
               <a href={item.url}>
                 <item.icon />
                 <span>{item.name}</span>
