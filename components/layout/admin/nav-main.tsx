@@ -8,8 +8,8 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  useSidebar,
 } from '~/components/ui/sidebar'
-import { useSession } from 'next-auth/react'
 import { usePathname } from 'next/navigation'
 import { useRouter } from 'next-nprogress-bar'
 
@@ -27,10 +27,10 @@ export function NavMain({
     }[]
   }[]
 }) {
-  const { data: session, status } = useSession()
   const router = useRouter()
   const pathname = usePathname()
   const buttonClasses = 'active:scale-95 duration-200 ease-in-out'
+  const { setOpenMobile } = useSidebar()
 
   return (
     <SidebarGroup>
@@ -43,7 +43,14 @@ export function NavMain({
             className="group/collapsible"
           >
             <SidebarMenuItem>
-              <SidebarMenuButton className={buttonClasses} tooltip={item.title} isActive={pathname === item.url} onClick={() => router.push(item.url)}>
+              <SidebarMenuButton
+                className={buttonClasses}
+                tooltip={item.title}
+                isActive={pathname === item.url}
+                onClick={() => {
+                  setOpenMobile(false)
+                  router.push(item.url)
+                }}>
                 {item.icon && <item.icon />}
                 <span>{item.title}</span>
               </SidebarMenuButton>
