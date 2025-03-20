@@ -20,7 +20,7 @@ import { useSWRHydrated } from '~/hooks/useSWRHydrated'
 import { useConfigStore } from '~/app/providers/config-store-Providers'
 
 function renderNextImage(
-  { alt = '', title, sizes }: RenderImageProps,
+  _: RenderImageProps,
   { photo }: RenderImageContext,
   dataList: never[],
 ) {
