@@ -2,7 +2,8 @@
 
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '~/components/ui/sheet'
 import { useButtonStore } from '~/app/providers/button-store-Providers'
-import { HandleProps, AlbumType } from '~/types'
+import type { AlbumType } from '~/types'
+import type { HandleProps } from '~/types/props'
 import { useSWRHydrated } from '~/hooks/useSWRHydrated'
 import React, { useState } from 'react'
 import { toast } from 'sonner'

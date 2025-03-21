@@ -3,7 +3,8 @@
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '~/components/ui/sheet'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '~/components/ui/select'
 import { useButtonStore } from '~/app/providers/button-store-Providers'
-import { HandleProps, CopyrightType } from '~/types'
+import type { CopyrightType } from '~/types'
+import type { HandleProps } from '~/types/props'
 import React, { useState } from 'react'
 import { toast } from 'sonner'
 import { useSWRHydrated } from '~/hooks/useSWRHydrated'
@@ -12,7 +13,7 @@ import { Button } from '~/components/ui/button'
 import { Switch } from '~/components/ui/switch'
 
 export default function CopyrightAddSheet(props : Readonly<HandleProps>) {
-  const { isLoading, mutate, error } = useSWRHydrated(props)
+  const { mutate } = useSWRHydrated(props)
   const { copyrightAdd, setCopyrightAdd } = useButtonStore(
     (state) => state,
   )

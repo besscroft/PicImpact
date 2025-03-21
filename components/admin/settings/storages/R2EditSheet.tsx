@@ -1,6 +1,6 @@
 'use client'
 
-import { Config } from '~/types'
+import type { Config } from '~/types'
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '~/components/ui/sheet'
 import { useButtonStore } from '~/app/providers/button-store-Providers'
 import React, { useState } from 'react'

@@ -5,7 +5,7 @@ import {
   fetchAlbumsList,
   fetchConfigsByKeys,
 } from '~/server/db/query'
-import { ImageHandleProps } from '~/types'
+import type { ImageHandleProps } from '~/types/props'
 
 export default async function Page({params}: { params: any }) {
   const { album } = await params

@@ -1,7 +1,7 @@
 'use server'
 
 import { db } from '~/server/lib/db'
-import { AlbumType, CopyrightType, ImageType } from '~/types'
+import type { AlbumType, CopyrightType, ImageType } from '~/types'
 
 export async function insertAlbums(album: AlbumType) {
   if (!album.sort || album.sort < 0) {

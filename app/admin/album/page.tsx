@@ -1,7 +1,7 @@
 import { fetchAlbumsList } from '~/server/db/query'
 import AlbumList from '~/components/admin/album/AlbumList'
 import RefreshButton from '~/components/album/RefreshButton'
-import { HandleProps } from '~/types'
+import type { HandleProps } from '~/types/props'
 import React from 'react'
 import AlbumAddSheet from '~/components/admin/album/AlbumAddSheet'
 import AlbumAddButton from '~/components/admin/album/AlbumAddButton'

@@ -1,7 +1,8 @@
 'use client'
 
 import { useButtonStore } from '~/app/providers/button-store-Providers'
-import { ImageServerHandleProps, ImageType } from '~/types'
+import type { ImageType } from '~/types'
+import type { ImageServerHandleProps } from '~/types/props'
 import { useSWRInfiniteServerHook } from '~/hooks/useSWRInfiniteServerHook'
 import React, { useState } from 'react'
 import { toast } from 'sonner'

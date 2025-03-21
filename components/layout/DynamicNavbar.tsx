@@ -1,7 +1,7 @@
 import VaulDrawer from '~/components/layout/VaulDrawer'
 import { DropMenu } from '~/components/layout/DropMenu'
 import { fetchAlbumsShow } from '~/server/db/query'
-import { AlbumListProps } from '~/types'
+import type { AlbumListProps } from '~/types/props'
 import AlbumDrawer from '~/components/layout/AlbumDrawer'
 
 export default async function DynamicNavbar() {

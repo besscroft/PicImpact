@@ -2,7 +2,8 @@
 
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from '~/components/ui/sheet'
 import { useButtonStore } from '~/app/providers/button-store-Providers'
-import { HandleProps, AlbumType } from '~/types'
+import type { AlbumType } from '~/types'
+import type { HandleProps } from '~/types/props'
 import React, { useState } from 'react'
 import { toast } from 'sonner'
 import { useSWRHydrated } from '~/hooks/useSWRHydrated'
@@ -12,7 +13,7 @@ import { Switch } from '~/components/ui/switch'
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from '~/components/ui/select'
 
 export default function AlbumAddSheet(props : Readonly<HandleProps>) {
-  const { isLoading, mutate, error } = useSWRHydrated(props)
+  const {mutate} = useSWRHydrated(props)
   const { albumAdd, setAlbumAdd } = useButtonStore(
     (state) => state,
   )

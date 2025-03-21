@@ -2,13 +2,12 @@
 
 import {BookImage, Home, Images} from 'lucide-react'
 import { Drawer } from 'vaul'
-import { AlbumType, AlbumListProps } from '~/types'
-import { useSession } from 'next-auth/react'
+import type { AlbumType } from '~/types'
+import type { AlbumListProps } from '~/types/props'
 import { useRouter } from 'next-nprogress-bar'
 import { usePathname } from 'next/navigation'
 
 export default function AlbumDrawer(props: Readonly<AlbumListProps>) {
-  const { data: session } = useSession()
   const router = useRouter()
   const pathname = usePathname()
 
@@ -40,7 +39,7 @@ export default function AlbumDrawer(props: Readonly<AlbumListProps>) {
                       <Home size={20} className={iconClasses} /><p>首页</p>
                     </Drawer.Close>
                   </div>
-                  {Array.isArray(props.data) && props.data?.map((album: AlbumType, index: any, array: AlbumType[]) => (
+                  {Array.isArray(props.data) && props.data?.map((album: AlbumType) => (
                     <div
                       key={album.id}
                       onClick={() => router.push(album.album_value)}

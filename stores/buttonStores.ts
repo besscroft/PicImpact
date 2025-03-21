@@ -1,6 +1,6 @@
 import { createStore } from 'zustand/vanilla'
 import { persist, createJSONStorage } from 'zustand/middleware'
-import { AlbumType, ImageType, Config, CopyrightType } from '~/types'
+import type { AlbumType, ImageType, Config, CopyrightType } from '~/types'
 
 export type ButtonState = {
   albumAdd: boolean

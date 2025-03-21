@@ -2,7 +2,7 @@
 
 import { cookies } from 'next/headers'
 import { defaultLocale } from '~/i18n'
-import { Language } from '~/types/language.ts'
+import { Language } from '~/types/language'
 
 const COOKIE_NAME = 'NEXT_LOCALE'
 

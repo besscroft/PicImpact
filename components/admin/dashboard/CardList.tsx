@@ -8,7 +8,7 @@ import {
 } from '~/components/ui/card'
 import { Button } from '~/components/ui/button'
 import { Progress } from '~/components/ui/progress'
-import { AnalysisDataProps } from '~/types'
+import type { AnalysisDataProps } from '~/types/props'
 import Link from 'next/link'
 import { MessageSquareHeart, Star, Send } from 'lucide-react'
 import Counter from '~/components/animata/text/counter'

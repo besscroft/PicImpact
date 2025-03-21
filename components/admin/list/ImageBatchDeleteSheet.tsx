@@ -1,6 +1,7 @@
 'use client'
 
-import { ImageListDataProps, ImageServerHandleProps, ImageType } from '~/types'
+import type { ImageType } from '~/types'
+import type { ImageListDataProps, ImageServerHandleProps } from '~/types/props'
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '~/components/ui/sheet'
 import React, { useState } from 'react'
 import { useButtonStore } from '~/app/providers/button-store-Providers'

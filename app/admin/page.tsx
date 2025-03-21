@@ -1,6 +1,6 @@
 import { fetchImagesAnalysis } from '~/server/db/query'
 import CardList from '~/components/admin/dashboard/CardList'
-import { AnalysisDataProps } from '~/types'
+import type { AnalysisDataProps } from '~/types/props'
 
 export default async function Admin() {
   const getData = async (): Promise<{

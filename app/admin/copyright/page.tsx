@@ -1,5 +1,5 @@
 import { fetchCopyrightList } from '~/server/db/query'
-import { HandleProps } from '~/types'
+import type { HandleProps } from '~/types/props'
 import React from 'react'
 import CopyrightList from '~/components/admin/copyright/CopyrightList'
 import CopyrightAddButton from '~/components/admin/copyright/CopyrightAddButton'

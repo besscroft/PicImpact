@@ -2,7 +2,7 @@ import {
   fetchServerImagesListByAlbum,
   fetchServerImagesPageTotalByAlbum
 } from '~/server/db/query'
-import { ImageServerHandleProps } from '~/types'
+import type { ImageServerHandleProps } from '~/types/props'
 import ListProps from '~/components/admin/list/ListProps'
 
 export default async function List() {

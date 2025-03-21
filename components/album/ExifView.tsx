@@ -10,7 +10,7 @@ import {
 } from "~/components/ui/table"
 import { Card } from '~/components/ui/card'
 import React from 'react'
-import { ImageDataProps } from '~/types'
+import type { ImageDataProps } from '~/types/props'
 import dayjs from 'dayjs'
 import customParseFormat from 'dayjs/plugin/customParseFormat'
 

@@ -1,6 +1,6 @@
 import 'server-only'
 import { fetchConfigsByKeys, fetchSecretKey, fetchUserById } from '~/server/db/query'
-import { Config } from '~/types'
+import type { Config } from '~/types'
 import { updateAListConfig, updateCustomInfo, updatePassword, updateR2Config, updateS3Config,updateUserInfo } from '~/server/db/operate'
 import { auth } from '~/server/auth'
 import CryptoJS from 'crypto-js'
