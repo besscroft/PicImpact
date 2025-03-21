@@ -1,7 +1,7 @@
 import Image from 'next/image'
 import favicon from '~/public/favicon.svg'
 import Link from 'next/link'
-import { fetchConfigsByKeys } from '~/server/db/query'
+import { fetchConfigsByKeys } from '~/server/db/query/configs'
 
 export default async function Logo() {
   const data = await fetchConfigsByKeys([

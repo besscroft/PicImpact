@@ -4,7 +4,7 @@ import CredentialsProvider from 'next-auth/providers/credentials'
 import { db } from '~/server/lib/db'
 import { z } from 'zod'
 import CryptoJS from 'crypto-js'
-import { fetchSecretKey } from '~/server/db/query'
+import { fetchSecretKey } from '~/server/db/query/configs'
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   secret: process.env.AUTH_SECRET || 'pic-impact',

@@ -1,7 +1,8 @@
 import Logo from '~/components/layout/Logo'
 import DynamicNavbar from '~/components/layout/DynamicNavbar'
 import HeaderLink from '~/components/layout/HeaderLink'
-import { fetchAlbumsShow,fetchAlbumsShowOptions } from '~/server/db/query'
+import { fetchAlbumsShow } from '~/server/db/query/albums'
+import { fetchAlbumsShowOptions } from '~/server/db/query/configs'
 import type { AlbumDataProps } from '~/types/props'
 
 export default async function Header() {

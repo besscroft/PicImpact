@@ -1,7 +1,7 @@
 import {
   fetchServerImagesListByAlbum,
   fetchServerImagesPageTotalByAlbum
-} from '~/server/db/query'
+} from '~/server/db/query/images'
 import type { ImageServerHandleProps } from '~/types/props'
 import ListProps from '~/components/admin/list/ListProps'
 

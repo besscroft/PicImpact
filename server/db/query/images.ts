@@ -1,49 +1,24 @@
+// 图片表
+
 'use server'
 
 import { Prisma } from '@prisma/client'
 import { db } from '~/server/lib/db'
 
-export async function fetchConfigsByKeys(keys: string[]) {
-  return await db.configs.findMany({
-    where: {
-      config_key: {
-        in: keys
-      }
-    },
-    select: {
-      id: true,
-      config_key: true,
-      config_value: true,
-      detail: true
-    }
-  });
-}
+const ALBUM_IMAGE_SORTING_ORDER = [
+  null,
+  'image.created_at DESC, image.updated_at DESC',
+  'COALESCE(TO_TIMESTAMP(image.exif->>\'data_time\', \'YYYY:MM:DD HH24:MI:SS\'), \'1970-01-01 00:00:00\') DESC, image.created_at DESC, image.updated_at DESC',
+  'image.created_at ASC, image.updated_at ASC',
+  'COALESCE(TO_TIMESTAMP(image.exif->>\'data_time\', \'YYYY:MM:DD HH24:MI:SS\'), \'1970-01-01 00:00:00\') ASC, image.created_at ASC, image.updated_at ASC',
+]
 
-export async function fetchAlbumsList() {
-  const albums = await db.albums.findMany({
-    where: {
-      del: 0
-    },
-    orderBy: [
-      {
-        sort: 'desc',
-      },
-      {
-        createdAt: 'desc',
-      },
-      {
-        updatedAt: 'desc'
-      }
-    ]
-  });
-  
-  // Map random_show to randomShow
-  return albums.map(album => ({
-    ...album,
-    randomShow: album.random_show
-  }));
-}
-
+/**
+ * 根据相册获取图片分页列表（服务端）
+ * @param pageNum 页码
+ * @param album 相册
+ * @returns {Promise<[ImageType]>} 图片列表
+ */
 export async function fetchServerImagesListByAlbum(pageNum: number, album: string) {
   if (album === 'all') {
     album = ''
@@ -115,6 +90,11 @@ export async function fetchServerImagesListByAlbum(pageNum: number, album: strin
   `;
 }
 
+/**
+ * 根据相册获取图片分页总数（服务端）
+ * @param album 相册
+ * @returns 图片总数
+ */
 export async function fetchServerImagesPageTotalByAlbum(album: string) {
   if (album === 'all') {
     album = ''
@@ -162,14 +142,12 @@ export async function fetchServerImagesPageTotalByAlbum(album: string) {
   return Number(pageTotal[0].total) ?? 0
 }
 
-const ALBUM_IMAGE_SORTING_ORDER = [
-  null,
-  'image.created_at DESC, image.updated_at DESC',
-  'COALESCE(TO_TIMESTAMP(image.exif->>\'data_time\', \'YYYY:MM:DD HH24:MI:SS\'), \'1970-01-01 00:00:00\') DESC, image.created_at DESC, image.updated_at DESC',
-  'image.created_at ASC, image.updated_at ASC',
-  'COALESCE(TO_TIMESTAMP(image.exif->>\'data_time\', \'YYYY:MM:DD HH24:MI:SS\'), \'1970-01-01 00:00:00\') ASC, image.created_at ASC, image.updated_at ASC',
-]
-
+/**
+ * 根据相册获取图片分页列表（客户端）
+ * @param pageNum 页码
+ * @param album 相册
+ * @returns {Promise<[ImageType]>} 图片列表
+ */
 export async function fetchClientImagesListByAlbum(pageNum: number, album: string) {
   if (pageNum < 1) {
     pageNum = 1
@@ -283,6 +261,11 @@ export async function fetchClientImagesListByAlbum(pageNum: number, album: strin
   `;
 }
 
+/**
+ * 根据相册获取图片分页总数（客户端）
+ * @param album 相册
+ * @returns 图片总数
+ */
 export async function fetchClientImagesPageTotalByAlbum(album: string) {
   const customIndexStyle = await db.configs.findUnique({
     where: {
@@ -341,6 +324,12 @@ export async function fetchClientImagesPageTotalByAlbum(album: string) {
   return Number(pageTotal[0].total) > 0 ? Math.ceil(Number(pageTotal[0].total) / 16) : 0
 }
 
+/**
+ * 根据图片标签获取图片分页列表（客户端）
+ * @param pageNum 页码
+ * @param tag 标签
+ * @returns {Promise<[ImageType]>} 图片列表
+ */
 export async function fetchClientImagesListByTag(pageNum: number, tag: string) {
   if (pageNum < 1) {
     pageNum = 1
@@ -388,6 +377,11 @@ export async function fetchClientImagesListByTag(pageNum: number, tag: string) {
   `;
 }
 
+/**
+ * 根据图片标签获取图片分页总数（客户端）
+ * @param tag 标签
+ * @returns 图片总数
+ */
 export async function fetchClientImagesPageTotalByTag(tag: string) {
   const pageTotal = await db.$queryRaw`
     SELECT COALESCE(COUNT(1),0) AS total
@@ -416,46 +410,10 @@ export async function fetchClientImagesPageTotalByTag(tag: string) {
   return Number(pageTotal[0].total) > 0 ? Math.ceil(Number(pageTotal[0].total) / 16) : 0
 }
 
-export async function fetchAlbumsShow() {
-  return await db.albums.findMany({
-    where: {
-      del: 0,
-      show: 0,
-      album_value: {
-        not: '/'
-      }
-    },
-    orderBy: [
-      {
-        sort: 'desc'
-      }
-    ]
-  });
-}
-
-export async function fetchAlbumsShowOptions() {
-  const data = await db.configs.findFirst({
-    where: {
-      config_key: 'custom_fold_album_enable'
-    },
-    select: {
-      config_value: true
-    }
-  })
-  const countData = await db.configs.findFirst({
-    where: {
-      config_key: 'custom_fold_album_count'
-    },
-    select: {
-      config_value: true
-    }
-  })
-  return {
-    enabled: data?.config_value === 'true',
-    count: parseInt(countData?.config_value || '6')
-  }
-}
-
+/**
+ * 获取图片分析数据
+ * @returns {Promise<{ total: number, showTotal: number, crTotal: number, tagsTotal: number, cameraStats: any[], result: any[] }>} 图片分析数据
+ */
 export async function fetchImagesAnalysis() {
   const counts = await db.$queryRaw<[{ images_total: number, images_show: number, cr_total: number, tags_total: number }]>`
     SELECT 
@@ -510,43 +468,11 @@ export async function fetchImagesAnalysis() {
   }
 }
 
-export async function fetchUserById(userId: string) {
-  return await db.user.findUnique({
-    where: {
-      id: userId
-    }
-  })
-}
-
-export async function fetchSecretKey() {
-  return await db.configs.findFirst({
-    where: {
-      config_key: 'secret_key'
-    },
-    select: {
-      id: true,
-      config_key: true,
-      config_value: true
-    }
-  })
-}
-
-export async function fetchCopyrightList() {
-  return await db.copyright.findMany({
-    where: {
-      del: 0,
-    },
-    orderBy: [
-      {
-        createdAt: 'desc',
-      },
-      {
-        updatedAt: 'desc'
-      }
-    ]
-  });
-}
-
+/**
+ * 根据图片 ID 获取图片详情
+ * @param id 图片 ID
+ * @returns {Promise<ImageType>} 图片详情
+ */
 export async function fetchImageByIdAndAuth(id: string) {
   return await db.$queryRaw`
     SELECT
@@ -572,45 +498,10 @@ export async function fetchImageByIdAndAuth(id: string) {
   `;
 }
 
-export async function queryAuthStatus() {
-  return await db.configs.findFirst({
-    where: {
-      config_key: 'auth_enable'
-    },
-    select: {
-      id: true,
-      config_key: true,
-      config_value: true
-    }
-  });
-}
-
-export async function queryAuthTemplateSecret() {
-  return await db.configs.findFirst({
-    where: {
-      config_key: 'auth_temp_secret'
-    },
-    select: {
-      id: true,
-      config_key: true,
-      config_value: true
-    }
-  });
-}
-
-export async function queryAuthSecret() {
-  return await db.configs.findFirst({
-    where: {
-      config_key: 'auth_secret'
-    },
-    select: {
-      id: true,
-      config_key: true,
-      config_value: true
-    }
-  });
-}
-
+/**
+ * 获取最新的 10 张图片
+ * @returns {Promise<ImageType[]>} 图片列表
+ */
 export async function getRSSImages() {
   // 每个相册取最新 10 张照片
   return await db.$queryRaw`

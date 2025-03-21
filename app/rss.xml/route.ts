@@ -1,6 +1,7 @@
 import 'server-only'
 import RSS from 'rss'
-import { fetchConfigsByKeys, getRSSImages } from '~/server/db/query'
+import { fetchConfigsByKeys } from '~/server/db/query/configs'
+import { getRSSImages } from '~/server/db/query/images'
 
 export async function GET(request: Request) {
   const data = await fetchConfigsByKeys([

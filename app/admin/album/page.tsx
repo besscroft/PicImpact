@@ -1,4 +1,4 @@
-import { fetchAlbumsList } from '~/server/db/query'
+import { fetchAlbumsList } from '~/server/db/query/albums'
 import AlbumList from '~/components/admin/album/AlbumList'
 import RefreshButton from '~/components/album/RefreshButton'
 import type { HandleProps } from '~/types/props'

@@ -1,6 +1,7 @@
 import Masonry from '~/components/album/Masonry'
-import { fetchClientImagesListByAlbum, fetchClientImagesPageTotalByAlbum, fetchConfigsByKeys } from '~/server/db/query'
 import type { ImageHandleProps } from '~/types/props'
+import { fetchClientImagesListByAlbum, fetchClientImagesPageTotalByAlbum } from '~/server/db/query/images'
+import { fetchConfigsByKeys } from '~/server/db/query/configs'
 
 export default async function Home() {
   const getData = async (pageNum: number, album: string) => {

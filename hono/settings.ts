@@ -1,11 +1,13 @@
 import 'server-only'
-import { fetchConfigsByKeys, fetchSecretKey, fetchUserById } from '~/server/db/query'
+import { fetchUserById } from '~/server/db/query'
+import { fetchConfigsByKeys, fetchSecretKey } from '~/server/db/query/configs'
 import type { Config } from '~/types'
-import { updateAListConfig, updateCustomInfo, updatePassword, updateR2Config, updateS3Config,updateUserInfo } from '~/server/db/operate'
 import { auth } from '~/server/auth'
 import CryptoJS from 'crypto-js'
 import { Hono } from 'hono'
 import { HTTPException } from 'hono/http-exception'
+import { updateAListConfig, updateCustomInfo, updateR2Config, updateS3Config } from '~/server/db/operate/configs'
+import { updatePassword, updateUserInfo } from '~/server/db/operate'
 
 const app = new Hono()
 
@@ -140,7 +142,7 @@ app.put('/update-password', async (c) => {
   const daUser = await fetchUserById(user?.id)
   const secretKey = await fetchSecretKey()
   if (!secretKey || !secretKey.config_value) {
-    throw new HTTPException(500, { message: 'Failed', cause: e })
+    throw new HTTPException(500, { message: 'Failed' })
   }
   const hashedOldPassword = CryptoJS.HmacSHA512(pwd.oldPassword, secretKey?.config_value).toString()
 
