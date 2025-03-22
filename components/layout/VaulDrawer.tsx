@@ -17,7 +17,7 @@ import {
 import { loginOut } from '~/server/actions'
 
 export default function VaulDrawer() {
-  const { data: session, status } = useSession()
+  const { data: session } = useSession()
   const router = useRouter()
   const pathname = usePathname()
   const { resolvedTheme, setTheme } = useTheme()

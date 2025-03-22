@@ -1,6 +1,7 @@
 'use client'
 
-import { AlbumType, AlbumDataProps } from '~/types'
+import type { AlbumType } from '~/types'
+import type { AlbumDataProps } from '~/types/props'
 import { usePathname } from 'next/navigation'
 import { useRouter } from 'next-nprogress-bar'
 import { useTranslations } from 'next-intl'

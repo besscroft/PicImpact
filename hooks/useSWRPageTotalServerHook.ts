@@ -1,5 +1,5 @@
 import useSWR from 'swr'
-import { ImageServerHandleProps } from '~/types'
+import type { ImageServerHandleProps } from '~/types/props'
 
 export const useSWRPageTotalServerHook = ({ args, totalHandle }: ImageServerHandleProps, tag: string)   => {
   const { data, error, isLoading, isValidating, mutate } = useSWR([args, tag],

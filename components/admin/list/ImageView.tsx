@@ -2,7 +2,8 @@
 
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '~/components/ui/sheet'
 import { useButtonStore } from '~/app/providers/button-store-Providers'
-import { ImageDataProps, ImageType } from '~/types'
+import type { ImageType } from '~/types'
+import type { ImageDataProps } from '~/types/props'
 import React from 'react'
 import { fetcher } from '~/lib/utils/fetcher'
 import useSWR from 'swr'

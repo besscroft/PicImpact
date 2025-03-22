@@ -1,7 +1,8 @@
 'use client'
 
 import React, { useEffect } from 'react'
-import { HandleProps, ImageHandleProps, ImageType } from '~/types'
+import type { ImageType } from '~/types'
+import type { HandleProps, ImageHandleProps } from '~/types/props'
 import { MasonryPhotoAlbum, RenderImageContext, RenderImageProps } from 'react-photo-album'
 import { useSWRPageTotalHook } from '~/hooks/useSWRPageTotalHook'
 import useSWRInfinite from 'swr/infinite'

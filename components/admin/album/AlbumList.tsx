@@ -4,7 +4,8 @@ import React, { useState } from 'react'
 import { useSWRHydrated } from '~/hooks/useSWRHydrated'
 import { ArrowDown10 } from 'lucide-react'
 import { toast } from 'sonner'
-import { AlbumType, HandleProps } from '~/types'
+import type { AlbumType } from '~/types'
+import type { HandleProps } from '~/types/props'
 import { useButtonStore } from '~/app/providers/button-store-Providers'
 import { Card, CardFooter } from '~/components/ui/card'
 import {
@@ -28,7 +29,7 @@ import { DeleteIcon } from '~/components/icons/delete'
 import { useTranslations } from 'next-intl'
 
 export default function AlbumList(props : Readonly<HandleProps>) {
-  const { data, isLoading, error, mutate } = useSWRHydrated(props)
+  const { data, mutate } = useSWRHydrated(props)
   const [album, setAlbum] = useState({} as AlbumType)
   const [deleteLoading, setDeleteLoading] = useState(false)
   const [updateAlbumLoading, setUpdateAlbumLoading] = useState(false)

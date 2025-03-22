@@ -1,7 +1,8 @@
 'use client'
 
 import React, { useState } from 'react'
-import { HandleProps, CopyrightType } from '~/types'
+import type { CopyrightType } from '~/types'
+import type { HandleProps } from '~/types/props'
 import { useSWRHydrated } from '~/hooks/useSWRHydrated'
 import { toast } from 'sonner'
 import { useButtonStore } from '~/app/providers/button-store-Providers'
@@ -22,7 +23,7 @@ import { DeleteIcon } from '~/components/icons/delete'
 import { useTranslations } from 'next-intl'
 
 export default function CopyrightList(props : Readonly<HandleProps>) {
-  const { data, isLoading, error, mutate } = useSWRHydrated(props)
+  const { data, mutate } = useSWRHydrated(props)
   const [copyright, setCopyright] = useState({} as CopyrightType)
   const [deleteLoading, setDeleteLoading] = useState(false)
   const [updateCopyrightLoading, setUpdateCopyrightLoading] = useState(false)

@@ -1,7 +1,7 @@
 'use server'
 
 import { signOut } from '~/server/auth'
-import { queryAuthSecret, queryAuthStatus } from '~/server/db/query'
+import { queryAuthSecret, queryAuthStatus } from '~/server/db/query/configs'
 import * as OTPAuth from 'otpauth'
 
 export async function validate2FA(token: string) {

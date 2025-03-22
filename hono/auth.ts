@@ -1,9 +1,9 @@
 import 'server-only'
-import { queryAuthTemplateSecret } from '~/server/db/query'
 import * as OTPAuth from 'otpauth'
-import { deleteAuthSecret, saveAuthSecret, saveAuthTemplateSecret } from '~/server/db/operate'
 import { Hono } from 'hono'
 import { HTTPException } from 'hono/http-exception'
+import { deleteAuthSecret, saveAuthSecret, saveAuthTemplateSecret } from '~/server/db/operate/configs'
+import { queryAuthTemplateSecret } from '~/server/db/query/configs'
 
 const app = new Hono()
 

@@ -2,12 +2,12 @@
 
 import React from 'react'
 import { useSWRHydrated } from '~/hooks/useSWRHydrated'
-import { HandleProps } from '~/types'
+import type { HandleProps } from '~/types/props'
 import { ReloadIcon } from '@radix-ui/react-icons'
 import { Button } from '~/components/ui/button'
 
 export default function RefreshButton(props: Readonly<HandleProps>) {
-  const { isLoading, mutate, error } = useSWRHydrated(props)
+  const { isLoading, mutate } = useSWRHydrated(props)
 
   return (
     <Button

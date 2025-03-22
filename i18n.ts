@@ -1,5 +1,5 @@
 import { getRequestConfig } from 'next-intl/server'
-import { getUserLocale } from '~/lib/utils/locale.ts'
+import { getUserLocale } from '~/lib/utils/locale'
 
 export const defaultLocale = 'zh'
 

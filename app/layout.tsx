@@ -7,7 +7,7 @@ import { ProgressBarProviders } from '~/app/providers/progress-bar-providers'
 import { ButtonStoreProvider } from '~/app/providers/button-store-Providers'
 
 import '~/style/globals.css'
-import { fetchConfigsByKeys } from '~/server/db/query'
+import { fetchConfigsByKeys } from '~/server/db/query/configs'
 
 import { NextIntlClientProvider } from 'next-intl'
 import { getLocale, getMessages } from 'next-intl/server'

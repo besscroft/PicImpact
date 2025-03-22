@@ -4,8 +4,8 @@ import {
   insertCopyright,
   updateCopyright,
   updateCopyrightShow
-} from '~/server/db/operate'
-import { fetchCopyrightList } from '~/server/db/query'
+} from '~/server/db/operate/copyrights'
+import { fetchCopyrightList } from '~/server/db/query/copyrights'
 import { Hono } from 'hono'
 import { HTTPException } from 'hono/http-exception'
 

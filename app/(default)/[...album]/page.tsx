@@ -1,11 +1,8 @@
 import Masonry from '~/components/album/Masonry'
-import {
-  fetchClientImagesListByAlbum,
-  fetchClientImagesPageTotalByAlbum,
-  fetchAlbumsList,
-  fetchConfigsByKeys,
-} from '~/server/db/query'
-import { ImageHandleProps } from '~/types'
+import { fetchClientImagesListByAlbum, fetchClientImagesPageTotalByAlbum } from '~/server/db/query/images'
+import type { ImageHandleProps } from '~/types/props'
+import { fetchConfigsByKeys } from '~/server/db/query/configs'
+import { fetchAlbumsList } from '~/server/db/query/albums'
 
 export default async function Page({params}: { params: any }) {
   const { album } = await params

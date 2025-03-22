@@ -1,6 +1,6 @@
 import 'server-only'
-import { fetchAlbumsList } from '~/server/db/query'
-import { deleteAlbum, insertAlbums, updateAlbum, updateAlbumShow } from '~/server/db/operate'
+import { fetchAlbumsList } from '~/server/db/query/albums'
+import { deleteAlbum, insertAlbums, updateAlbum, updateAlbumShow } from '~/server/db/operate/albums'
 import { Hono } from 'hono'
 import { HTTPException } from 'hono/http-exception'
 

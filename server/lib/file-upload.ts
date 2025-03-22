@@ -1,6 +1,6 @@
 import 'server-only'
 
-import { fetchConfigsByKeys } from '~/server/db/query'
+import { fetchConfigsByKeys } from '~/server/db/query/configs'
 import { getClient } from '~/server/lib/s3'
 import { uploadSimpleObject } from '~/server/lib/s3api'
 import { getR2Client } from '~/server/lib/r2'

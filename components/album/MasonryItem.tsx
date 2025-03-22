@@ -1,7 +1,8 @@
 'use client'
 
 import { useButtonStore } from '~/app/providers/button-store-Providers'
-import { CopyrightType, ImageType, ImageDataProps } from '~/types'
+import type { CopyrightType, ImageType } from '~/types'
+import type { ImageDataProps } from '~/types/props'
 import {
   Aperture,
   Camera,
@@ -41,7 +42,7 @@ import { LinkIcon } from '~/components/icons/link'
 import { ArrowLeftIcon } from '~/components/icons/arrow-left'
 import { ArrowRightIcon } from '~/components/icons/arrow-right'
 import LivePhoto from '~/components/album/LivePhoto'
-import {useConfigStore} from "~/app/providers/config-store-Providers.tsx";
+import { useConfigStore } from '~/app/providers/config-store-Providers'
 
 dayjs.extend(customParseFormat)
 

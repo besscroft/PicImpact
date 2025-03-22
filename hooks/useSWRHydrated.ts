@@ -1,5 +1,5 @@
 import useSWR from 'swr'
-import { HandleProps } from '~/types'
+import type { HandleProps } from '~/types/props'
 
 export const useSWRHydrated = ({ handle, args }: HandleProps)   => {
   const { data, error, isLoading, isValidating, mutate } = useSWR(args,

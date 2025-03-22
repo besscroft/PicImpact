@@ -34,7 +34,7 @@ import { useSession } from 'next-auth/react'
 import { loginOut } from '~/server/actions'
 import { useTheme } from 'next-themes'
 import * as React from 'react'
-import { setUserLocale } from '~/lib/utils/locale.ts'
+import { setUserLocale } from '~/lib/utils/locale'
 import { useTranslations } from 'next-intl'
 
 export function NavUser() {

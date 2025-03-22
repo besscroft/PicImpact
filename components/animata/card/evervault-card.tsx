@@ -4,7 +4,7 @@ import { useMotionValue } from 'framer-motion'
 import React, { useState, useEffect } from 'react'
 import { useMotionTemplate, motion } from 'framer-motion'
 import { cn } from '~/lib/utils'
-import { Avatar, AvatarFallback, AvatarImage } from '~/components/ui/avatar.tsx'
+import { Avatar, AvatarFallback, AvatarImage } from '~/components/ui/avatar'
 
 export const EvervaultCard = ({
   text,

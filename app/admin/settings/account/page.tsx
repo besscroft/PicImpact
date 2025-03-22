@@ -6,7 +6,6 @@ import { fetcher } from '~/lib/utils/fetcher'
 import { toast } from 'sonner'
 import { ReloadIcon } from '@radix-ui/react-icons'
 import { Button } from '~/components/ui/button'
-
 import { useSession } from 'next-auth/react'
 import { useTranslations } from 'next-intl'
 

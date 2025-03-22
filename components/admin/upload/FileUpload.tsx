@@ -10,9 +10,9 @@ import {
   SelectValue,
 } from '~/components/ui/select'
 import { useTranslations } from 'next-intl'
-import SimpleFileUpload from "~/components/admin/upload/SimpleFileUpload.tsx";
-import MultipleFileUpload from "~/components/admin/upload/MultipleFileUpload.tsx";
-import LivephotoFileUpload from "~/components/admin/upload/LivephotoFileUpload.tsx";
+import SimpleFileUpload from '~/components/admin/upload/SimpleFileUpload'
+import MultipleFileUpload from '~/components/admin/upload/MultipleFileUpload'
+import LivephotoFileUpload from '~/components/admin/upload/LivephotoFileUpload'
 
 export default function FileUpload() {
   const [mode, setMode] = useState('singleton')

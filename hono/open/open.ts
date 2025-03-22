@@ -1,7 +1,8 @@
 import 'server-only'
 import { Hono } from 'hono'
-import { fetchImageByIdAndAuth, queryAuthStatus } from '~/server/db/query'
 import { HTTPException } from 'hono/http-exception'
+import { queryAuthStatus } from '~/server/db/query/configs'
+import { fetchImageByIdAndAuth } from '~/server/db/query/images'
 
 const app = new Hono()
 

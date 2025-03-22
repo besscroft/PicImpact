@@ -1,6 +1,6 @@
 import Masonry from '~/components/album/Masonry'
-import { fetchClientImagesListByTag, fetchClientImagesPageTotalByTag } from '~/server/db/query'
-import { ImageHandleProps } from '~/types'
+import type { ImageHandleProps } from '~/types/props'
+import { fetchClientImagesListByTag, fetchClientImagesPageTotalByTag } from '~/server/db/query/images'
 
 export default async function Label({params}: { params: any }) {
   const { tag } = await params

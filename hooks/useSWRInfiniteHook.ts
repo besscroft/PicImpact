@@ -1,4 +1,4 @@
-import { ImageHandleProps } from '~/types'
+import type { ImageHandleProps } from '~/types/props'
 import useSWR from 'swr'
 
 export const useSWRInfiniteHook = ({ handle, args, album }: ImageHandleProps, pageNum: number)   => {

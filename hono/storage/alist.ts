@@ -1,5 +1,5 @@
 import 'server-only'
-import { fetchConfigsByKeys } from '~/server/db/query'
+import { fetchConfigsByKeys } from '~/server/db/query/configs'
 
 import { Hono } from 'hono'
 

@@ -1,7 +1,8 @@
 'use client'
 
 import React, { useState } from 'react'
-import { ImageListDataProps, ImageServerHandleProps, ImageType, AlbumType } from '~/types'
+import type { ImageType, AlbumType } from '~/types'
+import type { ImageListDataProps, ImageServerHandleProps } from '~/types/props'
 import { useSWRInfiniteServerHook } from '~/hooks/useSWRInfiniteServerHook'
 import { useSWRPageTotalServerHook } from '~/hooks/useSWRPageTotalServerHook'
 import { ConfigProvider, Pagination } from 'antd'
