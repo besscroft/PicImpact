@@ -31,7 +31,7 @@ export default function HeaderLink(props: Readonly<AlbumDataProps>) {
             className={
               cn(
                 pathname === '/' ? 'border-b-2 border-green-400 rounded-none' : 'rounded-none',
-                'text-base'
+                'text-base cursor-pointer'
               )
             }
             onClick={() => router.push('/')}
@@ -47,7 +47,7 @@ export default function HeaderLink(props: Readonly<AlbumDataProps>) {
               {props.data.map((album: AlbumType) => (
                 <NavigationMenuLink
                   className={cn(
-                    'min-w-80 cursor-pointer block select-none space-y-1 m-1 p-1 hover:bg-accent',
+                    'min-w-80 cursor-pointer block select-none space-y-1 m-1 p-1 hover:bg-accent cursor-pointer',
                     pathname === album.album_value ? 'border-b-2 border-green-400' : ''
                   )}
                   key={album.id}
@@ -64,7 +64,7 @@ export default function HeaderLink(props: Readonly<AlbumDataProps>) {
                 className={
                   cn(
                     pathname === album.album_value ? 'border-b-2 border-green-400 rounded-none' : 'rounded-none',
-                    'text-base'
+                    'text-base cursor-pointer'
                   )
                 }
                 onClick={() => router.push(album.album_value)}

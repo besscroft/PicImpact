@@ -109,13 +109,13 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       <SidebarHeader>
         <NavTitle />
       </SidebarHeader>
-      <SidebarContent>
+      <SidebarContent className="select-none">
         <NavMain items={data.navMain} />
         <NavProjects projects={data.projects} />
         <SidebarGroup className="mt-auto">
           <SidebarMenu>
-            <SidebarMenuItem>
-              <SidebarMenuButton onClick={() => router.push('/')}>
+            <SidebarMenuItem className="select-none">
+              <SidebarMenuButton className="cursor-pointer" onClick={() => router.push('/')}>
                 <Earth size={20} className={iconClasses} />
                 <span>{t('Login.goHome')}</span>
               </SidebarMenuButton>

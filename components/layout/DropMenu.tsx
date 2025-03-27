@@ -74,7 +74,7 @@ export const DropMenu = () => {
                 </DropdownMenuItem>
             }
             <DropdownMenuSub>
-              <DropdownMenuSubTrigger><Languages size={20} className={iconClasses} />{t('Button.language')}</DropdownMenuSubTrigger>
+              <DropdownMenuSubTrigger className="cursor-pointer "><Languages size={20} className={iconClasses} />{t('Button.language')}</DropdownMenuSubTrigger>
               <DropdownMenuPortal>
                 <DropdownMenuSubContent>
                   <DropdownMenuItem className="cursor-pointer" onClick={() => setUserLocale('zh')}>简体中文</DropdownMenuItem>

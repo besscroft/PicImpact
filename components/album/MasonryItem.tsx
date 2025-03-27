@@ -153,7 +153,7 @@ export default function MasonryItem() {
           </div>
         </div>
         <div className="h-full flex flex-col space-y-2 md:grid md:gap-2 md:grid-cols-3 xl:gap-4 w-full">
-          <div className="md:col-span-2 md:flex md:justify-center md:max-h-[90vh]">
+          <div className="md:col-span-2 md:flex md:justify-center md:max-h-[90vh] select-none">
             {
               MasonryViewData.type === 1 ?
                 <img
@@ -175,7 +175,7 @@ export default function MasonryItem() {
               MasonryViewDataList.length > 0 &&
               <div className="grid grid-cols-2 gap-2 mb-2">
                 <Button
-                  className="w-full active:scale-95 duration-200 ease-in-out"
+                  className="w-full active:scale-95 duration-200 ease-in-out cursor-pointer select-none"
                   onClick={() => loadingHandle('prev')}
                   variant="outline"
                 >
@@ -183,7 +183,7 @@ export default function MasonryItem() {
                   上一张
                 </Button>
                 <Button
-                  className="w-full active:scale-95 duration-200 ease-in-out"
+                  className="w-full active:scale-95 duration-200 ease-in-out cursor-pointer select-none"
                   onClick={() => loadingHandle('next')}
                   variant="outline"
                 >
@@ -194,19 +194,19 @@ export default function MasonryItem() {
             }
             <Tabs defaultValue="detail" className="w-full" ref={tabsListRef} aria-label="图片预览选择项">
               <TabsList className="grid w-full grid-cols-3">
-                <TabsTrigger value="detail">
+                <TabsTrigger value="detail" className="cursor-pointer">
                   <div className="flex items-center space-x-2 select-none">
                     <ImageIcon size={20}/>
                     <span>详情</span>
                   </div>
                 </TabsTrigger>
-                <TabsTrigger value="exif">
+                <TabsTrigger value="exif" className="cursor-pointer">
                   <div className="flex items-center space-x-2 select-none">
                     <Aperture size={20}/>
                     <span>Exif</span>
                   </div>
                 </TabsTrigger>
-                <TabsTrigger value="copyright">
+                <TabsTrigger value="copyright" className="cursor-pointer">
                   <div className="flex items-center space-x-2 select-none">
                     <Copyright size={20} />
                     <span>版权</span>
@@ -234,7 +234,7 @@ export default function MasonryItem() {
                           }
                         }}
                         variant="outline"
-                        className="active:scale-95 duration-200 ease-in-out"
+                        className="active:scale-95 duration-200 ease-in-out cursor-pointer select-none"
                       >
                         <CopyIcon />
                         复制
@@ -252,7 +252,7 @@ export default function MasonryItem() {
                         }
                       }}
                       variant="outline"
-                      className="active:scale-95 duration-200 ease-in-out"
+                      className="active:scale-95 duration-200 ease-in-out cursor-pointer select-none"
                     >
                       <LinkIcon />
                       分享
@@ -263,7 +263,7 @@ export default function MasonryItem() {
                           onClick={() => downloadImg()}
                           disabled={download}
                           variant="outline"
-                          className="active:scale-95 duration-200 ease-in-out"
+                          className="active:scale-95 duration-200 ease-in-out cursor-pointer select-none"
                         >
                           {download ? <ReloadIcon className="mr-2 h-4 w-4 animate-spin"/> : <DownloadIcon />}
                           下载
@@ -371,7 +371,7 @@ export default function MasonryItem() {
                           return <Card key={copyright.id} className="flex flex-col justify-center p-0">
                             <div className="flex justify-between w-full p-2 space-x-2">
                               <div className="flex justify-center items-center space-x-2">
-                                <Avatar>
+                                <Avatar className="select-none">
                                   <AvatarImage src={copyright.avatar_url} alt="avatar"/>
                                   <AvatarFallback>CN</AvatarFallback>
                                 </Avatar>
@@ -386,7 +386,7 @@ export default function MasonryItem() {
                                 href={copyright.url}
                                 target="_blank"
                               >
-                                <Button>
+                                <Button className="cursor-pointer">
                                   Follow
                                 </Button>
                               </Link>

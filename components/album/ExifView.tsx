@@ -22,8 +22,8 @@ export default function ExifView(props: Readonly<ImageDataProps>) {
       <Table aria-label="照片 Exif 信息">
         <TableHeader>
           <TableRow>
-            <TableHead>参数</TableHead>
-            <TableHead>值</TableHead>
+            <TableHead className="select-none">参数</TableHead>
+            <TableHead className="select-none">值</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>

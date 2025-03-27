@@ -29,12 +29,12 @@ export function NavMain({
 }) {
   const router = useRouter()
   const pathname = usePathname()
-  const buttonClasses = 'active:scale-95 duration-200 ease-in-out'
+  const buttonClasses = 'active:scale-95 duration-200 ease-in-out cursor-pointer'
   const { setOpenMobile } = useSidebar()
 
   return (
     <SidebarGroup>
-      <SidebarGroupLabel>菜单</SidebarGroupLabel>
+      <SidebarGroupLabel className="select-none">菜单</SidebarGroupLabel>
       <SidebarMenu>
         {items.map((item) => (
           <Collapsible
@@ -42,7 +42,7 @@ export function NavMain({
             asChild
             className="group/collapsible"
           >
-            <SidebarMenuItem>
+            <SidebarMenuItem className="select-none">
               <SidebarMenuButton
                 className={buttonClasses}
                 tooltip={item.title}

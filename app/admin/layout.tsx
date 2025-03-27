@@ -11,7 +11,7 @@ export default function AdminLayout({
     <SidebarProvider>
       <AppSidebar />
       <main className="flex w-full h-full flex-1 flex-col p-4">
-        <SidebarTrigger/>
+        <SidebarTrigger className="cursor-pointer" />
         <AntdRegistry>
           <div className="w-full h-full p-2">
             {children}

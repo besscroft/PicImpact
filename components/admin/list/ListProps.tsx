@@ -139,15 +139,15 @@ export default function ListProps(props : Readonly<ImageServerHandleProps>) {
               await mutate()
             }}
           >
-            <SelectTrigger>
+            <SelectTrigger className="cursor-pointer">
               <SelectValue placeholder={t('List.selectAlbum')} />
             </SelectTrigger>
             <SelectContent>
               <SelectGroup>
                 <SelectLabel>{t('Words.album')}</SelectLabel>
-                <SelectItem value="all">{t('Words.all')}</SelectItem>
+                <SelectItem className="cursor-pointer" value="all">{t('Words.all')}</SelectItem>
                 {albums?.map((album: AlbumType) => (
-                  <SelectItem key={album.album_value} value={album.album_value}>
+                  <SelectItem className="cursor-pointer" key={album.album_value} value={album.album_value}>
                     {album.name}
                   </SelectItem>
                 ))}
@@ -198,6 +198,7 @@ export default function ListProps(props : Readonly<ImageServerHandleProps>) {
                 <Button
                   variant="outline"
                   size="icon"
+                  className="cursor-pointer"
                   onClick={() => {
                     setImageViewData(image)
                     setImageView(true)
@@ -219,6 +220,7 @@ export default function ListProps(props : Readonly<ImageServerHandleProps>) {
                   <Switch
                     checked={image.show === 0}
                     disabled={updateShowLoading}
+                    className="cursor-pointer"
                     onCheckedChange={(isSelected: boolean) => updateImageShow(image.id, isSelected ? 0 : 1)}
                   />
                 }
@@ -240,6 +242,7 @@ export default function ListProps(props : Readonly<ImageServerHandleProps>) {
                     <Button
                       variant="outline"
                       size="icon"
+                      className="cursor-pointer"
                       onClick={() => {
                         setImage(image)
                         setImageAlbum(image.album_value)

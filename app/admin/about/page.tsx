@@ -14,7 +14,7 @@ export default async function About() {
         target="_blank"
       >
         <Image
-          className="my-4"
+          className="my-4 select-none"
           src={favicon}
           alt="Logo"
           width={64}
@@ -37,16 +37,16 @@ export default async function About() {
           />
         </svg>
 
-        <p className="whitespace-nowrap text-sm">v2.2.0</p>
+        <p className="whitespace-nowrap text-sm select-none">v2.3.0</p>
       </span>
-      <span>PicImpact 是一个摄影师专用的摄影作品展示网站，基于 Next.js + Hono.js 开发。</span>
+      <span className="select-none">PicImpact 是一个摄影师专用的摄影作品展示网站，基于 Next.js + Hono.js 开发。</span>
       <div className="grid grid-cols-1 gap-2 md:grid-cols-2 md:gap-4 lg:grid-cols-3 lg:gap-6 xl:grid-cols-4 xl:gap-8">
         {
           contributors.map((item: any) => {
             return (
               <div
                 key={item.login}
-                className="border border-black/[0.2] dark:border-white/[0.2] flex flex-col items-start w-full mx-auto p-4 relative"
+                className="select-none border border-black/[0.2] dark:border-white/[0.2] flex flex-col items-start w-full mx-auto p-4 relative"
               >
                 <Icon className="absolute h-6 w-6 -top-3 -left-3 dark:text-white text-black" />
                 <Icon className="absolute h-6 w-6 -bottom-3 -left-3 dark:text-white text-black" />
