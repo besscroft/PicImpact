@@ -130,7 +130,7 @@ export default function ListProps(props : Readonly<ImageServerHandleProps>) {
   return (
     <div className="flex flex-col space-y-2 h-full flex-1">
       <div className="flex justify-between space-x-1">
-        <div className="flex items-center justify-center w-full sm:w-64 md:w-80">
+        <div className="flex items-center w-full sm:w-64 md:w-80">
           <Select
             disabled={albumsLoading}
             onValueChange={async (value: string) => {
@@ -181,7 +181,7 @@ export default function ListProps(props : Readonly<ImageServerHandleProps>) {
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
         {Array.isArray(data) && data?.map((image: ImageType) => (
-          <Card key={image.id} className="flex flex-col h-72 show-up-motion items-center">
+          <Card key={image.id} className="flex flex-col h-72 show-up-motion items-center gap-0 py-0">
             <div className="flex h-12 justify-between w-full p-2 space-x-2">
               <Popover>
                 <PopoverTrigger className="cursor-pointer select-none inline-flex items-center justify-center rounded-full bg-emerald-100 px-2.5 py-0.5 text-emerald-700">
@@ -322,7 +322,7 @@ export default function ListProps(props : Readonly<ImageServerHandleProps>) {
           pageSize={8}
           hideOnSinglePage
           showSizeChanger={false}
-          onChange={async (page, pageSize) => {
+          onChange={async (page: number) => {
             setPageNum(page)
             await mutate()
           }}

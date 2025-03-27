@@ -37,7 +37,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const router = useRouter()
   const t = useTranslations()
 
-  const iconClasses = 'text-xl text-default-500 pointer-events-none flex-shrink-0'
+  const iconClasses = 'text-xl text-default-500 pointer-events-none shrink-0'
 
   const data = {
     navMain: [

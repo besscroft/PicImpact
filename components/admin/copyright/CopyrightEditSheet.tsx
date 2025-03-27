@@ -75,7 +75,7 @@ export default function CopyrightEditSheet(props : Readonly<HandleProps>) {
       }}
       modal={false}
     >
-      <SheetContent side="left" className="w-full overflow-y-auto scrollbar-hide" onInteractOutside={(event: any) => event.preventDefault()}>
+      <SheetContent side="left" className="w-full overflow-y-auto scrollbar-hide p-2" onInteractOutside={(event: any) => event.preventDefault()}>
         <SheetHeader>
           <SheetTitle>编辑版权</SheetTitle>
         </SheetHeader>

@@ -146,13 +146,13 @@ export default function MasonryItem() {
       <DialogHeader>
         <DialogTitle>{MasonryViewData.title}</DialogTitle>
       </DialogHeader>
-      <DialogContent className="flex flex-col overflow-y-auto scrollbar-hide h-full !rounded-none">
+      <DialogContent className="flex flex-col overflow-y-auto scrollbar-hide h-full !rounded-none max-w-none gap-0">
         <div className="flex items-center">
           <div className="flex-1 overflow-hidden whitespace-nowrap">
             <p>{MasonryViewData.title}</p>
           </div>
         </div>
-        <div className="h-full flex flex-col space-y-2 md:grid md:gap-2 md:grid-cols-3 xl:gap-4">
+        <div className="h-full flex flex-col space-y-2 md:grid md:gap-2 md:grid-cols-3 xl:gap-4 w-full">
           <div className="md:col-span-2 md:flex md:justify-center md:max-h-[90vh]">
             {
               MasonryViewData.type === 1 ?
@@ -173,7 +173,7 @@ export default function MasonryItem() {
           <div className="flex w-full flex-col">
             {
               MasonryViewDataList.length > 0 &&
-              <div className="flex w-full space-x-2 mb-2">
+              <div className="grid grid-cols-2 gap-2 mb-2">
                 <Button
                   className="w-full active:scale-95 duration-200 ease-in-out"
                   onClick={() => loadingHandle('prev')}
@@ -368,7 +368,7 @@ export default function MasonryItem() {
                     <div className="flex flex-col space-y-2 mt-2 w-full">
                       {MasonryViewData.copyrights.map((copyright: CopyrightType) => {
                         if (copyright.type === 'social') {
-                          return <Card key={copyright.id} className="flex h-32 flex-col show-up-motion justify-center">
+                          return <Card key={copyright.id} className="flex flex-col show-up-motion justify-center p-0">
                             <div className="flex justify-between w-full p-2 space-x-2">
                               <div className="flex justify-center items-center space-x-2">
                                 <Avatar>

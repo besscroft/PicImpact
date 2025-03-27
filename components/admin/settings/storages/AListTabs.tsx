@@ -31,7 +31,7 @@ export default function AListTabs() {
 
   return (
     <div className="space-y-2">
-      <Card>
+      <Card className="py-0">
         <div className="flex justify-between p-2">
           <div className="flex gap-5">
             <div className="flex flex-col gap-1 items-start justify-center">
@@ -65,7 +65,7 @@ export default function AListTabs() {
       </Card>
       {
         data &&
-        <Card>
+        <Card className="py-0">
           <Table aria-label="Alist 设置">
             <TableHeader>
               <TableRow>

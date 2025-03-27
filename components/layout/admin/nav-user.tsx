@@ -43,7 +43,7 @@ export function NavUser() {
   const { data: session} = useSession()
   const t = useTranslations()
 
-  const iconClasses = 'text-xl text-default-500 pointer-events-none flex-shrink-0'
+  const iconClasses = 'text-xl text-default-500 pointer-events-none shrink-0'
 
   return (
     <SidebarMenu>

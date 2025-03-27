@@ -33,7 +33,7 @@ export const DropMenu = () => {
   const { resolvedTheme, setTheme } = useTheme()
   const t = useTranslations()
 
-  const iconClasses = 'text-xl text-default-500 pointer-events-none flex-shrink-0'
+  const iconClasses = 'text-xl text-default-500 pointer-events-none shrink-0'
 
   useEffect(() => {
     setMounted(true)

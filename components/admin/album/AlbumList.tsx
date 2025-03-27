@@ -59,7 +59,7 @@ export default function AlbumList(props : Readonly<HandleProps>) {
     }
   }
 
-  async function updateAlbumShow(id: string, album_value: string, show: number) {
+  async function updateAlbumShow(id: string, show: number) {
     try {
       setUpdateAlbumId(id)
       setUpdateAlbumLoading(true)
@@ -90,7 +90,7 @@ export default function AlbumList(props : Readonly<HandleProps>) {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
       {data && data.map((album: AlbumType) => (
-        <Card key={album.id} className="flex flex-col h-72 show-up-motion items-center">
+        <Card key={album.id} className="flex flex-col h-72 show-up-motion items-center gap-0 py-0">
           <div className="flex h-12 justify-start w-full p-2 space-x-2">
             <p>{album.name}</p>
             <Popover>
@@ -116,7 +116,7 @@ export default function AlbumList(props : Readonly<HandleProps>) {
                   <Switch
                     checked={album.show === 0}
                     disabled={updateAlbumLoading}
-                    onCheckedChange={(isSelected: boolean) => updateAlbumShow(album.id, album.album_value, isSelected ? 0 : 1)}
+                    onCheckedChange={(isSelected: boolean) => updateAlbumShow(album.id, isSelected ? 0 : 1)}
                   />
               }
               <div className="flex space-x-2 items-center justify-center text-sm select-none rounded-full bg-emerald-100 px-2.5 py-0.5 text-emerald-700">

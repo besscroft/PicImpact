@@ -84,7 +84,7 @@ export default function CopyrightList(props : Readonly<HandleProps>) {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
       {data && data.map((copyright: CopyrightType) => (
-        <Card key={copyright.id} className="flex flex-col h-72 show-up-motion items-center">
+        <Card key={copyright.id} className="flex flex-col h-72 show-up-motion items-center gap-0 py-0">
           <div className="flex h-12 justify-start w-full p-2 space-x-2">
             <p>{copyright.name}</p>
             <p className="select-none inline-flex items-center justify-center rounded-full bg-emerald-100 px-2.5 py-0.5 text-emerald-700 whitespace-nowrap text-sm">{copyright.type === 'social' ? t('Copyright.social') : t('Copyright.external')}</p>
