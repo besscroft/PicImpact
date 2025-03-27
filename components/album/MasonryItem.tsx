@@ -272,7 +272,7 @@ export default function MasonryItem() {
                   </div>
                   {
                     MasonryViewData.album_allow_download === 0 && (
-                      <Card className="py-4 show-up-motion">
+                      <Card className="py-4">
                       <div className="pb-0 pt-2 px-4 flex-col items-start">
                         <div className="flex items-center space-x-1">
                           <CircleAlert size={20}/>
@@ -286,7 +286,7 @@ export default function MasonryItem() {
                   {MasonryViewData?.exif?.model && MasonryViewData?.exif?.f_number
                     && MasonryViewData?.exif?.exposure_time && MasonryViewData?.exif?.focal_length
                     && MasonryViewData?.exif?.iso_speed_rating && MasonryViewData?.exif?.make &&
-                    <Card className="py-2 show-up-motion">
+                    <Card className="py-2">
                       <div className="pb-0 pt-2 px-2 flex-col items-start space-y-2">
                         <div className="flex items-center justify-center space-x-1 w-full">
                           <Camera size={20}/>
@@ -318,7 +318,7 @@ export default function MasonryItem() {
                       </div>
                     </Card>
                   }
-                  <Card className="py-4 show-up-motion">
+                  <Card className="py-4">
                     <div className="pb-0 pt-2 px-4 flex-col items-start">
                       <div className="flex items-center space-x-1">
                         <Languages size={20}/>
@@ -327,7 +327,7 @@ export default function MasonryItem() {
                       <h4 className="font-bold text-large">{MasonryViewData.detail || 'N&A'}</h4>
                     </div>
                   </Card>
-                  <Card className="py-4 show-up-motion">
+                  <Card className="py-4">
                     <div className="pb-0 pt-2 px-4 flex-col items-start">
                       <div className="flex items-center space-x-1">
                         <CalendarDays size={20}/>
@@ -368,7 +368,7 @@ export default function MasonryItem() {
                     <div className="flex flex-col space-y-2 mt-2 w-full">
                       {MasonryViewData.copyrights.map((copyright: CopyrightType) => {
                         if (copyright.type === 'social') {
-                          return <Card key={copyright.id} className="flex flex-col show-up-motion justify-center p-0">
+                          return <Card key={copyright.id} className="flex flex-col justify-center p-0">
                             <div className="flex justify-between w-full p-2 space-x-2">
                               <div className="flex justify-center items-center space-x-2">
                                 <Avatar>
