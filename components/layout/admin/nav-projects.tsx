@@ -26,13 +26,13 @@ export function NavProjects({
 }) {
   const router = useRouter()
   const pathname = usePathname()
-  const buttonClasses = 'active:scale-95 duration-200 ease-in-out'
+  const buttonClasses = 'active:scale-95 duration-200 ease-in-out cursor-pointer'
   const { setOpenMobile } = useSidebar()
 
   return (
     <SidebarGroup className="group-data-[collapsible=icon]:hidden">
-      <SidebarGroupLabel>{projects.title}</SidebarGroupLabel>
-      <SidebarMenu>
+      <SidebarGroupLabel className="select-none">{projects.title}</SidebarGroupLabel>
+      <SidebarMenu className="select-none">
         {projects?.items.map((item) => (
           <SidebarMenuItem key={item.name}>
             <SidebarMenuButton

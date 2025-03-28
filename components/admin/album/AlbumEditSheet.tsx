@@ -68,7 +68,7 @@ export default function AlbumEditSheet(props : Readonly<HandleProps>) {
       }}
       modal={false}
     >
-      <SheetContent side="left" className="w-full overflow-y-auto scrollbar-hide" onInteractOutside={(event: any) => event.preventDefault()}>
+      <SheetContent side="left" className="w-full overflow-y-auto scrollbar-hide p-2" onInteractOutside={(event: any) => event.preventDefault()}>
         <SheetHeader>
           <SheetTitle>编辑相册</SheetTitle>
         </SheetHeader>

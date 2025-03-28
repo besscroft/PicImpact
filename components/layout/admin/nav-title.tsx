@@ -22,7 +22,7 @@ export function NavTitle() {
       <SidebarMenuItem>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <SidebarMenuButton size="lg" onClick={() => router.push('/')}>
+            <SidebarMenuButton className="cursor-pointer select-none" size="lg" onClick={() => router.push('/')}>
               <div className="flex aspect-square size-8 items-center justify-center rounded-lg">
                 <Image src={favicon} alt="Logo" />
               </div>

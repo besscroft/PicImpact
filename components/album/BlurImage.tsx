@@ -12,7 +12,7 @@ export default function BlurImage({ photo, dataList }: { photo: any, dataList: a
   const [loaded, setLoaded] = useState(false)
 
   return (
-    <div className="relative inline-block">
+    <div className="relative inline-block select-none">
       <img
         width={photo.width}
         height={photo.height}

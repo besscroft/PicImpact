@@ -146,14 +146,14 @@ export default function MasonryItem() {
       <DialogHeader>
         <DialogTitle>{MasonryViewData.title}</DialogTitle>
       </DialogHeader>
-      <DialogContent className="flex flex-col overflow-y-auto scrollbar-hide h-full !rounded-none">
+      <DialogContent className="flex flex-col overflow-y-auto scrollbar-hide h-full !rounded-none max-w-none gap-0">
         <div className="flex items-center">
           <div className="flex-1 overflow-hidden whitespace-nowrap">
             <p>{MasonryViewData.title}</p>
           </div>
         </div>
-        <div className="h-full flex flex-col space-y-2 md:grid md:gap-2 md:grid-cols-3 xl:gap-4">
-          <div className="md:col-span-2 md:flex md:justify-center md:max-h-[90vh]">
+        <div className="h-full flex flex-col space-y-2 md:grid md:gap-2 md:grid-cols-3 xl:gap-4 w-full">
+          <div className="md:col-span-2 md:flex md:justify-center md:max-h-[90vh] select-none">
             {
               MasonryViewData.type === 1 ?
                 <img
@@ -173,9 +173,9 @@ export default function MasonryItem() {
           <div className="flex w-full flex-col">
             {
               MasonryViewDataList.length > 0 &&
-              <div className="flex w-full space-x-2 mb-2">
+              <div className="grid grid-cols-2 gap-2 mb-2">
                 <Button
-                  className="w-full active:scale-95 duration-200 ease-in-out"
+                  className="w-full active:scale-95 duration-200 ease-in-out cursor-pointer select-none"
                   onClick={() => loadingHandle('prev')}
                   variant="outline"
                 >
@@ -183,7 +183,7 @@ export default function MasonryItem() {
                   上一张
                 </Button>
                 <Button
-                  className="w-full active:scale-95 duration-200 ease-in-out"
+                  className="w-full active:scale-95 duration-200 ease-in-out cursor-pointer select-none"
                   onClick={() => loadingHandle('next')}
                   variant="outline"
                 >
@@ -194,19 +194,19 @@ export default function MasonryItem() {
             }
             <Tabs defaultValue="detail" className="w-full" ref={tabsListRef} aria-label="图片预览选择项">
               <TabsList className="grid w-full grid-cols-3">
-                <TabsTrigger value="detail">
+                <TabsTrigger value="detail" className="cursor-pointer">
                   <div className="flex items-center space-x-2 select-none">
                     <ImageIcon size={20}/>
                     <span>详情</span>
                   </div>
                 </TabsTrigger>
-                <TabsTrigger value="exif">
+                <TabsTrigger value="exif" className="cursor-pointer">
                   <div className="flex items-center space-x-2 select-none">
                     <Aperture size={20}/>
                     <span>Exif</span>
                   </div>
                 </TabsTrigger>
-                <TabsTrigger value="copyright">
+                <TabsTrigger value="copyright" className="cursor-pointer">
                   <div className="flex items-center space-x-2 select-none">
                     <Copyright size={20} />
                     <span>版权</span>
@@ -234,7 +234,7 @@ export default function MasonryItem() {
                           }
                         }}
                         variant="outline"
-                        className="active:scale-95 duration-200 ease-in-out"
+                        className="active:scale-95 duration-200 ease-in-out cursor-pointer select-none"
                       >
                         <CopyIcon />
                         复制
@@ -252,7 +252,7 @@ export default function MasonryItem() {
                         }
                       }}
                       variant="outline"
-                      className="active:scale-95 duration-200 ease-in-out"
+                      className="active:scale-95 duration-200 ease-in-out cursor-pointer select-none"
                     >
                       <LinkIcon />
                       分享
@@ -263,7 +263,7 @@ export default function MasonryItem() {
                           onClick={() => downloadImg()}
                           disabled={download}
                           variant="outline"
-                          className="active:scale-95 duration-200 ease-in-out"
+                          className="active:scale-95 duration-200 ease-in-out cursor-pointer select-none"
                         >
                           {download ? <ReloadIcon className="mr-2 h-4 w-4 animate-spin"/> : <DownloadIcon />}
                           下载
@@ -272,7 +272,7 @@ export default function MasonryItem() {
                   </div>
                   {
                     MasonryViewData.album_allow_download === 0 && (
-                      <Card className="py-4 show-up-motion">
+                      <Card className="py-4">
                       <div className="pb-0 pt-2 px-4 flex-col items-start">
                         <div className="flex items-center space-x-1">
                           <CircleAlert size={20}/>
@@ -286,7 +286,7 @@ export default function MasonryItem() {
                   {MasonryViewData?.exif?.model && MasonryViewData?.exif?.f_number
                     && MasonryViewData?.exif?.exposure_time && MasonryViewData?.exif?.focal_length
                     && MasonryViewData?.exif?.iso_speed_rating && MasonryViewData?.exif?.make &&
-                    <Card className="py-2 show-up-motion">
+                    <Card className="py-2">
                       <div className="pb-0 pt-2 px-2 flex-col items-start space-y-2">
                         <div className="flex items-center justify-center space-x-1 w-full">
                           <Camera size={20}/>
@@ -318,7 +318,7 @@ export default function MasonryItem() {
                       </div>
                     </Card>
                   }
-                  <Card className="py-4 show-up-motion">
+                  <Card className="py-4">
                     <div className="pb-0 pt-2 px-4 flex-col items-start">
                       <div className="flex items-center space-x-1">
                         <Languages size={20}/>
@@ -327,7 +327,7 @@ export default function MasonryItem() {
                       <h4 className="font-bold text-large">{MasonryViewData.detail || 'N&A'}</h4>
                     </div>
                   </Card>
-                  <Card className="py-4 show-up-motion">
+                  <Card className="py-4">
                     <div className="pb-0 pt-2 px-4 flex-col items-start">
                       <div className="flex items-center space-x-1">
                         <CalendarDays size={20}/>
@@ -368,10 +368,10 @@ export default function MasonryItem() {
                     <div className="flex flex-col space-y-2 mt-2 w-full">
                       {MasonryViewData.copyrights.map((copyright: CopyrightType) => {
                         if (copyright.type === 'social') {
-                          return <Card key={copyright.id} className="flex h-32 flex-col show-up-motion justify-center">
+                          return <Card key={copyright.id} className="flex flex-col justify-center p-0">
                             <div className="flex justify-between w-full p-2 space-x-2">
                               <div className="flex justify-center items-center space-x-2">
-                                <Avatar>
+                                <Avatar className="select-none">
                                   <AvatarImage src={copyright.avatar_url} alt="avatar"/>
                                   <AvatarFallback>CN</AvatarFallback>
                                 </Avatar>
@@ -386,7 +386,7 @@ export default function MasonryItem() {
                                 href={copyright.url}
                                 target="_blank"
                               >
-                                <Button>
+                                <Button className="cursor-pointer">
                                   Follow
                                 </Button>
                               </Link>

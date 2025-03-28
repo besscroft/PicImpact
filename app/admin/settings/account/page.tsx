@@ -107,6 +107,7 @@ export default function Preferences() {
           disabled={loading || isValidating}
           onClick={() => updateUserInfo()}
           aria-label={t("Button.submit")}
+          className="cursor-pointer"
         >
           {loading && <ReloadIcon className="mr-2 h-4 w-4 animate-spin"/>}
           {t("Button.submit")}

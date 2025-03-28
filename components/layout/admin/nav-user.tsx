@@ -43,7 +43,7 @@ export function NavUser() {
   const { data: session} = useSession()
   const t = useTranslations()
 
-  const iconClasses = 'text-xl text-default-500 pointer-events-none flex-shrink-0'
+  const iconClasses = 'text-xl text-default-500 pointer-events-none shrink-0'
 
   return (
     <SidebarMenu>
@@ -52,13 +52,13 @@ export function NavUser() {
           <DropdownMenuTrigger asChild>
             <SidebarMenuButton
               size="lg"
-              className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
+              className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground cursor-pointer"
             >
-              <Avatar className="h-8 w-8 rounded-lg">
+              <Avatar className="h-8 w-8 rounded-lg select-none">
                 <AvatarImage src={session?.user?.image!} alt={session?.user?.name!} />
                 <AvatarFallback className="rounded-lg">CN</AvatarFallback>
               </Avatar>
-              <div className="grid flex-1 text-left text-sm leading-tight">
+              <div className="grid flex-1 text-left text-sm leading-tight select-none">
                 <span className="truncate font-semibold">{session?.user?.name}</span>
                 <span className="truncate text-xs">{session?.user?.email}</span>
               </div>
@@ -89,7 +89,7 @@ export function NavUser() {
               <span>{ resolvedTheme === 'light' ? t("Button.dark") : t('Button.light') }</span>
             </DropdownMenuItem>
             <DropdownMenuSub>
-              <DropdownMenuSubTrigger><Languages size={20} className={iconClasses} />{t('Button.language')}</DropdownMenuSubTrigger>
+              <DropdownMenuSubTrigger className="cursor-pointer"><Languages size={20} className={iconClasses} />{t('Button.language')}</DropdownMenuSubTrigger>
               <DropdownMenuPortal>
                 <DropdownMenuSubContent>
                   <DropdownMenuItem className="cursor-pointer" onClick={() => setUserLocale('zh')}>简体中文</DropdownMenuItem>

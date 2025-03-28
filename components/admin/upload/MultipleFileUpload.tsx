@@ -277,9 +277,9 @@ export default function MultipleFileUpload() {
 
   return (
     <div className="flex flex-col space-y-2 h-full flex-1">
-      <div className="flex flex-col show-up-motion space-y-2">
-        <div className="flex justify-between space-x-2">
-          <div className="flex w-full justify-between space-x-1">
+      <div className="flex flex-col space-y-2">
+        <div className="flex space-x-2">
+          <div className="flex flex-1 w-full space-x-1">
             <Select
               defaultValue={storage}
               onValueChange={async (value: string) => {

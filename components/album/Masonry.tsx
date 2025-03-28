@@ -119,6 +119,7 @@ export default function Masonry(props : Readonly<ImageHandleProps>) {
               onClick={() => {
                 setSize(size + 1)
               }}
+              className="select-none cursor-pointer"
               aria-label="加载更多"
             >
               加载更多

@@ -31,7 +31,7 @@ export default function S3Tabs() {
 
   return (
     <div className="space-y-2">
-      <Card>
+      <Card className="py-0">
         <div className="flex justify-between p-2">
           <div className="flex gap-5">
             <div className="flex flex-col gap-1 items-start justify-center">
@@ -65,7 +65,7 @@ export default function S3Tabs() {
       </ Card>
       {
         data &&
-        <Card>
+        <Card className="p-2">
           <Table aria-label="S3 设置">
             <TableHeader>
               <TableRow>

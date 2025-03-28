@@ -208,7 +208,7 @@ export default function Authenticator() {
                   <InputOTPSlot index={5} />
                 </InputOTPGroup>
               </InputOTP>
-              <div className="flex items-center justify-center space-x-2 w-full sm:w-64">
+              <div className="gap space-y-2 w-full sm:w-64">
                 <Button
                   variant="outline"
                   className="cursor-pointer w-full sm:w-64"

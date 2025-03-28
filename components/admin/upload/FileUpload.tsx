@@ -21,7 +21,7 @@ export default function FileUpload() {
   return (
     <div className="flex flex-col space-y-2 h-full flex-1">
       <div className="flex justify-between space-x-1">
-        <div className="flex items-center justify-center w-full sm:w-64 md:w-80">
+        <div className="flex items-center w-full sm:w-64 md:w-80">
           <Select
             value={mode}
             onValueChange={(value: string) => {

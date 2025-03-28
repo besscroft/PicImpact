@@ -18,12 +18,12 @@ dayjs.extend(customParseFormat)
 
 export default function ExifView(props: Readonly<ImageDataProps>) {
   return (
-    <Card className="show-up-motion">
+    <Card className="p-2">
       <Table aria-label="照片 Exif 信息">
         <TableHeader>
           <TableRow>
-            <TableHead>参数</TableHead>
-            <TableHead>值</TableHead>
+            <TableHead className="select-none">参数</TableHead>
+            <TableHead className="select-none">值</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>

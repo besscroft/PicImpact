@@ -71,7 +71,7 @@ export default function CopyrightAddSheet(props : Readonly<HandleProps>) {
       onOpenChange={() => setCopyrightAdd(!copyrightAdd)}
       modal={false}
     >
-      <SheetContent side="left" className="w-full overflow-y-auto scrollbar-hide" onInteractOutside={(event: any) => event.preventDefault()}>
+      <SheetContent side="left" className="w-full overflow-y-auto scrollbar-hide p-2" onInteractOutside={(event: any) => event.preventDefault()}>
         <SheetHeader>
           <SheetTitle>新增版权</SheetTitle>
         </SheetHeader>

@@ -33,7 +33,7 @@ export default function ImageView() {
         }
       }}
     >
-      <SheetContent side="left" className="w-full overflow-y-auto scrollbar-hide">
+      <SheetContent side="left" className="w-full overflow-y-auto scrollbar-hide p-2">
         <SheetHeader>
           <SheetTitle>{imageViewData.title}</SheetTitle>
         </SheetHeader>

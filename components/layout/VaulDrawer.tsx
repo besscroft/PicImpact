@@ -22,7 +22,7 @@ export default function VaulDrawer() {
   const pathname = usePathname()
   const { resolvedTheme, setTheme } = useTheme()
 
-  const iconClasses = 'text-xl text-default-500 pointer-events-none flex-shrink-0'
+  const iconClasses = 'text-xl text-default-500 pointer-events-none shrink-0'
 
   const activeClasses = 'bg-gray-100 text-black rounded-small'
   const closeClasses = 'flex items-center space-x-2 w-full p-1 rounded-small active:scale-95 duration-200 ease-in-out'
@@ -37,7 +37,7 @@ export default function VaulDrawer() {
         <Drawer.Content className="fixed inset-x-0 bottom-0 z-50 mt-24 flex h-auto flex-col rounded-t-[10px] border bg-background focus-visible:!outline-none">
           <Drawer.Title></Drawer.Title>
           <div className="p-4 bg-white dark:bg-zinc-800 rounded-t-[10px] flex-1">
-            <div className="mx-auto w-12 h-1.5 flex-shrink-0 rounded-full bg-gray-300 mb-2" />
+            <div className="mx-auto w-12 h-1.5 shrink-0 rounded-full bg-gray-300 mb-2" />
             <div className="flex flex-col gap-4">
               <div className="w-full px-1 py-2 rounded-small">
                 {

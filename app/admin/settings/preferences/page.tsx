@@ -206,6 +206,7 @@ export default function Preferences() {
             id="customIndexDownloadEnable"
             disabled={isValidating || isLoading}
             checked={customIndexDownloadEnable}
+            className="cursor-pointer"
             onCheckedChange={checked => {
               setCustomIndexDownloadEnable(checked)
             }}
@@ -223,6 +224,7 @@ export default function Preferences() {
             id="enableMaxWidthLimit"
             disabled={isValidating || isLoading}
             checked={enablePreviewImageMaxWidthLimit}
+            className="cursor-pointer"
             onCheckedChange={checked => {
               setPreviewImageMaxWidthLimitEnabled(checked)
             }}
@@ -255,6 +257,7 @@ export default function Preferences() {
             id="customFoldAlbumEnable"
             disabled={isValidating || isLoading}
             checked={customFoldAlbumEnable}
+            className="cursor-pointer"
             onCheckedChange={checked => {
               setCustomFoldAlbumEnable(checked)
             }}
@@ -271,6 +274,7 @@ export default function Preferences() {
             id="customIndexRandomShow"
             disabled={isValidating || isLoading}
             checked={customIndexRandomShow}
+            className="cursor-pointer"
             onCheckedChange={checked => {
               setCustomIndexRandomShow(checked)
             }}
@@ -300,6 +304,7 @@ export default function Preferences() {
           disabled={loading || isValidating}
           onClick={() => updateInfo()}
           aria-label={t("Button.submit")}
+          className="cursor-pointer"
         >
           {loading && <ReloadIcon className="mr-2 h-4 w-4 animate-spin"/>}
           {t("Button.submit")}
