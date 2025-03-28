@@ -65,7 +65,7 @@ export default function AListTabs() {
       </Card>
       {
         data &&
-        <Card className="py-0">
+        <Card className="p-2">
           <Table aria-label="Alist 设置">
             <TableHeader>
               <TableRow>

@@ -176,7 +176,7 @@ export const UserFrom = ({
               }
               <Button
                 type="submit"
-                className="w-full select-none"
+                className="w-full select-none cursor-pointer"
                 disabled={(data?.data?.auth_enable === 'true' && token.length !== 6) || email.length === 0 || password.length < 6}
                 onClick={handleLogin}
                 aria-label={t('Login.login')}
@@ -184,7 +184,7 @@ export const UserFrom = ({
                 {isLoading && <ReloadIcon className="mr-2 h-4 w-4 animate-spin"/>}{t('Login.login')}
               </Button>
               <Button
-                className="w-full select-none"
+                className="w-full select-none cursor-pointer"
                 onClick={() => router.push('/')}
                 aria-label={t('Login.goHome')}
               >

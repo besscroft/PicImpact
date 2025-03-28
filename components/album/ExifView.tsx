@@ -18,7 +18,7 @@ dayjs.extend(customParseFormat)
 
 export default function ExifView(props: Readonly<ImageDataProps>) {
   return (
-    <Card className="p-0">
+    <Card className="p-2">
       <Table aria-label="照片 Exif 信息">
         <TableHeader>
           <TableRow>

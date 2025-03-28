@@ -65,7 +65,7 @@ export default function R2Tabs() {
       </ Card>
       {
         data &&
-        <Card className="py-0">
+        <Card className="p-2">
           <Table aria-label="Cloudflare R2 设置">
             <TableHeader>
               <TableRow>

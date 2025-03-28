@@ -98,6 +98,7 @@ export default function CopyrightList(props : Readonly<HandleProps>) {
                 <Switch
                   checked={copyright.show === 0}
                   disabled={updateCopyrightLoading}
+                  className="cursor-pointer"
                   onCheckedChange={(isSelected: boolean) => updateCopyrightShow(copyright.id, isSelected ? 0 : 1)}
                 />
               }

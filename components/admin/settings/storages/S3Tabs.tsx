@@ -65,7 +65,7 @@ export default function S3Tabs() {
       </ Card>
       {
         data &&
-        <Card className="py-0">
+        <Card className="p-2">
           <Table aria-label="S3 设置">
             <TableHeader>
               <TableRow>

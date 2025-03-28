@@ -116,6 +116,7 @@ export default function AlbumList(props : Readonly<HandleProps>) {
                   <Switch
                     checked={album.show === 0}
                     disabled={updateAlbumLoading}
+                    className="cursor-pointer"
                     onCheckedChange={(isSelected: boolean) => updateAlbumShow(album.id, isSelected ? 0 : 1)}
                   />
               }
