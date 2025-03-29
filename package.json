@@ -8,6 +8,7 @@
     "dev:turbopack": "next dev --turbopack",
     "dev:prisma": "pnpm run prisma:dev && pnpm run prisma:generate",
     "build": "next build",
+    "build:analyzer": "ANALYZE=true next build",
     "build:vercel": "pnpm run prisma:deploy && npx prisma generate && next build",
     "build:netlify": "pnpm run prisma:deploy && npx prisma generate && next build",
     "build:node": "pnpm run prisma:deploy && npx prisma generate && next build",
@@ -98,6 +99,7 @@
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.1",
+    "@next/bundle-analyzer": "^15.2.4",
     "@tailwindcss/postcss": "^4.0.17",
     "@types/crypto-js": "^4.2.2",
     "@types/node": "^20.17.19",
