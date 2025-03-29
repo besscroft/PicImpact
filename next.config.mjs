@@ -1,9 +1,10 @@
 import createNextIntlPlugin from 'next-intl/plugin'
+import bundleAnalyzer from '@next/bundle-analyzer'
 
 const withNextIntl = createNextIntlPlugin('./i18n.ts')
 
 /** @type {import('next').NextConfig} */
-const nextConfig = {
+let nextConfig = {
   output: "standalone",
   reactStrictMode: true,
   compiler: {
@@ -31,5 +32,11 @@ const nextConfig = {
     ],
   },
 };
+
+if (process.env.ANALYZE === 'true') {
+  nextConfig = bundleAnalyzer({
+    enabled: true,
+  })(nextConfig)
+}
 
 export default withNextIntl(nextConfig);
