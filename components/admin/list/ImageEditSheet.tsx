@@ -287,6 +287,7 @@ export default function ImageEditSheet(props : Readonly<ImageServerHandleProps &
             />
           </div>
           <Button
+            className="cursor-pointer"
             disabled={loading}
             onClick={() => submit()}
             aria-label="更新"
