@@ -68,7 +68,7 @@ export default function Preferences() {
         />
       </div>
       <div className="grid w-full max-w-sm items-center gap-1.5">
-        <Label htmlFor="email">{t('Account.username')}</Label>
+        <Label htmlFor="name">{t('Account.username')}</Label>
         <Input
           type="text"
           id="name"
@@ -79,7 +79,7 @@ export default function Preferences() {
         />
       </div>
       <div className="grid w-full max-w-sm items-center gap-1.5">
-        <Label htmlFor="email">{t('Account.avatar')}</Label>
+        <Label htmlFor="avatar">{t('Account.avatar')}</Label>
         <Textarea
           id="avatar"
           disabled={isValidating || isLoading}

@@ -93,7 +93,7 @@ export default function Preferences() {
     <div className="grid grid-cols-1 gap-4 lg:grid-cols-4 lg:gap-8">
       <div className="rounded space-y-4">
         <div className="grid w-full max-w-sm items-center gap-1.5">
-          <Label htmlFor="email">{t('Preferences.webSiteTitle')}</Label>
+          <Label htmlFor="title">{t('Preferences.webSiteTitle')}</Label>
           <Input
             type="text"
             id="title"
@@ -104,7 +104,7 @@ export default function Preferences() {
           />
         </div>
         <div className="grid w-full max-w-sm items-center gap-1.5">
-          <Label htmlFor="email"> favicon </Label>
+          <Label htmlFor="customFaviconUrl"> favicon </Label>
           <Input
             type="text"
             id="customFaviconUrl"
@@ -115,7 +115,7 @@ export default function Preferences() {
           />
         </div>
         <div className="grid w-full max-w-sm items-center gap-1.5">
-          <Label htmlFor="email">{t('Preferences.webAuthor')}</Label>
+          <Label htmlFor="customAuthor">{t('Preferences.webAuthor')}</Label>
           <Input
             type="text"
             id="customAuthor"
@@ -128,7 +128,7 @@ export default function Preferences() {
       </div>
       <div className="rounded space-y-4">
         <div className="grid w-full max-w-sm items-center gap-1.5">
-          <Label htmlFor="email"> RSS feedId </Label>
+          <Label htmlFor="feedId"> RSS feedId </Label>
           <Input
             type="text"
             id="feedId"
@@ -139,7 +139,7 @@ export default function Preferences() {
           />
         </div>
         <div className="grid w-full max-w-sm items-center gap-1.5">
-          <Label htmlFor="email"> RSS userId </Label>
+          <Label htmlFor="userId"> RSS userId </Label>
           <Input
             type="text"
             id="userId"
@@ -163,7 +163,7 @@ export default function Preferences() {
           </Select>
         </div>
         <div className="grid w-full max-w-sm items-center gap-1.5">
-          <Label htmlFor="email">{t('Preferences.previewQuality')}</Label>
+          <Label htmlFor="previewQuality">{t('Preferences.previewQuality')}</Label>
           <Input
             type="text"
             id="previewQuality"
@@ -208,7 +208,7 @@ export default function Preferences() {
           </div>
         </label>
         <div className="grid w-full max-w-sm items-center gap-1.5">
-          <Label htmlFor="email">{t('Preferences.maxWidth')}</Label>
+          <Label htmlFor="maxWidth">{t('Preferences.maxWidth')}</Label>
           <Input
             type="number"
             id="maxWidth"
@@ -255,7 +255,7 @@ export default function Preferences() {
           </div>
         </label>
         <div className="grid w-full max-w-sm items-center gap-1.5">
-          <Label htmlFor="email">{t('Preferences.customFoldAlbumCount')}</Label>
+          <Label htmlFor="customFoldAlbumCount">{t('Preferences.customFoldAlbumCount')}</Label>
           <Input
             type="number"
             id="customFoldAlbumCount"

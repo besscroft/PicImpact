@@ -15,6 +15,8 @@ import {
 import { ReloadIcon } from '@radix-ui/react-icons'
 import { Button } from '~/components/ui/button'
 import { useTranslations } from 'next-intl'
+import { Label } from '~/components/ui/label'
+import { Input } from '~/components/ui/input'
 
 export default function PassWord() {
   const [loading, setLoading] = useState(false)
@@ -99,20 +101,15 @@ export default function PassWord() {
           render={({ field }) => (
             <FormItem>
               <FormControl>
-                <label
-                  htmlFor="onePassword"
-                  className="w-full sm:w-64 block overflow-hidden rounded-md border border-gray-200 px-3 py-2 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600"
-                >
-                  <span className="text-xs font-medium text-gray-700">{t('Password.onePassword')}</span>
-
-                  <input
+                <div className="grid w-full max-w-sm items-center gap-1.5">
+                  <Label htmlFor="onePassword">{t('Password.onePassword')}</Label>
+                  <Input
                     type="password"
                     id="onePassword"
                     placeholder={t('Password.inputOldPassword')}
                     {...field}
-                    className="mt-1 w-full border-none p-0 focus:border-transparent focus:outline-none focus:ring-0 sm:text-sm"
                   />
-                </label>
+                </div>
               </FormControl>
               <FormMessage/>
             </FormItem>
@@ -124,20 +121,15 @@ export default function PassWord() {
           render={({field}) => (
             <FormItem>
               <FormControl>
-                <label
-                  htmlFor="twoPassword"
-                  className="w-full sm:w-64 block overflow-hidden rounded-md border border-gray-200 px-3 py-2 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600"
-                >
-                  <span className="text-xs font-medium text-gray-700">{t('Password.twoPassword')}</span>
-
-                  <input
+                <div className="grid w-full max-w-sm items-center gap-1.5">
+                  <Label htmlFor="twoPassword">{t('Password.twoPassword')}</Label>
+                  <Input
                     type="password"
                     id="twoPassword"
                     placeholder={t('Password.inputTwoPassword')}
                     {...field}
-                    className="mt-1 w-full border-none p-0 focus:border-transparent focus:outline-none focus:ring-0 sm:text-sm"
                   />
-                </label>
+                </div>
               </FormControl>
               <FormMessage/>
             </FormItem>
@@ -149,35 +141,32 @@ export default function PassWord() {
           render={({field}) => (
             <FormItem>
               <FormControl>
-                <label
-                  htmlFor="threePassword"
-                  className="w-full sm:w-64 block overflow-hidden rounded-md border border-gray-200 px-3 py-2 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600"
-                >
-                  <span className="text-xs font-medium text-gray-700">{t('Password.threePassword')}</span>
-
-                  <input
+                <div className="grid w-full max-w-sm items-center gap-1.5">
+                  <Label htmlFor="threePassword">{t('Password.threePassword')}</Label>
+                  <Input
                     type="password"
                     id="threePassword"
                     placeholder={t('Password.inputThreePassword')}
                     {...field}
-                    className="mt-1 w-full border-none p-0 focus:border-transparent focus:outline-none focus:ring-0 sm:text-sm"
                   />
-                </label>
+                </div>
               </FormControl>
               <FormMessage/>
             </FormItem>
           )}
         />
-        <Button
-          variant="outline"
-          className="cursor-pointer"
-          type="submit"
-          disabled={loading}
-          aria-label={t("Button.submit")}
-        >
-          {loading && <ReloadIcon className="mr-2 h-4 w-4 animate-spin"/>}
-          {t("Button.submit")}
-        </Button>
+        <div className="flex w-full max-w-sm items-center justify-center space-x-1">
+          <Button
+            variant="outline"
+            className="cursor-pointer"
+            type="submit"
+            disabled={loading}
+            aria-label={t("Button.submit")}
+          >
+            {loading && <ReloadIcon className="mr-2 h-4 w-4 animate-spin"/>}
+            {t("Button.submit")}
+          </Button>
+        </div>
       </form>
     </Form>
   )
