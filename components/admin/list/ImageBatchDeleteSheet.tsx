@@ -114,6 +114,7 @@ export default function ImageBatchDeleteSheet(props : Readonly<ImageServerHandle
           <Dialog>
             <DialogTrigger asChild>
               <Button
+                className="cursor-pointer"
                 disabled={data.length === 0}
                 aria-label="更新"
               >
@@ -131,6 +132,7 @@ export default function ImageBatchDeleteSheet(props : Readonly<ImageServerHandle
               </div>
               <DialogFooter>
                 <Button
+                  className="cursor-pointer"
                   disabled={loading}
                   onClick={() => submit()}
                   aria-label="确认删除"

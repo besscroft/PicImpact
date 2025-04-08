@@ -268,6 +268,7 @@ export default function ImageEditSheet(props : Readonly<ImageServerHandleProps &
               </div>
             </div>
             <Switch
+              className="cursor-pointer"
               checked={image?.show === 0}
               onCheckedChange={(value) => setImageEditData({...image, show: value ? 0 : 1})}
             />
@@ -280,11 +281,13 @@ export default function ImageEditSheet(props : Readonly<ImageServerHandleProps &
               </div>
             </div>
             <Switch
+              className="cursor-pointer"
               checked={image?.show_on_mainpage === 0}
               onCheckedChange={(value) => setImageEditData({...image, show_on_mainpage: value ? 0 : 1})}
             />
           </div>
           <Button
+            className="cursor-pointer"
             disabled={loading}
             onClick={() => submit()}
             aria-label="更新"
