@@ -8,6 +8,9 @@ import { ReloadIcon } from '@radix-ui/react-icons'
 import { Button } from '~/components/ui/button'
 import { useSession } from 'next-auth/react'
 import { useTranslations } from 'next-intl'
+import { Label } from '~/components/ui/label'
+import { Input } from '~/components/ui/input'
+import { Textarea } from '~/components/ui/textarea'
 
 export default function Preferences() {
   const [email, setEmail] = useState('')
@@ -52,56 +55,40 @@ export default function Preferences() {
     setAvatar(data?.image?.toString() || '');
   },[data])
   return (
-    <div className="space-y-2">
-      <label
-        htmlFor="email"
-        className="w-full sm:w-64 block overflow-hidden rounded-md border border-gray-200 px-3 py-2 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600"
-      >
-        <span className="text-xs font-medium text-gray-700">{t('Account.email')}</span>
-
-        <input
+    <div className="space-y-4">
+      <div className="grid w-full max-w-sm items-center gap-1.5">
+        <Label htmlFor="email">{t('Account.email')}</Label>
+        <Input
           type="email"
           id="email"
           disabled={isValidating || isLoading}
           value={email || ''}
           placeholder={t('Account.inputEmail')}
           onChange={(e) => setEmail(e.target.value)}
-          className="mt-1 w-full border-none p-0 focus:border-transparent focus:outline-none focus:ring-0 sm:text-sm"
         />
-      </label>
-      <label
-        htmlFor="name"
-        className="w-full sm:w-64 block overflow-hidden rounded-md border border-gray-200 px-3 py-2 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600"
-      >
-        <span className="text-xs font-medium text-gray-700">{t("Account.username")} </span>
-
-        <input
+      </div>
+      <div className="grid w-full max-w-sm items-center gap-1.5">
+        <Label htmlFor="email">{t('Account.username')}</Label>
+        <Input
           type="text"
           id="name"
           disabled={isValidating || isLoading}
           value={name || ''}
           placeholder={t('Account.inputUsername')}
           onChange={(e) => setName(e.target.value)}
-          className="mt-1 w-full border-none p-0 focus:border-transparent focus:outline-none focus:ring-0 sm:text-sm"
         />
-      </label>
-      <label
-        htmlFor="avatar"
-        className="w-full sm:w-64 block overflow-hidden rounded-md border border-gray-200 px-3 py-2 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600"
-      >
-        <span className="text-xs font-medium text-gray-700">{t('Account.avatar')}</span>
-
-        <input
-          type="text"
+      </div>
+      <div className="grid w-full max-w-sm items-center gap-1.5">
+        <Label htmlFor="email">{t('Account.avatar')}</Label>
+        <Textarea
           id="avatar"
           disabled={isValidating || isLoading}
           value={avatar || ''}
           placeholder={t('Account.inputAvatar')}
           onChange={(e) => setAvatar(e.target.value)}
-          className="mt-1 w-full border-none p-0 focus:border-transparent focus:outline-none focus:ring-0 sm:text-sm"
         />
-      </label>
-      <div className="flex w-full sm:w-64 items-center justify-center space-x-1">
+      </div>
+      <div className="flex w-full max-w-sm items-center justify-center space-x-1">
         <Button
           variant="outline"
           disabled={loading || isValidating}
