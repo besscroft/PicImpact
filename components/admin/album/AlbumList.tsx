@@ -164,6 +164,7 @@ export default function AlbumList(props : Readonly<HandleProps>) {
                   </div>
                   <DialogFooter>
                     <Button
+                      className="cursor-pointer"
                       disabled={deleteLoading}
                       onClick={() => deleteAlbum()}
                       aria-label={t('Button.yesDelete')}

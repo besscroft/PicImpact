@@ -116,12 +116,12 @@ export default function CopyrightEditSheet(props : Readonly<HandleProps>) {
               setCopyrightEditData({...copyright, type: value})
             }}
           >
-            <SelectTrigger>
+            <SelectTrigger className="w-full cursor-pointer">
               <SelectValue placeholder="请选择类型"/>
             </SelectTrigger>
             <SelectContent>
               {copyrightSelect.map((copyright) => (
-                <SelectItem key={copyright.value} value={copyright.value}>
+                <SelectItem className="cursor-pointer" key={copyright.value} value={copyright.value}>
                   {copyright.label}
                 </SelectItem>
               ))}
@@ -180,6 +180,7 @@ export default function CopyrightEditSheet(props : Readonly<HandleProps>) {
               </div>
             </div>
             <Switch
+              className="cursor-pointer"
               checked={copyright?.show === 0}
               onCheckedChange={(value) => setCopyrightEditData({...copyright, show: value ? 0 : 1})}
             />
@@ -192,11 +193,13 @@ export default function CopyrightEditSheet(props : Readonly<HandleProps>) {
               </div>
             </div>
             <Switch
+              className="cursor-pointer"
               checked={copyright?.default === 0}
               onCheckedChange={(value) => setCopyrightEditData({...copyright, default: value ? 0 : 1})}
             />
           </div>
           <Button
+            className="cursor-pointer"
             disabled={loading}
             onClick={() => submit()}
             aria-label="更新"

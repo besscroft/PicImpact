@@ -148,6 +148,7 @@ export default function CopyrightList(props : Readonly<HandleProps>) {
                   </div>
                   <DialogFooter>
                     <Button
+                      className="cursor-pointer"
                       disabled={deleteLoading}
                       onClick={() => deleteCopyright()}
                       aria-label={t('Button.yesDelete')}

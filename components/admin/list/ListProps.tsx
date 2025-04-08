@@ -265,14 +265,14 @@ export default function ListProps(props : Readonly<ImageServerHandleProps>) {
                         await mutate()
                       }}
                     >
-                      <SelectTrigger>
+                      <SelectTrigger className="cursor-pointer">
                         <SelectValue placeholder={t('List.selectAlbum')} />
                       </SelectTrigger>
                       <SelectContent>
                         <SelectGroup>
                           <SelectLabel>{t('Words.album')}</SelectLabel>
                           {albums?.map((album: AlbumType) => (
-                            <SelectItem key={album.id} value={album.id}>
+                            <SelectItem className="cursor-pointer" key={album.id} value={album.id}>
                               {album.name}
                             </SelectItem>
                           ))}
@@ -280,11 +280,12 @@ export default function ListProps(props : Readonly<ImageServerHandleProps>) {
                       </SelectContent>
                     </Select>
                     <AlertDialogFooter>
-                      <AlertDialogCancel onClick={() => {
+                      <AlertDialogCancel className="cursor-pointer" onClick={() => {
                         setImage({} as ImageType)
                         setImageAlbum('')
                       }}>{t('Button.canal')}</AlertDialogCancel>
                       <AlertDialogAction
+                        className="cursor-pointer"
                         disabled={updateImageAlbumLoading}
                         onClick={() => updateImageAlbum()}
                         aria-label={t('Button.update')}

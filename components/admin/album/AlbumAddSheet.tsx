@@ -147,6 +147,7 @@ export default function AlbumAddSheet(props : Readonly<HandleProps>) {
                 </div>
               </div>
               <Switch
+                className="cursor-pointer"
                 checked={data?.allow_download === 0}
                 onCheckedChange={(value) => {
                   setData({...data, allow_download: value ? 0 : 1})
@@ -161,6 +162,7 @@ export default function AlbumAddSheet(props : Readonly<HandleProps>) {
                 </div>
               </div>
               <Switch
+                className="cursor-pointer"
                 checked={data?.show === 0}
                 onCheckedChange={(value) => {
                   setData({...data, show: value ? 0 : 1})
@@ -175,6 +177,7 @@ export default function AlbumAddSheet(props : Readonly<HandleProps>) {
                 </div>
               </div>
               <Switch
+                className="cursor-pointer"
                 checked={data?.randomShow === 1}
                 onCheckedChange={(value) => {
                   setData({...data, randomShow: value ? 1 : 0})
@@ -192,20 +195,21 @@ export default function AlbumAddSheet(props : Readonly<HandleProps>) {
                   })
                 }}
               >
-                <SelectTrigger className="w-full">
+                <SelectTrigger className="w-full cursor-pointer">
                   <SelectValue placeholder="选择排序规则" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectGroup>
-                    <SelectItem value="1">上传时间从新到旧</SelectItem>
-                    <SelectItem value="2">拍摄时间从新到旧</SelectItem>
-                    <SelectItem value="3">上传时间从旧到新</SelectItem>
-                    <SelectItem value="4">拍摄时间从旧到新</SelectItem>
+                    <SelectItem className="cursor-pointer" value="1">上传时间从新到旧</SelectItem>
+                    <SelectItem className="cursor-pointer" value="2">拍摄时间从新到旧</SelectItem>
+                    <SelectItem className="cursor-pointer" value="3">上传时间从旧到新</SelectItem>
+                    <SelectItem className="cursor-pointer" value="4">拍摄时间从旧到新</SelectItem>
                   </SelectGroup>
                 </SelectContent>
               </Select>
             </div>
             <Button
+              className="cursor-pointer"
               disabled={loading}
               onClick={() => submit()}
               aria-label="提交"
