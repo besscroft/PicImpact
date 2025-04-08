@@ -9,6 +9,8 @@ import { Button } from '~/components/ui/button'
 import { Switch } from '~/components/ui/switch'
 import { useTranslations } from 'next-intl'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '~/components/ui/select'
+import { Input } from '~/components/ui/input'
+import { Label } from '~/components/ui/label'
 
 export default function Preferences() {
   const [title, setTitle] = useState('')
@@ -88,227 +90,196 @@ export default function Preferences() {
   }, [data])
 
   return (
-    <div className="space-y-2">
-      <label
-        htmlFor="title"
-        className="w-full sm:w-64 block overflow-hidden rounded-md border border-gray-200 px-3 py-2 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600"
-      >
-        <span className="text-xs font-medium text-gray-700">{t('Preferences.webSiteTitle')}</span>
-
-        <input
-          type="text"
-          id="title"
-          disabled={isValidating || isLoading}
-          value={title || ''}
-          placeholder={t('Preferences.inputWebSiteTitle')}
-          onChange={(e) => setTitle(e.target.value)}
-          className="mt-1 w-full border-none p-0 focus:border-transparent focus:outline-none focus:ring-0 sm:text-sm"
-        />
-      </label>
-      <label
-        htmlFor="customFaviconUrl"
-        className="w-full sm:w-64 block overflow-hidden rounded-md border border-gray-200 px-3 py-2 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600"
-      >
-        <span className="text-xs font-medium text-gray-700"> favicon </span>
-
-        <input
-          type="text"
-          id="customFaviconUrl"
-          disabled={isValidating || isLoading}
-          value={customFaviconUrl || ''}
-          placeholder={t('Preferences.favicon')}
-          onChange={(e) => setCustomFaviconUrl(e.target.value)}
-          className="mt-1 w-full border-none p-0 focus:border-transparent focus:outline-none focus:ring-0 sm:text-sm"
-        />
-      </label>
-      <label
-        htmlFor="customAuthor"
-        className="w-full sm:w-64 block overflow-hidden rounded-md border border-gray-200 px-3 py-2 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600"
-      >
-        <span className="text-xs font-medium text-gray-700">{t('Preferences.webAuthor')}</span>
-
-        <input
-          type="text"
-          id="customAuthor"
-          disabled={isValidating || isLoading}
-          value={customAuthor || ''}
-          placeholder={t('Preferences.inputWebAuthor')}
-          onChange={(e) => setCustomAuthor(e.target.value)}
-          className="mt-1 w-full border-none p-0 focus:border-transparent focus:outline-none focus:ring-0 sm:text-sm"
-        />
-      </label>
-      <label
-        htmlFor="feedId"
-        className="w-full sm:w-64 block overflow-hidden rounded-md border border-gray-200 px-3 py-2 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600"
-      >
-        <span className="text-xs font-medium text-gray-700"> RSS feedId </span>
-
-        <input
-          type="text"
-          id="feedId"
-          disabled={isValidating || isLoading}
-          value={feedId || ''}
-          placeholder={t('Preferences.inputFeedId')}
-          onChange={(e) => setFeedId(e.target.value)}
-          className="mt-1 w-full border-none p-0 focus:border-transparent focus:outline-none focus:ring-0 sm:text-sm"
-        />
-      </label>
-      <label
-        htmlFor="userId"
-        className="w-full sm:w-64 block overflow-hidden rounded-md border border-gray-200 px-3 py-2 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600"
-      >
-        <span className="text-xs font-medium text-gray-700"> RSS userId </span>
-
-        <input
-          type="text"
-          id="userId"
-          disabled={isValidating || isLoading}
-          value={userId || ''}
-          placeholder={t('Preferences.inputUserId')}
-          onChange={(e) => setUserId(e.target.value)}
-          className="mt-1 w-full border-none p-0 focus:border-transparent focus:outline-none focus:ring-0 sm:text-sm"
-        />
-      </label>
-      <div className="w-full sm:w-64">
-        <Select value={customIndexStyle} onValueChange={(value) => setCustomIndexStyle(value)}>
-          <SelectTrigger>
-            <SelectValue placeholder={t('Preferences.indexStyleSelect')} />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="0">{t('Preferences.indexStyleDefault')}</SelectItem>
-            <SelectItem value="1">{t('Preferences.indexStyleStar')}</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
-      <label
-        htmlFor="previewQuality"
-        className="w-full sm:w-64 block overflow-hidden rounded-md border border-gray-200 px-3 py-2 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600"
-      >
-        <span className="text-xs font-medium text-gray-700">{t('Preferences.previewQuality')}</span>
-
-        <input
-          type="text"
-          id="previewQuality"
-          disabled={isValidating || isLoading}
-          value={previewQualityInput}
-          placeholder={t('Preferences.inputPreviewQuality')}
-          onChange={(e) => setPreviewQualityInput(e.target.value)}
-          className="mt-1 w-full border-none p-0 focus:border-transparent focus:outline-none focus:ring-0 sm:text-sm"
-        />
-      </label>
-      <label
-        htmlFor="customIndexDownloadEnable"
-        className="w-full sm:w-64 block overflow-hidden rounded-md border border-gray-200 px-3 py-2 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600"
-      >
-        <span className="text-xs font-medium text-gray-700">{t('Preferences.customIndexDownloadEnable')}</span>
-        <div>
-          <Switch
-            id="customIndexDownloadEnable"
+    <div className="grid grid-cols-1 gap-4 lg:grid-cols-4 lg:gap-8">
+      <div className="rounded space-y-4">
+        <div className="grid w-full max-w-sm items-center gap-1.5">
+          <Label htmlFor="email">{t('Preferences.webSiteTitle')}</Label>
+          <Input
+            type="text"
+            id="title"
             disabled={isValidating || isLoading}
-            checked={customIndexDownloadEnable}
-            className="cursor-pointer"
-            onCheckedChange={checked => {
-              setCustomIndexDownloadEnable(checked)
-            }}
+            value={title || ''}
+            placeholder={t('Preferences.inputWebSiteTitle')}
+            onChange={(e) => setTitle(e.target.value)}
           />
         </div>
-      </label>
-      <div className="flex gap-4">
-        <label
-          htmlFor="enableMaxWidthLimit"
-          className="w-full sm:w-64 block overflow-hidden rounded-md border border-gray-200 px-3 py-2 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600"
-        >
-          <span className="text-xs font-medium text-gray-700">{t('Preferences.enableMaxWidthLimit')}</span>
-          <div>
-          <Switch
-            id="enableMaxWidthLimit"
+        <div className="grid w-full max-w-sm items-center gap-1.5">
+          <Label htmlFor="email"> favicon </Label>
+          <Input
+            type="text"
+            id="customFaviconUrl"
             disabled={isValidating || isLoading}
-            checked={enablePreviewImageMaxWidthLimit}
-            className="cursor-pointer"
-            onCheckedChange={checked => {
-              setPreviewImageMaxWidthLimitEnabled(checked)
-            }}
+            value={customFaviconUrl || ''}
+            placeholder={t('Preferences.favicon')}
+            onChange={(e) => setCustomFaviconUrl(e.target.value)}
           />
+        </div>
+        <div className="grid w-full max-w-sm items-center gap-1.5">
+          <Label htmlFor="email">{t('Preferences.webAuthor')}</Label>
+          <Input
+            type="text"
+            id="customAuthor"
+            disabled={isValidating || isLoading}
+            value={customAuthor || ''}
+            placeholder={t('Preferences.inputWebAuthor')}
+            onChange={(e) => setCustomAuthor(e.target.value)}
+          />
+        </div>
+      </div>
+      <div className="rounded space-y-4">
+        <div className="grid w-full max-w-sm items-center gap-1.5">
+          <Label htmlFor="email"> RSS feedId </Label>
+          <Input
+            type="text"
+            id="feedId"
+            disabled={isValidating || isLoading}
+            value={feedId || ''}
+            placeholder={t('Preferences.inputFeedId')}
+            onChange={(e) => setFeedId(e.target.value)}
+          />
+        </div>
+        <div className="grid w-full max-w-sm items-center gap-1.5">
+          <Label htmlFor="email"> RSS userId </Label>
+          <Input
+            type="text"
+            id="userId"
+            disabled={isValidating || isLoading}
+            value={userId || ''}
+            placeholder={t('Preferences.inputUserId')}
+            onChange={(e) => setUserId(e.target.value)}
+          />
+        </div>
+      </div>
+      <div className="rounded space-y-4">
+        <div className="w-full max-w-sm">
+          <Select value={customIndexStyle} onValueChange={(value) => setCustomIndexStyle(value)}>
+            <SelectTrigger className="w-full cursor-pointer">
+              <SelectValue placeholder={t('Preferences.indexStyleSelect')} />
+            </SelectTrigger>
+            <SelectContent className="cursor-pointer">
+              <SelectItem className="cursor-pointer" value="0">{t('Preferences.indexStyleDefault')}</SelectItem>
+              <SelectItem className="cursor-pointer" value="1">{t('Preferences.indexStyleStar')}</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+        <div className="grid w-full max-w-sm items-center gap-1.5">
+          <Label htmlFor="email">{t('Preferences.previewQuality')}</Label>
+          <Input
+            type="text"
+            id="previewQuality"
+            disabled={isValidating || isLoading}
+            value={previewQualityInput}
+            placeholder={t('Preferences.inputPreviewQuality')}
+            onChange={(e) => setPreviewQualityInput(e.target.value)}
+          />
+        </div>
+        <label
+          htmlFor="customIndexDownloadEnable"
+          className="w-full max-w-sm cursor-pointer block overflow-hidden rounded-md border border-gray-200 px-3 py-2 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600"
+        >
+          <span className="text-xs font-medium text-gray-700">{t('Preferences.customIndexDownloadEnable')}</span>
+          <div>
+            <Switch
+              id="customIndexDownloadEnable"
+              disabled={isValidating || isLoading}
+              checked={customIndexDownloadEnable}
+              className="cursor-pointer"
+              onCheckedChange={checked => {
+                setCustomIndexDownloadEnable(checked)
+              }}
+            />
           </div>
         </label>
         <label
-          htmlFor="maxWidth"
-          className="w-full sm:w-64 block overflow-hidden rounded-md border border-gray-200 px-3 py-2 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600"
+          htmlFor="enableMaxWidthLimit"
+          className="w-full max-w-sm cursor-pointer block overflow-hidden rounded-md border border-gray-200 px-3 py-2 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600"
         >
-          <span className="text-xs font-medium text-gray-700">{t('Preferences.maxWidth')}</span>
-          <input
-            type="text"
+          <span className="text-xs font-medium text-gray-700">{t('Preferences.enableMaxWidthLimit')}</span>
+          <div>
+            <Switch
+              id="enableMaxWidthLimit"
+              disabled={isValidating || isLoading}
+              checked={enablePreviewImageMaxWidthLimit}
+              className="cursor-pointer"
+              onCheckedChange={checked => {
+                setPreviewImageMaxWidthLimitEnabled(checked)
+              }}
+            />
+          </div>
+        </label>
+        <div className="grid w-full max-w-sm items-center gap-1.5">
+          <Label htmlFor="email">{t('Preferences.maxWidth')}</Label>
+          <Input
+            type="number"
             id="maxWidth"
             disabled={isValidating || isLoading}
             value={previewImageMaxWidth}
             placeholder={t('Preferences.inputMaxWidth')}
             onChange={(e) => setPreviewImageMaxWidth(e.target.value)}
-            className="mt-1 w-full border-none p-0 focus:border-transparent focus:outline-none focus:ring-0 sm:text-sm"
           />
-        </label>
+        </div>
       </div>
-      <label
-        htmlFor="customFoldAlbumEnable"
-        className="w-full sm:w-64 block overflow-hidden rounded-md border border-gray-200 px-3 py-2 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600"
-      >
-        <span className="text-xs font-medium text-gray-700">{t('Preferences.customFoldAlbumEnable')}</span>
-        <div>
-          <Switch
-            id="customFoldAlbumEnable"
-            disabled={isValidating || isLoading}
-            checked={customFoldAlbumEnable}
-            className="cursor-pointer"
-            onCheckedChange={checked => {
-              setCustomFoldAlbumEnable(checked)
-            }}
-          />
-        </div>
-      </label>
-      <label
-        htmlFor="customIndexRandomShow"
-        className="w-full sm:w-64 block overflow-hidden rounded-md border border-gray-200 px-3 py-2 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600"
-      >
-        <span className="text-xs font-medium text-gray-700">{t('Preferences.customIndexRandomShow')}</span>
-        <div>
-          <Switch
-            id="customIndexRandomShow"
-            disabled={isValidating || isLoading}
-            checked={customIndexRandomShow}
-            className="cursor-pointer"
-            onCheckedChange={checked => {
-              setCustomIndexRandomShow(checked)
-            }}
-          />
-        </div>
-      </label>
-      <label
-        htmlFor="customFoldAlbumCount"
-        className="w-full sm:w-64 block overflow-hidden rounded-md border border-gray-200 px-3 py-2 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600"
-      >
-        <span className="text-xs font-medium text-gray-700">{t('Preferences.customFoldAlbumCount')}</span>
-        <input
-          type="number"
-          id="customFoldAlbumCount"
-          disabled={isValidating || isLoading || !customFoldAlbumEnable}
-          value={customFoldAlbumCount}
-          min="1"
-          onChange={(e) => setCustomFoldAlbumCount(e.target.value)}
-          className={`mt-1 w-full border-none p-0 focus:border-transparent focus:outline-none focus:ring-0 sm:text-sm ${
-            !customFoldAlbumEnable ? 'text-gray-500 cursor-not-allowed' : ''
-          }`}
-        />
-      </label>
-      <div className="flex w-full sm:w-64 items-center justify-center space-x-1">
-        <Button
-          variant="outline"
-          disabled={loading || isValidating}
-          onClick={() => updateInfo()}
-          aria-label={t("Button.submit")}
-          className="cursor-pointer"
+      <div className="rounded space-y-4">
+        <label
+          htmlFor="customFoldAlbumEnable"
+          className="w-full max-w-sm cursor-pointer block overflow-hidden rounded-md border border-gray-200 px-3 py-2 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600"
         >
-          {loading && <ReloadIcon className="mr-2 h-4 w-4 animate-spin"/>}
-          {t("Button.submit")}
-        </Button>
+          <span className="text-xs font-medium text-gray-700">{t('Preferences.customFoldAlbumEnable')}</span>
+          <div>
+            <Switch
+              id="customFoldAlbumEnable"
+              disabled={isValidating || isLoading}
+              checked={customFoldAlbumEnable}
+              className="cursor-pointer"
+              onCheckedChange={checked => {
+                setCustomFoldAlbumEnable(checked)
+              }}
+            />
+          </div>
+        </label>
+        <label
+          htmlFor="customIndexRandomShow"
+          className="w-full max-w-sm cursor-pointer block overflow-hidden rounded-md border border-gray-200 px-3 py-2 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600"
+        >
+          <span className="text-xs font-medium text-gray-700">{t('Preferences.customIndexRandomShow')}</span>
+          <div>
+            <Switch
+              id="customIndexRandomShow"
+              disabled={isValidating || isLoading}
+              checked={customIndexRandomShow}
+              className="cursor-pointer"
+              onCheckedChange={checked => {
+                setCustomIndexRandomShow(checked)
+              }}
+            />
+          </div>
+        </label>
+        <div className="grid w-full max-w-sm items-center gap-1.5">
+          <Label htmlFor="email">{t('Preferences.customFoldAlbumCount')}</Label>
+          <Input
+            type="number"
+            id="customFoldAlbumCount"
+            disabled={isValidating || isLoading || !customFoldAlbumEnable}
+            value={customFoldAlbumCount}
+            min="1"
+            onChange={(e) => setCustomFoldAlbumCount(e.target.value)}
+            className={`w-full border-none focus:border-transparent focus:outline-none focus:ring-0 sm:text-sm ${
+              !customFoldAlbumEnable ? 'text-gray-500 cursor-not-allowed' : ''
+            }`}
+          />
+        </div>
+        <div className="flex w-full sm:w-64 items-center justify-center space-x-1">
+          <Button
+            variant="outline"
+            disabled={loading || isValidating}
+            onClick={() => updateInfo()}
+            aria-label={t("Button.submit")}
+            className="cursor-pointer"
+          >
+            {loading && <ReloadIcon className="mr-2 h-4 w-4 animate-spin"/>}
+            {t("Button.submit")}
+          </Button>
+        </div>
       </div>
     </div>
   )
