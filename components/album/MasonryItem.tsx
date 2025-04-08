@@ -43,6 +43,8 @@ import { ArrowLeftIcon } from '~/components/icons/arrow-left'
 import { ArrowRightIcon } from '~/components/icons/arrow-right'
 import LivePhoto from '~/components/album/LivePhoto'
 import { useConfigStore } from '~/app/providers/config-store-Providers'
+import { LazyLoadImage } from 'react-lazy-load-image-component'
+import 'react-lazy-load-image-component/src/effects/blur.css'
 
 dayjs.extend(customParseFormat)
 
@@ -156,12 +158,15 @@ export default function MasonryItem() {
           <div className="md:col-span-2 md:flex md:justify-center md:max-h-[90vh] select-none">
             {
               MasonryViewData.type === 1 ?
-                <img
+                <LazyLoadImage
                   width={MasonryViewData.width}
-                  loading="lazy"
                   src={MasonryViewData.preview_url || MasonryViewData.url}
                   alt={MasonryViewData.detail}
                   className="object-contain md:max-h-[90vh]"
+                  effect="blur"
+                  wrapperProps={{
+                    style: {transitionDelay: "0.5s"},
+                  }}
                 />
                 : <LivePhoto
                   url={MasonryViewData.preview_url || MasonryViewData.url}
