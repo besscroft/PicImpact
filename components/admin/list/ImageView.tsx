@@ -11,6 +11,8 @@ import ExifView from '~/components/album/ExifView'
 import { Switch } from '~/components/ui/switch'
 import LivePhoto from '~/components/album/LivePhoto'
 import MultipleSelector from '~/components/ui/origin/multiselect'
+import { LazyLoadImage } from 'react-lazy-load-image-component'
+import 'react-lazy-load-image-component/src/effects/blur.css'
 
 export default function ImageView() {
   const { imageView, imageViewData, setImageView, setImageViewData } = useButtonStore(
@@ -39,9 +41,13 @@ export default function ImageView() {
         </SheetHeader>
         <div className="mt-4 space-y-2">
           {imageViewData?.type === 1 ?
-            <img
+            <LazyLoadImage
               src={imageViewData.preview_url || imageViewData.url}
               alt={imageViewData.detail}
+              effect="blur"
+              wrapperProps={{
+                style: {transitionDelay: "0.5s"},
+              }}
             />
             :
             <LivePhoto url={imageViewData.preview_url || imageViewData.url} videoUrl={imageViewData.video_url} />
