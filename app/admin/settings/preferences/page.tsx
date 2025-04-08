@@ -268,7 +268,7 @@ export default function Preferences() {
             }`}
           />
         </div>
-        <div className="flex w-full sm:w-64 items-center justify-center space-x-1">
+        <div className="flex w-full max-w-sm items-center justify-center space-x-1">
           <Button
             variant="outline"
             disabled={loading || isValidating}
