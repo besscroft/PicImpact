@@ -55,40 +55,9 @@ export default function Preferences() {
     setAvatar(data?.image?.toString() || '');
   },[data])
   return (
-    <div className="space-y-4">
-      <div className="grid w-full max-w-sm items-center gap-1.5">
-        <Label htmlFor="email">{t('Account.email')}</Label>
-        <Input
-          type="email"
-          id="email"
-          disabled={isValidating || isLoading}
-          value={email || ''}
-          placeholder={t('Account.inputEmail')}
-          onChange={(e) => setEmail(e.target.value)}
-        />
-      </div>
-      <div className="grid w-full max-w-sm items-center gap-1.5">
-        <Label htmlFor="name">{t('Account.username')}</Label>
-        <Input
-          type="text"
-          id="name"
-          disabled={isValidating || isLoading}
-          value={name || ''}
-          placeholder={t('Account.inputUsername')}
-          onChange={(e) => setName(e.target.value)}
-        />
-      </div>
-      <div className="grid w-full max-w-sm items-center gap-1.5">
-        <Label htmlFor="avatar">{t('Account.avatar')}</Label>
-        <Textarea
-          id="avatar"
-          disabled={isValidating || isLoading}
-          value={avatar || ''}
-          placeholder={t('Account.inputAvatar')}
-          onChange={(e) => setAvatar(e.target.value)}
-        />
-      </div>
-      <div className="flex w-full max-w-sm items-center justify-center space-x-1">
+    <div className="flex flex-col space-y-4 h-full flex-1">
+      <div className="flex justify-between space-x-1">
+        <div>{t("Link.account")}</div>
         <Button
           variant="outline"
           disabled={loading || isValidating}
@@ -99,6 +68,40 @@ export default function Preferences() {
           {loading && <ReloadIcon className="mr-2 h-4 w-4 animate-spin"/>}
           {t("Button.submit")}
         </Button>
+      </div>
+      <div className="space-y-4">
+        <div className="grid w-full max-w-sm items-center gap-1.5">
+          <Label htmlFor="email">{t('Account.email')}</Label>
+          <Input
+            type="email"
+            id="email"
+            disabled={isValidating || isLoading}
+            value={email || ''}
+            placeholder={t('Account.inputEmail')}
+            onChange={(e) => setEmail(e.target.value)}
+          />
+        </div>
+        <div className="grid w-full max-w-sm items-center gap-1.5">
+          <Label htmlFor="name">{t('Account.username')}</Label>
+          <Input
+            type="text"
+            id="name"
+            disabled={isValidating || isLoading}
+            value={name || ''}
+            placeholder={t('Account.inputUsername')}
+            onChange={(e) => setName(e.target.value)}
+          />
+        </div>
+        <div className="grid w-full max-w-sm items-center gap-1.5">
+          <Label htmlFor="avatar">{t('Account.avatar')}</Label>
+          <Textarea
+            id="avatar"
+            disabled={isValidating || isLoading}
+            value={avatar || ''}
+            placeholder={t('Account.inputAvatar')}
+            onChange={(e) => setAvatar(e.target.value)}
+          />
+        </div>
       </div>
     </div>
   )
