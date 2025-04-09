@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useRef, useState } from 'react'
 import { toast } from 'sonner'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
@@ -21,6 +21,7 @@ import { Input } from '~/components/ui/input'
 export default function PassWord() {
   const [loading, setLoading] = useState(false)
   const t = useTranslations()
+  const formRef = useRef<HTMLFormElement>(null)
 
   const FormSchema = z.object({
     onePassword: z.string()
@@ -93,81 +94,84 @@ export default function PassWord() {
   }
 
   return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(updatePassword)} className="w-2/3 space-y-6">
-        <FormField
-          control={form.control}
-          name="onePassword"
-          render={({ field }) => (
-            <FormItem>
-              <FormControl>
-                <div className="grid w-full max-w-sm items-center gap-1.5">
-                  <Label htmlFor="onePassword">{t('Password.onePassword')}</Label>
-                  <Input
-                    type="password"
-                    id="onePassword"
-                    placeholder={t('Password.inputOldPassword')}
-                    {...field}
-                  />
-                </div>
-              </FormControl>
-              <FormMessage/>
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="twoPassword"
-          render={({field}) => (
-            <FormItem>
-              <FormControl>
-                <div className="grid w-full max-w-sm items-center gap-1.5">
-                  <Label htmlFor="twoPassword">{t('Password.twoPassword')}</Label>
-                  <Input
-                    type="password"
-                    id="twoPassword"
-                    placeholder={t('Password.inputTwoPassword')}
-                    {...field}
-                  />
-                </div>
-              </FormControl>
-              <FormMessage/>
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="threePassword"
-          render={({field}) => (
-            <FormItem>
-              <FormControl>
-                <div className="grid w-full max-w-sm items-center gap-1.5">
-                  <Label htmlFor="threePassword">{t('Password.threePassword')}</Label>
-                  <Input
-                    type="password"
-                    id="threePassword"
-                    placeholder={t('Password.inputThreePassword')}
-                    {...field}
-                  />
-                </div>
-              </FormControl>
-              <FormMessage/>
-            </FormItem>
-          )}
-        />
-        <div className="flex w-full max-w-sm items-center justify-center space-x-1">
-          <Button
-            variant="outline"
-            className="cursor-pointer"
-            type="submit"
-            disabled={loading}
-            aria-label={t("Button.submit")}
-          >
-            {loading && <ReloadIcon className="mr-2 h-4 w-4 animate-spin"/>}
-            {t("Button.submit")}
-          </Button>
-        </div>
-      </form>
-    </Form>
+    <div className="flex flex-col space-y-4 h-full flex-1">
+      <div className="flex justify-between space-x-1">
+        <div>{t("Link.password")}</div>
+        <Button
+          variant="outline"
+          className="cursor-pointer"
+          disabled={loading}
+          aria-label={t("Button.submit")}
+          onClick={() => formRef.current?.requestSubmit()}
+        >
+          {loading && <ReloadIcon className="mr-2 h-4 w-4 animate-spin"/>}
+          {t("Button.submit")}
+        </Button>
+      </div>
+      <Form {...form}>
+        <form ref={formRef} onSubmit={form.handleSubmit(updatePassword)} className="w-full max-w-sm space-y-6">
+          <FormField
+            control={form.control}
+            name="onePassword"
+            render={({ field }) => (
+              <FormItem>
+                <FormControl>
+                  <div className="grid w-full max-w-sm items-center gap-1.5">
+                    <Label htmlFor="onePassword">{t('Password.onePassword')}</Label>
+                    <Input
+                      type="password"
+                      id="onePassword"
+                      placeholder={t('Password.inputOldPassword')}
+                      {...field}
+                    />
+                  </div>
+                </FormControl>
+                <FormMessage/>
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="twoPassword"
+            render={({field}) => (
+              <FormItem>
+                <FormControl>
+                  <div className="grid w-full max-w-sm items-center gap-1.5">
+                    <Label htmlFor="twoPassword">{t('Password.twoPassword')}</Label>
+                    <Input
+                      type="password"
+                      id="twoPassword"
+                      placeholder={t('Password.inputTwoPassword')}
+                      {...field}
+                    />
+                  </div>
+                </FormControl>
+                <FormMessage/>
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="threePassword"
+            render={({field}) => (
+              <FormItem>
+                <FormControl>
+                  <div className="grid w-full max-w-sm items-center gap-1.5">
+                    <Label htmlFor="threePassword">{t('Password.threePassword')}</Label>
+                    <Input
+                      type="password"
+                      id="threePassword"
+                      placeholder={t('Password.inputThreePassword')}
+                      {...field}
+                    />
+                  </div>
+                </FormControl>
+                <FormMessage/>
+              </FormItem>
+            )}
+          />
+        </form>
+      </Form>
+    </div>
   )
 }
