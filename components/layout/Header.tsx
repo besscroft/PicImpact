@@ -26,7 +26,7 @@ export default async function Header() {
   }
 
   return (
-    <div className="flex items-center w-full p-2 sm:px-8 md:px-16 lg:px-32">
+    <div className="flex items-center w-full p-2 sm:w-[80%] mx-auto">
       <div className="justify-start">
         <Logo/>
       </div>
