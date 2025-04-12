@@ -4,13 +4,11 @@ import { LazyLoadImage } from 'react-lazy-load-image-component'
 import 'react-lazy-load-image-component/src/effects/blur.css'
 import type { ImageType } from '~/types'
 import * as React from 'react'
-import {
-  Aperture,
-  Camera,
-  CircleGauge,
-  Crosshair,
-  Timer
-} from 'lucide-react'
+import { CameraIcon } from '~/components/icons/camera'
+import { ApertureIcon } from '~/components/icons/aperture'
+import { TimerIcon } from '~/components/icons/timer'
+import { CrosshairIcon } from '~/components/icons/crosshair'
+import { GaugeIcon } from '~/components/icons/gauge'
 
 export default function GalleryImage({ photo }: { photo: ImageType }) {
   const exifIconClass = 'dark:text-gray-50'
@@ -64,7 +62,7 @@ export default function GalleryImage({ photo }: { photo: ImageType }) {
       <div className="flex flex-wrap space-x-2 sm:space-x-0 sm:flex-col flex-1 px-2 py-1 sm:py-0 sm:space-y-1 text-gray-500 sm:sticky top-4 self-start">
         {photo?.exif?.make && photo?.exif?.model &&
           <div className="flex items-center space-x-1">
-            <Camera className={exifIconClass} size={18} />
+            <CameraIcon className={exifIconClass} size={18} />
             <p className={exifTextClass}>
               {`${photo?.exif?.make} ${photo?.exif?.model}`}
             </p>
@@ -72,7 +70,7 @@ export default function GalleryImage({ photo }: { photo: ImageType }) {
         }
         {photo?.exif?.f_number &&
           <div className="flex items-center space-x-1">
-            <Aperture className={exifIconClass} size={18} />
+            <ApertureIcon className={exifIconClass} size={18} />
             <p className={exifTextClass}>
               {photo?.exif?.f_number}
             </p>
@@ -80,7 +78,7 @@ export default function GalleryImage({ photo }: { photo: ImageType }) {
         }
         {photo?.exif?.exposure_time &&
           <div className="flex items-center space-x-1">
-            <Timer className={exifIconClass} size={18} />
+            <TimerIcon className={exifIconClass} size={18} />
             <p className={exifTextClass}>
               {photo?.exif?.exposure_time}
             </p>
@@ -88,7 +86,7 @@ export default function GalleryImage({ photo }: { photo: ImageType }) {
         }
         {photo?.exif?.focal_length &&
           <div className="flex items-center space-x-1">
-            <Crosshair className={exifIconClass} size={18} />
+            <CrosshairIcon className={exifIconClass} size={18} />
             <p className={exifTextClass}>
               {photo?.exif?.focal_length}
             </p>
@@ -96,7 +94,7 @@ export default function GalleryImage({ photo }: { photo: ImageType }) {
         }
         {photo?.exif?.iso_speed_rating &&
           <div className="flex items-center space-x-1">
-            <CircleGauge className={exifIconClass} size={18} />
+            <GaugeIcon className={exifIconClass} size={18} />
             <p className={exifTextClass}>
               {photo?.exif?.iso_speed_rating}
             </p>

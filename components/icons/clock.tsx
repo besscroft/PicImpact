@@ -1,34 +1,53 @@
 'use client'
 
-import type { Variants } from 'motion/react'
+import type { Transition, Variants } from 'motion/react'
 import { motion, useAnimation } from 'motion/react'
 import type { HTMLAttributes } from 'react'
 import { forwardRef, useCallback, useImperativeHandle, useRef } from 'react'
 import { cn } from '~/lib/utils'
 
-export interface SquarePenIconHandle {
+export interface ClockIconHandle {
   startAnimation: () => void;
   stopAnimation: () => void;
 }
 
-interface SquarePenIconProps extends HTMLAttributes<HTMLDivElement> {
+interface ClockIconProps extends HTMLAttributes<HTMLDivElement> {
   size?: number;
 }
 
-const penVariants: Variants = {
+const handTransition: Transition = {
+  duration: 0.6,
+  ease: [0.4, 0, 0.2, 1],
+};
+
+const handVariants: Variants = {
   normal: {
     rotate: 0,
-    x: 0,
-    y: 0,
+    originX: '50%',
+    originY: '50%',
   },
   animate: {
-    rotate: [-0.5, 0.5, -0.5],
-    x: [0, -1, 1.5, 0],
-    y: [0, 1.5, -1, 0],
+    rotate: 360,
   },
 };
 
-const SquarePenIcon = forwardRef<SquarePenIconHandle, SquarePenIconProps>(
+const minuteHandTransition: Transition = {
+  duration: 0.5,
+  ease: 'easeInOut',
+};
+
+const minuteHandVariants: Variants = {
+  normal: {
+    rotate: 0,
+    originX: '50%',
+    originY: '50%',
+  },
+  animate: {
+    rotate: 45,
+  },
+};
+
+const ClockIcon = forwardRef<ClockIconHandle, ClockIconProps>(
   ({ onMouseEnter, onMouseLeave, className, size = 28, ...props }, ref) => {
     const controls = useAnimation();
     const isControlledRef = useRef(false);
@@ -84,13 +103,27 @@ const SquarePenIcon = forwardRef<SquarePenIconHandle, SquarePenIconProps>(
           strokeWidth="2"
           strokeLinecap="round"
           strokeLinejoin="round"
-          style={{ overflow: 'visible' }}
         >
-          <path d="M12 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
-          <motion.path
-            d="M18.375 2.625a1 1 0 0 1 3 3l-9.013 9.014a2 2 0 0 1-.853.505l-2.873.84a.5.5 0 0 1-.62-.62l.84-2.873a2 2 0 0 1 .506-.852z"
-            variants={penVariants}
+          <circle cx="12" cy="12" r="10" />
+          <motion.line
+            x1="12"
+            y1="12"
+            x2="12"
+            y2="6"
+            variants={handVariants}
             animate={controls}
+            initial="normal"
+            transition={handTransition}
+          />
+          <motion.line
+            x1="12"
+            y1="12"
+            x2="16"
+            y2="12"
+            variants={minuteHandVariants}
+            animate={controls}
+            initial="normal"
+            transition={minuteHandTransition}
           />
         </svg>
       </div>
@@ -98,6 +131,6 @@ const SquarePenIcon = forwardRef<SquarePenIconHandle, SquarePenIconProps>(
   }
 );
 
-SquarePenIcon.displayName = 'SquarePenIcon';
+ClockIcon.displayName = 'ClockIcon';
 
-export { SquarePenIcon };
+export { ClockIcon };

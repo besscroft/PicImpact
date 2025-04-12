@@ -1,13 +1,11 @@
 'use client'
 
-import { useButtonStore } from '~/app/providers/button-store-providers'
 import { LazyLoadImage } from 'react-lazy-load-image-component'
 import 'react-lazy-load-image-component/src/effects/blur.css'
+import { useRouter } from 'next-nprogress-bar'
 
 export default function BlurImage({ photo, dataList }: { photo: any, dataList: any }) {
-  const { setMasonryView, setMasonryViewData, setMasonryViewDataList } = useButtonStore(
-    (state) => state,
-  )
+  const router = useRouter()
 
   return (
     <div className="relative inline-block select-none shadow-sm shadow-gray-200 dark:shadow-gray-800">
@@ -21,11 +19,7 @@ export default function BlurImage({ photo, dataList }: { photo: any, dataList: a
         wrapperProps={{
           style: {transitionDelay: "0.5s"},
         }}
-        onClick={() => {
-          setMasonryView(true)
-          setMasonryViewData(photo)
-          setMasonryViewDataList(dataList)
-        }}
+        onClick={() => router.push(`/preview/${photo?.id}`)}
       />
       {
         photo.type === 2 &&

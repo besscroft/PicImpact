@@ -6,29 +6,33 @@ import type { HTMLAttributes } from 'react'
 import { forwardRef, useCallback, useImperativeHandle, useRef } from 'react'
 import { cn } from '~/lib/utils'
 
-export interface SquarePenIconHandle {
+export interface TelescopeIconHandle {
   startAnimation: () => void;
   stopAnimation: () => void;
 }
 
-interface SquarePenIconProps extends HTMLAttributes<HTMLDivElement> {
+interface TelescopeIconProps extends HTMLAttributes<HTMLDivElement> {
   size?: number;
 }
 
-const penVariants: Variants = {
+const scopeVariants: Variants = {
   normal: {
     rotate: 0,
-    x: 0,
-    y: 0,
+    transition: {
+      duration: 0.6,
+      ease: 'easeInOut',
+    },
   },
   animate: {
-    rotate: [-0.5, 0.5, -0.5],
-    x: [0, -1, 1.5, 0],
-    y: [0, 1.5, -1, 0],
+    rotate: -15,
+    transition: {
+      duration: 0.8,
+      ease: 'easeInOut',
+    },
   },
 };
 
-const SquarePenIcon = forwardRef<SquarePenIconHandle, SquarePenIconProps>(
+const TelescopeIcon = forwardRef<TelescopeIconHandle, TelescopeIconProps>(
   ({ onMouseEnter, onMouseLeave, className, size = 28, ...props }, ref) => {
     const controls = useAnimation();
     const isControlledRef = useRef(false);
@@ -84,20 +88,28 @@ const SquarePenIcon = forwardRef<SquarePenIconHandle, SquarePenIconProps>(
           strokeWidth="2"
           strokeLinecap="round"
           strokeLinejoin="round"
-          style={{ overflow: 'visible' }}
         >
-          <path d="M12 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
-          <motion.path
-            d="M18.375 2.625a1 1 0 0 1 3 3l-9.013 9.014a2 2 0 0 1-.853.505l-2.873.84a.5.5 0 0 1-.62-.62l.84-2.873a2 2 0 0 1 .506-.852z"
-            variants={penVariants}
+          <motion.g
+            variants={scopeVariants}
             animate={controls}
-          />
+            style={{ transformOrigin: '12px 13px' }}
+          >
+            <path d="m10.065 12.493-6.18 1.318a.934.934 0 0 1-1.108-.702l-.537-2.15a1.07 1.07 0 0 1 .691-1.265l13.504-4.44" />
+            <path d="m13.56 11.747 4.332-.924" />
+            <path d="m10.065 12.493-6.18 1.318a.934.934 0 0 1-1.108-.702l-.537-2.15a1.07 1.07 0 0 1 .691-1.265l13.504-4.44" />
+            <path d="m13.56 11.747 4.332-.924" />
+            <path d="M16.485 5.94a2 2 0 0 1 1.455-2.425l1.09-.272a1 1 0 0 1 1.212.727l1.515 6.06a1 1 0 0 1-.727 1.213l-1.09.272a2 2 0 0 1-2.425-1.455z" />
+            <path d="m6.158 8.633 1.114 4.456" />
+          </motion.g>
+          <path d="m16 21-3.105-6.21" />
+          <path d="m8 21 3.105-6.21" />
+          <circle cx="12" cy="13" r="2" />
         </svg>
       </div>
     );
   }
 );
 
-SquarePenIcon.displayName = 'SquarePenIcon';
+TelescopeIcon.displayName = 'TelescopeIcon';
 
-export { SquarePenIcon };
+export { TelescopeIcon };

@@ -26,6 +26,13 @@ export type ImageHandleProps = {
   randomShow?: boolean
 }
 
+export type PreviewImageHandleProps = {
+  data: ImageType
+  args: string
+  id: string
+  configHandle: () => any
+}
+
 export type LinkProps = {
   handle: () => any
   args: string

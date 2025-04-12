@@ -14,21 +14,6 @@ export default auth((req) => {
   if (req.auth && req.nextUrl.pathname === '/login') {
     return NextResponse.redirect(new URL('/', req.url))
   }
-  if (req.nextUrl.pathname.includes('/preview/')) {
-    const startIndex = req.nextUrl.pathname.indexOf('/preview/') + '/preview/'.length;
-    const contentAfterPreview = req.nextUrl.pathname.substring(startIndex);
-    if (req.nextUrl.pathname.startsWith('/preview')) {
-      const redirectUrl = new URL('/', req.url)
-      redirectUrl.searchParams.set('id', String(contentAfterPreview))
-      return NextResponse.redirect(redirectUrl)
-    } else {
-      let endIndex = req.nextUrl.pathname.indexOf('/preview');
-      let contentBeforePreview = req.nextUrl.pathname.substring(0, endIndex);
-      const redirectUrl = new URL(contentBeforePreview, req.url)
-      redirectUrl.searchParams.set('id', String(contentAfterPreview))
-      return NextResponse.redirect(redirectUrl)
-    }
-  }
 });
 
 // Optionally, don't invoke Middleware on some paths

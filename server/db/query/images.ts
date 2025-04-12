@@ -4,6 +4,7 @@
 
 import { Prisma } from '@prisma/client'
 import { db } from '~/server/lib/db'
+import type { ImageType } from '~/types'
 
 const ALBUM_IMAGE_SORTING_ORDER = [
   null,
@@ -473,7 +474,7 @@ export async function fetchImagesAnalysis() {
  * @param id 图片 ID
  * @returns {Promise<ImageType>} 图片详情
  */
-export async function fetchImageByIdAndAuth(id: string) {
+export async function fetchImageByIdAndAuth(id: string): Promise<ImageType[]> {
   return await db.$queryRaw`
     SELECT
         "images".*,
