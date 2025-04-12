@@ -1,11 +1,11 @@
 import { fetchCopyrightList } from '~/server/db/query/copyrights'
 import type { HandleProps } from '~/types/props'
 import React from 'react'
-import CopyrightList from '~/components/admin/copyright/CopyrightList'
-import CopyrightAddButton from '~/components/admin/copyright/CopyrightAddButton'
-import RefreshButton from '~/components/album/RefreshButton'
-import CopyrightAddSheet from '~/components/admin/copyright/CopyrightAddSheet'
-import CopyrightEditSheet from '~/components/admin/copyright/CopyrightEditSheet'
+import CopyrightList from '~/components/admin/copyright/copyright-list'
+import CopyrightAddButton from '~/components/admin/copyright/copyright-add-button'
+import RefreshButton from '~/components/album/refresh-button'
+import CopyrightAddSheet from '~/components/admin/copyright/copyright-add-sheet'
+import CopyrightEditSheet from '~/components/admin/copyright/copyright-edit-sheet'
 
 export default async function Copyright() {
   const getData = async () => {

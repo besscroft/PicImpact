@@ -1,8 +1,8 @@
 'use client'
 
-import AListTabs from '~/components/admin/settings/storages/AListTabs'
-import S3Tabs from '~/components/admin/settings/storages/S3Tabs'
-import R2Tabs from '~/components/admin/settings/storages/R2Tabs'
+import AlistTabs from '~/components/admin/settings/storages/alist-tabs'
+import S3Tabs from '~/components/admin/settings/storages/s3-tabs'
+import R2Tabs from '~/components/admin/settings/storages/r2-tabs'
 import {
   Tabs,
   TabsContent,
@@ -27,7 +27,7 @@ export default function Storages() {
           <R2Tabs />
         </TabsContent>
         <TabsContent value="alist">
-          <AListTabs />
+          <AlistTabs />
         </TabsContent>
       </Tabs>
     </div>

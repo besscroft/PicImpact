@@ -1,4 +1,4 @@
-import { UserFrom } from '~/components/login/UserFrom'
+import { UserFrom } from '~/components/login/user-from'
 import Image from 'next/image'
 import favicon from '~/public/favicon.svg'
 import Link from 'next/link'

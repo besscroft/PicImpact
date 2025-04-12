@@ -1,11 +1,11 @@
 import { fetchAlbumsList } from '~/server/db/query/albums'
-import AlbumList from '~/components/admin/album/AlbumList'
-import RefreshButton from '~/components/album/RefreshButton'
+import AlbumList from '~/components/admin/album/album-list'
+import RefreshButton from '~/components/album/refresh-button'
 import type { HandleProps } from '~/types/props'
 import React from 'react'
-import AlbumAddSheet from '~/components/admin/album/AlbumAddSheet'
-import AlbumAddButton from '~/components/admin/album/AlbumAddButton'
-import AlbumEditSheet from '~/components/admin/album/AlbumEditSheet'
+import AlbumAddSheet from '~/components/admin/album/album-add-sheet'
+import AlbumAddButton from '~/components/admin/album/album-add-button'
+import AlbumEditSheet from '~/components/admin/album/album-edit-sheet'
 
 export default async function List() {
 

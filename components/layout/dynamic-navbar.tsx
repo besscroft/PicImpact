@@ -1,0 +1,30 @@
+import VaulDrawer from '~/components/layout/vaul-drawer'
+import { DropMenu } from '~/components/layout/drop-menu'
+import { fetchAlbumsShow } from '~/server/db/query/albums'
+import type { AlbumListProps } from '~/types/props'
+import AlbumDrawer from '~/components/layout/album-drawer'
+
+export default async function DynamicNavbar() {
+  const getData = async () => {
+    'use server'
+    return await fetchAlbumsShow()
+  }
+
+  const data = await getData()
+
+  const props: AlbumListProps = {
+    data: data
+  }
+
+  return (
+    <>
+      <div className="flex space-x-2 sm:hidden">
+        <AlbumDrawer {...props} />
+        <VaulDrawer />
+      </div>
+      <div className="hidden sm:flex space-x-2">
+        <DropMenu/>
+      </div>
+    </>
+  )
+}

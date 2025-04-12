@@ -1,4 +1,4 @@
-import Masonry from '~/components/album/Masonry'
+import Masonry from '~/components/album/masonry'
 import { fetchClientImagesListByAlbum, fetchClientImagesPageTotalByAlbum } from '~/server/db/query/images'
 import type { ImageHandleProps } from '~/types/props'
 import { fetchConfigsByKeys } from '~/server/db/query/configs'

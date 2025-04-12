@@ -1,11 +1,10 @@
 'use client'
 
 import type { HandleProps, ImageHandleProps } from '~/types/props'
-import { useSWRPageTotalHook } from '~/hooks/useSWRPageTotalHook'
+import { useSwrPageTotalHook } from '~/hooks/use-swr-page-total-hook.ts'
 import useSWRInfinite from 'swr/infinite'
-import { useSWRHydrated } from '~/hooks/useSWRHydrated'
+import { useSwrHydrated } from '~/hooks/use-swr-hydrated.ts'
 import { useTranslations } from 'next-intl'
-import { MasonryPhotoAlbum, RenderImageContext, RenderImageProps } from 'react-photo-album'
 import type { ImageType } from '~/types'
 import { ReloadIcon } from '@radix-ui/react-icons'
 import { Button } from '~/components/ui/button'
@@ -13,7 +12,7 @@ import React from 'react'
 import GalleryImage from '~/components/album/gallery-image'
 
 export default function Gallery(props : Readonly<ImageHandleProps>) {
-  const { data: pageTotal } = useSWRPageTotalHook(props)
+  const { data: pageTotal } = useSwrPageTotalHook(props)
   const { data, isLoading, isValidating, size, setSize } = useSWRInfinite((index) => {
       return [`client-${props.args}-${index}-${props.album}`, index]
     },
@@ -28,7 +27,7 @@ export default function Gallery(props : Readonly<ImageHandleProps>) {
     handle: props.configHandle,
     args: 'system-config',
   }
-  const { data: configData } = useSWRHydrated(configProps)
+  const { data: configData } = useSwrHydrated(configProps)
   const dataList = data ? [].concat(...data) : [];
   const processedDataList = props.randomShow ? [...dataList].sort(() => Math.random() - 0.5) : dataList;
   const t = useTranslations()

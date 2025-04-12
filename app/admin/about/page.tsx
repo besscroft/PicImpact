@@ -2,7 +2,7 @@ import favicon from '~/public/favicon.svg'
 import Image from 'next/image'
 import Link from 'next/link'
 import { fetchContributors } from '~/lib/github/get-contributors'
-import { EvervaultCard, Icon } from '~/components/animata/card/evervault-card'
+import { EvervaultCard, Icon } from '~/components/ui/origin/evervault-card'
 
 export default async function About() {
   const contributors = await fetchContributors('besscroft', 'PicImpact');
