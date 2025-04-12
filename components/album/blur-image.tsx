@@ -10,7 +10,7 @@ export default function BlurImage({ photo, dataList }: { photo: any, dataList: a
   )
 
   return (
-    <div className="relative inline-block select-none shadow-sm shadow-gray-200">
+    <div className="relative inline-block select-none shadow-sm shadow-gray-200 dark:shadow-gray-800">
       <LazyLoadImage
         className="cursor-pointer"
         width={photo.width}

@@ -4,7 +4,7 @@ import HeaderIconGroup from '~/components/layout/header-icon-group'
 
 export default async function Header(props: Readonly<AlbumDataProps>) {
   return (
-    <div className="flex items-center w-full p-2 sm:w-[66.667%] mx-auto sticky top-0 z-50 bg-white">
+    <div className="flex items-center w-full p-2 sm:w-[66.667%] mx-auto sticky top-0 z-50 bg-white dark:bg-black">
       <div className="justify-start">
         <Logo/>
       </div>
