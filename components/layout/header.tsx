@@ -1,8 +1,8 @@
 import Logo from '~/components/layout/logo'
 import { fetchAlbumsShow } from '~/server/db/query/albums'
-import { fetchAlbumsShowOptions } from '~/server/db/query/configs'
 import type { AlbumDataProps } from '~/types/props'
 import HeaderIconGroup from '~/components/layout/header-icon-group'
+import type { AlbumType } from '~/types'
 
 export default async function Header() {
   const getData = async () => {
@@ -10,18 +10,10 @@ export default async function Header() {
     return await fetchAlbumsShow()
   }
 
-  const getCustomFoldAlbumEnable = async () => {
-    'use server'
-    return await fetchAlbumsShowOptions()
-  }
-
-  const data = await getData()
-  const customFoldAlbumEnable = await getCustomFoldAlbumEnable()
+  const data: AlbumType[] = await getData()
 
   const props: AlbumDataProps = {
-    data: data,
-    customFoldAlbumEnable: customFoldAlbumEnable.enabled,
-    customFoldAlbumCount: customFoldAlbumEnable.count
+    data: data
   }
 
   return (
@@ -32,7 +24,7 @@ export default async function Header() {
       <div className="flex gap-1 flex-1 select-none justify-center w-full">
       </div>
       <div className="flex h-full items-center space-x-2 justify-end">
-        <HeaderIconGroup />
+        <HeaderIconGroup {...props} />
       </div>
     </div>
   );

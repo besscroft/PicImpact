@@ -25,6 +25,7 @@ export type ButtonState = {
   imageBatchDelete: boolean
   searchOpen: boolean
   loginHelp: boolean
+  command: boolean
 }
 
 export type ButtonActions = {
@@ -50,6 +51,7 @@ export type ButtonActions = {
   setImageBatchDelete: (imageBatchDelete: boolean) => void
   setSearchOpen: (searchOpen: boolean) => void
   setLoginHelp: (loginHelp: boolean) => void
+  setCommand: (command: boolean) => void
 }
 
 export type ButtonStore = ButtonState & ButtonActions
@@ -78,6 +80,7 @@ export const initButtonStore = (): ButtonState => {
     imageBatchDelete: false,
     searchOpen: false,
     loginHelp: false,
+    command: false,
   }
 }
 
@@ -104,6 +107,7 @@ export const defaultInitState: ButtonState = {
   imageBatchDelete: false,
   searchOpen: false,
   loginHelp: false,
+  command: false,
 }
 
 export const createButtonStore = (
@@ -111,7 +115,7 @@ export const createButtonStore = (
 ) => {
   return createStore<ButtonStore>()(
     persist(
-      (set, get) => ({
+      (set) => ({
         ...initState,
         setAlbumAdd: (albumAddValue) => set(() => ({
           albumAdd: albumAddValue,
@@ -179,6 +183,9 @@ export const createButtonStore = (
         setLoginHelp: (loginHelpValue) => set(() => ({
           loginHelp: loginHelpValue,
         })),
+        setCommand: (commandValue) => set(() => ({
+          command: commandValue,
+        }))
       }),
       {
         name: 'pic-impact-button-storage', // name of the item in the storage (must be unique)

@@ -1,11 +1,9 @@
 // 业务专用类型
 
-import { AlbumType, ImageType } from '~/types/index.ts'
+import { AlbumType, ImageType } from '~/types/index'
 
 export type AlbumDataProps = {
   data: AlbumType[]
-  customFoldAlbumEnable: boolean
-  customFoldAlbumCount: number
 }
 
 export type HandleProps = {
