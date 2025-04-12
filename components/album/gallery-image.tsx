@@ -14,13 +14,13 @@ import {
 
 export default function GalleryImage({ photo }: { photo: ImageType }) {
   return (
-    <div className="flex flex-col sm:flex-row w-full items-start justify-between">
-      <div className="flex flex-1 flex-col px-2">
+    <div className="flex flex-col sm:flex-row w-full items-start justify-between sm:relative overflow-x-clip">
+      <div className="flex flex-1 flex-col px-2 sm:sticky top-4 self-start">
         <div className="flex space-x-2 py-1 sm:justify-end">
           <div className="font-semibold">{ photo.title }</div>
         </div>
       </div>
-      <div className="relative inline-block select-none sm:w-[66.667%] mx-auto shadow-sm shadow-gray-200 overflow-x-hidden">
+      <div className="relative inline-block select-none sm:w-[66.667%] mx-auto shadow-sm shadow-gray-200">
         <LazyLoadImage
           width={photo.width}
           height={photo.height}
@@ -58,7 +58,7 @@ export default function GalleryImage({ photo }: { photo: ImageType }) {
           </div>
         }
       </div>
-      <div className="flex flex-wrap space-x-2 sm:space-x-0 sm:flex-col flex-1 px-2 py-1 sm:py-0 space-y-1 text-gray-500">
+      <div className="flex flex-wrap space-x-2 sm:space-x-0 sm:flex-col flex-1 px-2 py-1 sm:py-0 space-y-1 text-gray-500 sm:sticky top-4 self-start">
         {photo?.exif?.make && photo?.exif?.model &&
           <div className="flex items-center space-x-1">
             <Camera size={18}/>
