@@ -61,7 +61,7 @@ export default function GalleryImage({ photo }: { photo: ImageType }) {
           </div>
         }
       </div>
-      <div className="flex flex-wrap space-x-2 sm:space-x-0 sm:flex-col flex-1 px-2 py-1 sm:py-0 space-y-1 text-gray-500 sm:sticky top-4 self-start">
+      <div className="flex flex-wrap space-x-2 sm:space-x-0 sm:flex-col flex-1 px-2 py-1 sm:py-0 sm:space-y-1 text-gray-500 sm:sticky top-4 self-start">
         {photo?.exif?.make && photo?.exif?.model &&
           <div className="flex items-center space-x-1">
             <Camera className={exifIconClass} size={18} />
@@ -74,7 +74,7 @@ export default function GalleryImage({ photo }: { photo: ImageType }) {
           <div className="flex items-center space-x-1">
             <Aperture className={exifIconClass} size={18} />
             <p className={exifTextClass}>
-              {`${photo?.exif?.f_number}`}
+              {photo?.exif?.f_number}
             </p>
           </div>
         }
@@ -82,7 +82,7 @@ export default function GalleryImage({ photo }: { photo: ImageType }) {
           <div className="flex items-center space-x-1">
             <Timer className={exifIconClass} size={18} />
             <p className={exifTextClass}>
-              {`${photo?.exif?.exposure_time}`}
+              {photo?.exif?.exposure_time}
             </p>
           </div>
         }
@@ -90,7 +90,7 @@ export default function GalleryImage({ photo }: { photo: ImageType }) {
           <div className="flex items-center space-x-1">
             <Crosshair className={exifIconClass} size={18} />
             <p className={exifTextClass}>
-              {`${photo?.exif?.focal_length}`}
+              {photo?.exif?.focal_length}
             </p>
           </div>
         }
@@ -98,7 +98,7 @@ export default function GalleryImage({ photo }: { photo: ImageType }) {
           <div className="flex items-center space-x-1">
             <CircleGauge className={exifIconClass} size={18} />
             <p className={exifTextClass}>
-              {`${photo?.exif?.iso_speed_rating}`}
+              {photo?.exif?.iso_speed_rating}
             </p>
           </div>
         }

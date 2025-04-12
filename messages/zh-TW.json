@@ -51,7 +51,8 @@
     "update": "更新",
     "canal": "取消",
     "delete": "刪除",
-    "yesDelete": "確定刪除"
+    "yesDelete": "確定刪除",
+    "goBack": "返回"
   },
   "Dashboard": {
     "picData": "照片數據",

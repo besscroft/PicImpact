@@ -1,6 +1,8 @@
-import Masonry from '~/components/album/masonry'
 import type { ImageHandleProps } from '~/types/props'
 import { fetchClientImagesListByTag, fetchClientImagesPageTotalByTag } from '~/server/db/query/images'
+import TagGallery from '~/components/album/tag-gallery'
+
+import 'react-photo-album/masonry.css'
 
 export default async function Label({params}: { params: any }) {
   const { tag } = await params
@@ -22,7 +24,7 @@ export default async function Label({params}: { params: any }) {
 
   const props: ImageHandleProps = {
     handle: getData,
-    args: `getImages-client-label`,
+    args: `getImages-client-tag`,
     album: `${decodeURIComponent(tag)}`,
     totalHandle: getPageTotal,
     configHandle: getConfig,
@@ -30,6 +32,6 @@ export default async function Label({params}: { params: any }) {
   }
 
   return (
-    <Masonry {...props} />
+    <TagGallery {...props} />
   )
 }

@@ -51,7 +51,8 @@
     "update": "Update",
     "canal": "Cancel",
     "delete": "Delete",
-    "yesDelete": "Confirm deletion"
+    "yesDelete": "Confirm deletion",
+    "goBack": "GO back"
   },
   "Dashboard": {
     "picData": "Photo Data",

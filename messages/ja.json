@@ -51,7 +51,8 @@
     "update": "更新",
     "canal": "キャンセル",
     "delete": "削除",
-    "yesDelete": "削除を確認"
+    "yesDelete": "削除を確認",
+    "goBack": "戻る"
   },
   "Dashboard": {
     "picData": "写真データ",
