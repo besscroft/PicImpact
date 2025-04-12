@@ -13,6 +13,9 @@ import {
 } from 'lucide-react'
 
 export default function GalleryImage({ photo }: { photo: ImageType }) {
+  const exifIconClass = 'dark:text-gray-50'
+  const exifTextClass = 'text-tiny text-sm select-none items-center dark:text-gray-50'
+
   return (
     <div className="flex flex-col sm:flex-row w-full items-start justify-between sm:relative overflow-x-clip">
       <div className="flex flex-1 flex-col px-2 sm:sticky top-4 self-start">
@@ -61,50 +64,40 @@ export default function GalleryImage({ photo }: { photo: ImageType }) {
       <div className="flex flex-wrap space-x-2 sm:space-x-0 sm:flex-col flex-1 px-2 py-1 sm:py-0 space-y-1 text-gray-500 sm:sticky top-4 self-start">
         {photo?.exif?.make && photo?.exif?.model &&
           <div className="flex items-center space-x-1">
-            <Camera size={18}/>
-            <p
-              className="text-tiny text-sm select-none items-center"
-            >
+            <Camera className={exifIconClass} size={18} />
+            <p className={exifTextClass}>
               {`${photo?.exif?.make} ${photo?.exif?.model}`}
             </p>
           </div>
         }
         {photo?.exif?.f_number &&
           <div className="flex items-center space-x-1">
-            <Aperture size={18}/>
-            <p
-              className="text-tiny text-sm select-none items-center"
-            >
+            <Aperture className={exifIconClass} size={18} />
+            <p className={exifTextClass}>
               {`${photo?.exif?.f_number}`}
             </p>
           </div>
         }
         {photo?.exif?.exposure_time &&
           <div className="flex items-center space-x-1">
-            <Timer size={18}/>
-            <p
-              className="text-tiny text-sm select-none items-center"
-            >
+            <Timer className={exifIconClass} size={18} />
+            <p className={exifTextClass}>
               {`${photo?.exif?.exposure_time}`}
             </p>
           </div>
         }
         {photo?.exif?.focal_length &&
           <div className="flex items-center space-x-1">
-            <Crosshair size={18}/>
-            <p
-              className="text-tiny text-sm select-none items-center"
-            >
+            <Crosshair className={exifIconClass} size={18} />
+            <p className={exifTextClass}>
               {`${photo?.exif?.focal_length}`}
             </p>
           </div>
         }
         {photo?.exif?.iso_speed_rating &&
           <div className="flex items-center space-x-1">
-            <CircleGauge size={18}/>
-            <p
-              className="text-tiny text-sm select-none items-center"
-            >
+            <CircleGauge className={exifIconClass} size={18} />
+            <p className={exifTextClass}>
               {`${photo?.exif?.iso_speed_rating}`}
             </p>
           </div>
