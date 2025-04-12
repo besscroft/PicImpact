@@ -10,7 +10,7 @@ export type AlbumType = {
   allow_download: number;
   license: string | null;
   image_sorting: number;
-  randomShow: number;
+  random_show: number;
   del?: number;
   createdAt?: Date;
   updatedAt?: Date | null;
