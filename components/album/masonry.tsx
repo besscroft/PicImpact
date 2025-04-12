@@ -92,7 +92,7 @@ export default function Masonry(props : Readonly<ImageHandleProps>) {
   }, []);
 
   return (
-    <div className="w-full sm:w-[75%] mx-auto p-2">
+    <div className="w-full sm:w-[66.667%] mx-auto overflow-x-hidden p-2">
       <MasonryPhotoAlbum
         columns={(containerWidth) => {
           if (containerWidth < 768) return 2;

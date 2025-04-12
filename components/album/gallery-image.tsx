@@ -20,7 +20,7 @@ export default function GalleryImage({ photo }: { photo: ImageType }) {
           <div className="font-semibold">{ photo.title }</div>
         </div>
       </div>
-      <div className="relative inline-block select-none sm:w-[66.667%] mx-auto shadow-sm shadow-gray-200">
+      <div className="relative inline-block select-none sm:w-[66.667%] mx-auto shadow-sm shadow-gray-200 overflow-x-hidden">
         <LazyLoadImage
           width={photo.width}
           height={photo.height}
