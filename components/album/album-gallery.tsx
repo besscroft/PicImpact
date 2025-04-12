@@ -9,9 +9,22 @@ import type { ImageType } from '~/types'
 import { ReloadIcon } from '@radix-ui/react-icons'
 import { Button } from '~/components/ui/button'
 import React from 'react'
-import GalleryImage from '~/components/album/gallery-image'
+import { MasonryPhotoAlbum, RenderImageContext, RenderImageProps } from 'react-photo-album'
+import BlurImage from '~/components/album/blur-image'
+import MasonryItem from '~/components/album/masonry-item'
 
-export default function Gallery(props : Readonly<ImageHandleProps>) {
+
+function renderNextImage(
+  _: RenderImageProps,
+  { photo }: RenderImageContext,
+  dataList: never[],
+) {
+  return (
+    <BlurImage photo={photo} dataList={dataList} />
+  );
+}
+
+export default function AlbumGallery(props : Readonly<ImageHandleProps>) {
   const { data: pageTotal } = useSwrPageTotalHook(props)
   const { data, isLoading, isValidating, size, setSize } = useSWRInfinite((index) => {
       return [`client-${props.args}-${index}-${props.album}`, index]
@@ -34,9 +47,29 @@ export default function Gallery(props : Readonly<ImageHandleProps>) {
 
   return (
     <div className="w-full p-2 space-y-4">
-      {processedDataList?.map((item: ImageType) => (
-        <GalleryImage key={item.id} photo={item} />
-      ))}
+      <div className="flex flex-col sm:flex-row w-full p-2 items-start justify-between sm:relative overflow-x-clip">
+        <div className="flex flex-1 flex-col px-2 sm:sticky top-4 self-start">
+        </div>
+        <div className="w-full sm:w-[66.667%] mx-auto">
+          <MasonryPhotoAlbum
+            columns={(containerWidth) => {
+              if (containerWidth < 768) return 2;
+              if (containerWidth < 1024) return 3;
+              return 4;
+            }}
+            photos={
+              processedDataList?.map((item: ImageType) => ({
+                src: item.preview_url || item.url,
+                alt: item.detail,
+                ...item
+              })) || []
+            }
+            render={{image: (...args) => renderNextImage(...args, processedDataList)}}
+          />
+        </div>
+        <div className="flex flex-wrap space-x-2 sm:space-x-0 sm:flex-col flex-1 px-2 py-1 sm:py-0 space-y-1 text-gray-500 sm:sticky top-4 self-start">
+        </div>
+      </div>
       <div className="flex items-center justify-center my-4">
         {
           isValidating ?
@@ -56,6 +89,7 @@ export default function Gallery(props : Readonly<ImageHandleProps>) {
               : t('Tips.noImg')
         }
       </div>
+      <MasonryItem />
     </div>
   )
 }
