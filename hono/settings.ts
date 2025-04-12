@@ -19,13 +19,10 @@ app.get('/get-custom-info', async (c) => {
     'rss_feed_id',
     'rss_user_id',
     'custom_index_style',
-    'custom_fold_album_enable',
-    'custom_fold_album_count',
     'custom_index_download_enable',
     'preview_max_width_limit',
     'preview_max_width_limit_switch',
     'preview_quality',
-    'custom_index_random_show',
   ]);
   return c.json(data)
 })
@@ -121,8 +118,6 @@ app.put('/update-custom-info', async (c) => {
     enablePreviewImageMaxWidthLimit: boolean
     previewImageMaxWidth: number
     previewQuality: number
-    customFoldAlbumEnable: boolean
-    customFoldAlbumCount: number
     customIndexRandomShow: boolean
   }
   try {

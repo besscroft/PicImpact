@@ -142,10 +142,7 @@
     "indexStyleSelect": "ホームページスタイルを選択",
     "indexStyleDefault": "デフォルトアルバムモード",
     "indexStyleStar": "精選画像モード",
-    "customIndexDownloadEnable": "ホームページのコピー/ダウンロードボタンを表示（精選モードで有効）",
-    "customFoldAlbumEnable": "アルバムの自動折りたたみを有効にする",
-    "customFoldAlbumCount": "自動折りたたみアルバム数",
-    "customIndexRandomShow": "ホームページのランダム表示を有効にする"
+    "customIndexDownloadEnable": "ホームページのコピー/ダウンロードボタンを表示（精選モードで有効）"
   },
   "Password": {
     "onePassword": "旧パスワード",

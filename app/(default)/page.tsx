@@ -1,6 +1,5 @@
 import type { ImageHandleProps } from '~/types/props'
 import { fetchClientImagesListByAlbum, fetchClientImagesPageTotalByAlbum } from '~/server/db/query/images'
-import { fetchConfigsByKeys } from '~/server/db/query/configs'
 import Gallery from '~/components/album/gallery'
 
 export default async function Home() {
@@ -16,13 +15,9 @@ export default async function Home() {
 
   const getConfig = async () => {
     'use server'
-    return await fetchConfigsByKeys([
-      'custom_index_random_show'
-    ])
+    // 什么都不做
+    console.log('')
   }
-
-  const configData = await getConfig()
-  const value = configData[0]?.config_value ?? 'false'
 
   const props: ImageHandleProps = {
     handle: getData,
@@ -30,7 +25,7 @@ export default async function Home() {
     album: '/',
     totalHandle: getPageTotal,
     configHandle: getConfig,
-    randomShow: value === 'true'
+    randomShow: false
   }
 
   return (

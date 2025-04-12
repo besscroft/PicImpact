@@ -81,9 +81,6 @@ export async function updateCustomInfo(payload: {
   enablePreviewImageMaxWidthLimit: boolean
   previewImageMaxWidth: number
   previewQuality: number
-  customFoldAlbumEnable: boolean
-  customFoldAlbumCount: number
-  customIndexRandomShow: boolean
 }) {
   const {
     title,
@@ -92,13 +89,10 @@ export async function updateCustomInfo(payload: {
     feedId,
     userId,
     customIndexStyle,
-    customFoldAlbumEnable,
-    customFoldAlbumCount,
     customIndexDownloadEnable,
     enablePreviewImageMaxWidthLimit,
     previewImageMaxWidth,
     previewQuality,
-    customIndexRandomShow,
   } = payload
   await db.$transaction(async (tx) => {
     await tx.configs.update({
@@ -157,33 +151,6 @@ export async function updateCustomInfo(payload: {
     })
     await tx.configs.update({
       where: {
-        config_key: 'custom_fold_album_enable'
-      },
-      data: {
-        config_value: customFoldAlbumEnable ? 'true' : 'false',
-        updatedAt: new Date()
-      }
-    })
-    await tx.configs.update({
-      where: {
-        config_key: 'custom_fold_album_count'
-      },
-      data: {
-        config_value: customFoldAlbumCount.toString(),
-        updatedAt: new Date()
-      }
-    })
-    await tx.configs.update({
-      where: {
-        config_key: 'custom_index_random_show'
-      },
-      data: {
-        config_value: customIndexRandomShow.toString(),
-        updatedAt: new Date()
-      }
-    })
-    await tx.configs.update({
-      where: {
         config_key: 'custom_index_download_enable'
       },
       data: {
@@ -191,18 +158,16 @@ export async function updateCustomInfo(payload: {
         updatedAt: new Date(),
       }
     })
-    if (typeof enablePreviewImageMaxWidthLimit === 'boolean') {
-      await tx.configs.update({
-        where: {
-          config_key: 'preview_max_width_limit_switch'
-        },
-        data: {
-          config_value: enablePreviewImageMaxWidthLimit ? '1' : '0',
-          updatedAt: new Date(),
-        }
-      })
-    }
-    if (typeof previewImageMaxWidth === 'number' && previewImageMaxWidth > 0) {
+    await tx.configs.update({
+      where: {
+        config_key: 'preview_max_width_limit_switch'
+      },
+      data: {
+        config_value: enablePreviewImageMaxWidthLimit ? '1' : '0',
+        updatedAt: new Date(),
+      }
+    })
+    if (previewImageMaxWidth > 0) {
       await tx.configs.update({
         where: {
           config_key: 'preview_max_width_limit'
@@ -213,7 +178,7 @@ export async function updateCustomInfo(payload: {
         }
       })
     }
-    if (typeof previewQuality === 'number' && previewQuality > 0) {
+    if (previewQuality > 0) {
       await tx.configs.update({
         where: {
           config_key: 'preview_quality'

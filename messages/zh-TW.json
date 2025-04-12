@@ -142,10 +142,7 @@
     "indexStyleSelect": "選擇首頁模式",
     "indexStyleDefault": "預設相簿模式",
     "indexStyleStar": "精選圖片模式",
-    "customIndexDownloadEnable": "首頁複製下載按鈕顯示（精選模式生效）",
-    "customFoldAlbumEnable": "是否開啟自動折疊相簿",
-    "customFoldAlbumCount": "自動折疊相簿數量",
-    "customIndexRandomShow": "是否啟用首頁隨機排列"
+    "customIndexDownloadEnable": "首頁複製下載按鈕顯示（精選模式生效）"
   },
   "Password": {
     "onePassword": "舊密碼",
