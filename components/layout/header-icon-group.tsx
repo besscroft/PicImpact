@@ -18,7 +18,8 @@ export default function HeaderIconGroup(props: Readonly<AlbumDataProps>) {
     <>
       <div className="flex items-center space-x-1">
         <LoaderPinwheelIcon size={18} onClick={() => router.push('/')} />
-        <GalleryThumbnailsIcon size={18} />
+        {Array.isArray(props.data) && props.data.length > 0 &&
+          <GalleryThumbnailsIcon onClick={() => router.push(props.data[0].album_value ?? '/')} size={18} />}
         <CompassIcon onClick={() => setCommand(true)} size={18} />
       </div>
       <Command {...props} />
