@@ -1,9 +1,8 @@
 import Logo from '~/components/layout/Logo'
-import DynamicNavbar from '~/components/layout/DynamicNavbar'
-import HeaderLink from '~/components/layout/HeaderLink'
 import { fetchAlbumsShow } from '~/server/db/query/albums'
 import { fetchAlbumsShowOptions } from '~/server/db/query/configs'
 import type { AlbumDataProps } from '~/types/props'
+import HeaderIconGroup from "~/components/layout/header-icon-group.tsx";
 
 export default async function Header() {
   const getData = async () => {
@@ -26,16 +25,14 @@ export default async function Header() {
   }
 
   return (
-    <div className="flex items-center w-full p-2 sm:w-[80%] mx-auto">
+    <div className="flex items-center w-full p-2 sm:w-[66.667%] mx-auto">
       <div className="justify-start">
         <Logo/>
       </div>
-      <div className="hidden sm:flex gap-1 flex-1 select-none justify-center w-full">
-        <HeaderLink {...props} />
+      <div className="flex gap-1 flex-1 select-none justify-center w-full">
       </div>
-      <div className="flex sm:hidden flex-1"></div>
       <div className="flex h-full items-center space-x-2 justify-end">
-        <DynamicNavbar/>
+        <HeaderIconGroup />
       </div>
     </div>
   );

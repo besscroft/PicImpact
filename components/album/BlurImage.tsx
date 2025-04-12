@@ -12,7 +12,7 @@ export default function BlurImage({ photo, dataList }: { photo: any, dataList: a
   return (
     <div className="relative inline-block select-none">
       <LazyLoadImage
-        className="cursor-pointer transition duration-500 ease-in-out hover:scale-[1.01]"
+        className="cursor-pointer"
         width={photo.width}
         height={photo.height}
         src={photo.src}
