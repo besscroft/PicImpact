@@ -20,11 +20,6 @@ import { ReloadIcon } from '@radix-ui/react-icons'
 import { Card, CardContent, CardFooter } from '~/components/ui/card'
 import { Switch } from '~/components/ui/switch'
 import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '~/components/ui/popover'
-import {
   AlertDialog,
   AlertDialogAction,
   AlertDialogCancel,
@@ -46,6 +41,7 @@ import {
 import { SquarePenIcon } from '~/components/icons/square-pen'
 import { DeleteIcon } from '~/components/icons/delete'
 import { useTranslations } from 'next-intl'
+import { Badge } from '~/components/ui/badge'
 
 export default function ListProps(props : Readonly<ImageServerHandleProps>) {
   const [pageNum, setPageNum] = useState(1)
@@ -183,17 +179,7 @@ export default function ListProps(props : Readonly<ImageServerHandleProps>) {
         {Array.isArray(data) && data?.map((image: ImageType) => (
           <Card key={image.id} className="flex flex-col h-72 show-up-motion items-center gap-0 py-0">
             <div className="flex h-12 justify-between w-full p-2 space-x-2">
-              <Popover>
-                <PopoverTrigger className="cursor-pointer select-none inline-flex items-center justify-center rounded-full bg-emerald-100 px-2.5 py-0.5 text-emerald-700">
-                  <div className="flex space-x-2 items-center justify-center text-sm">{image.album_name}</div>
-                </PopoverTrigger>
-                <PopoverContent>
-                  <div className="px-1 py-2 select-none">
-                    <div className="text-small font-bold">{t('Words.album')}</div>
-                    <div className="text-tiny">{t('List.albumDisplay')}</div>
-                  </div>
-                </PopoverContent>
-              </Popover>
+              <Badge variant="secondary" aria-label={t('Words.album')}>{image.album_name}</Badge>
               <div className="flex items-center">
                 <Button
                   variant="outline"
@@ -224,17 +210,7 @@ export default function ListProps(props : Readonly<ImageServerHandleProps>) {
                     onCheckedChange={(isSelected: boolean) => updateImageShow(image.id, isSelected ? 0 : 1)}
                   />
                 }
-                <Popover>
-                  <PopoverTrigger className="cursor-pointer select-none inline-flex items-center justify-center rounded-full bg-emerald-100 px-2.5 py-0.5 text-emerald-700">
-                    <div className="flex space-x-2 items-center justify-center text-sm"><ArrowDown10 size={20}/>{image.sort}</div>
-                  </PopoverTrigger>
-                  <PopoverContent>
-                    <div className="px-1 py-2 select-none">
-                      <div className="text-small font-bold">{t('Words.sort')}</div>
-                      <div className="text-tiny">{t('List.rule')}</div>
-                    </div>
-                  </PopoverContent>
-                </Popover>
+                <Badge variant="secondary" aria-label={t('Words.sort')}><ArrowDown10 size={18}/>{image.sort}</Badge>
               </div>
               <div className="space-x-1">
                 <AlertDialog>

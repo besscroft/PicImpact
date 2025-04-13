@@ -8,11 +8,6 @@ import type { AlbumType } from '~/types'
 import type { HandleProps } from '~/types/props'
 import { useButtonStore } from '~/app/providers/button-store-providers'
 import { Card, CardFooter } from '~/components/ui/card'
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '~/components/ui/popover'
 import { Switch } from '~/components/ui/switch'
 import { ReloadIcon } from '@radix-ui/react-icons'
 import { Button } from '~/components/ui/button'
@@ -27,6 +22,7 @@ import {
 import { SquarePenIcon } from '~/components/icons/square-pen'
 import { DeleteIcon } from '~/components/icons/delete'
 import { useTranslations } from 'next-intl'
+import { Badge } from '~/components/ui/badge'
 
 export default function AlbumList(props : Readonly<HandleProps>) {
   const { data, mutate } = useSwrHydrated(props)
@@ -92,19 +88,8 @@ export default function AlbumList(props : Readonly<HandleProps>) {
       {data && data.map((album: AlbumType) => (
         <Card key={album.id} className="flex flex-col h-72 show-up-motion items-center gap-0 py-0">
           <div className="flex h-12 justify-start w-full p-2 space-x-2">
-            <p>{album.name}</p>
-            <Popover>
-              <PopoverTrigger
-                className="cursor-pointer select-none inline-flex items-center justify-center rounded-full bg-emerald-100 px-2.5 py-0.5 text-emerald-700">
-                <p className="whitespace-nowrap text-sm" aria-label={t('Album.router')}>{album.album_value}</p>
-              </PopoverTrigger>
-              <PopoverContent>
-                <div className="px-1 py-2 select-none">
-                  <div className="text-small font-bold">{t('Album.router')}</div>
-                  <div className="text-tiny">{t('Album.routerDetail')}</div>
-                </div>
-              </PopoverContent>
-            </Popover>
+            <Badge aria-label={t('Album.albumName')}>{album.name}</Badge>
+            <Badge variant="secondary" aria-label={t('Album.router')}>{album.album_value}</Badge>
           </div>
           <div className="flex justify-start w-full p-2 h-48">
             {album.detail || t('Album.noTips')}
@@ -120,9 +105,7 @@ export default function AlbumList(props : Readonly<HandleProps>) {
                     onCheckedChange={(isSelected: boolean) => updateAlbumShow(album.id, isSelected ? 0 : 1)}
                   />
               }
-              <div className="flex space-x-2 items-center justify-center text-sm select-none rounded-full bg-emerald-100 px-2.5 py-0.5 text-emerald-700">
-                <ArrowDown10 size={20}/>{album.sort}
-              </div>
+              <Badge variant="secondary" aria-label={t('Words.sort')}><ArrowDown10 size={18}/>{album.sort}</Badge>
             </div>
             <div className="space-x-1">
               <Button
