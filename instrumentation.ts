@@ -52,11 +52,6 @@ export async function register() {
           ],
           skipDuplicates: true,
         })
-        await tx.$executeRaw`
-          INSERT INTO "public"."albums" (id, name, album_value, detail, show, sort)
-            VALUES (${cuid()}, '首页', '/', '首页路由默认会初始化，但您可以选择使用方式。', 1, 0)
-          ON CONFLICT (album_value) DO NOTHING;
-        `
       })
       console.log('action boot completed.')
       await prisma.$disconnect()
