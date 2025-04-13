@@ -37,7 +37,7 @@ export default async function About() {
           />
         </svg>
 
-        <p className="whitespace-nowrap text-sm select-none">v2.3.0</p>
+        <p className="whitespace-nowrap text-sm select-none">v2.4.0</p>
       </span>
       <span className="select-none">PicImpact 是一个摄影师专用的摄影作品展示网站，基于 Next.js + Hono.js 开发。</span>
       <div className="grid grid-cols-1 gap-2 md:grid-cols-2 md:gap-4 lg:grid-cols-3 lg:gap-6 xl:grid-cols-4 xl:gap-8">

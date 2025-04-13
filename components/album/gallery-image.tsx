@@ -83,7 +83,7 @@ export default function GalleryImage({ photo, configData }: { photo: ImageType, 
       </div>
       <div
         className="relative inline-block select-none sm:w-[66.667%] mx-auto shadow-sm shadow-gray-200 dark:shadow-gray-800">
-      <LazyLoadImage
+        <LazyLoadImage
           width={photo.width}
           height={photo.height}
           src={photo.url}
