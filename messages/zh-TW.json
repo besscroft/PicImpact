@@ -131,7 +131,7 @@
     "maxWidth": "預覽圖最大寬度(正整數)",
     "inputMaxWidth": "請輸入預覽圖最大寬度限制，正整數",
     "indexStyleSelect": "選擇首頁模式",
-    "indexStyleDefault": "預設相簿模式",
+    "indexStyleDefault": "瀑布流模式",
     "indexStyleStar": "精選圖片模式",
     "customIndexDownloadEnable": "下載按鈕顯示"
   },

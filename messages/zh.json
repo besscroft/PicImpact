@@ -131,7 +131,7 @@
     "maxWidth": "预览图最大宽度(正整数)",
     "inputMaxWidth": "请输入预览图最大宽度限制，正整数",
     "indexStyleSelect": "选择首页模式",
-    "indexStyleDefault": "默认相册模式",
+    "indexStyleDefault": "瀑布流模式",
     "indexStyleStar": "精选图片模式",
     "customIndexDownloadEnable": "下载按钮显示"
   },

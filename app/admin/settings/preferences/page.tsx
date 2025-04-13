@@ -187,6 +187,7 @@ export default function Preferences() {
                 <SelectValue placeholder={t('Preferences.indexStyleSelect')} />
               </SelectTrigger>
               <SelectContent className="cursor-pointer">
+                <SelectItem className="cursor-pointer" value="0">{t('Preferences.indexStyleDefault')}</SelectItem>
                 <SelectItem className="cursor-pointer" value="1">{t('Preferences.indexStyleStar')}</SelectItem>
               </SelectContent>
             </Select>

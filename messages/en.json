@@ -131,7 +131,7 @@
     "maxWidth": "Maximum Width for Preview Images (positive integer)",
     "inputMaxWidth": "Please enter the maximum width limit for preview images, a positive integer.",
     "indexStyleSelect": "Select Homepage Style",
-    "indexStyleDefault": "Default Album Style",
+    "indexStyleDefault": "Waterfall Style",
     "indexStyleStar": "Featured Image Style",
     "customIndexDownloadEnable": "Show Download Button"
   },
