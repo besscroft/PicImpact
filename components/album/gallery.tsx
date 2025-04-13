@@ -35,7 +35,7 @@ export default function Gallery(props : Readonly<ImageHandleProps>) {
   return (
     <div className="w-full p-2 space-y-4">
       {processedDataList?.map((item: ImageType) => (
-        <GalleryImage key={item.id} photo={item} />
+        <GalleryImage key={item.id} photo={item} configData={configData} />
       ))}
       <div className="flex items-center justify-center my-4">
         {

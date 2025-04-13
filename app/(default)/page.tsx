@@ -1,6 +1,7 @@
 import type { ImageHandleProps } from '~/types/props'
 import { fetchClientImagesListByAlbum, fetchClientImagesPageTotalByAlbum } from '~/server/db/query/images'
 import Gallery from '~/components/album/gallery'
+import { fetchConfigsByKeys } from '~/server/db/query/configs'
 
 export default async function Home() {
   const getData = async (pageNum: number, album: string) => {
@@ -15,8 +16,9 @@ export default async function Home() {
 
   const getConfig = async () => {
     'use server'
-    // 什么都不做
-    console.log('')
+    return await fetchConfigsByKeys([
+      'custom_index_download_enable'
+    ])
   }
 
   const props: ImageHandleProps = {
