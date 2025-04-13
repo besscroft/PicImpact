@@ -133,7 +133,7 @@
     "indexStyleSelect": "ホームページスタイルを選択",
     "indexStyleDefault": "デフォルトアルバムモード",
     "indexStyleStar": "精選画像モード",
-    "customIndexDownloadEnable": "ホームページのコピー/ダウンロードボタンを表示（精選モードで有効）"
+    "customIndexDownloadEnable": "ダウンロードボタンの表示"
   },
   "Password": {
     "onePassword": "旧パスワード",

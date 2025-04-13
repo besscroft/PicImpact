@@ -1,6 +1,7 @@
 import { fetchImageByIdAndAuth } from '~/server/db/query/images'
 import type { PreviewImageHandleProps } from '~/types/props'
 import PreviewImage from '~/components/album/preview-image'
+import { fetchConfigsByKeys } from '~/server/db/query/configs'
 
 
 export default async function Label({params}: { params: any }) {
@@ -13,8 +14,9 @@ export default async function Label({params}: { params: any }) {
 
   const getConfig = async () => {
     'use server'
-    // 什么都不做
-    console.log('')
+    return await fetchConfigsByKeys([
+      'custom_index_download_enable'
+    ])
   }
 
   const imageData = await getData(id)

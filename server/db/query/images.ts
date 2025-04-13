@@ -170,7 +170,6 @@ export async function fetchClientImagesListByAlbum(pageNum: number, album: strin
         image.*,
         albums.name AS album_name,
         albums.id AS album_value,
-        albums.allow_download AS album_allow_download,
         albums.license AS album_license,
         albums.image_sorting AS album_image_sorting
     FROM 
@@ -272,7 +271,6 @@ export async function fetchClientImagesListByTag(pageNum: number, tag: string) {
         image.*,
         albums.name AS album_name,
         albums.id AS album_value,
-        albums.allow_download AS album_allow_download,
         albums.license AS album_license
     FROM 
         "public"."images" AS image
@@ -394,7 +392,6 @@ export async function fetchImageByIdAndAuth(id: string): Promise<ImageType[]> {
   return await db.$queryRaw`
     SELECT
         "images".*,
-        "albums".allow_download AS album_allow_download,
         "albums".license AS album_license
     FROM
         "images"

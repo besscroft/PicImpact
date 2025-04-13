@@ -1,6 +1,6 @@
 'use client'
 
-import type { ImageDataProps, PreviewImageHandleProps } from '~/types/props'
+import type { HandleProps, ImageDataProps, PreviewImageHandleProps } from '~/types/props'
 import { LazyLoadImage } from 'react-lazy-load-image-component'
 import LivePhoto from '~/components/album/live-photo'
 import { toast } from 'sonner'
@@ -23,6 +23,7 @@ import { CopyIcon } from '~/components/icons/copy'
 import { RefreshCWIcon } from '~/components/icons/refresh-cw'
 import { cn } from '~/lib/utils'
 import PreviewImageExif from '~/components/album/preview-image-exif'
+import { useSwrHydrated } from '~/hooks/use-swr-hydrated'
 
 export default function PreviewImage(props: Readonly<PreviewImageHandleProps>) {
   const router = useRouter()
@@ -34,6 +35,12 @@ export default function PreviewImage(props: Readonly<PreviewImageHandleProps>) {
   const exifProps: ImageDataProps = {
     data: props.data,
   }
+
+  const configProps: HandleProps = {
+    handle: props.configHandle,
+    args: 'system-config',
+  }
+  const { data: configData } = useSwrHydrated(configProps)
 
   async function downloadImg() {
     setDownload(true)
@@ -175,17 +182,22 @@ export default function PreviewImage(props: Readonly<PreviewImageHandleProps>) {
                 }
               }}
             />
-            {download ?
-              <RefreshCWIcon
-                className={cn(exifIconClass, 'animate-spin cursor-not-allowed')}
-                size={20}
-              />:
-              <DownloadIcon
-                className={exifIconClass}
-                size={20}
-                onClick={() => downloadImg()}
-              />
+            {configData?.find((item: any) => item.config_key === 'custom_index_download_enable')?.config_value.toString() === 'true'
+              && <>
+                {download ?
+                  <RefreshCWIcon
+                    className={cn(exifIconClass, 'animate-spin cursor-not-allowed')}
+                    size={20}
+                  />:
+                  <DownloadIcon
+                    className={exifIconClass}
+                    size={20}
+                    onClick={() => downloadImg()}
+                  />
+                }
+              </>
             }
+
             <PreviewImageExif {...exifProps} />
           </div>
           {props.data?.labels &&

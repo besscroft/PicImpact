@@ -48,7 +48,7 @@ export async function register() {
             { config_key: 'preview_max_width_limit_switch', config_value: '0', detail: '预览图最大宽度限制开关' },
             { config_key: 'preview_quality', config_value: '0.2', detail: '预览图压缩质量' },
             { config_key: 'custom_index_style', config_value: '0', detail: '首页风格：0->默认相册模式；1->精选图片模式' },
-            { config_key: 'custom_index_download_enable', config_value: 'false', detail: '是否启用首页下载' },
+            { config_key: 'custom_index_download_enable', config_value: 'false', detail: '是否启用图片下载' },
           ],
           skipDuplicates: true,
         })

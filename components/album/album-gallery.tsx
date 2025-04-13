@@ -1,9 +1,8 @@
 'use client'
 
-import type { HandleProps, ImageHandleProps } from '~/types/props'
+import type { ImageHandleProps } from '~/types/props'
 import { useSwrPageTotalHook } from '~/hooks/use-swr-page-total-hook'
 import useSWRInfinite from 'swr/infinite'
-import { useSwrHydrated } from '~/hooks/use-swr-hydrated'
 import { useTranslations } from 'next-intl'
 import type { ImageType } from '~/types'
 import { ReloadIcon } from '@radix-ui/react-icons'
@@ -34,11 +33,6 @@ export default function AlbumGallery(props : Readonly<ImageHandleProps>) {
       revalidateIfStale: false,
       revalidateOnReconnect: false,
     })
-  const configProps: HandleProps = {
-    handle: props.configHandle,
-    args: 'system-config',
-  }
-  const { data: configData } = useSwrHydrated(configProps)
   const dataList = data ? [].concat(...data) : [];
   const processedDataList = props.randomShow ? [...dataList].sort(() => Math.random() - 0.5) : dataList;
   const t = useTranslations()

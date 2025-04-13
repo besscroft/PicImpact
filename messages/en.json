@@ -133,7 +133,7 @@
     "indexStyleSelect": "Select Homepage Style",
     "indexStyleDefault": "Default Album Style",
     "indexStyleStar": "Featured Image Style",
-    "customIndexDownloadEnable": "Show Copy/Download Button on Homepage (Effective in Featured Mode)"
+    "customIndexDownloadEnable": "Show Download Button"
   },
   "Password": {
     "onePassword": "Old Password",

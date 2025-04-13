@@ -20,11 +20,10 @@ export async function insertAlbums(album: AlbumType) {
       detail: album.detail,
       sort: album.sort,
       show: album.show,
-      allow_download: album.allow_download,
       license: album.license,
       del: 0,
       image_sorting: album.image_sorting,
-      random_show: album.randomShow,
+      random_show: album.random_show,
     }
   })
 }
@@ -72,11 +71,10 @@ export async function updateAlbum(album: AlbumType) {
         detail: album.detail,
         sort: album.sort,
         show: album.show,
-        allow_download: album.allow_download,
         license: album.license,
         updatedAt: new Date(),
         image_sorting: album.image_sorting,
-        random_show: album.randomShow,
+        random_show: album.random_show,
       }
     })
     await tx.imagesAlbumsRelation.updateMany({

@@ -150,21 +150,6 @@ export default function AlbumEditSheet(props : Readonly<HandleProps>) {
           </label>
           <div className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
             <div className="flex flex-col gap-1">
-              <div className="text-medium">允许下载</div>
-              <div className="text-tiny text-default-400">
-                是否显示下载/复制按钮。
-              </div>
-            </div>
-            <Switch
-              className="cursor-pointer"
-              checked={album?.allow_download === 0}
-              onCheckedChange={(value) => {
-                setAlbumEditData({...album, allow_download: value ? 0 : 1})
-              }}
-            />
-          </div>
-          <div className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
-            <div className="flex flex-col gap-1">
               <div className="text-medium">显示状态</div>
               <div className="text-tiny text-default-400">
                 是否需要在首页以路由形式呈现，点击后跳转页面。

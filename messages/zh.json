@@ -133,7 +133,7 @@
     "indexStyleSelect": "选择首页模式",
     "indexStyleDefault": "默认相册模式",
     "indexStyleStar": "精选图片模式",
-    "customIndexDownloadEnable": "首页复制下载按钮显示（精选模式生效）"
+    "customIndexDownloadEnable": "下载按钮显示"
   },
   "Password": {
     "onePassword": "旧密码",
