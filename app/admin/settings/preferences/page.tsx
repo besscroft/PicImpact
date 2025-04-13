@@ -11,6 +11,7 @@ import { useTranslations } from 'next-intl'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '~/components/ui/select'
 import { Input } from '~/components/ui/input'
 import { Label } from '~/components/ui/label'
+import { CopyIcon } from '~/components/icons/copy'
 
 export default function Preferences() {
   const [title, setTitle] = useState('')
@@ -154,15 +155,38 @@ export default function Preferences() {
               onChange={(e) => setUserId(e.target.value)}
             />
           </div>
+          <div className="grid w-full max-w-sm items-center gap-1.5">
+            <Label htmlFor="userId"> RSS URI </Label>
+            <div className="flex items-center space-x-2">
+              <Input
+                id="link"
+                defaultValue={window.location.origin + '/rss.xml'}
+                readOnly
+              />
+              <CopyIcon
+                onClick={async () => {
+                  try {
+                    const url = window.location.origin + '/rss.xml'
+                    // @ts-ignore
+                    await navigator.clipboard.writeText(url);
+                    toast.success('复制成功！', {duration: 500})
+                  } catch (error) {
+                    toast.error('复制失败！', {duration: 500})
+                  }
+                }}
+                size={18}
+              />
+            </div>
+          </div>
         </div>
         <div className="rounded space-y-4">
-          <div className="w-full max-w-sm">
+          <div className="w-full max-w-sm space-y-1">
+            <Label htmlFor="indexStyleSelect"> {t('Preferences.indexStyleSelect')} </Label>
             <Select value={customIndexStyle} onValueChange={(value) => setCustomIndexStyle(value)}>
               <SelectTrigger className="w-full cursor-pointer">
                 <SelectValue placeholder={t('Preferences.indexStyleSelect')} />
               </SelectTrigger>
               <SelectContent className="cursor-pointer">
-                <SelectItem className="cursor-pointer" value="0">{t('Preferences.indexStyleDefault')}</SelectItem>
                 <SelectItem className="cursor-pointer" value="1">{t('Preferences.indexStyleStar')}</SelectItem>
               </SelectContent>
             </Select>
