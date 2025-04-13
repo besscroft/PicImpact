@@ -1,7 +1,9 @@
-import Masonry from '~/components/album/Masonry'
 import type { ImageHandleProps } from '~/types/props'
 import { fetchClientImagesListByAlbum, fetchClientImagesPageTotalByAlbum } from '~/server/db/query/images'
+import Gallery from '~/components/album/gallery'
 import { fetchConfigsByKeys } from '~/server/db/query/configs'
+import AlbumGallery from '~/components/album/album-gallery'
+import 'react-photo-album/masonry.css'
 
 export default async function Home() {
   const getData = async (pageNum: number, album: string) => {
@@ -17,12 +19,19 @@ export default async function Home() {
   const getConfig = async () => {
     'use server'
     return await fetchConfigsByKeys([
-      'custom_index_random_show'
+      'custom_index_download_enable',
     ])
   }
 
-  const configData = await getConfig()
-  const value = configData[0]?.config_value ?? 'false'
+  const getStyleConfig = async () => {
+    'use server'
+    return await fetchConfigsByKeys([
+      'custom_index_style',
+    ])
+  }
+
+  const style = await getStyleConfig()
+  const currentStyle = style?.find(a => a.config_key === 'custom_index_style').config_value
 
   const props: ImageHandleProps = {
     handle: getData,
@@ -30,10 +39,14 @@ export default async function Home() {
     album: '/',
     totalHandle: getPageTotal,
     configHandle: getConfig,
-    randomShow: value === 'true'
+    randomShow: false
   }
 
   return (
-    <Masonry {...props} />
+    <>
+      {currentStyle && currentStyle === '1' ?
+        <Gallery {...props} /> : <AlbumGallery {...props} />
+      }
+    </>
   )
 }

@@ -23,7 +23,6 @@
     "upload": "上傳",
     "list": "圖片維護",
     "album": "相簿管理",
-    "copyright": "版權管理",
     "about": "關於",
     "settings": "設定",
     "preferences": "首選項",
@@ -51,14 +50,14 @@
     "update": "更新",
     "canal": "取消",
     "delete": "刪除",
-    "yesDelete": "確定刪除"
+    "yesDelete": "確定刪除",
+    "goBack": "返回"
   },
   "Dashboard": {
     "picData": "照片數據",
     "picShow": "顯示照片",
     "bisData": "業務數據",
     "albumData": "相簿數據",
-    "copyrightData": "版權數據",
     "how": "感覺如何？",
     "starTip": "如果您覺得專案不錯",
     "issueTip": "如果您有 Bug 反饋和建議",
@@ -118,14 +117,6 @@
     "albumName": "相簿名稱",
     "albumRouter": "相簿路由"
   },
-  "Copyright": {
-    "social": "社交媒體",
-    "external": "外鏈",
-    "editCopyright": "編輯版權",
-    "deleteCopyright": "刪除版權",
-    "copyrightId": "版權 ID",
-    "copyrightName": "版權名稱"
-  },
   "Preferences": {
     "webSiteTitle": "網站標題",
     "inputWebSiteTitle": "請輸入網站標題。",
@@ -140,12 +131,9 @@
     "maxWidth": "預覽圖最大寬度(正整數)",
     "inputMaxWidth": "請輸入預覽圖最大寬度限制，正整數",
     "indexStyleSelect": "選擇首頁模式",
-    "indexStyleDefault": "預設相簿模式",
+    "indexStyleDefault": "瀑布流模式",
     "indexStyleStar": "精選圖片模式",
-    "customIndexDownloadEnable": "首頁複製下載按鈕顯示（精選模式生效）",
-    "customFoldAlbumEnable": "是否開啟自動折疊相簿",
-    "customFoldAlbumCount": "自動折疊相簿數量",
-    "customIndexRandomShow": "是否啟用首頁隨機排列"
+    "customIndexDownloadEnable": "下載按鈕顯示"
   },
   "Password": {
     "onePassword": "舊密碼",

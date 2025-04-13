@@ -23,7 +23,6 @@
     "upload": "アップロード",
     "list": "画像維持",
     "album": "アルバム管理",
-    "copyright": "著作権管理",
     "about": "について",
     "settings": "設定",
     "preferences": "優先設定",
@@ -51,14 +50,14 @@
     "update": "更新",
     "canal": "キャンセル",
     "delete": "削除",
-    "yesDelete": "削除を確認"
+    "yesDelete": "削除を確認",
+    "goBack": "戻る"
   },
   "Dashboard": {
     "picData": "写真データ",
     "picShow": "写真を表示",
     "bisData": "ビジネスデータ",
     "albumData": "アルバムデータ",
-    "copyrightData": "著作権データ",
     "how": "どう感じますか？",
     "starTip": "プロジェクトが良いと思われる場合",
     "issueTip": "バグのフィードバックや提案がある場合",
@@ -118,14 +117,6 @@
     "albumName": "アルバム名",
     "albumRouter": "アルバムルーター"
   },
-  "Copyright": {
-    "social": "ソーシャルメディア",
-    "external": "外部リンク",
-    "editCopyright": "著作権を編集",
-    "deleteCopyright": "著作権を削除",
-    "copyrightId": "著作権 ID",
-    "copyrightName": "著作権名"
-  },
   "Preferences": {
     "webSiteTitle": "ウェブサイトのタイトル",
     "inputWebSiteTitle": "ウェブサイトのタイトルを入力してください。",
@@ -140,12 +131,9 @@
     "maxWidth": "プレビュー画像の最大幅（正の整数）",
     "inputMaxWidth": "プレビュー画像の最大幅制限を入力してください（正の整数）",
     "indexStyleSelect": "ホームページスタイルを選択",
-    "indexStyleDefault": "デフォルトアルバムモード",
+    "indexStyleDefault": "ウォーターフォールモード",
     "indexStyleStar": "精選画像モード",
-    "customIndexDownloadEnable": "ホームページのコピー/ダウンロードボタンを表示（精選モードで有効）",
-    "customFoldAlbumEnable": "アルバムの自動折りたたみを有効にする",
-    "customFoldAlbumCount": "自動折りたたみアルバム数",
-    "customIndexRandomShow": "ホームページのランダム表示を有効にする"
+    "customIndexDownloadEnable": "ダウンロードボタンの表示"
   },
   "Password": {
     "onePassword": "旧パスワード",

@@ -4,14 +4,14 @@ import { ThemeProvider } from '~/app/providers/next-ui-providers'
 import { ToasterProviders } from '~/app/providers/toaster-providers'
 import { SessionProviders } from '~/app/providers/session-providers'
 import { ProgressBarProviders } from '~/app/providers/progress-bar-providers'
-import { ButtonStoreProvider } from '~/app/providers/button-store-Providers'
+import { ButtonStoreProvider } from '~/app/providers/button-store-providers'
 
 import '~/style/globals.css'
 import { fetchConfigsByKeys } from '~/server/db/query/configs'
 
 import { NextIntlClientProvider } from 'next-intl'
 import { getLocale, getMessages } from 'next-intl/server'
-import { ConfigStoreProvider } from '~/app/providers/config-store-Providers'
+import { ConfigStoreProvider } from '~/app/providers/config-store-providers'
 
 type Props = {
   params: { id: string }

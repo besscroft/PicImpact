@@ -11,6 +11,7 @@ import { useTranslations } from 'next-intl'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '~/components/ui/select'
 import { Input } from '~/components/ui/input'
 import { Label } from '~/components/ui/label'
+import { CopyIcon } from '~/components/icons/copy'
 
 export default function Preferences() {
   const [title, setTitle] = useState('')
@@ -24,9 +25,6 @@ export default function Preferences() {
   const [customIndexDownloadEnable, setCustomIndexDownloadEnable] = useState(false)
   const [enablePreviewImageMaxWidthLimit, setPreviewImageMaxWidthLimitEnabled] = useState(false)
   const [previewQualityInput, setPreviewQualityInput] = useState('0.2')
-  const [customFoldAlbumEnable, setCustomFoldAlbumEnable] = useState(false)
-  const [customFoldAlbumCount, setCustomFoldAlbumCount] = useState('6')
-  const [customIndexRandomShow, setCustomIndexRandomShow] = useState(false)
   const t = useTranslations()
 
   const { data, isValidating, isLoading } = useSWR<{ config_key: string, config_value: string }[]>('/api/v1/settings/get-custom-info', fetcher)
@@ -60,9 +58,6 @@ export default function Preferences() {
           enablePreviewImageMaxWidthLimit,
           previewImageMaxWidth: maxWidth,
           previewQuality,
-          customFoldAlbumEnable: customFoldAlbumEnable,
-          customFoldAlbumCount: customFoldAlbumCount,
-          customIndexRandomShow: customIndexRandomShow,
         }),
       }).then(res => res.json())
       toast.success('修改成功！')
@@ -84,9 +79,6 @@ export default function Preferences() {
     setPreviewImageMaxWidth(data?.find((item) => item.config_key === 'preview_max_width_limit')?.config_value?.toString() || '0')
     setPreviewImageMaxWidthLimitEnabled(data?.find((item) => item.config_key === 'preview_max_width_limit_switch')?.config_value === '1')
     setPreviewQualityInput(data?.find((item) => item.config_key === 'preview_quality')?.config_value || '0.2')
-    setCustomFoldAlbumEnable(data?.find((item) => item.config_key === 'custom_fold_album_enable')?.config_value.toString() === 'true' || false)
-    setCustomFoldAlbumCount(data?.find((item) => item.config_key === 'custom_fold_album_count')?.config_value || '6')
-    setCustomIndexRandomShow(data?.find((item) => item.config_key === 'custom_index_random_show')?.config_value.toString() === 'true' || false)
   }, [data])
 
   return (
@@ -163,9 +155,33 @@ export default function Preferences() {
               onChange={(e) => setUserId(e.target.value)}
             />
           </div>
+          <div className="grid w-full max-w-sm items-center gap-1.5">
+            <Label htmlFor="userId"> RSS URI </Label>
+            <div className="flex items-center space-x-2">
+              <Input
+                id="link"
+                defaultValue={window.location.origin + '/rss.xml'}
+                readOnly
+              />
+              <CopyIcon
+                onClick={async () => {
+                  try {
+                    const url = window.location.origin + '/rss.xml'
+                    // @ts-ignore
+                    await navigator.clipboard.writeText(url);
+                    toast.success('复制成功！', {duration: 500})
+                  } catch (error) {
+                    toast.error('复制失败！', {duration: 500})
+                  }
+                }}
+                size={18}
+              />
+            </div>
+          </div>
         </div>
         <div className="rounded space-y-4">
-          <div className="w-full max-w-sm">
+          <div className="w-full max-w-sm space-y-1">
+            <Label htmlFor="indexStyleSelect"> {t('Preferences.indexStyleSelect')} </Label>
             <Select value={customIndexStyle} onValueChange={(value) => setCustomIndexStyle(value)}>
               <SelectTrigger className="w-full cursor-pointer">
                 <SelectValue placeholder={t('Preferences.indexStyleSelect')} />
@@ -187,6 +203,19 @@ export default function Preferences() {
               onChange={(e) => setPreviewQualityInput(e.target.value)}
             />
           </div>
+          <div className="grid w-full max-w-sm items-center gap-1.5">
+            <Label htmlFor="maxWidth">{t('Preferences.maxWidth')}</Label>
+            <Input
+              type="number"
+              id="maxWidth"
+              disabled={isValidating || isLoading}
+              value={previewImageMaxWidth}
+              placeholder={t('Preferences.inputMaxWidth')}
+              onChange={(e) => setPreviewImageMaxWidth(e.target.value)}
+            />
+          </div>
+        </div>
+        <div className="rounded space-y-4">
           <label
             htmlFor="customIndexDownloadEnable"
             className="w-full max-w-sm cursor-pointer block overflow-hidden rounded-md border border-gray-200 px-3 py-2 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600"
@@ -221,67 +250,6 @@ export default function Preferences() {
               />
             </div>
           </label>
-          <div className="grid w-full max-w-sm items-center gap-1.5">
-            <Label htmlFor="maxWidth">{t('Preferences.maxWidth')}</Label>
-            <Input
-              type="number"
-              id="maxWidth"
-              disabled={isValidating || isLoading}
-              value={previewImageMaxWidth}
-              placeholder={t('Preferences.inputMaxWidth')}
-              onChange={(e) => setPreviewImageMaxWidth(e.target.value)}
-            />
-          </div>
-        </div>
-        <div className="rounded space-y-4">
-          <label
-            htmlFor="customFoldAlbumEnable"
-            className="w-full max-w-sm cursor-pointer block overflow-hidden rounded-md border border-gray-200 px-3 py-2 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600"
-          >
-            <span className="text-xs font-medium text-gray-700">{t('Preferences.customFoldAlbumEnable')}</span>
-            <div>
-              <Switch
-                id="customFoldAlbumEnable"
-                disabled={isValidating || isLoading}
-                checked={customFoldAlbumEnable}
-                className="cursor-pointer"
-                onCheckedChange={checked => {
-                  setCustomFoldAlbumEnable(checked)
-                }}
-              />
-            </div>
-          </label>
-          <label
-            htmlFor="customIndexRandomShow"
-            className="w-full max-w-sm cursor-pointer block overflow-hidden rounded-md border border-gray-200 px-3 py-2 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600"
-          >
-            <span className="text-xs font-medium text-gray-700">{t('Preferences.customIndexRandomShow')}</span>
-            <div>
-              <Switch
-                id="customIndexRandomShow"
-                disabled={isValidating || isLoading}
-                checked={customIndexRandomShow}
-                className="cursor-pointer"
-                onCheckedChange={checked => {
-                  setCustomIndexRandomShow(checked)
-                }}
-              />
-            </div>
-          </label>
-          <div className="grid w-full max-w-sm items-center gap-1.5">
-            <Label htmlFor="customFoldAlbumCount">{t('Preferences.customFoldAlbumCount')}</Label>
-            <Input
-              type="number"
-              id="customFoldAlbumCount"
-              disabled={isValidating || isLoading || !customFoldAlbumEnable}
-              value={customFoldAlbumCount}
-              min="1"
-              onChange={(e) => setCustomFoldAlbumCount(e.target.value)}
-              className={`w-full border-none focus:border-transparent focus:outline-none focus:ring-0 sm:text-sm ${
-                !customFoldAlbumEnable ? 'text-gray-500 cursor-not-allowed' : ''
-              }`}
-            />
-          </div>
         </div>
       </div>
     </div>

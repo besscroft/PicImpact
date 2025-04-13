@@ -129,21 +129,6 @@ export async function updateImage(image: ImageType) {
         updatedAt: new Date(),
       }
     })
-    await tx.imagesCopyrightRelation.deleteMany({
-      where: {
-        imageId: image.id
-      }
-    })
-    if (Array.isArray(image.copyrights) && image.copyrights.length > 0) {
-      await tx.imagesCopyrightRelation.createMany({
-        data: image.copyrights.map((item: string) => {
-          return {
-            imageId: image.id,
-            copyrightId: item
-          }
-        })
-      })
-    }
   })
 }
 

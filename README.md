@@ -19,7 +19,6 @@ PicImpact 是一个支持自部署的摄影师专用的摄影作品展示网站�
 - 图片支持绑定标签，并且可通过标签进行交互，筛选标签下所有图片。
 - 支持输出 RSS，可以使用 [Follow](https://github.com/RSSNext/Follow) 订阅，并支持订阅源所有权验证。
 - 支持批量自动化上传，上传图片时会生成 0.3 倍率的压缩图片，以提供加载优化。
-- 图片版权信息展示和维护功能，支持外链跳转。
 - 后台有图片数据统计、图片上传、图片维护、相册管理、系统设置和存储配置功能。
 - 双因素认证功能，基于 TOTP 算法 [RFC 6238](https://www.rfc-editor.org/rfc/rfc6238)，支持 Google Authenticator、Microsoft Authenticator 和 1Password 等。
 - 基于 SSR 的混合渲染，采用状态机制，提供良好的使用体验。
@@ -62,6 +61,12 @@ pnpm run dev
 ```
 
 如果您有任何建议，欢迎反馈！
+
+### TODO
+
+- [ ] Map 地图展示
+
+...
 
 ### 代码贡献
 

@@ -23,7 +23,6 @@
     "upload": "Upload",
     "list": "Image Maintenance",
     "album": "Album Management",
-    "copyright": "Copyright Management",
     "about": "About",
     "settings": "Settings",
     "preferences": "Preferences",
@@ -51,14 +50,14 @@
     "update": "Update",
     "canal": "Cancel",
     "delete": "Delete",
-    "yesDelete": "Confirm deletion"
+    "yesDelete": "Confirm deletion",
+    "goBack": "GO back"
   },
   "Dashboard": {
     "picData": "Photo Data",
     "picShow": "Show Photos",
     "bisData": "Business Data",
     "albumData": "Album Data",
-    "copyrightData": "Copyright Data",
     "how": "How do you feel?",
     "starTip": "If you think this project is good",
     "issueTip": "If you have bug feedback or suggestions",
@@ -118,14 +117,6 @@
     "albumName": "Album Name",
     "albumRouter": "Album Router"
   },
-  "Copyright": {
-    "social": "Social Media",
-    "external": "External Link",
-    "editCopyright": "Edit Copyright",
-    "deleteCopyright": "Delete Copyright",
-    "copyrightId": "Copyright ID",
-    "copyrightName": "Copyright Name"
-  },
   "Preferences": {
     "webSiteTitle": "Website Title",
     "inputWebSiteTitle": "Please enter the website title.",
@@ -140,12 +131,9 @@
     "maxWidth": "Maximum Width for Preview Images (positive integer)",
     "inputMaxWidth": "Please enter the maximum width limit for preview images, a positive integer.",
     "indexStyleSelect": "Select Homepage Style",
-    "indexStyleDefault": "Default Album Style",
+    "indexStyleDefault": "Waterfall Style",
     "indexStyleStar": "Featured Image Style",
-    "customIndexDownloadEnable": "Show Copy/Download Button on Homepage (Effective in Featured Mode)",
-    "customFoldAlbumEnable": "Enable Auto-fold Albums",
-    "customFoldAlbumCount": "Auto-fold Albums Count",
-    "customIndexRandomShow": "Enable Random Display on Homepage"
+    "customIndexDownloadEnable": "Show Download Button"
   },
   "Password": {
     "onePassword": "Old Password",

@@ -7,10 +7,9 @@ export type AlbumType = {
   detail: string | null;
   show: number;
   sort: number;
-  allow_download: number;
   license: string | null;
   image_sorting: number;
-  randomShow: number;
+  random_show: number;
   del?: number;
   createdAt?: Date;
   updatedAt?: Date | null;
@@ -54,21 +53,7 @@ export type ImageType = {
   sort: number;
   album_name: string;
   album_value: string;
-  album_allow_download: number; // 映射自相册下载权限
   album_license: string;
-  copyrights: any[];
-}
-
-export type CopyrightType = {
-  id: string;
-  name: string;
-  social_name: string;
-  type: string;
-  url: string;
-  avatar_url: string;
-  detail: string;
-  default: number;
-  show: number;
 }
 
 export type Config = {

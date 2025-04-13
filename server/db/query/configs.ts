@@ -92,30 +92,3 @@ export async function queryAuthSecret() {
     }
   });
 }
-
-/**
- * 获取 是否启用相册折叠 和 相册折叠数量
- * @returns 是否启用相册折叠 和 相册折叠数量
- */
-export async function fetchAlbumsShowOptions() {
-  const data = await db.configs.findFirst({
-    where: {
-      config_key: 'custom_fold_album_enable'
-    },
-    select: {
-      config_value: true
-    }
-  })
-  const countData = await db.configs.findFirst({
-    where: {
-      config_key: 'custom_fold_album_count'
-    },
-    select: {
-      config_value: true
-    }
-  })
-  return {
-    enabled: data?.config_value === 'true',
-    count: parseInt(countData?.config_value || '6')
-  }
-}

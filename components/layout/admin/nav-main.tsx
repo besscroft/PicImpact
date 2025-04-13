@@ -51,7 +51,7 @@ export function NavMain({
                   setOpenMobile(false)
                   router.push(item.url)
                 }}>
-                {item.icon && <item.icon />}
+                {item.icon && <item.icon size={18} />}
                 <span>{item.title}</span>
               </SidebarMenuButton>
             </SidebarMenuItem>

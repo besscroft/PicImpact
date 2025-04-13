@@ -1,8 +1,10 @@
-import Masonry from '~/components/album/Masonry'
 import { fetchClientImagesListByAlbum, fetchClientImagesPageTotalByAlbum } from '~/server/db/query/images'
 import type { ImageHandleProps } from '~/types/props'
 import { fetchConfigsByKeys } from '~/server/db/query/configs'
 import { fetchAlbumsList } from '~/server/db/query/albums'
+import AlbumGallery from '~/components/album/album-gallery'
+
+import 'react-photo-album/masonry.css'
 
 export default async function Page({params}: { params: any }) {
   const { album } = await params
@@ -37,6 +39,6 @@ export default async function Page({params}: { params: any }) {
   }
 
   return (
-    <Masonry {...props} />
+    <AlbumGallery {...props} />
   )
 }

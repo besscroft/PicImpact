@@ -1,11 +1,9 @@
 // 业务专用类型
 
-import { AlbumType, ImageType } from '~/types/index.ts'
+import { AlbumType, ImageType } from '~/types/index'
 
 export type AlbumDataProps = {
   data: AlbumType[]
-  customFoldAlbumEnable: boolean
-  customFoldAlbumCount: number
 }
 
 export type HandleProps = {
@@ -26,6 +24,13 @@ export type ImageHandleProps = {
   totalHandle: (tag: string) => any
   configHandle: () => any
   randomShow?: boolean
+}
+
+export type PreviewImageHandleProps = {
+  data: ImageType
+  args: string
+  id: string
+  configHandle: () => any
 }
 
 export type LinkProps = {
@@ -50,7 +55,6 @@ export type AnalysisDataProps = {
   data: {
     total: number;
     showTotal: number;
-    crTotal: number;
     tagsTotal: number;
     cameraStats: Array<{
       camera: string;
