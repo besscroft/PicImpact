@@ -1,14 +1,6 @@
 'use client'
 
 import {
-  GalleryHorizontal,
-  SquareTerminal,
-  MoonStar,
-  SunMedium,
-  User,
-  LoaderPinwheel
-} from 'lucide-react'
-import {
   CommandDialog,
   CommandEmpty,
   CommandGroup,
@@ -24,6 +16,12 @@ import { useTheme } from 'next-themes'
 import { useTranslations } from 'next-intl'
 import type { AlbumDataProps } from '~/types/props'
 import type { AlbumType } from '~/types'
+import { LoaderPinwheelIcon } from '~/components/icons/loader-pinwheel'
+import { GalleryThumbnailsIcon } from '~/components/icons/gallery-thumbnails'
+import { SquareTerminalIcon } from '~/components/icons/square-terminal'
+import { SunMoonIcon } from '~/components/icons/sun-moon'
+import { SunMediumIcon } from '~/components/icons/sun-medium'
+import { UserIcon } from '~/components/icons/user'
 
 export default function Command(props: Readonly<AlbumDataProps>) {
   const { command, setCommand } = useButtonStore(
@@ -34,7 +32,6 @@ export default function Command(props: Readonly<AlbumDataProps>) {
   const { resolvedTheme, setTheme } = useTheme()
   const t = useTranslations()
 
-  const iconClasses = 'text-xl text-default-500 pointer-events-none shrink-0'
   const closeClasses = 'flex items-center space-x-2 w-full p-1 rounded-small active:scale-95 duration-200 ease-in-out cursor-pointer'
 
   return (
@@ -53,7 +50,7 @@ export default function Command(props: Readonly<AlbumDataProps>) {
                     router.push('/')
                   }}
                 >
-                  <LoaderPinwheel />
+                  <LoaderPinwheelIcon size={18} />
                   <span>{t('Link.home')}</span>
                 </CommandItem>
                 {props.data.map((album: AlbumType) => (
@@ -65,7 +62,7 @@ export default function Command(props: Readonly<AlbumDataProps>) {
                       router.push(album.album_value)
                     }}
                   >
-                    <GalleryHorizontal />
+                    <GalleryThumbnailsIcon size={18} />
                     <span>{album.name}</span>
                   </CommandItem>
                 ))}
@@ -79,7 +76,7 @@ export default function Command(props: Readonly<AlbumDataProps>) {
                 router.push('/admin')
                 setCommand(false)
               }}>
-                <SquareTerminal />
+                <SquareTerminalIcon size={18} />
                 <span>{t('Link.dashboard')}</span>
               </CommandItem>
             </CommandGroup> :
@@ -88,7 +85,7 @@ export default function Command(props: Readonly<AlbumDataProps>) {
                 router.push('/login')
                 setCommand(false)
               }}>
-                <User />
+                <UserIcon size={18} />
                 <span>{t('Login.login')}</span>
               </CommandItem>
             </CommandGroup>
@@ -96,7 +93,7 @@ export default function Command(props: Readonly<AlbumDataProps>) {
           <CommandSeparator />
           <CommandGroup heading="Settings">
             <CommandItem className={closeClasses} onSelect={() => setTheme(resolvedTheme === 'light' ? 'dark' : 'light')}>
-              {resolvedTheme === 'light' ? <MoonStar size={20} className={iconClasses} /> : <SunMedium size={20} className={iconClasses} />}
+              {resolvedTheme === 'light' ? <SunMoonIcon size={18} /> : <SunMediumIcon size={18} />}
               <p>{ resolvedTheme === 'light' ? '切换至⌈常夜⌋' : '切换至⌈白夜⌋' }</p>
             </CommandItem>
             <CommandItem className="justify-end">

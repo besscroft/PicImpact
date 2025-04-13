@@ -18,9 +18,9 @@ import { GaugeIcon } from '~/components/icons/gauge'
 import { ClockIcon } from '~/components/icons/clock'
 import dayjs from 'dayjs'
 import { TelescopeIcon } from '~/components/icons/telescope'
-import { FlaskIcon } from '~/components/icons/flask.tsx'
+import { FlaskIcon } from '~/components/icons/flask'
 import { toast } from 'sonner'
-import { CopyIcon } from '~/components/icons/copy.tsx'
+import { CopyIcon } from '~/components/icons/copy'
 
 export default function PreviewImageExif(props: Readonly<ImageDataProps>) {
   const exifIconClass = 'dark:text-gray-50 text-gray-500'
@@ -28,7 +28,7 @@ export default function PreviewImageExif(props: Readonly<ImageDataProps>) {
 
   return (
     <Dialog>
-      <DialogTrigger asChild>
+      <DialogTrigger>
         <FrameIcon
           className={exifIconClass}
           size={20}
