@@ -33,7 +33,7 @@ export function NavProjects({
     <SidebarGroup className="group-data-[collapsible=icon]:hidden">
       <SidebarGroupLabel className="select-none">{projects.title}</SidebarGroupLabel>
       <SidebarMenu className="select-none">
-        {projects?.items.map((item) => (
+        {projects?.items?.map((item) => (
           <SidebarMenuItem key={item.name}>
             <SidebarMenuButton
               className={buttonClasses}
@@ -44,7 +44,7 @@ export function NavProjects({
                 router.push(item.url)
               }}>
               <a href={item.url}>
-                <item.icon />
+                <item.icon size={18} />
                 <span>{item.name}</span>
               </a>
             </SidebarMenuButton>

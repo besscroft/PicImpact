@@ -33,7 +33,7 @@ const circleVariants: Variants = {
     pathOffset: [1, 0],
     transition: {
       duration: 0.6,
-      ease: "linear",
+      ease: 'linear',
       opacity: { duration: 0.1 },
     },
   },
@@ -55,7 +55,7 @@ const bladeVariants: Variants = {
     pathOffset: [1, 0],
     transition: {
       duration: 0.6,
-      ease: "linear",
+      ease: 'linear',
       opacity: { duration: 0.1 },
     },
   },
@@ -231,6 +231,6 @@ const ApertureIcon = forwardRef<ApertureIconHandle, ApertureIconProps>(
   },
 )
 
-ApertureIcon.displayName = "ApertureIcon"
+ApertureIcon.displayName = 'ApertureIcon';
 
 export { ApertureIcon }

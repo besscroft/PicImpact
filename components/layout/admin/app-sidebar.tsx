@@ -1,20 +1,6 @@
 'use client'
 
 import * as React from 'react'
-import {
-  Copyright,
-  Earth,
-  Image,
-  ImageUp,
-  Info,
-  Frame,
-  ServerCog,
-  Milestone,
-  RectangleEllipsis,
-  SquareTerminal,
-  ShieldCheck,
-} from 'lucide-react'
-
 import { NavMain } from '~/components/layout/admin/nav-main'
 import { NavProjects } from '~/components/layout/admin/nav-projects'
 import { NavUser } from '~/components/layout/admin/nav-user'
@@ -32,44 +18,48 @@ import {
 } from '~/components/ui/sidebar'
 import { useRouter } from 'next-nprogress-bar'
 import { useTranslations } from 'next-intl'
+import { SquareTerminalIcon } from '~/components/icons/square-terminal'
+import { UploadIcon } from '~/components/icons/upload'
+import { LayersIcon } from '~/components/icons/layers'
+import { GalleryThumbnailsIcon } from '~/components/icons/gallery-thumbnails'
+import { GithubIcon } from '~/components/icons/github'
+import { FrameIcon } from '~/components/icons/frame'
+import { ShieldCheckIcon } from '~/components/icons/shield-check'
+import { KeyCircleIcon } from '~/components/icons/key-circle'
+import { CogIcon } from '~/components/icons/cog'
+import { FingerprintIcon } from '~/components/icons/fingerprint'
+import { LoaderPinwheelIcon } from '~/components/icons/loader-pinwheel'
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const router = useRouter()
   const t = useTranslations()
-
-  const iconClasses = 'text-xl text-default-500 pointer-events-none shrink-0'
 
   const data = {
     navMain: [
       {
         title: t('Link.dashboard'),
         url: "/admin",
-        icon: SquareTerminal,
+        icon: SquareTerminalIcon,
       },
       {
         title: t('Link.upload'),
         url: "/admin/upload",
-        icon: ImageUp,
+        icon: UploadIcon,
       },
       {
         title: t('Link.list'),
         url: "/admin/list",
-        icon: Image,
+        icon: LayersIcon,
       },
       {
         title: t('Link.album'),
         url: "/admin/album",
-        icon: Milestone,
-      },
-      {
-        title: t('Link.copyright'),
-        url: "/admin/copyright",
-        icon: Copyright,
+        icon: GalleryThumbnailsIcon,
       },
       {
         title: t('Link.about'),
         url: "/admin/about",
-        icon: Info,
+        icon: GithubIcon,
       },
     ],
     projects: {
@@ -78,27 +68,27 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         {
           name: t('Link.preferences'),
           url: "/admin/settings/preferences",
-          icon: Frame,
+          icon: FrameIcon,
         },
         {
           name: t('Link.account'),
           url: "/admin/settings/account",
-          icon: ShieldCheck,
+          icon: ShieldCheckIcon,
         },
         {
           name: t('Link.password'),
           url: "/admin/settings/password",
-          icon: RectangleEllipsis,
+          icon: KeyCircleIcon,
         },
         {
           name: t('Link.storages'),
           url: "/admin/settings/storages",
-          icon: ServerCog,
+          icon: CogIcon,
         },
         {
           name: t('Link.authenticator'),
           url: "/admin/settings/authenticator",
-          icon: ShieldCheck,
+          icon: FingerprintIcon,
         },
       ],
     },
@@ -116,7 +106,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           <SidebarMenu>
             <SidebarMenuItem className="select-none">
               <SidebarMenuButton className="cursor-pointer" onClick={() => router.push('/')}>
-                <Earth size={20} className={iconClasses} />
+                <LoaderPinwheelIcon size={18} />
                 <span>{t('Login.goHome')}</span>
               </SidebarMenuButton>
             </SidebarMenuItem>

@@ -33,7 +33,7 @@ const circleVariants: Variants = {
     pathOffset: [1, 0],
     transition: {
       duration: 0.6,
-      ease: "linear",
+      ease: 'linear',
       opacity: { duration: 0.1 },
     },
   },
@@ -55,7 +55,7 @@ const lineVariants: Variants = {
     pathOffset: [1, 0],
     transition: {
       duration: 0.6,
-      ease: "linear",
+      ease: 'linear',
       opacity: { duration: 0.1 },
     },
   },
@@ -163,6 +163,6 @@ const CrosshairIcon = forwardRef<CrosshairIconHandle, CrosshairIconProps>(
   },
 )
 
-CrosshairIcon.displayName = "CrosshairIcon"
+CrosshairIcon.displayName = 'CrosshairIcon';
 
 export { CrosshairIcon }

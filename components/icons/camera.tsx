@@ -33,7 +33,7 @@ const bodyVariants: Variants = {
     pathOffset: [1, 0],
     transition: {
       duration: 0.6,
-      ease: "linear",
+      ease: 'linear',
       opacity: { duration: 0.1 },
     },
   },
@@ -55,7 +55,7 @@ const lensVariants: Variants = {
     pathOffset: [1, 0],
     transition: {
       duration: 0.6,
-      ease: "linear",
+      ease: 'linear',
       opacity: { duration: 0.1 },
     },
   },
@@ -77,7 +77,7 @@ const flashVariants: Variants = {
     pathOffset: [1, 0],
     transition: {
       duration: 0.6,
-      ease: "linear",
+      ease: 'linear',
       opacity: { duration: 0.1 },
     },
   },
@@ -95,14 +95,14 @@ const CameraIcon = forwardRef<CameraIconHandle, CameraIconProps>(
 
       return {
         startAnimation: () => {
-          bodyControls.start("animate")
-          lensControls.start("animate")
-          flashControls.start("animate")
+          bodyControls.start('animate')
+          lensControls.start('animate')
+          flashControls.start('animate')
         },
         stopAnimation: () => {
-          bodyControls.start("normal")
-          lensControls.start("normal")
-          flashControls.start("normal")
+          bodyControls.start('normal')
+          lensControls.start('normal')
+          flashControls.start('normal')
         },
       }
     })
@@ -110,9 +110,9 @@ const CameraIcon = forwardRef<CameraIconHandle, CameraIconProps>(
     const handleMouseEnter = useCallback(
       (e: React.MouseEvent<HTMLDivElement>) => {
         if (!isControlledRef.current) {
-          bodyControls.start("animate")
-          lensControls.start("animate")
-          flashControls.start("animate")
+          bodyControls.start('animate')
+          lensControls.start('animate')
+          flashControls.start('animate')
         } else {
           onMouseEnter?.(e)
         }
@@ -168,6 +168,6 @@ const CameraIcon = forwardRef<CameraIconHandle, CameraIconProps>(
   },
 )
 
-CameraIcon.displayName = "CameraIcon"
+CameraIcon.displayName = 'CameraIcon';
 
 export { CameraIcon }
