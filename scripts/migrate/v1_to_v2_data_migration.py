@@ -7,12 +7,6 @@ def migrate_config_table(db_v1, db_v2):
         del row['id']
         db_v2['configs'].upsert(row, ['config_key'])
     print("Configs table migrated successfully")
-def migrate_copyright_table(db_v1, db_v2):
-    v1_data=list(db_v1.query('SELECT * FROM "Copyright"'))
-    for row in v1_data:
-        row['id']=str(row['id'])
-        db_v2["copyrights"].upsert(row, ['id'])
-    print("Copyright table migrated successfully")
 
 def migrate_albums_table(db_v1, db_v2):
     v1_data=list(db_v1.query('SELECT * FROM "Tags"'))

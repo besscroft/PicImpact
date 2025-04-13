@@ -9,7 +9,6 @@ import { MasonryPhotoAlbum, RenderImageContext, RenderImageProps } from 'react-p
 import type { ImageType } from '~/types'
 import { ReloadIcon } from '@radix-ui/react-icons'
 import { Button } from '~/components/ui/button'
-import MasonryItem from '~/components/album/masonry-item'
 import React from 'react'
 import BlurImage from '~/components/album/blur-image'
 import { SparklesIcon } from '~/components/icons/sparkles'
@@ -107,7 +106,6 @@ export default function TagGallery(props : Readonly<ImageHandleProps>) {
               : t('Tips.noImg')
         }
       </div>
-      <MasonryItem />
     </div>
   )
 }

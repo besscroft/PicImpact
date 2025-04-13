@@ -3,18 +3,7 @@ import CardList from '~/components/admin/dashboard/card-list'
 import type { AnalysisDataProps } from '~/types/props'
 
 export default async function Admin() {
-  const getData = async (): Promise<{
-    total: number
-    showTotal: number
-    crTotal: number
-    tagsTotal: number
-    cameraStats: Array<{
-      camera: string;
-      lens: string;
-      count: number;
-    }>;
-    result: any[]
-  }> => {
+  const getData = async (): Promise<AnalysisDataProps> => {
     'use server'
     // @ts-ignore
     return await fetchImagesAnalysis()

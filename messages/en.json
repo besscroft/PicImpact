@@ -23,7 +23,6 @@
     "upload": "Upload",
     "list": "Image Maintenance",
     "album": "Album Management",
-    "copyright": "Copyright Management",
     "about": "About",
     "settings": "Settings",
     "preferences": "Preferences",
@@ -59,7 +58,6 @@
     "picShow": "Show Photos",
     "bisData": "Business Data",
     "albumData": "Album Data",
-    "copyrightData": "Copyright Data",
     "how": "How do you feel?",
     "starTip": "If you think this project is good",
     "issueTip": "If you have bug feedback or suggestions",
@@ -118,14 +116,6 @@
     "albumId": "Album ID",
     "albumName": "Album Name",
     "albumRouter": "Album Router"
-  },
-  "Copyright": {
-    "social": "Social Media",
-    "external": "External Link",
-    "editCopyright": "Edit Copyright",
-    "deleteCopyright": "Delete Copyright",
-    "copyrightId": "Copyright ID",
-    "copyrightName": "Copyright Name"
   },
   "Preferences": {
     "webSiteTitle": "Website Title",

@@ -23,7 +23,6 @@
     "upload": "上传",
     "list": "图片维护",
     "album": "相册管理",
-    "copyright": "版权管理",
     "account": "账户设置",
     "about": "关于",
     "settings": "设置",
@@ -59,7 +58,6 @@
     "picShow": "显示照片",
     "bisData": "业务数据",
     "albumData": "相册数据",
-    "copyrightData": "版权数据",
     "how": "感觉如何？",
     "starTip": "如果您觉得项目不错",
     "issueTip": "如果您有 Bug 反馈和建议",
@@ -118,14 +116,6 @@
     "albumId": "相册 ID",
     "albumName": "相册名称",
     "albumRouter": "相册路由"
-  },
-  "Copyright": {
-    "social": "社交媒体",
-    "external": "外链",
-    "editCopyright": "编辑版权",
-    "deleteCopyright": "删除版权",
-    "copyrightId": "版权 ID",
-    "copyrightName": "版权名称"
   },
   "Preferences": {
     "webSiteTitle": "网站标题",

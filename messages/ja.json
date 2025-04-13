@@ -23,7 +23,6 @@
     "upload": "アップロード",
     "list": "画像維持",
     "album": "アルバム管理",
-    "copyright": "著作権管理",
     "about": "について",
     "settings": "設定",
     "preferences": "優先設定",
@@ -59,7 +58,6 @@
     "picShow": "写真を表示",
     "bisData": "ビジネスデータ",
     "albumData": "アルバムデータ",
-    "copyrightData": "著作権データ",
     "how": "どう感じますか？",
     "starTip": "プロジェクトが良いと思われる場合",
     "issueTip": "バグのフィードバックや提案がある場合",
@@ -118,14 +116,6 @@
     "albumId": "アルバム ID",
     "albumName": "アルバム名",
     "albumRouter": "アルバムルーター"
-  },
-  "Copyright": {
-    "social": "ソーシャルメディア",
-    "external": "外部リンク",
-    "editCopyright": "著作権を編集",
-    "deleteCopyright": "著作権を削除",
-    "copyrightId": "著作権 ID",
-    "copyrightName": "著作権名"
   },
   "Preferences": {
     "webSiteTitle": "ウェブサイトのタイトル",

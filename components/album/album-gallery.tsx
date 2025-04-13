@@ -11,7 +11,6 @@ import { Button } from '~/components/ui/button'
 import React from 'react'
 import { MasonryPhotoAlbum, RenderImageContext, RenderImageProps } from 'react-photo-album'
 import BlurImage from '~/components/album/blur-image'
-import MasonryItem from '~/components/album/masonry-item'
 
 function renderNextImage(
   _: RenderImageProps,
@@ -88,7 +87,6 @@ export default function AlbumGallery(props : Readonly<ImageHandleProps>) {
               : t('Tips.noImg')
         }
       </div>
-      <MasonryItem />
     </div>
   )
 }

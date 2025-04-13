@@ -55,7 +55,6 @@ export type AnalysisDataProps = {
   data: {
     total: number;
     showTotal: number;
-    crTotal: number;
     tagsTotal: number;
     cameraStats: Array<{
       camera: string;

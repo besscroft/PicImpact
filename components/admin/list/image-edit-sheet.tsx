@@ -6,13 +6,10 @@ import type { ImageServerHandleProps } from '~/types/props'
 import { useSwrInfiniteServerHook } from '~/hooks/use-swr-infinite-server-hook'
 import React, { useState } from 'react'
 import { toast } from 'sonner'
-import { fetcher } from '~/lib/utils/fetcher'
-import useSWR from 'swr'
 import { Switch } from '~/components/ui/switch'
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '~/components/ui/sheet'
 import { ReloadIcon } from '@radix-ui/react-icons'
 import { Button } from '~/components/ui/button'
-import MultipleSelector, { Option } from '~/components/ui/origin/multiselect'
 import { Tag, TagInput } from 'emblor'
 
 export default function ImageEditSheet(props : Readonly<ImageServerHandleProps & { pageNum: number } & { album: string }>) {
@@ -22,7 +19,6 @@ export default function ImageEditSheet(props : Readonly<ImageServerHandleProps &
     (state) => state,
   )
   const [loading, setLoading] = useState(false)
-  const { data} = useSWR('/api/v1/copyrights/get', fetcher)
   const [activeTagIndex, setActiveTagIndex] = useState<number | null>(null);
 
   async function submit() {
@@ -222,25 +218,6 @@ export default function ImageEditSheet(props : Readonly<ImageServerHandleProps &
               className="mt-1 w-full border-none p-0 focus:border-transparent focus:outline-none focus:ring-0 sm:text-sm"
             />
           </label>
-          <MultipleSelector
-            commandProps={{
-              label: "选择版权信息",
-            }}
-            options={data}
-            value={!image.copyrights ? [] : image.copyrights.map((item: any) => {
-              const found = data?.find((element: any) => element.value === item)
-              return {
-                label: found?.label || '',
-                value: item
-              }
-            })}
-            placeholder="选择版权信息"
-            emptyIndicator={<p className="text-center text-sm">暂未选择版权信息</p>}
-            onChange={(options: Option[]) => {
-              const values = options.map(option => option.value)
-              setImageEditData({...image, copyrights: values})
-            }}
-          />
           <TagInput
             tags={!image.labels ? [] : image.labels.map((label: string) => ({ id: Math.floor(Math.random() * 1000), text: label }))}
             setTags={(newTags: any) => {

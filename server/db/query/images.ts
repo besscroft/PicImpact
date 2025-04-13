@@ -32,19 +32,7 @@ export async function fetchServerImagesListByAlbum(pageNum: number, album: strin
       SELECT 
           image.*,
           albums.name AS album_name,
-          albums.id AS album_value,
-          COALESCE((
-              SELECT json_agg(copyright.id)
-              FROM "public"."copyrights" AS copyright
-              INNER JOIN "public"."images_copyright_relation" AS icrelation
-                  ON copyright.id = icrelation."copyrightId"
-              INNER JOIN "public"."images" AS image_child
-                  ON icrelation."imageId" = image_child."id"
-              WHERE copyright.del = 0
-              AND image_child.del = 0
-              AND image.id = image_child.id
-          ),
-          '[]'::json) AS copyrights
+          albums.id AS album_value
       FROM 
           "public"."images" AS image
       INNER JOIN "public"."images_albums_relation" AS relation
@@ -65,19 +53,7 @@ export async function fetchServerImagesListByAlbum(pageNum: number, album: strin
     SELECT 
         image.*,
         albums.name AS album_name,
-        albums.id AS album_value,
-        COALESCE((
-            SELECT json_agg(copyright.id)  -- 直接聚合 copyright.id，而不是整行
-            FROM "public"."copyrights" AS copyright
-            INNER JOIN "public"."images_copyright_relation" AS icrelation
-                ON copyright.id = icrelation."copyrightId"
-            INNER JOIN "public"."images" AS image_child
-                ON icrelation."imageId" = image_child."id"
-            WHERE copyright.del = 0
-            AND image_child.del = 0
-            AND image.id = image_child.id
-        ),
-        '[]'::json) AS copyrights
+        albums.id AS album_value
     FROM 
         "public"."images" AS image
     LEFT JOIN "public"."images_albums_relation" AS relation
@@ -167,29 +143,7 @@ export async function fetchClientImagesListByAlbum(pageNum: number, album: strin
   if (customIndexStyle?.config_value === '1' && album === '/') {
     return await db.$queryRaw`
     SELECT 
-        image.*,
-        (
-            SELECT json_agg(row_to_json(t))
-            FROM (
-                SELECT copyright.*
-                FROM "public"."copyrights" AS copyright
-                INNER JOIN "public"."images_copyright_relation" AS icrelation
-                    ON copyright.id = icrelation."copyrightId"
-                INNER JOIN "public"."images" AS image_child
-                    ON icrelation."imageId" = image_child."id"
-                WHERE copyright.del = 0
-                AND image_child.del = 0
-                AND copyright.show = 0
-                AND copyright.default = 1
-                AND image.id = image_child.id
-                UNION
-                SELECT copyright.*
-                FROM "public"."copyrights" AS copyright
-                WHERE copyright.del = 0
-                AND copyright.show = 0
-                AND copyright.default = 0
-            ) t
-        ) AS copyrights
+        image.*
     FROM 
         "public"."images" AS image
     WHERE
@@ -218,29 +172,7 @@ export async function fetchClientImagesListByAlbum(pageNum: number, album: strin
         albums.id AS album_value,
         albums.allow_download AS album_allow_download,
         albums.license AS album_license,
-        albums.image_sorting AS album_image_sorting,
-        (
-            SELECT json_agg(row_to_json(t))
-            FROM (
-                SELECT copyright.*
-                FROM "public"."copyrights" AS copyright
-                INNER JOIN "public"."images_copyright_relation" AS icrelation
-                    ON copyright.id = icrelation."copyrightId"
-                INNER JOIN "public"."images" AS image_child
-                    ON icrelation."imageId" = image_child."id"
-                WHERE copyright.del = 0
-                AND image_child.del = 0
-                AND copyright.show = 0
-                AND copyright.default = 1
-                AND image.id = image_child.id
-                UNION
-                SELECT copyright.*
-                FROM "public"."copyrights" AS copyright
-                WHERE copyright.del = 0
-                AND copyright.show = 0
-                AND copyright.default = 0
-            ) t
-        ) AS copyrights
+        albums.image_sorting AS album_image_sorting
     FROM 
         "public"."images" AS image
     INNER JOIN "public"."images_albums_relation" AS relation
@@ -341,22 +273,7 @@ export async function fetchClientImagesListByTag(pageNum: number, tag: string) {
         albums.name AS album_name,
         albums.id AS album_value,
         albums.allow_download AS album_allow_download,
-        albums.license AS album_license,
-        (
-            SELECT json_agg(row_to_json(t))
-            FROM (
-                SELECT copyright.*
-                FROM "public"."copyrights" AS copyright
-                INNER JOIN "public"."images_copyright_relation" AS icrelation
-                    ON copyright.id = icrelation."copyrightId"
-                INNER JOIN "public"."images" AS image_child
-                    ON icrelation."imageId" = image_child."id"
-                WHERE copyright.del = 0
-                AND image_child.del = 0
-                AND copyright.show = 0
-                AND image.id = image_child.id
-            ) t
-        ) AS copyrights
+        albums.license AS album_license
     FROM 
         "public"."images" AS image
     INNER JOIN "public"."images_albums_relation" AS relation
@@ -418,10 +335,9 @@ export async function fetchClientImagesPageTotalByTag(tag: string) {
 export async function fetchImagesAnalysis() {
   const counts = await db.$queryRaw<[{ images_total: number, images_show: number, cr_total: number, tags_total: number }]>`
     SELECT 
-      (SELECT COUNT(*) FROM "public"."images" WHERE del = 0) as images_total,
-      (SELECT COUNT(*) FROM "public"."images" WHERE del = 0 AND show = 0) as images_show,
-      (SELECT COUNT(*) FROM "public"."copyrights" WHERE del = 0) as cr_total,
-      (SELECT COUNT(*) FROM "public"."albums" WHERE del = 0) as tags_total
+      (SELECT COALESCE(COUNT(*), 0) FROM "public"."images" WHERE del = 0) as images_total,
+      (SELECT COALESCE(COUNT(*), 0) FROM "public"."images" WHERE del = 0 AND show = 0) as images_show,
+      (SELECT COALESCE(COUNT(*), 0) FROM "public"."albums" WHERE del = 0) as tags_total
   `;
 
   const cameraStats = await db.$queryRaw`

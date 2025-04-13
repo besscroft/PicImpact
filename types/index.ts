@@ -56,19 +56,6 @@ export type ImageType = {
   album_value: string;
   album_allow_download: number; // 映射自相册下载权限
   album_license: string;
-  copyrights: any[];
-}
-
-export type CopyrightType = {
-  id: string;
-  name: string;
-  social_name: string;
-  type: string;
-  url: string;
-  avatar_url: string;
-  detail: string;
-  default: number;
-  show: number;
 }
 
 export type Config = {
