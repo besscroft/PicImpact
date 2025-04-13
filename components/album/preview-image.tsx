@@ -218,7 +218,7 @@ export default function PreviewImage(props: Readonly<PreviewImageHandleProps>) {
             props.data?.detail &&
             <div className="flex items-center space-x-1">
               <LanguagesIcon className={exifIconClass} size={18} />
-              <div className={exifTextClass}>
+              <div className={cn(exifTextClass, 'text-wrap')}>
                 {props.data?.detail}
               </div>
             </div>
