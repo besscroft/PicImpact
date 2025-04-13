@@ -20,8 +20,12 @@ import useSWR from 'swr'
 import type { ImageDataProps } from '~/types/props'
 import { ClockIcon } from '~/components/icons/clock'
 import dayjs from 'dayjs'
+import { Badge } from '~/components/ui/badge'
+import { useRouter } from 'next-nprogress-bar'
 
 export default function GalleryImage({ photo, configData }: { photo: ImageType, configData: any }) {
+  const router = useRouter()
+
   const exifIconClass = 'dark:text-gray-50 text-gray-500'
   const exifTextClass = 'text-tiny text-sm select-none items-center dark:text-gray-50 text-gray-500'
 
@@ -82,7 +86,7 @@ export default function GalleryImage({ photo, configData }: { photo: ImageType, 
         </article>
       </div>
       <div
-        className="relative inline-block select-none sm:w-[66.667%] mx-auto shadow-sm shadow-gray-200 dark:shadow-gray-800">
+        className="show-up-motion relative inline-block select-none sm:w-[66.667%] mx-auto shadow-gray-200 dark:shadow-gray-800">
         <LazyLoadImage
           width={photo.width}
           height={photo.height}
@@ -163,6 +167,20 @@ export default function GalleryImage({ photo, configData }: { photo: ImageType, 
             </div>
           }
         </div>
+        {photo?.labels &&
+          <div className="flex flex-wrap space-x-2 sm:sticky">
+            {photo?.labels.map((tag: string) => (
+              <Badge
+                variant="secondary"
+                className="cursor-pointer"
+                key={tag}
+                onClick={() => {
+                  router.push(`/tag/${tag}`)
+                }}
+              >{tag}</Badge>
+            ))}
+          </div>
+        }
         <div className="flex flex-wrap space-x-1 sm:sticky">
           <CopyIcon
             className={exifIconClass}

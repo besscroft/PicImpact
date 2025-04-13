@@ -199,7 +199,7 @@ export default function ListProps(props : Readonly<ImageServerHandleProps>) {
               <ListImage image={image} />
             </CardContent>
             <CardFooter
-              className="flex h-12 p-2 mb-1 space-x-1 select-none before:bg-white/10 border-white/20 border-1 overflow-hidden py-1 before:rounded-xl rounded-large w-[calc(100%_-_8px)] shadow-small z-10">
+              className="flex h-12 p-2 mb-1 space-x-1 select-none rounded-md before:bg-white/10 border-white/20 border-1 overflow-hidden py-1 before:rounded-xl rounded-large w-[calc(100%_-_8px)] shadow-small z-10">
               <div className="flex flex-1 space-x-1 items-center">
                 {
                   updateShowLoading && updateShowId === image.id ? <ReloadIcon className="mr-2 h-4 w-4 animate-spin"/> :

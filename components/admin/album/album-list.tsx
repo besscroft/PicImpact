@@ -94,7 +94,7 @@ export default function AlbumList(props : Readonly<HandleProps>) {
           <div className="flex justify-start w-full p-2 h-48">
             {album.detail || t('Album.noTips')}
           </div>
-          <CardFooter className="flex h-12 p-2 mb-1 space-x-1 select-none before:bg-white/10 border-white/20 border-1 overflow-hidden py-1 before:rounded-xl rounded-large w-[calc(100%_-_8px)] shadow-small z-10">
+          <CardFooter className="flex h-12 p-2 mb-1 space-x-1 select-none rounded-md before:bg-white/10 border-white/20 border-1 overflow-hidden py-1 before:rounded-xl rounded-large w-[calc(100%_-_8px)] shadow-small z-10">
             <div className="flex flex-1 space-x-1 items-center">
               {
                 updateAlbumLoading && updateAlbumId === album.id ? <ReloadIcon className="mr-2 h-4 w-4 animate-spin"/> :

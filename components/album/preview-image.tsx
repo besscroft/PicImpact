@@ -74,7 +74,7 @@ export default function PreviewImage(props: Readonly<PreviewImageHandleProps>) {
   return (
     <div className="flex flex-col overflow-y-auto scrollbar-hide h-full !rounded-none max-w-none gap-0 p-2">
       <div className="h-full flex flex-col space-y-2 sm:grid sm:gap-2 sm:grid-cols-3 w-full">
-        <div className="sm:col-span-2 sm:flex sm:justify-center sm:max-h-[90vh] select-none">
+        <div className="show-up-motion sm:col-span-2 sm:flex sm:justify-center sm:max-h-[90vh] select-none">
           {
             props.data.type === 1 ?
               <LazyLoadImage
