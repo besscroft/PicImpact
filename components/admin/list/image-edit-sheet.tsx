@@ -254,7 +254,7 @@ export default function ImageEditSheet(props : Readonly<ImageServerHandleProps &
             <div className="flex flex-col gap-1">
               <div className="text-medium">首页显示状态</div>
               <div className="text-tiny text-default-400">
-                是否需要在首页显示图片，仅在精选图片模式下生效
+                是否需要在首页显示图片
               </div>
             </div>
             <Switch

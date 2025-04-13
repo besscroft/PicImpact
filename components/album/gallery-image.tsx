@@ -82,7 +82,7 @@ export default function GalleryImage({ photo, configData }: { photo: ImageType, 
           </div>
         }
         <article className="hidden sm:flex text-wrap text-right dark:text-gray-50 text-gray-500">
-          <p>{photo?.detail}</p>
+          <p className="w-full">{photo?.detail}</p>
         </article>
       </div>
       <div
