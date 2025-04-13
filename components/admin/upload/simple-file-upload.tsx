@@ -8,8 +8,6 @@ import useSWR from 'swr'
 import { fetcher } from '~/lib/utils/fetcher'
 import type { ExifType, AlbumType, ImageType } from '~/types'
 import Compressor from 'compressorjs'
-import { ReloadIcon } from '@radix-ui/react-icons'
-import { Button } from '~/components/ui/button'
 import {
   Select,
   SelectContent,
@@ -22,7 +20,8 @@ import {
 import { Tag, TagInput } from 'emblor'
 import { useTranslations } from 'next-intl'
 import { exifReader, uploadFile } from '~/lib/utils/file'
-import { Send } from 'lucide-react'
+import { RocketIcon } from '~/components/icons/rocket'
+import { RefreshCWIcon } from '~/components/icons/refresh-cw'
 
 export default function SimpleFileUpload() {
   const [alistStorage, setAlistStorage] = useState([])
@@ -389,14 +388,17 @@ export default function SimpleFileUpload() {
               </SelectContent>
             </Select>
           </div>
-          <Button
-            variant="outline"
-            disabled={loading}
-            onClick={() => submit()}
-            aria-label={t('Button.submit')}
-          >
-            {loading ? <ReloadIcon className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
-          </Button>
+          {loading ?
+            <RefreshCWIcon
+              size={20}
+              className="animate-spin cursor-not-allowed"
+            /> :
+            <RocketIcon
+              size={20}
+              onClick={() => submit()}
+              aria-label={t('Button.submit')}
+            />
+          }
           {
             storageSelect && alistStorage?.length > 0 &&
             <div className="w-full">

@@ -1,13 +1,6 @@
 'use client'
 
 import {
-  ChevronsUpDown,
-  Languages,
-  LogOut,
-  MoonStar,
-  SunMedium,
-} from 'lucide-react'
-import {
   Avatar,
   AvatarFallback,
   AvatarImage,
@@ -36,14 +29,17 @@ import { useTheme } from 'next-themes'
 import * as React from 'react'
 import { setUserLocale } from '~/lib/utils/locale'
 import { useTranslations } from 'next-intl'
+import { SunMoonIcon } from '~/components/icons/sun-moon'
+import { SunMediumIcon } from '~/components/icons/sun-medium'
+import { LanguagesIcon } from '~/components/icons/languages'
+import { LogoutIcon } from '~/components/icons/logout'
+import { ChevronsDownUpIcon } from '~/components/icons/chevrons-up-down'
 
 export function NavUser() {
   const { isMobile } = useSidebar()
   const { resolvedTheme, setTheme } = useTheme()
   const { data: session} = useSession()
   const t = useTranslations()
-
-  const iconClasses = 'text-xl text-default-500 pointer-events-none shrink-0'
 
   return (
     <SidebarMenu>
@@ -62,7 +58,7 @@ export function NavUser() {
                 <span className="truncate font-semibold">{session?.user?.name}</span>
                 <span className="truncate text-xs">{session?.user?.email}</span>
               </div>
-              <ChevronsUpDown className="ml-auto size-4" />
+              <ChevronsDownUpIcon size={18} />
             </SidebarMenuButton>
           </DropdownMenuTrigger>
           <DropdownMenuContent
@@ -85,11 +81,11 @@ export function NavUser() {
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuItem className="cursor-pointer" onClick={() => setTheme(resolvedTheme === 'light' ? 'dark' : 'light')}>
-              {resolvedTheme === 'light' ? <MoonStar size={20} className={iconClasses} /> : <SunMedium size={20} className={iconClasses} />}
+              {resolvedTheme === 'light' ? <SunMoonIcon size={18} /> : <SunMediumIcon size={18} />}
               <span>{ resolvedTheme === 'light' ? t("Button.dark") : t('Button.light') }</span>
             </DropdownMenuItem>
             <DropdownMenuSub>
-              <DropdownMenuSubTrigger className="cursor-pointer"><Languages size={20} className={iconClasses} />{t('Button.language')}</DropdownMenuSubTrigger>
+              <DropdownMenuSubTrigger className="cursor-pointer"><LanguagesIcon size={18} />{t('Button.language')}</DropdownMenuSubTrigger>
               <DropdownMenuPortal>
                 <DropdownMenuSubContent>
                   <DropdownMenuItem className="cursor-pointer" onClick={() => setUserLocale('zh')}>简体中文</DropdownMenuItem>
@@ -109,7 +105,7 @@ export function NavUser() {
                 console.error(e)
               }
             }}>
-              <LogOut />
+              <LogoutIcon size={18} />
               {t('Login.logout')}
             </DropdownMenuItem>
           </DropdownMenuContent>

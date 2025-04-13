@@ -229,7 +229,6 @@ export default function GalleryImage({ photo, configData }: { photo: ImageType, 
               }
             </>
           }
-
           <PreviewImageExif {...exifProps} />
         </div>
       </div>
