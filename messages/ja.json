@@ -96,7 +96,9 @@
     "selectAlbum": "アルバムを選択してください",
     "selectAlistDirectory": "Alist ディレクトリを選択してください",
     "alistDirectory": "Alist ディレクトリ",
-    "alternativeUpload": "あまり推奨されませんが、この方法も提供されています。"
+    "uploading": "アップロード中...",
+    "uploadSuccess": "アップロードに成功しました",
+    "uploadError": "アップロードに失敗しました"
   },
   "List": {
     "viewImage": "画像を表示",

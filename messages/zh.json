@@ -96,7 +96,9 @@
     "selectAlbum": "请选择相册",
     "selectAlistDirectory": "请选择 Alist 目录",
     "alistDirectory": "Alist 目录",
-    "alternativeUpload": "虽然不太推荐，但还是提供了这么个方式。"
+    "uploading": "上传中...",
+    "uploadSuccess": "上传成功",
+    "uploadError": "上传失败"
   },
   "List": {
     "viewImage": "查看图片",

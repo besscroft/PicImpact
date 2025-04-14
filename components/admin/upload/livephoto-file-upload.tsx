@@ -197,10 +197,9 @@ export default function LivephotoFileUpload() {
         if (compressedFile instanceof File) {
           const res = await uploadFile(compressedFile, type, storage, alistMountPath)
           if (res?.code === 200) {
-            toast.success('预览图片上传成功')
             setPreviewUrl(res?.data)
           } else {
-            toast.error('预览图片上传失败')
+            throw new Error("Upload failed")
           }
         } else {
           const compressedFileFromBlob = new File([compressedFile], flag ? outputBuffer.name : file.name, {
@@ -208,15 +207,14 @@ export default function LivephotoFileUpload() {
           });
           const res = await uploadFile(compressedFileFromBlob, type, storage, alistMountPath)
           if (res?.code === 200) {
-            toast.success('预览图片上传成功')
             setPreviewUrl(res?.data)
           } else {
-            toast.error('预览图片上传失败')
+            throw new Error("Upload failed")
           }
         }
       },
       error() {
-        toast.error('预览图片上传失败')
+        throw new Error("Upload failed")
       },
     })
   }
@@ -224,14 +222,12 @@ export default function LivephotoFileUpload() {
   async function resHandle(res: any, file: File, type: number, flag: boolean, outputBuffer: any) {
     if (type === 2) {
       if (res?.code === 200) {
-        toast.success('LivePhoto 视频上传成功')
         setVideoUrl(res?.data)
       } else {
-        toast.error('LivePhoto 视频上传失败')
+        throw new Error("Upload failed")
       }
     } else {
       if (res?.code === 200) {
-        toast.success('图片上传成功，尝试生成预览图片并上传')
         try {
           if (album === '/') {
             await uploadPreviewImage(file, '/preview', flag, outputBuffer)
@@ -239,12 +235,12 @@ export default function LivephotoFileUpload() {
             await uploadPreviewImage(file, album + '/preview', flag, outputBuffer)
           }
         } catch (e) {
-          console.error(e)
+          throw new Error("Upload failed")
         }
         await loadExif(file, outputBuffer, flag)
         setUrl(res?.data)
       } else {
-        toast.error('图片上传失败')
+        throw new Error("Upload failed")
       }
     }
   }
@@ -290,7 +286,7 @@ export default function LivephotoFileUpload() {
     }
   }
 
-  function onBeforeUpload(type: number) {
+  async function onBeforeUpload(type: number) {
     if (type === 1) {
       setTitle('')
       setPreviewUrl('')
@@ -330,12 +326,11 @@ export default function LivephotoFileUpload() {
       },
     ) => {
       try {
-        toast.info('Uploading files...')
         // Process each file individually
         const uploadPromises = files.map(async (file) => {
           try {
-            onBeforeUpload(1);
-            onRequestUpload(file, 1)
+            await onBeforeUpload(1);
+            await onRequestUpload(file, 1)
             onSuccess(file);
           } catch (error) {
             onError(
@@ -345,8 +340,13 @@ export default function LivephotoFileUpload() {
           }
         });
 
-        // Wait for all uploads to complete
-        await Promise.all(uploadPromises);
+        toast.promise(() => Promise.all(uploadPromises), {
+          loading: t('Upload.uploading'),
+          success: () => {
+            return t('Upload.uploadSuccess');
+          },
+          error: t('Upload.uploadError'),
+        });
       } catch (error) {
         // This handles any error that might occur outside the individual upload processes
         console.error("Unexpected error during upload:", error);
@@ -372,8 +372,8 @@ export default function LivephotoFileUpload() {
         // Process each file individually
         const uploadPromises = files.map(async (file) => {
           try {
-            onBeforeUpload(2);
-            onRequestUpload(file, 2)
+            await onBeforeUpload(2);
+            await onRequestUpload(file, 2)
             onSuccess(file);
           } catch (error) {
             onError(
@@ -383,8 +383,13 @@ export default function LivephotoFileUpload() {
           }
         });
 
-        // Wait for all uploads to complete
-        await Promise.all(uploadPromises);
+        toast.promise(() => Promise.all(uploadPromises), {
+          loading: t('Upload.uploading'),
+          success: () => {
+            return t('Upload.uploadSuccess');
+          },
+          error: t('Upload.uploadError'),
+        });
       } catch (error) {
         // This handles any error that might occur outside the individual upload processes
         console.error("Unexpected error during upload:", error);

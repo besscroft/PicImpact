@@ -206,7 +206,6 @@ export default function MultipleFileUpload() {
             await uploadFile(compressedFile, album, storage, alistMountPath).then(async (res) => {
               if (res.code === 200) {
                 await resHandle(res, file, flag, outputBuffer)
-                toast.success('Upload success')
               } else {
                 throw new Error("Upload failed")
               }
@@ -218,7 +217,6 @@ export default function MultipleFileUpload() {
             await uploadFile(compressedFileFromBlob, album, storage, alistMountPath).then(async (res) => {
               if (res.code === 200) {
                 await resHandle(res, file, flag, outputBuffer)
-                toast.success('Upload success')
               } else {
                 throw new Error("Upload failed")
               }
@@ -230,7 +228,6 @@ export default function MultipleFileUpload() {
       await uploadFile(file, album, storage, alistMountPath).then(async (res) => {
         if (res.code === 200) {
           await resHandle(res, file, flag, outputBuffer)
-          toast.success('Upload success')
         } else {
           throw new Error("Upload failed")
         }
@@ -259,11 +256,10 @@ export default function MultipleFileUpload() {
       },
     ) => {
       try {
-        toast.info('Uploading files...')
         // Process each file individually
         const uploadPromises = files.map(async (file) => {
           try {
-            onRequestUpload(file)
+            await onRequestUpload(file)
             onSuccess(file);
           } catch (error) {
             onError(
@@ -273,8 +269,13 @@ export default function MultipleFileUpload() {
           }
         });
 
-        // Wait for all uploads to complete
-        await Promise.all(uploadPromises);
+        toast.promise(() => Promise.all(uploadPromises), {
+          loading: t('Upload.uploading'),
+          success: () => {
+            return t('Upload.uploadSuccess');
+          },
+          error: t('Upload.uploadError'),
+        });
       } catch (error) {
         // This handles any error that might occur outside the individual upload processes
         console.error("Unexpected error during upload:", error);
@@ -376,7 +377,7 @@ export default function MultipleFileUpload() {
             <UploadIcon/>
             <p className="font-medium text-sm">Drag & drop images here</p>
             <p className="text-muted-foreground text-xs">
-              Or click to browse (max 1 files)
+              Or click to browse (max 5 files)
             </p>
           </div>
         </FileUploadDropzone>

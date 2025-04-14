@@ -259,7 +259,6 @@ export default function SimpleFileUpload() {
             await uploadFile(compressedFile, album, storage, alistMountPath).then(async (res) => {
               if (res.code === 200) {
                 await resHandle(res, file, flag, outputBuffer)
-                toast.success('Upload success')
               } else {
                 throw new Error("Upload failed")
               }
@@ -271,7 +270,6 @@ export default function SimpleFileUpload() {
             await uploadFile(compressedFileFromBlob, album, storage, alistMountPath).then(async (res) => {
               if (res.code === 200) {
                 await resHandle(res, file, flag, outputBuffer)
-                toast.success('Upload success')
               } else {
                 throw new Error("Upload failed")
               }
@@ -283,7 +281,6 @@ export default function SimpleFileUpload() {
       await uploadFile(file, album, storage, alistMountPath).then(async (res) => {
         if (res.code === 200) {
           await resHandle(res, file, flag, outputBuffer)
-          toast.success('Upload success')
         } else {
           throw new Error("Upload failed")
         }
@@ -307,7 +304,7 @@ export default function SimpleFileUpload() {
     setImageLabels([])
   }
 
-  function onBeforeUpload() {
+  async function onBeforeUpload() {
     setTitle('')
     setPreviewUrl('')
     setVideoUrl('')
@@ -328,12 +325,11 @@ export default function SimpleFileUpload() {
       },
     ) => {
       try {
-        toast.info('Uploading files...')
         // Process each file individually
         const uploadPromises = files.map(async (file) => {
           try {
-            onBeforeUpload();
-            onRequestUpload(file)
+            await onBeforeUpload();
+            await onRequestUpload(file)
             onSuccess(file);
           } catch (error) {
             onError(
@@ -343,8 +339,13 @@ export default function SimpleFileUpload() {
           }
         });
 
-        // Wait for all uploads to complete
-        await Promise.all(uploadPromises);
+        toast.promise(() => Promise.all(uploadPromises), {
+          loading: t('Upload.uploading'),
+          success: () => {
+            return t('Upload.uploadSuccess');
+          },
+          error: t('Upload.uploadError'),
+        });
       } catch (error) {
         // This handles any error that might occur outside the individual upload processes
         console.error("Unexpected error during upload:", error);
