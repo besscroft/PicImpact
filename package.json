@@ -21,7 +21,6 @@
     "prebuild": "npx prisma generate"
   },
   "dependencies": {
-    "@ant-design/nextjs-registry": "^1.0.2",
     "@auth/prisma-adapter": "^2.7.4",
     "@aws-sdk/client-s3": "^3.750.0",
     "@hono/node-server": "^1.13.8",
@@ -54,7 +53,6 @@
     "@radix-ui/react-toggle": "^1.1.2",
     "@radix-ui/react-toggle-group": "^1.1.2",
     "@radix-ui/react-tooltip": "^1.1.8",
-    "antd": "^5.24.1",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "cmdk": "^1.1.1",
