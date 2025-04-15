@@ -5,7 +5,6 @@ import type { ImageType, AlbumType } from '~/types'
 import type { ImageListDataProps, ImageServerHandleProps } from '~/types/props'
 import { useSwrInfiniteServerHook } from '~/hooks/use-swr-infinite-server-hook'
 import { useSwrPageTotalServerHook } from '~/hooks/use-swr-page-total-server-hook'
-import { ConfigProvider, Pagination } from 'antd'
 import { ArrowDown10, ScanSearch, Replace } from 'lucide-react'
 import { toast } from 'sonner'
 import { useButtonStore } from '~/app/providers/button-store-providers'
@@ -42,6 +41,8 @@ import { SquarePenIcon } from '~/components/icons/square-pen'
 import { DeleteIcon } from '~/components/icons/delete'
 import { useTranslations } from 'next-intl'
 import { Badge } from '~/components/ui/badge'
+import { ChevronLeftIcon } from '~/components/icons/chevron-left'
+import { ChevronRightIcon } from '~/components/icons/chevron-right'
 
 export default function ListProps(props : Readonly<ImageServerHandleProps>) {
   const [pageNum, setPageNum] = useState(1)
@@ -288,26 +289,44 @@ export default function ListProps(props : Readonly<ImageServerHandleProps>) {
           </Card>
         ))}
       </div>
-      <ConfigProvider
-        theme={{
-          "token": {
-            "colorTextBase": "#13c2c2"
-          }
-        }}
-      >
-        <Pagination
-          defaultCurrent={1}
-          current={pageNum}
-          total={total}
-          pageSize={8}
-          hideOnSinglePage
-          showSizeChanger={false}
-          onChange={async (page: number) => {
-            setPageNum(page)
+      <div className="flex space-x-2">
+        <Select
+          value={pageNum.toString()}
+          onValueChange={async (page: string) => {
+            setPageNum(Number(page))
             await mutate()
           }}
+        >
+          <SelectTrigger className="h-8">
+            <SelectValue placeholder={pageNum} />
+          </SelectTrigger>
+          <SelectContent side="top">
+            {Array.from({ length: Math.ceil(total / 8) }, (_, i) => i + 1).map((num) => (
+              <SelectItem key={num} value={num.toString()}>
+                {num}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+        <ChevronLeftIcon
+          onClick={async () => {
+            if (pageNum > 1) {
+              setPageNum(pageNum - 1)
+              await mutate()
+            }
+          }}
+          size={18}
         />
-      </ConfigProvider>
+        <ChevronRightIcon
+          onClick={async () => {
+            if (pageNum < Math.ceil(total / 8)) {
+              setPageNum(pageNum + 1)
+              await mutate()
+            }
+          }}
+          size={18}
+        />
+      </div>
       <ImageEditSheet {...{...props, pageNum, album}} />
       <ImageView />
       <ImageBatchDeleteSheet {...{...props, dataProps, pageNum, album}} />
