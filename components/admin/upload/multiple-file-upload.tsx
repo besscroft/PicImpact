@@ -124,8 +124,9 @@ export default function MultipleFileUpload() {
             body: JSON.stringify(data),
           }).then(res => res.json())
           if (res?.code === 200) {
+            toast.success('保存成功')
           } else {
-            throw new Error("Upload failed")
+            toast.error('保存失败')
           }
         };
         // @ts-ignore
