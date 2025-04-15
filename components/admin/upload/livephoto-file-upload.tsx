@@ -396,7 +396,7 @@ export default function LivephotoFileUpload() {
         toast.error('Upload failed')
       }
     },
-    [],
+    [onRequestUpload],
   );
 
   return (

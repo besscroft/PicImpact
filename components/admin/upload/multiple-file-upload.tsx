@@ -282,7 +282,7 @@ export default function MultipleFileUpload() {
         toast.error('Upload failed')
       }
     },
-    [],
+    [onRequestUpload],
   );
 
   return (

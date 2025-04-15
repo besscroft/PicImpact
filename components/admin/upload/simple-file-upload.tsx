@@ -352,7 +352,7 @@ export default function SimpleFileUpload() {
         toast.error('Upload failed')
       }
     },
-    [],
+    [onRequestUpload],
   );
 
   return (
