@@ -24,10 +24,12 @@ import {
   DialogTrigger,
 } from '~/components/ui/dialog'
 import { Label } from '~/components/ui/label'
+import { useSwrPageTotalServerHook } from '~/hooks/use-swr-page-total-server-hook'
 
 export default function ImageBatchDeleteSheet(props : Readonly<ImageServerHandleProps & { dataProps: ImageListDataProps } & { pageNum: number } & { album: string }>) {
   const { dataProps, pageNum, album, ...restProps } = props
   const { mutate } = useSwrInfiniteServerHook(restProps, pageNum, album)
+  const { mutate: totalMutate } = useSwrPageTotalServerHook(props, album)
   const { imageBatchDelete, setImageBatchDelete } = useButtonStore(
     (state) => state,
   )
@@ -52,6 +54,7 @@ export default function ImageBatchDeleteSheet(props : Readonly<ImageServerHandle
       setImageBatchDelete(false)
       setData([])
       await mutate()
+      await totalMutate()
     } catch (e) {
       toast.error('删除失败！')
     } finally {

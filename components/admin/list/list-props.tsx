@@ -289,44 +289,46 @@ export default function ListProps(props : Readonly<ImageServerHandleProps>) {
           </Card>
         ))}
       </div>
-      <div className="flex space-x-2">
-        <Select
-          value={pageNum.toString()}
-          onValueChange={async (page: string) => {
-            setPageNum(Number(page))
-            await mutate()
-          }}
-        >
-          <SelectTrigger className="h-8">
-            <SelectValue placeholder={pageNum} />
-          </SelectTrigger>
-          <SelectContent side="top">
-            {Array.from({ length: Math.ceil(total / 8) }, (_, i) => i + 1).map((num) => (
-              <SelectItem key={num} value={num.toString()}>
-                {num}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-        <ChevronLeftIcon
-          onClick={async () => {
-            if (pageNum > 1) {
-              setPageNum(pageNum - 1)
+      {pageNum === 1 && total !== 0 &&
+        <div className="flex space-x-2">
+          <Select
+            value={pageNum.toString()}
+            onValueChange={async (page: string) => {
+              setPageNum(Number(page))
               await mutate()
-            }
-          }}
-          size={18}
-        />
-        <ChevronRightIcon
-          onClick={async () => {
-            if (pageNum < Math.ceil(total / 8)) {
-              setPageNum(pageNum + 1)
-              await mutate()
-            }
-          }}
-          size={18}
-        />
-      </div>
+            }}
+          >
+            <SelectTrigger className="h-8">
+              <SelectValue placeholder={pageNum} />
+            </SelectTrigger>
+            <SelectContent side="top">
+              {Array.from({ length: Math.ceil(total / 8) }, (_, i) => i + 1).map((num) => (
+                <SelectItem key={num} value={num.toString()}>
+                  {num}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <ChevronLeftIcon
+            onClick={async () => {
+              if (pageNum > 1) {
+                setPageNum(pageNum - 1)
+                await mutate()
+              }
+            }}
+            size={18}
+          />
+          <ChevronRightIcon
+            onClick={async () => {
+              if (pageNum < Math.ceil(total / 8)) {
+                setPageNum(pageNum + 1)
+                await mutate()
+              }
+            }}
+            size={18}
+          />
+        </div>
+      }
       <ImageEditSheet {...{...props, pageNum, album}} />
       <ImageView />
       <ImageBatchDeleteSheet {...{...props, dataProps, pageNum, album}} />
