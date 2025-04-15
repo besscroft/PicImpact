@@ -96,7 +96,9 @@
     "selectAlbum": "請選擇相簿",
     "selectAlistDirectory": "請選擇 Alist 目錄",
     "alistDirectory": "Alist 目錄",
-    "alternativeUpload": "雖然不太推薦，但還是提供了這麼個方式。"
+    "uploading": "上傳中...",
+    "uploadSuccess": "上傳成功",
+    "uploadError": "上傳失敗"
   },
   "List": {
     "viewImage": "查看圖片",

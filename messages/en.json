@@ -96,7 +96,9 @@
     "selectAlbum": "Please select album",
     "selectAlistDirectory": "Please select Alist directory",
     "alistDirectory": "Alist directory",
-    "alternativeUpload": "Although not recommended, this method is still provided."
+    "uploading": "uploading...",
+    "uploadSuccess": "upload success",
+    "uploadError": "upload error"
   },
   "List": {
     "viewImage": "View Image",
