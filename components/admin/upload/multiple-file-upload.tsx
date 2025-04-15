@@ -287,80 +287,72 @@ export default function MultipleFileUpload() {
 
   return (
     <div className="flex flex-col space-y-2 h-full flex-1">
-      <div className="flex space-x-2">
-        <div className="flex flex-1 w-full space-x-1">
-          <Select
-            defaultValue={storage}
-            onValueChange={async (value: string) => {
-              setStorage(value)
-              if (value === 'alist') {
-                getAlistStorage()
-              } else {
-                setStorageSelect(false)
-              }
-            }}
-          >
-            <SelectTrigger>
-              <SelectValue placeholder={t('Upload.selectStorage')} />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectGroup>
-                <SelectLabel>{t('Words.album')}</SelectLabel>
-                {storages?.map((storage: any) => (
-                  <SelectItem key={storage.value} value={storage.value}>
-                    {storage.label}
-                  </SelectItem>
-                ))}
-              </SelectGroup>
-            </SelectContent>
-          </Select>
-          <Select
-            disabled={isLoading}
-            defaultValue={album}
-            onValueChange={async (value: string) => {
-              setAlbum(value)
-            }}
-          >
-            <SelectTrigger>
-              <SelectValue placeholder={t('Upload.selectAlbum')} />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectGroup>
-                <SelectLabel>{t('Words.album')}</SelectLabel>
-                {data?.map((album: AlbumType) => (
-                  <SelectItem key={album.album_value} value={album.album_value}>
-                    {album.name}
-                  </SelectItem>
-                ))}
-              </SelectGroup>
-            </SelectContent>
-          </Select>
-        </div>
+      <div className="flex space-x-2 flex-wrap space-y-1">
+        <Select
+          defaultValue={storage}
+          onValueChange={async (value: string) => {
+            setStorage(value)
+            if (value === 'alist') {
+              await getAlistStorage()
+            } else {
+              setStorageSelect(false)
+            }
+          }}
+        >
+          <SelectTrigger>
+            <SelectValue placeholder={t('Upload.selectStorage')} />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectGroup>
+              <SelectLabel>{t('Words.album')}</SelectLabel>
+              {storages?.map((storage: any) => (
+                <SelectItem key={storage.value} value={storage.value}>
+                  {storage.label}
+                </SelectItem>
+              ))}
+            </SelectGroup>
+          </SelectContent>
+        </Select>
+        <Select
+          disabled={isLoading}
+          defaultValue={album}
+          onValueChange={(value: string) => setAlbum(value)}
+        >
+          <SelectTrigger>
+            <SelectValue placeholder={t('Upload.selectAlbum')} />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectGroup>
+              <SelectLabel>{t('Words.album')}</SelectLabel>
+              {data?.map((album: AlbumType) => (
+                <SelectItem key={album.album_value} value={album.album_value}>
+                  {album.name}
+                </SelectItem>
+              ))}
+            </SelectGroup>
+          </SelectContent>
+        </Select>
         {
           storageSelect && alistStorage?.length > 0 &&
-          <div className="w-full">
-            <Select
-              disabled={isLoading}
-              defaultValue={album}
-              onValueChange={async (value: string) => {
-                setAlistMountPath(value)
-              }}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder={t('Upload.selectAlistDirectory')} />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectGroup>
-                  <SelectLabel>{t('Upload.alistDirectory')}</SelectLabel>
-                  {alistStorage?.map((storage: any) => (
-                    <SelectItem key={storage?.mount_path} value={storage?.mount_path}>
-                      {storage?.mount_path}
-                    </SelectItem>
-                  ))}
-                </SelectGroup>
-              </SelectContent>
-            </Select>
-          </div>
+          <Select
+            disabled={isLoading}
+            defaultValue={alistMountPath}
+            onValueChange={(value: string) => setAlistMountPath(value)}
+          >
+            <SelectTrigger>
+              <SelectValue placeholder={t('Upload.selectAlistDirectory')} />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectGroup>
+                <SelectLabel>{t('Upload.alistDirectory')}</SelectLabel>
+                {alistStorage?.map((storage: any) => (
+                  <SelectItem key={storage?.mount_path} value={storage?.mount_path}>
+                    {storage?.mount_path}
+                  </SelectItem>
+                ))}
+              </SelectGroup>
+            </SelectContent>
+          </Select>
         }
       </div>
       <FileUpload

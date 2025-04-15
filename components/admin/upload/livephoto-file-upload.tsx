@@ -408,7 +408,7 @@ export default function LivephotoFileUpload() {
             onValueChange={async (value: string) => {
               setStorage(value)
               if (value === 'alist') {
-                getAlistStorage()
+                await getAlistStorage()
               } else {
                 setStorageSelect(false)
               }
@@ -431,9 +431,7 @@ export default function LivephotoFileUpload() {
           <Select
             disabled={isLoading}
             defaultValue={album}
-            onValueChange={async (value: string) => {
-              setAlbum(value)
-            }}
+            onValueChange={(value: string) => setAlbum(value)}
           >
             <SelectTrigger>
               <SelectValue placeholder={t('Upload.selectAlbum')} />
@@ -461,33 +459,29 @@ export default function LivephotoFileUpload() {
             aria-label={t('Button.submit')}
           />
         }
-        {
-          storageSelect && alistStorage?.length > 0 &&
-          <div className="w-full">
-            <Select
-              disabled={isLoading}
-              defaultValue={album}
-              onValueChange={async (value: string) => {
-                setAlistMountPath(value)
-              }}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder={t('Upload.selectAlistDirectory')} />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectGroup>
-                  <SelectLabel>{t('Upload.alistDirectory')}</SelectLabel>
-                  {alistStorage?.map((storage: any) => (
-                    <SelectItem key={storage?.mount_path} value={storage?.mount_path}>
-                      {storage?.mount_path}
-                    </SelectItem>
-                  ))}
-                </SelectGroup>
-              </SelectContent>
-            </Select>
-          </div>
-        }
       </div>
+      {
+        storageSelect && alistStorage?.length > 0 &&
+        <Select
+          disabled={isLoading}
+          defaultValue={alistMountPath}
+          onValueChange={(value: string) => setAlistMountPath(value)}
+        >
+          <SelectTrigger>
+            <SelectValue placeholder={t('Upload.selectAlistDirectory')} />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectGroup>
+              <SelectLabel>{t('Upload.alistDirectory')}</SelectLabel>
+              {alistStorage?.map((storage: any) => (
+                <SelectItem key={storage?.mount_path} value={storage?.mount_path}>
+                  {storage?.mount_path}
+                </SelectItem>
+              ))}
+            </SelectGroup>
+          </SelectContent>
+        </Select>
+      }
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
         <div className="flex flex-col space-y-2">
           <FileUpload
