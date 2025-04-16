@@ -70,16 +70,16 @@
     "livephotoskit": "^1.5.6",
     "lucide-react": "^0.484.0",
     "motion": "^12.6.5",
-    "next": "^15.2.3",
+    "next": "15.3.0",
     "next-auth": "5.0.0-beta.25",
     "next-intl": "^3.26.5",
     "next-nprogress-bar": "^2.4.7",
     "next-qrcode": "^2.5.1",
     "next-themes": "^0.4.4",
     "otpauth": "^9.3.6",
-    "react": "^19.0.0",
+    "react": "19.1.0",
     "react-day-picker": "8.10.1",
-    "react-dom": "^19.0.0",
+    "react-dom": "19.1.0",
     "react-hook-form": "^7.54.2",
     "react-lazy-load-image-component": "^1.6.3",
     "react-photo-album": "^3.0.2",
@@ -98,18 +98,24 @@
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.1",
-    "@next/bundle-analyzer": "^15.2.4",
+    "@next/bundle-analyzer": "15.3.0",
     "@tailwindcss/postcss": "^4.0.17",
     "@types/crypto-js": "^4.2.2",
     "@types/node": "^20.17.19",
-    "@types/react": "^19.0.10",
-    "@types/react-dom": "^19.0.4",
+    "@types/react": "19.1.2",
+    "@types/react-dom": "19.1.2",
     "@types/react-lazy-load-image-component": "^1.6.4",
     "@types/rss": "^0.0.32",
     "eslint": "^9.21.0",
-    "eslint-config-next": "^15.1.7",
+    "eslint-config-next": "15.3.0",
     "prisma": "6.4.1",
     "tailwindcss": "^4.0.17",
     "typescript": "^5.7.3"
+  },
+  "pnpm": {
+    "overrides": {
+      "@types/react": "19.1.2",
+      "@types/react-dom": "19.1.2"
+    }
   }
 }
