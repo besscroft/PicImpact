@@ -289,7 +289,7 @@ export default function ListProps(props : Readonly<ImageServerHandleProps>) {
           </Card>
         ))}
       </div>
-      {pageNum === 1 && total !== 0 &&
+      {total !== 0 &&
         <div className="flex space-x-2">
           <Select
             value={pageNum.toString()}
