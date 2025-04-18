@@ -140,13 +140,13 @@ export default function AlbumEditSheet(props : Readonly<HandleProps>) {
             <span className="text-xs font-medium text-gray-700"> 许可协议 </span>
 
           <input
-              type="text"
-              id="detail"
-              value={album?.license}
-              placeholder="CC BY-NC-SA 4.0"
-              onChange={(e) => setAlbumEditData({...album, license: e.target.value})}
-              className="mt-1 w-full border-none p-0 focus:border-transparent focus:outline-none focus:ring-0 sm:text-sm"
-            />
+            type="text"
+            id="detail"
+            value={album?.license}
+            placeholder="CC BY-NC-SA 4.0"
+            onChange={(e) => setAlbumEditData({...album, license: e.target.value})}
+            className="mt-1 w-full border-none p-0 focus:border-transparent focus:outline-none focus:ring-0 sm:text-sm"
+          />
           </label>
           <div className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
             <div className="flex flex-col gap-1">
@@ -172,36 +172,36 @@ export default function AlbumEditSheet(props : Readonly<HandleProps>) {
             </div>
             <Switch
               className="cursor-pointer"
-              checked={album?.randomShow === 1}
+              checked={album?.random_show === 0}
               onCheckedChange={(value) => {
-                setAlbumEditData({...album, randomShow: value ? 1 : 0})
+                setAlbumEditData({...album, random_show: value ? 0 : 1})
               }}
             />
           </div>
           <div className="flex flex-col gap-1 rounded-lg border p-3 shadow-sm">
-              <div className="text-medium">相册内图片排序规则</div>
-              <Select
-                value={typeof album.image_sorting === 'number' ? album.image_sorting.toString() : '1'}
-                onValueChange={(value) => {
-                  setAlbumEditData({
-                    ...album,
-                    image_sorting: parseInt(value),
-                  })
-                }}
-              >
-                <SelectTrigger className="w-full cursor-pointer">
-                  <SelectValue placeholder="选择排序规则" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectGroup>
-                    <SelectItem className="cursor-pointer" value="1">上传时间从新到旧</SelectItem>
-                    <SelectItem className="cursor-pointer" value="2">拍摄时间从新到旧</SelectItem>
-                    <SelectItem className="cursor-pointer" value="3">上传时间从旧到新</SelectItem>
-                    <SelectItem className="cursor-pointer" value="4">拍摄时间从旧到新</SelectItem>
-                  </SelectGroup>
-                </SelectContent>
-              </Select>
-            </div>
+            <div className="text-medium">相册内图片排序规则</div>
+            <Select
+              value={typeof album.image_sorting === 'number' ? album.image_sorting.toString() : '1'}
+              onValueChange={(value) => {
+                setAlbumEditData({
+                  ...album,
+                  image_sorting: parseInt(value),
+                })
+              }}
+            >
+              <SelectTrigger className="w-full cursor-pointer">
+                <SelectValue placeholder="选择排序规则" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  <SelectItem className="cursor-pointer" value="1">上传时间从新到旧</SelectItem>
+                  <SelectItem className="cursor-pointer" value="2">拍摄时间从新到旧</SelectItem>
+                  <SelectItem className="cursor-pointer" value="3">上传时间从旧到新</SelectItem>
+                  <SelectItem className="cursor-pointer" value="4">拍摄时间从旧到新</SelectItem>
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+          </div>
           <Button
             className="cursor-pointer"
             disabled={loading}

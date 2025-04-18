@@ -180,7 +180,7 @@ export async function fetchClientImagesListByAlbum(pageNum: number, album: strin
     ORDER BY ${orderBy}
     LIMIT 16 OFFSET ${(pageNum - 1) * 16}
   `;
-  if (dataList && albumData && albumData.random_show === 1) {
+  if (dataList && albumData && albumData.random_show === 0) {
     return [...dataList].sort(() => Math.random() - 0.5);
   }
   return dataList;

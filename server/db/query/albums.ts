@@ -9,7 +9,7 @@ import { db } from '~/server/lib/db'
  * @returns {Promise<AlbumType[]>} 相册列表
  */
 export async function fetchAlbumsList() {
-  const albums = await db.albums.findMany({
+  return await db.albums.findMany({
     where: {
       del: 0
     },
@@ -25,12 +25,6 @@ export async function fetchAlbumsList() {
       }
     ]
   });
-
-  // Map random_show to randomShow
-  return albums.map(album => ({
-    ...album,
-    randomShow: album.random_show
-  }));
 }
 
 /**
