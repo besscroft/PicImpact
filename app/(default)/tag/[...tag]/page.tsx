@@ -27,8 +27,7 @@ export default async function Label({params}: { params: any }) {
     args: `getImages-client-tag`,
     album: `${decodeURIComponent(tag)}`,
     totalHandle: getPageTotal,
-    configHandle: getConfig,
-    randomShow: false
+    configHandle: getConfig
   }
 
   return (

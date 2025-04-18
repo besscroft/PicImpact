@@ -154,7 +154,7 @@ export async function fetchClientImagesListByAlbum(pageNum: number, album: strin
   if (albumData && albumData.image_sorting && ALBUM_IMAGE_SORTING_ORDER[albumData.image_sorting]) {
     orderBy = Prisma.sql([`image.sort DESC, ${ALBUM_IMAGE_SORTING_ORDER[albumData.image_sorting]}`])
   }
-  return await db.$queryRaw`
+  const dataList: any[] = await db.$queryRaw`
     SELECT 
         image.*,
         albums.name AS album_name,
@@ -180,6 +180,10 @@ export async function fetchClientImagesListByAlbum(pageNum: number, album: strin
     ORDER BY ${orderBy}
     LIMIT 16 OFFSET ${(pageNum - 1) * 16}
   `;
+  if (dataList && albumData && albumData.random_show === 1) {
+    return [...dataList].sort(() => Math.random() - 0.5);
+  }
+  return dataList;
 }
 
 /**
