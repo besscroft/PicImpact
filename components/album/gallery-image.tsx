@@ -172,7 +172,7 @@ export default function GalleryImage({ photo, configData }: { photo: ImageType, 
             {photo?.labels.map((tag: string) => (
               <Badge
                 variant="secondary"
-                className="cursor-pointer"
+                className="cursor-pointer select-none"
                 key={tag}
                 onClick={() => {
                   router.push(`/tag/${tag}`)
