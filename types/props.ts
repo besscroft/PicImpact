@@ -23,7 +23,6 @@ export type ImageHandleProps = {
   album: string
   totalHandle: (tag: string) => any
   configHandle: () => any
-  randomShow?: boolean
 }
 
 export type PreviewImageHandleProps = {

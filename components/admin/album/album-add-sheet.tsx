@@ -131,13 +131,13 @@ export default function AlbumAddSheet(props : Readonly<HandleProps>) {
             <span className="text-xs font-medium text-gray-700"> 许可协议 </span>
 
             <input
-                type="text"
-                id="detail"
-                value={data?.license}
-                placeholder="CC BY-NC-SA 4.0"
-                onChange={(e) => setData({...data, license: e.target.value})}
-                className="mt-1 w-full border-none p-0 focus:border-transparent focus:outline-none focus:ring-0 sm:text-sm"
-              />
+              type="text"
+              id="detail"
+              value={data?.license}
+              placeholder="CC BY-NC-SA 4.0"
+              onChange={(e) => setData({...data, license: e.target.value})}
+              className="mt-1 w-full border-none p-0 focus:border-transparent focus:outline-none focus:ring-0 sm:text-sm"
+            />
             </label>
             <div className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
               <div className="flex flex-col gap-1">
@@ -163,9 +163,9 @@ export default function AlbumAddSheet(props : Readonly<HandleProps>) {
               </div>
               <Switch
                 className="cursor-pointer"
-                checked={data?.random_show === 1}
+                checked={data?.random_show === 0}
                 onCheckedChange={(value) => {
-                  setData({...data, random_show: value ? 1 : 0})
+                  setData({...data, random_show: value ? 0 : 1})
                 }}
               />
             </div>

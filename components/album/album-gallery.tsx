@@ -34,7 +34,6 @@ export default function AlbumGallery(props : Readonly<ImageHandleProps>) {
       revalidateOnReconnect: false,
     })
   const dataList = data ? [].concat(...data) : [];
-  const processedDataList = props.randomShow ? [...dataList].sort(() => Math.random() - 0.5) : dataList;
   const t = useTranslations()
 
   return (
@@ -50,13 +49,13 @@ export default function AlbumGallery(props : Readonly<ImageHandleProps>) {
               return 4;
             }}
             photos={
-              processedDataList?.map((item: ImageType) => ({
+              dataList?.map((item: ImageType) => ({
                 src: item.preview_url || item.url,
                 alt: item.detail,
                 ...item
               })) || []
             }
-            render={{image: (...args) => renderNextImage(...args, processedDataList)}}
+            render={{image: (...args) => renderNextImage(...args, dataList)}}
           />
         </div>
         <div className="flex flex-wrap space-x-2 sm:space-x-0 sm:flex-col flex-1 px-2 py-1 sm:py-0 space-y-1 text-gray-500 sm:sticky top-4 self-start">
@@ -66,7 +65,7 @@ export default function AlbumGallery(props : Readonly<ImageHandleProps>) {
         {
           isValidating ?
             <ReloadIcon className="mr-2 h-4 w-4 animate-spin"/>
-            : processedDataList.length > 0 ?
+            : dataList.length > 0 ?
               size < pageTotal &&
               <Button
                 disabled={isLoading}

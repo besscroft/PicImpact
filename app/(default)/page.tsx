@@ -38,8 +38,7 @@ export default async function Home() {
     args: 'getImages-client',
     album: '/',
     totalHandle: getPageTotal,
-    configHandle: getConfig,
-    randomShow: false
+    configHandle: getConfig
   }
 
   return (
