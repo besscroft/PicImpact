@@ -12,6 +12,7 @@ import { fetchConfigsByKeys } from '~/server/db/query/configs'
 import { NextIntlClientProvider } from 'next-intl'
 import { getLocale, getMessages } from 'next-intl/server'
 import { ConfigStoreProvider } from '~/app/providers/config-store-providers'
+import Script from 'next/script'
 
 type Props = {
   params: { id: string }
@@ -44,6 +45,14 @@ export default async function RootLayout({
 
   const messages = await getMessages()
 
+  const data = await fetchConfigsByKeys([
+    'umami_analytics',
+    'umami_host'
+  ])
+
+  const umamiHost = data?.find((item: any) => item.config_key === 'umami_host')?.config_value || 'https://cloud.umami.is/script.js'
+  const umamiAnalytics = data?.find((item: any) => item.config_key === 'umami_analytics')?.config_value
+
   return (
     <html className="overflow-y-auto scrollbar-hide" lang={locale} suppressHydrationWarning>
     <body>
@@ -61,6 +70,13 @@ export default async function RootLayout({
         </ConfigStoreProvider>
       </NextIntlClientProvider>
     </SessionProviders>
+    <Script
+      id="umami-analytics"
+      strategy="afterInteractive"
+      async
+      src={umamiHost}
+      data-website-id={umamiAnalytics}
+    ></Script>
     </body>
     </html>
   );

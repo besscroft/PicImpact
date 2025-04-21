@@ -135,7 +135,9 @@
     "indexStyleSelect": "ホームページスタイルを選択",
     "indexStyleDefault": "ウォーターフォールモード",
     "indexStyleStar": "精選画像モード",
-    "customIndexDownloadEnable": "ダウンロードボタンの表示"
+    "customIndexDownloadEnable": "ダウンロードボタンの表示",
+    "umamiHost": "Umami Website Host",
+    "umamiAnalytics": "Umami Website ID"
   },
   "Password": {
     "onePassword": "旧パスワード",
