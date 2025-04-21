@@ -81,6 +81,8 @@ export async function updateCustomInfo(payload: {
   enablePreviewImageMaxWidthLimit: boolean
   previewImageMaxWidth: number
   previewQuality: number
+  umamiHost: string
+  umamiAnalytics: string
 }) {
   const {
     title,
@@ -93,6 +95,8 @@ export async function updateCustomInfo(payload: {
     enablePreviewImageMaxWidthLimit,
     previewImageMaxWidth,
     previewQuality,
+    umamiHost,
+    umamiAnalytics
   } = payload
   await db.$transaction(async (tx) => {
     await tx.configs.update({
@@ -137,6 +141,24 @@ export async function updateCustomInfo(payload: {
       },
       data: {
         config_value: userId,
+        updatedAt: new Date()
+      }
+    })
+    await tx.configs.update({
+      where: {
+        config_key: 'umami_host'
+      },
+      data: {
+        config_value: umamiHost,
+        updatedAt: new Date()
+      }
+    })
+    await tx.configs.update({
+      where: {
+        config_key: 'umami_analytics'
+      },
+      data: {
+        config_value: umamiAnalytics,
         updatedAt: new Date()
       }
     })

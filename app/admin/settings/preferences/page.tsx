@@ -25,6 +25,8 @@ export default function Preferences() {
   const [customIndexDownloadEnable, setCustomIndexDownloadEnable] = useState(false)
   const [enablePreviewImageMaxWidthLimit, setPreviewImageMaxWidthLimitEnabled] = useState(false)
   const [previewQualityInput, setPreviewQualityInput] = useState('0.2')
+  const [umamiAnalytics, setUmamiAnalytics] = useState('')
+  const [umamiHost, setUmamiHost] = useState('')
   const t = useTranslations()
 
   const { data, isValidating, isLoading } = useSWR<{ config_key: string, config_value: string }[]>('/api/v1/settings/get-custom-info', fetcher)
@@ -58,6 +60,8 @@ export default function Preferences() {
           enablePreviewImageMaxWidthLimit,
           previewImageMaxWidth: maxWidth,
           previewQuality,
+          umamiHost,
+          umamiAnalytics
         }),
       }).then(res => res.json())
       toast.success('修改成功！')
@@ -79,6 +83,8 @@ export default function Preferences() {
     setPreviewImageMaxWidth(data?.find((item) => item.config_key === 'preview_max_width_limit')?.config_value?.toString() || '0')
     setPreviewImageMaxWidthLimitEnabled(data?.find((item) => item.config_key === 'preview_max_width_limit_switch')?.config_value === '1')
     setPreviewQualityInput(data?.find((item) => item.config_key === 'preview_quality')?.config_value || '0.2')
+    setUmamiHost(data?.find((item) => item.config_key === 'umami_host')?.config_value || '')
+    setUmamiAnalytics(data?.find((item) => item.config_key === 'umami_analytics')?.config_value || '')
   }, [data])
 
   return (
@@ -177,6 +183,28 @@ export default function Preferences() {
                 size={18}
               />
             </div>
+          </div>
+          <div className="grid w-full max-w-sm items-center gap-1.5">
+            <Label htmlFor="umamiHost"> Umami Cloud Analytics </Label>
+            <Input
+              type="text"
+              id="umamiHost"
+              disabled={isValidating || isLoading}
+              value={umamiHost || ''}
+              placeholder={t('Preferences.umamiHost')}
+              onChange={(e) => setUmamiHost(e.target.value)}
+            />
+          </div>
+          <div className="grid w-full max-w-sm items-center gap-1.5">
+            <Label htmlFor="umamiAnalytics"> Umami Website ID </Label>
+            <Input
+              type="text"
+              id="umamiAnalytics"
+              disabled={isValidating || isLoading}
+              value={umamiAnalytics || ''}
+              placeholder={t('Preferences.umamiAnalytics')}
+              onChange={(e) => setUmamiAnalytics(e.target.value)}
+            />
           </div>
         </div>
         <div className="rounded space-y-4">

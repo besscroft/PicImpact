@@ -135,7 +135,9 @@
     "indexStyleSelect": "選擇首頁模式",
     "indexStyleDefault": "瀑布流模式",
     "indexStyleStar": "精選圖片模式",
-    "customIndexDownloadEnable": "下載按鈕顯示"
+    "customIndexDownloadEnable": "下載按鈕顯示",
+    "umamiHost": "Umami Website Host",
+    "umamiAnalytics": "Umami Website ID"
   },
   "Password": {
     "onePassword": "舊密碼",

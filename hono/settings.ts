@@ -23,6 +23,8 @@ app.get('/get-custom-info', async (c) => {
     'preview_max_width_limit',
     'preview_max_width_limit_switch',
     'preview_quality',
+    'umami_host',
+    'umami_analytics'
   ]);
   return c.json(data)
 })
@@ -119,6 +121,8 @@ app.put('/update-custom-info', async (c) => {
     previewImageMaxWidth: number
     previewQuality: number
     customIndexRandomShow: boolean
+    umamiHost: string
+    umamiAnalytics: string
   }
   try {
     await updateCustomInfo(query);

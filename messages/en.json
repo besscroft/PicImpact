@@ -135,7 +135,9 @@
     "indexStyleSelect": "Select Homepage Style",
     "indexStyleDefault": "Waterfall Style",
     "indexStyleStar": "Featured Image Style",
-    "customIndexDownloadEnable": "Show Download Button"
+    "customIndexDownloadEnable": "Show Download Button",
+    "umamiHost": "Umami Website Host",
+    "umamiAnalytics": "Umami Website ID"
   },
   "Password": {
     "onePassword": "Old Password",
