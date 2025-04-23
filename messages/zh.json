@@ -77,6 +77,7 @@
     "uploadTips1": "点击上传文件或拖拽文件到这里",
     "uploadTips2": "Vercel 等平台 Free 订阅限制上传大小 6M。",
     "uploadTips3": "上传 LivePhoto 视频",
+    "uploadTips4": "单次最多可上传 {count} 个文件",
     "title": "图片标题",
     "inputTitle": "输入图片标题",
     "url": "图片地址",

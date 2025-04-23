@@ -335,11 +335,12 @@ export default function MultipleFileUpload() {
             </SelectGroup>
           </SelectContent>
         </Select>
-        {storageSelect && alistStorage?.length > 0 && (
-          <Select
-            disabled={isLoading}
-            value={alistMountPath}
-            onValueChange={(value: string) => setAlistMountPath(value)}
+        {
+          storage === 'alist' && storageSelect && alistStorage?.length > 0 && (
+            <Select
+              disabled={isLoading}
+              defaultValue={alistMountPath}
+              onValueChange={(value: string) => setAlistMountPath(value)}
           >
             <SelectTrigger>
               <SelectValue placeholder={t('Upload.selectAlistDirectory')} />
@@ -365,12 +366,16 @@ export default function MultipleFileUpload() {
         multiple={true}
         disabled={storage === '' || album === '' || (storage === 'alist' && alistMountPath === '')}
       >
-        <FileUploadDropzone>
-          <div className="flex flex-col items-center justify-center gap-2">
-            <UploadIcon className="h-8 w-8 text-muted-foreground" />
-            <div className="text-sm text-muted-foreground">
-              拖拽文件到此处或点击上传
-            </div>
+        <FileUploadDropzone className="h-full">
+          <div className="flex flex-col items-center gap-1">
+            <UploadIcon/>
+            <p className="font-medium text-sm">{t('Upload.uploadTips1')}</p>
+            <p className="text-muted-foreground text-xs">
+              {t('Upload.uploadTips2')}
+            </p>
+            <p className="text-muted-foreground text-xs">
+              {t('Upload.uploadTips4', { count: maxUploadFiles })}
+            </p>
           </div>
         </FileUploadDropzone>
         <FileUploadList>
