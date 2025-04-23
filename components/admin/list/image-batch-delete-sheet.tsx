@@ -85,7 +85,7 @@ export default function ImageBatchDeleteSheet(props : Readonly<ImageServerHandle
                 key={item.id}
                 className="relative flex w-full items-start gap-2 rounded-lg border border-input p-4 shadow-sm shadow-black/5 has-[[data-state=checked]]:border-ring">
                 <Checkbox
-                  className="order-1 after:absolute after:inset-0"
+                  className="cursor-pointer order-1 after:absolute after:inset-0"
                   checked={data?.includes(item.id)}
                   onCheckedChange={(checked) => {
                     return checked
