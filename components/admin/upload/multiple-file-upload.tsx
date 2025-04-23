@@ -37,7 +37,6 @@ export default function MultipleFileUpload() {
   const [alistMountPath, setAlistMountPath] = useState('')
   const [lat, setLat] = useState('')
   const [lon, setLon] = useState('')
-  const [maxFiles, setMaxFiles] = useState(5)
   const [files, setFiles] = useState<File[]>([])
   const t = useTranslations()
 
@@ -48,12 +47,6 @@ export default function MultipleFileUpload() {
   const previewImageMaxWidthLimit = parseInt(configs?.find(config => config.config_key === 'preview_max_width_limit')?.config_value || '0')
   const previewCompressQuality = parseFloat(configs?.find(config => config.config_key === 'preview_quality')?.config_value || '0.2')
   const maxUploadFiles = parseInt(configs?.find(config => config.config_key === 'max_upload_files')?.config_value || '5')
-
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      // 客户端代码
-    }
-  }, [])
 
   async function getAlistStorage() {
     if (alistStorage.length > 0) {
@@ -295,8 +288,8 @@ export default function MultipleFileUpload() {
   );
 
   return (
-    <div className="space-y-4">
-      <div className="flex items-center space-x-2">
+    <div className="flex flex-col space-y-2 h-full flex-1">
+      <div className="flex space-x-2 flex-wrap space-y-1">
         <Select
           disabled={isLoading}
           value={storage}
@@ -315,9 +308,9 @@ export default function MultipleFileUpload() {
           <SelectContent>
             <SelectGroup>
               <SelectLabel>{t('Words.album')}</SelectLabel>
-              {storages.map((item) => (
-                <SelectItem key={item.value} value={item.value}>
-                  {item.label}
+              {storages?.map((storage: any) => (
+                <SelectItem key={storage.value} value={storage.value}>
+                  {storage.label}
                 </SelectItem>
               ))}
             </SelectGroup>
@@ -325,8 +318,8 @@ export default function MultipleFileUpload() {
         </Select>
         <Select
           disabled={isLoading}
-          value={album}
-          onValueChange={setAlbum}
+          defaultValue={album}
+          onValueChange={(value: string) => setAlbum(value)}
         >
           <SelectTrigger>
             <SelectValue placeholder={t('Upload.selectAlbum')} />
@@ -342,6 +335,27 @@ export default function MultipleFileUpload() {
             </SelectGroup>
           </SelectContent>
         </Select>
+        {storageSelect && alistStorage?.length > 0 && (
+          <Select
+            disabled={isLoading}
+            value={alistMountPath}
+            onValueChange={(value: string) => setAlistMountPath(value)}
+          >
+            <SelectTrigger>
+              <SelectValue placeholder={t('Upload.selectAlistDirectory')} />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectGroup>
+                <SelectLabel>{t('Upload.alistDirectory')}</SelectLabel>
+                {alistStorage?.map((storage: any) => (
+                  <SelectItem key={storage?.mount_path} value={storage?.mount_path}>
+                    {storage?.mount_path}
+                  </SelectItem>
+                ))}
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+        )}
       </div>
       <FileUpload
         value={files}
@@ -364,7 +378,11 @@ export default function MultipleFileUpload() {
             <FileUploadItem key={index} value={file}>
               <FileUploadItemPreview />
               <FileUploadItemMetadata />
-              <FileUploadItemDelete />
+              <FileUploadItemDelete asChild>
+                <Button onClick={() => onRemoveFile()} variant="ghost" size="icon" className="size-7">
+                  <X />
+                </Button>
+              </FileUploadItemDelete>
             </FileUploadItem>
           ))}
         </FileUploadList>
