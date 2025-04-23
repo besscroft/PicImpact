@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { toast } from 'sonner'
 import useSWR from 'swr'
 import { fetcher } from '~/lib/utils/fetcher'
@@ -27,6 +27,7 @@ import {
 import { UploadIcon } from '~/components/icons/upload'
 import { Button } from '~/components/ui/button'
 import { X } from 'lucide-react'
+import { Input } from '~/components/ui/input'
 
 export default function MultipleFileUpload() {
   const [alistStorage, setAlistStorage] = useState([])
@@ -36,6 +37,7 @@ export default function MultipleFileUpload() {
   const [alistMountPath, setAlistMountPath] = useState('')
   const [lat, setLat] = useState('')
   const [lon, setLon] = useState('')
+  const [files, setFiles] = useState<File[]>([])
   const t = useTranslations()
 
   const { data, isLoading } = useSWR('/api/v1/albums/get', fetcher)
@@ -44,6 +46,7 @@ export default function MultipleFileUpload() {
   const previewImageMaxWidthLimitSwitchOn = configs?.find(config => config.config_key === 'preview_max_width_limit_switch')?.config_value === '1'
   const previewImageMaxWidthLimit = parseInt(configs?.find(config => config.config_key === 'preview_max_width_limit')?.config_value || '0')
   const previewCompressQuality = parseFloat(configs?.find(config => config.config_key === 'preview_quality')?.config_value || '0.2')
+  const maxUploadFiles = parseInt(configs?.find(config => config.config_key === 'max_upload_files')?.config_value || '5')
 
   async function getAlistStorage() {
     if (alistStorage.length > 0) {
@@ -243,8 +246,6 @@ export default function MultipleFileUpload() {
     setLon('')
   }
 
-  const [files, setFiles] = React.useState<File[]>([]);
-
   const onUpload = React.useCallback(
     async (
       files: File[],
@@ -290,7 +291,8 @@ export default function MultipleFileUpload() {
     <div className="flex flex-col space-y-2 h-full flex-1">
       <div className="flex space-x-2 flex-wrap space-y-1">
         <Select
-          defaultValue={storage}
+          disabled={isLoading}
+          value={storage}
           onValueChange={async (value: string) => {
             setStorage(value)
             if (value === 'alist') {
@@ -334,11 +336,11 @@ export default function MultipleFileUpload() {
           </SelectContent>
         </Select>
         {
-          storageSelect && alistStorage?.length > 0 &&
-          <Select
-            disabled={isLoading}
-            defaultValue={alistMountPath}
-            onValueChange={(value: string) => setAlistMountPath(value)}
+          storage === 'alist' && storageSelect && alistStorage?.length > 0 && (
+            <Select
+              disabled={isLoading}
+              defaultValue={alistMountPath}
+              onValueChange={(value: string) => setAlistMountPath(value)}
           >
             <SelectTrigger>
               <SelectValue placeholder={t('Upload.selectAlistDirectory')} />
@@ -354,34 +356,36 @@ export default function MultipleFileUpload() {
               </SelectGroup>
             </SelectContent>
           </Select>
-        }
+        )}
       </div>
       <FileUpload
-        maxFiles={5}
-        className="w-full h-full"
         value={files}
         onValueChange={setFiles}
         onUpload={onUpload}
+        maxFiles={maxUploadFiles}
         multiple={true}
         disabled={storage === '' || album === '' || (storage === 'alist' && alistMountPath === '')}
       >
         <FileUploadDropzone className="h-full">
           <div className="flex flex-col items-center gap-1">
             <UploadIcon/>
-            <p className="font-medium text-sm">Drag & drop images here</p>
+            <p className="font-medium text-sm">{t('Upload.uploadTips1')}</p>
             <p className="text-muted-foreground text-xs">
-              Or click to browse (max 5 files)
+              {t('Upload.uploadTips2')}
+            </p>
+            <p className="text-muted-foreground text-xs">
+              {t('Upload.uploadTips4', { count: maxUploadFiles })}
             </p>
           </div>
         </FileUploadDropzone>
         <FileUploadList>
           {files.map((file, index) => (
             <FileUploadItem key={index} value={file}>
-              <FileUploadItemPreview/>
-              <FileUploadItemMetadata/>
+              <FileUploadItemPreview />
+              <FileUploadItemMetadata />
               <FileUploadItemDelete asChild>
                 <Button onClick={() => onRemoveFile()} variant="ghost" size="icon" className="size-7">
-                  <X/>
+                  <X />
                 </Button>
               </FileUploadItemDelete>
             </FileUploadItem>
@@ -391,3 +395,4 @@ export default function MultipleFileUpload() {
     </div>
   )
 }
+

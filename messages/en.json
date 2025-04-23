@@ -77,6 +77,7 @@
     "uploadTips1": "Click to upload file or drag file here",
     "uploadTips2": "Vercel and other platforms Free subscription limit upload size to 6M.",
     "uploadTips3": "Upload LivePhoto video",
+    "uploadTips4": "Maximum {count} files can be uploaded at once",
     "title": "Image Title",
     "inputTitle": "Enter Image Title",
     "url": "Image URL",
@@ -137,7 +138,9 @@
     "indexStyleStar": "Featured Image Style",
     "customIndexDownloadEnable": "Show Download Button",
     "umamiHost": "Umami Website Host",
-    "umamiAnalytics": "Umami Website ID"
+    "umamiAnalytics": "Umami Website ID",
+    "maxUploadFiles": "Maximum Upload Files",
+    "inputMaxUploadFiles": "Please enter the maximum number of files that can be uploaded"
   },
   "Password": {
     "onePassword": "Old Password",

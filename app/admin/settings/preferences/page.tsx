@@ -27,6 +27,7 @@ export default function Preferences() {
   const [previewQualityInput, setPreviewQualityInput] = useState('0.2')
   const [umamiAnalytics, setUmamiAnalytics] = useState('')
   const [umamiHost, setUmamiHost] = useState('')
+  const [maxUploadFiles, setMaxUploadFiles] = useState('5')
   const t = useTranslations()
 
   const { data, isValidating, isLoading } = useSWR<{ config_key: string, config_value: string }[]>('/api/v1/settings/get-custom-info', fetcher)
@@ -40,6 +41,11 @@ export default function Preferences() {
     const previewQuality = parseFloat(previewQualityInput)
     if (isNaN(previewQuality) || previewQuality <= 0 || previewQuality > 1) {
       toast.error('预览图压缩质量只支持0-1，大于0')
+      return
+    }
+    const maxFiles = parseInt(maxUploadFiles)
+    if (isNaN(maxFiles) || maxFiles < 1) {
+      toast.error('最大上传文件数量不能小于 1')
       return
     }
     try {
@@ -61,7 +67,8 @@ export default function Preferences() {
           previewImageMaxWidth: maxWidth,
           previewQuality,
           umamiHost,
-          umamiAnalytics
+          umamiAnalytics,
+          maxUploadFiles: maxFiles
         }),
       }).then(res => res.json())
       toast.success('修改成功！')
@@ -85,6 +92,7 @@ export default function Preferences() {
     setPreviewQualityInput(data?.find((item) => item.config_key === 'preview_quality')?.config_value || '0.2')
     setUmamiHost(data?.find((item) => item.config_key === 'umami_host')?.config_value || '')
     setUmamiAnalytics(data?.find((item) => item.config_key === 'umami_analytics')?.config_value || '')
+    setMaxUploadFiles(data?.find((item) => item.config_key === 'max_upload_files')?.config_value || '5')
   }, [data])
 
   return (
@@ -166,13 +174,13 @@ export default function Preferences() {
             <div className="flex items-center space-x-2">
               <Input
                 id="link"
-                defaultValue={window.location.origin + '/rss.xml'}
+                defaultValue={typeof window !== 'undefined' ? window.location.origin + '/rss.xml' : ''}
                 readOnly
               />
               <CopyIcon
                 onClick={async () => {
                   try {
-                    const url = window.location.origin + '/rss.xml'
+                    const url = typeof window !== 'undefined' ? window.location.origin + '/rss.xml' : ''
                     // @ts-ignore
                     await navigator.clipboard.writeText(url);
                     toast.success('复制成功！', {duration: 500})
@@ -240,6 +248,18 @@ export default function Preferences() {
               value={previewImageMaxWidth}
               placeholder={t('Preferences.inputMaxWidth')}
               onChange={(e) => setPreviewImageMaxWidth(e.target.value)}
+            />
+          </div>
+          <div className="grid w-full max-w-sm items-center gap-1.5">
+            <Label htmlFor="maxUploadFiles">{t('Preferences.maxUploadFiles')}</Label>
+            <Input
+              type="number"
+              id="maxUploadFiles"
+              min={1}
+              disabled={isValidating || isLoading}
+              value={maxUploadFiles}
+              placeholder={t('Preferences.inputMaxUploadFiles')}
+              onChange={(e) => setMaxUploadFiles(e.target.value)}
             />
           </div>
         </div>

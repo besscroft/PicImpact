@@ -83,135 +83,152 @@ export async function updateCustomInfo(payload: {
   previewQuality: number
   umamiHost: string
   umamiAnalytics: string
+  maxUploadFiles: number
 }) {
-  const {
-    title,
-    customFaviconUrl,
-    customAuthor,
-    feedId,
-    userId,
-    customIndexStyle,
-    customIndexDownloadEnable,
-    enablePreviewImageMaxWidthLimit,
-    previewImageMaxWidth,
-    previewQuality,
-    umamiHost,
-    umamiAnalytics
-  } = payload
-  await db.$transaction(async (tx) => {
-    await tx.configs.update({
-      where: {
-        config_key: 'custom_title'
-      },
-      data: {
-        config_value: title,
-        updatedAt: new Date()
-      }
-    })
-    await tx.configs.update({
-      where: {
-        config_key: 'custom_favicon_url'
-      },
-      data: {
-        config_value: customFaviconUrl,
-        updatedAt: new Date()
-      }
-    })
-    await tx.configs.update({
-      where: {
-        config_key: 'custom_author'
-      },
-      data: {
-        config_value: customAuthor,
-        updatedAt: new Date()
-      }
-    })
-    await tx.configs.update({
-      where: {
-        config_key: 'rss_feed_id'
-      },
-      data: {
-        config_value: feedId,
-        updatedAt: new Date()
-      }
-    })
-    await tx.configs.update({
-      where: {
-        config_key: 'rss_user_id'
-      },
-      data: {
-        config_value: userId,
-        updatedAt: new Date()
-      }
-    })
-    await tx.configs.update({
-      where: {
-        config_key: 'umami_host'
-      },
-      data: {
-        config_value: umamiHost,
-        updatedAt: new Date()
-      }
-    })
-    await tx.configs.update({
-      where: {
-        config_key: 'umami_analytics'
-      },
-      data: {
-        config_value: umamiAnalytics,
-        updatedAt: new Date()
-      }
-    })
-    await tx.configs.update({
-      where: {
-        config_key: 'custom_index_style'
-      },
-      data: {
-        config_value: customIndexStyle.toString(),
-        updatedAt: new Date()
-      }
-    })
-    await tx.configs.update({
-      where: {
-        config_key: 'custom_index_download_enable'
-      },
-      data: {
-        config_value: customIndexDownloadEnable ? 'true' : 'false',
-        updatedAt: new Date(),
-      }
-    })
-    await tx.configs.update({
-      where: {
-        config_key: 'preview_max_width_limit_switch'
-      },
-      data: {
-        config_value: enablePreviewImageMaxWidthLimit ? '1' : '0',
-        updatedAt: new Date(),
-      }
-    })
-    if (previewImageMaxWidth > 0) {
+  try {
+    const {
+      title,
+      customFaviconUrl,
+      customAuthor,
+      feedId,
+      userId,
+      customIndexStyle,
+      customIndexDownloadEnable,
+      enablePreviewImageMaxWidthLimit,
+      previewImageMaxWidth,
+      previewQuality,
+      umamiHost,
+      umamiAnalytics,
+      maxUploadFiles
+    } = payload
+
+    await db.$transaction(async (tx) => {
       await tx.configs.update({
         where: {
-          config_key: 'preview_max_width_limit'
+          config_key: 'custom_title'
         },
         data: {
-          config_value: previewImageMaxWidth.toString(),
+          config_value: title,
+          updatedAt: new Date()
+        }
+      })
+      await tx.configs.update({
+        where: {
+          config_key: 'custom_favicon_url'
+        },
+        data: {
+          config_value: customFaviconUrl,
+          updatedAt: new Date()
+        }
+      })
+      await tx.configs.update({
+        where: {
+          config_key: 'custom_author'
+        },
+        data: {
+          config_value: customAuthor,
+          updatedAt: new Date()
+        }
+      })
+      await tx.configs.update({
+        where: {
+          config_key: 'rss_feed_id'
+        },
+        data: {
+          config_value: feedId,
+          updatedAt: new Date()
+        }
+      })
+      await tx.configs.update({
+        where: {
+          config_key: 'rss_user_id'
+        },
+        data: {
+          config_value: userId,
+          updatedAt: new Date()
+        }
+      })
+      await tx.configs.update({
+        where: {
+          config_key: 'umami_host'
+        },
+        data: {
+          config_value: umamiHost,
+          updatedAt: new Date()
+        }
+      })
+      await tx.configs.update({
+        where: {
+          config_key: 'umami_analytics'
+        },
+        data: {
+          config_value: umamiAnalytics,
+          updatedAt: new Date()
+        }
+      })
+      await tx.configs.update({
+        where: {
+          config_key: 'custom_index_style'
+        },
+        data: {
+          config_value: customIndexStyle.toString(),
+          updatedAt: new Date()
+        }
+      })
+      await tx.configs.update({
+        where: {
+          config_key: 'custom_index_download_enable'
+        },
+        data: {
+          config_value: customIndexDownloadEnable ? 'true' : 'false',
           updatedAt: new Date(),
         }
       })
-    }
-    if (previewQuality > 0) {
       await tx.configs.update({
         where: {
-          config_key: 'preview_quality'
+          config_key: 'preview_max_width_limit_switch'
         },
         data: {
-          config_value: previewQuality.toString(),
+          config_value: enablePreviewImageMaxWidthLimit ? '1' : '0',
           updatedAt: new Date(),
         }
       })
-    }
-  })
+      if (previewImageMaxWidth > 0) {
+        await tx.configs.update({
+          where: {
+            config_key: 'preview_max_width_limit'
+          },
+          data: {
+            config_value: previewImageMaxWidth.toString(),
+            updatedAt: new Date(),
+          }
+        })
+      }
+      if (previewQuality > 0) {
+        await tx.configs.update({
+          where: {
+            config_key: 'preview_quality'
+          },
+          data: {
+            config_value: previewQuality.toString(),
+            updatedAt: new Date(),
+          }
+        })
+      }
+      await tx.configs.update({
+        where: {
+          config_key: 'max_upload_files'
+        },
+        data: {
+          config_value: maxUploadFiles.toString(),
+          updatedAt: new Date(),
+        }
+      })
+    })
+  } catch (error) {
+    console.error('Error updating custom info:', error)
+    throw error
+  }
 }
 
 /**
