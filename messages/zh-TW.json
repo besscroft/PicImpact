@@ -137,7 +137,9 @@
     "indexStyleStar": "精選圖片模式",
     "customIndexDownloadEnable": "下載按鈕顯示",
     "umamiHost": "Umami Website Host",
-    "umamiAnalytics": "Umami Website ID"
+    "umamiAnalytics": "Umami Website ID",
+    "maxUploadFiles": "最大上傳檔案數量",
+    "inputMaxUploadFiles": "請輸入最大上傳檔案數量"
   },
   "Password": {
     "onePassword": "舊密碼",

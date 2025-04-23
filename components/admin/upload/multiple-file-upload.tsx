@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { toast } from 'sonner'
 import useSWR from 'swr'
 import { fetcher } from '~/lib/utils/fetcher'
@@ -27,6 +27,7 @@ import {
 import { UploadIcon } from '~/components/icons/upload'
 import { Button } from '~/components/ui/button'
 import { X } from 'lucide-react'
+import { Input } from '~/components/ui/input'
 
 export default function MultipleFileUpload() {
   const [alistStorage, setAlistStorage] = useState([])
@@ -36,6 +37,8 @@ export default function MultipleFileUpload() {
   const [alistMountPath, setAlistMountPath] = useState('')
   const [lat, setLat] = useState('')
   const [lon, setLon] = useState('')
+  const [maxFiles, setMaxFiles] = useState(5)
+  const [files, setFiles] = useState<File[]>([])
   const t = useTranslations()
 
   const { data, isLoading } = useSWR('/api/v1/albums/get', fetcher)
@@ -44,6 +47,13 @@ export default function MultipleFileUpload() {
   const previewImageMaxWidthLimitSwitchOn = configs?.find(config => config.config_key === 'preview_max_width_limit_switch')?.config_value === '1'
   const previewImageMaxWidthLimit = parseInt(configs?.find(config => config.config_key === 'preview_max_width_limit')?.config_value || '0')
   const previewCompressQuality = parseFloat(configs?.find(config => config.config_key === 'preview_quality')?.config_value || '0.2')
+  const maxUploadFiles = parseInt(configs?.find(config => config.config_key === 'max_upload_files')?.config_value || '5')
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      // 客户端代码
+    }
+  }, [])
 
   async function getAlistStorage() {
     if (alistStorage.length > 0) {
@@ -243,8 +253,6 @@ export default function MultipleFileUpload() {
     setLon('')
   }
 
-  const [files, setFiles] = React.useState<File[]>([]);
-
   const onUpload = React.useCallback(
     async (
       files: File[],
@@ -287,10 +295,11 @@ export default function MultipleFileUpload() {
   );
 
   return (
-    <div className="flex flex-col space-y-2 h-full flex-1">
-      <div className="flex space-x-2 flex-wrap space-y-1">
+    <div className="space-y-4">
+      <div className="flex items-center space-x-2">
         <Select
-          defaultValue={storage}
+          disabled={isLoading}
+          value={storage}
           onValueChange={async (value: string) => {
             setStorage(value)
             if (value === 'alist') {
@@ -306,9 +315,9 @@ export default function MultipleFileUpload() {
           <SelectContent>
             <SelectGroup>
               <SelectLabel>{t('Words.album')}</SelectLabel>
-              {storages?.map((storage: any) => (
-                <SelectItem key={storage.value} value={storage.value}>
-                  {storage.label}
+              {storages.map((item) => (
+                <SelectItem key={item.value} value={item.value}>
+                  {item.label}
                 </SelectItem>
               ))}
             </SelectGroup>
@@ -316,8 +325,8 @@ export default function MultipleFileUpload() {
         </Select>
         <Select
           disabled={isLoading}
-          defaultValue={album}
-          onValueChange={(value: string) => setAlbum(value)}
+          value={album}
+          onValueChange={setAlbum}
         >
           <SelectTrigger>
             <SelectValue placeholder={t('Upload.selectAlbum')} />
@@ -333,57 +342,29 @@ export default function MultipleFileUpload() {
             </SelectGroup>
           </SelectContent>
         </Select>
-        {
-          storageSelect && alistStorage?.length > 0 &&
-          <Select
-            disabled={isLoading}
-            defaultValue={alistMountPath}
-            onValueChange={(value: string) => setAlistMountPath(value)}
-          >
-            <SelectTrigger>
-              <SelectValue placeholder={t('Upload.selectAlistDirectory')} />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectGroup>
-                <SelectLabel>{t('Upload.alistDirectory')}</SelectLabel>
-                {alistStorage?.map((storage: any) => (
-                  <SelectItem key={storage?.mount_path} value={storage?.mount_path}>
-                    {storage?.mount_path}
-                  </SelectItem>
-                ))}
-              </SelectGroup>
-            </SelectContent>
-          </Select>
-        }
       </div>
       <FileUpload
-        maxFiles={5}
-        className="w-full h-full"
         value={files}
         onValueChange={setFiles}
         onUpload={onUpload}
+        maxFiles={maxUploadFiles}
         multiple={true}
         disabled={storage === '' || album === '' || (storage === 'alist' && alistMountPath === '')}
       >
-        <FileUploadDropzone className="h-full">
-          <div className="flex flex-col items-center gap-1">
-            <UploadIcon/>
-            <p className="font-medium text-sm">Drag & drop images here</p>
-            <p className="text-muted-foreground text-xs">
-              Or click to browse (max 5 files)
-            </p>
+        <FileUploadDropzone>
+          <div className="flex flex-col items-center justify-center gap-2">
+            <UploadIcon className="h-8 w-8 text-muted-foreground" />
+            <div className="text-sm text-muted-foreground">
+              拖拽文件到此处或点击上传
+            </div>
           </div>
         </FileUploadDropzone>
         <FileUploadList>
           {files.map((file, index) => (
             <FileUploadItem key={index} value={file}>
-              <FileUploadItemPreview/>
-              <FileUploadItemMetadata/>
-              <FileUploadItemDelete asChild>
-                <Button onClick={() => onRemoveFile()} variant="ghost" size="icon" className="size-7">
-                  <X/>
-                </Button>
-              </FileUploadItemDelete>
+              <FileUploadItemPreview />
+              <FileUploadItemMetadata />
+              <FileUploadItemDelete />
             </FileUploadItem>
           ))}
         </FileUploadList>
@@ -391,3 +372,4 @@ export default function MultipleFileUpload() {
     </div>
   )
 }
+

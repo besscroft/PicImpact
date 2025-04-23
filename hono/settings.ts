@@ -12,21 +12,27 @@ import { updatePassword, updateUserInfo } from '~/server/db/operate'
 const app = new Hono()
 
 app.get('/get-custom-info', async (c) => {
-  const data = await fetchConfigsByKeys([
-    'custom_title',
-    'custom_favicon_url',
-    'custom_author',
-    'rss_feed_id',
-    'rss_user_id',
-    'custom_index_style',
-    'custom_index_download_enable',
-    'preview_max_width_limit',
-    'preview_max_width_limit_switch',
-    'preview_quality',
-    'umami_host',
-    'umami_analytics'
-  ]);
-  return c.json(data)
+  try {
+    const data = await fetchConfigsByKeys([
+      'custom_title',
+      'custom_favicon_url',
+      'custom_author',
+      'rss_feed_id',
+      'rss_user_id',
+      'custom_index_style',
+      'custom_index_download_enable',
+      'preview_max_width_limit',
+      'preview_max_width_limit_switch',
+      'preview_quality',
+      'umami_host',
+      'umami_analytics',
+      'max_upload_files'
+    ]);
+    return c.json(data)
+  } catch (error) {
+    console.error('Error fetching custom info:', error)
+    throw new HTTPException(500, { message: 'Failed to fetch custom info', cause: error })
+  }
 })
 
 app.get('/r2-info', async (c) => {
@@ -123,6 +129,7 @@ app.put('/update-custom-info', async (c) => {
     customIndexRandomShow: boolean
     umamiHost: string
     umamiAnalytics: string
+    maxUploadFiles: number
   }
   try {
     await updateCustomInfo(query);

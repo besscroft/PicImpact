@@ -137,7 +137,9 @@
     "indexStyleStar": "Featured Image Style",
     "customIndexDownloadEnable": "Show Download Button",
     "umamiHost": "Umami Website Host",
-    "umamiAnalytics": "Umami Website ID"
+    "umamiAnalytics": "Umami Website ID",
+    "maxUploadFiles": "Maximum Upload Files",
+    "inputMaxUploadFiles": "Please enter the maximum number of files that can be uploaded"
   },
   "Password": {
     "onePassword": "Old Password",
