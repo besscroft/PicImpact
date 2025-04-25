@@ -374,7 +374,8 @@ export async function fetchImageByIdAndAuth(id: string): Promise<ImageType[]> {
   return await db.$queryRaw`
     SELECT
         "images".*,
-        "albums".license AS album_license
+        "albums".license AS album_license,
+        "albums".album_value AS album_value
     FROM
         "images"
     INNER JOIN "images_albums_relation"

@@ -44,8 +44,8 @@ export default function PreviewImage(props: Readonly<PreviewImageHandleProps>) {
   const { data: configData } = useSwrHydrated(configProps)
 
   const handleClose = () => {
-    if (props.data?.album) {
-      router.push(`/${props.data.album}`)
+    if (props.data?.album_value) {
+      router.push(`${props.data.album_value}`)
     } else {
       router.push('/')
     }
