@@ -91,13 +91,6 @@ export default function PreviewImage(props: Readonly<PreviewImageHandleProps>) {
   return (
     <div className="flex flex-col overflow-y-auto scrollbar-hide h-full !rounded-none max-w-none gap-0 p-2">
       <div className="relative h-full flex flex-col space-y-2 sm:grid sm:gap-2 sm:grid-cols-3 w-full">
-        <button 
-          onClick={handleClose}
-          className="absolute right-2 top-2 z-50 p-2 rounded-full bg-gray-800/50 hover:bg-gray-700/50 transition-colors"
-          aria-label="返回"
-        >
-          <XIcon className="text-white" size={24} />
-        </button>
         <div className="show-up-motion sm:col-span-2 sm:flex sm:justify-center sm:max-h-[90vh] select-none">
           {
             props.data.type === 1 ?
@@ -119,7 +112,16 @@ export default function PreviewImage(props: Readonly<PreviewImageHandleProps>) {
           }
         </div>
         <div className="flex w-full flex-col space-y-2">
-          <div className="font-semibold">{props.data?.title}</div>
+          <div className="flex items-center justify-between">
+            <div className="flex-1 font-semibold">{props.data?.title}</div>
+            <button
+              onClick={handleClose}
+              className="z-50"
+              aria-label="返回"
+            >
+              <XIcon className={exifIconClass} size={18} />
+            </button>
+          </div>
           {props.data?.exif?.make && props.data?.exif?.model &&
             <div className="flex items-center space-x-1">
               <CameraIcon className={exifIconClass} size={18} />
