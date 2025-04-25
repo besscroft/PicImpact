@@ -16,6 +16,7 @@ import { ApertureIcon } from '~/components/icons/aperture'
 import { TimerIcon } from '~/components/icons/timer'
 import { CrosshairIcon } from '~/components/icons/crosshair'
 import { GaugeIcon } from '~/components/icons/gauge'
+import { XIcon } from '~/components/icons/x'
 import 'react-lazy-load-image-component/src/effects/blur.css'
 import { Badge } from '~/components/ui/badge'
 import { LanguagesIcon } from '~/components/icons/languages'
@@ -42,22 +43,30 @@ export default function PreviewImage(props: Readonly<PreviewImageHandleProps>) {
   }
   const { data: configData } = useSwrHydrated(configProps)
 
+  const handleClose = () => {
+    if (props.data?.album_value) {
+      router.push(`${props.data.album_value}`)
+    } else {
+      router.push('/')
+    }
+  }
+
   async function downloadImg() {
     setDownload(true)
     try {
       let msg = '开始下载，原图较大，请耐心等待！'
-      if (props.data.album_license != null) {
+      if (props.data?.album_license != null) {
         msg += '图片版权归作者所有, 分享转载需遵循 ' + props.data.album_license + ' 许可协议！'
       }
 
       toast.warning(msg, { duration: 1500 })
-      await fetch(`/api/open/get-image-blob?imageUrl=${props.data.url}`)
+      await fetch(`/api/open/get-image-blob?imageUrl=${props.data?.url}`)
         .then((response) => response.blob())
         .then((blob) => {
           const url = window.URL.createObjectURL(new Blob([blob]));
           const link = document.createElement("a");
           link.href = url;
-          const parsedUrl = new URL(props.data.url);
+          const parsedUrl = new URL(props.data?.url ?? '');
           const filename = parsedUrl.pathname.split('/').pop();
           link.download = filename || "downloaded-file";
           document.body.appendChild(link);
@@ -71,9 +80,17 @@ export default function PreviewImage(props: Readonly<PreviewImageHandleProps>) {
     }
   }
 
+  if (!props.data) {
+    return (
+      <div className="flex items-center justify-center h-full">
+        <p className="text-gray-500">加载中...</p>
+      </div>
+    )
+  }
+
   return (
     <div className="flex flex-col overflow-y-auto scrollbar-hide h-full !rounded-none max-w-none gap-0 p-2">
-      <div className="h-full flex flex-col space-y-2 sm:grid sm:gap-2 sm:grid-cols-3 w-full">
+      <div className="relative h-full flex flex-col space-y-2 sm:grid sm:gap-2 sm:grid-cols-3 w-full">
         <div className="show-up-motion sm:col-span-2 sm:flex sm:justify-center sm:max-h-[90vh] select-none">
           {
             props.data.type === 1 ?
@@ -95,7 +112,16 @@ export default function PreviewImage(props: Readonly<PreviewImageHandleProps>) {
           }
         </div>
         <div className="flex w-full flex-col space-y-2">
-          <div className="font-semibold">{props.data?.title}</div>
+          <div className="flex items-center justify-between">
+            <div className="flex-1 font-semibold">{props.data?.title}</div>
+            <button
+              onClick={handleClose}
+              className="z-50"
+              aria-label="返回"
+            >
+              <XIcon className={exifIconClass} size={18} />
+            </button>
+          </div>
           {props.data?.exif?.make && props.data?.exif?.model &&
             <div className="flex items-center space-x-1">
               <CameraIcon className={exifIconClass} size={18} />
