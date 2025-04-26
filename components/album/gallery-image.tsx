@@ -47,15 +47,15 @@ export default function GalleryImage({ photo, configData }: { photo: ImageType, 
       await fetch(`/api/open/get-image-blob?imageUrl=${photo.url}`)
         .then((response) => response.blob())
         .then((blob) => {
-          const url = window.URL.createObjectURL(new Blob([blob]));
-          const link = document.createElement("a");
-          link.href = url;
-          const parsedUrl = new URL(photo.url);
-          const filename = parsedUrl.pathname.split('/').pop();
-          link.download = filename || "downloaded-file";
-          document.body.appendChild(link);
-          link.click();
-          document.body.removeChild(link);
+          const url = window.URL.createObjectURL(new Blob([blob]))
+          const link = document.createElement('a')
+          link.href = url
+          const parsedUrl = new URL(photo.url)
+          const filename = parsedUrl.pathname.split('/').pop()
+          link.download = filename || 'downloaded-file'
+          document.body.appendChild(link)
+          link.click()
+          document.body.removeChild(link)
         })
     } catch (e) {
       toast.error('下载失败！', { duration: 500 })
@@ -94,7 +94,7 @@ export default function GalleryImage({ photo, configData }: { photo: ImageType, 
           alt={photo.title}
           effect="blur"
           wrapperProps={{
-            style: {transitionDelay: "0.5s"},
+            style: {transitionDelay: '0.5s'},
           }}
         />
         {
@@ -189,7 +189,7 @@ export default function GalleryImage({ photo, configData }: { photo: ImageType, 
               try {
                 const url = photo?.url
                 // @ts-ignore
-                await navigator.clipboard.writeText(url);
+                await navigator.clipboard.writeText(url)
                 let msg = '复制图片链接成功！'
                 if (photo?.album_license != null) {
                   msg = '图片版权归作者所有, 分享转载需遵循 ' + photo?.album_license + ' 许可协议！'
@@ -207,7 +207,7 @@ export default function GalleryImage({ photo, configData }: { photo: ImageType, 
               try {
                 const url = window.location.origin + '/preview/' + photo.id
                 // @ts-ignore
-                await navigator.clipboard.writeText(url);
+                await navigator.clipboard.writeText(url)
                 toast.success('复制分享直链成功！', {duration: 500})
               } catch (error) {
                 toast.error('复制分享直链失败！', {duration: 500})

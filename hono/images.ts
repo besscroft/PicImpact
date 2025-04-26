@@ -24,7 +24,7 @@ app.post('/add', async (c) => {
     throw new HTTPException(500, { message: 'Image width cannot be empty and must be greater than 0' })
   }
   try {
-    await insertImage(image);
+    await insertImage(image)
     return c.json({ code: 200, message: 'Success' })
   } catch (e) {
     throw new HTTPException(500, { message: 'Failed', cause: e })
@@ -34,7 +34,7 @@ app.post('/add', async (c) => {
 app.delete('/batch-delete', async (c) => {
   try {
     const data = await c.req.json()
-    await deleteBatchImage(data);
+    await deleteBatchImage(data)
     return c.json({ code: 200, message: 'Success' })
   } catch (e) {
     throw new HTTPException(500, { message: 'Failed', cause: e })
@@ -44,7 +44,7 @@ app.delete('/batch-delete', async (c) => {
 app.delete('/delete/:id', async (c) => {
   try {
     const { id } = c.req.param()
-    await deleteImage(id);
+    await deleteImage(id)
     return c.json({ code: 200, message: 'Success' })
   } catch (e) {
     throw new HTTPException(500, { message: 'Failed', cause: e })
@@ -63,7 +63,7 @@ app.put('/update', async (c) => {
     throw new HTTPException(500, { message: 'Image width cannot be empty and must be greater than 0' })
   }
   try {
-    await updateImage(image);
+    await updateImage(image)
     return c.json({ code: 200, message: 'Success' })
   } catch (e) {
     throw new HTTPException(500, { message: 'Failed', cause: e })
@@ -72,14 +72,14 @@ app.put('/update', async (c) => {
 
 app.put('/update-show', async (c) => {
   const image = await c.req.json()
-  const data = await updateImageShow(image.id, image.show);
+  const data = await updateImageShow(image.id, image.show)
   return c.json(data)
 })
 
 app.put('/update-Album', async (c) => {
   const image = await c.req.json()
   try {
-    await updateImageAlbum(image.imageId, image.albumId);
+    await updateImageAlbum(image.imageId, image.albumId)
     return c.json({
       code: 200,
       message: 'Success'

@@ -18,7 +18,7 @@ function renderNextImage(
 ) {
   return (
     <BlurImage photo={photo} dataList={dataList} />
-  );
+  )
 }
 
 export default function AlbumGallery(props : Readonly<ImageHandleProps>) {
@@ -33,7 +33,7 @@ export default function AlbumGallery(props : Readonly<ImageHandleProps>) {
       revalidateIfStale: false,
       revalidateOnReconnect: false,
     })
-  const dataList = data ? [].concat(...data) : [];
+  const dataList = data ? [].concat(...data) : []
   const t = useTranslations()
 
   return (
@@ -44,9 +44,9 @@ export default function AlbumGallery(props : Readonly<ImageHandleProps>) {
         <div className="w-full sm:w-[66.667%] mx-auto">
           <MasonryPhotoAlbum
             columns={(containerWidth) => {
-              if (containerWidth < 768) return 2;
-              if (containerWidth < 1024) return 3;
-              return 4;
+              if (containerWidth < 768) return 2
+              if (containerWidth < 1024) return 3
+              return 4
             }}
             photos={
               dataList?.map((item: ImageType) => ({

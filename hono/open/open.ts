@@ -8,7 +8,7 @@ const app = new Hono()
 
 app.get('/get-auth-status', async (c) => {
   try {
-    const data = await queryAuthStatus();
+    const data = await queryAuthStatus()
 
     return c.json({
       code: 200,
@@ -33,7 +33,7 @@ app.get('/get-image-blob', async (c) => {
 app.get('/get-image-by-id', async (c) => {
   const { searchParams } = new URL(c.req.url)
   const id = searchParams.get('id')
-  const data = await fetchImageByIdAndAuth(String(id));
+  const data = await fetchImageByIdAndAuth(String(id))
   if (data && data?.length > 0) {
     return c.json({ code: 200, message: 'Image data retrieved successfully', data: data })
   } else {

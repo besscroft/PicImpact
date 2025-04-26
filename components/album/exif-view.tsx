@@ -7,7 +7,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "~/components/ui/table"
+} from '~/components/ui/table'
 import { Card } from '~/components/ui/card'
 import React from 'react'
 import type { ImageDataProps } from '~/types/props'

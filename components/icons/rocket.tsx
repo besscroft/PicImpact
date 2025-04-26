@@ -31,7 +31,7 @@ const variants: Variants = {
       times: [0, 0.15, 0.3, 0.45, 0.6, 0.75, 0.9, 1],
     },
   },
-};
+}
 
 const fireVariants: Variants = {
   normal: {
@@ -52,48 +52,48 @@ const fireVariants: Variants = {
       times: [0, 0.2, 0.5, 0.8, 1],
     },
   },
-};
+}
 
 const RocketIcon = forwardRef<RocketIconHandle, RocketIconProps>(
   ({ onMouseEnter, onMouseLeave, className, size = 28, ...props }, ref) => {
-    const controls = useAnimation();
-    const isControlledRef = useRef(false);
+    const controls = useAnimation()
+    const isControlledRef = useRef(false)
 
     useImperativeHandle(ref, () => {
-      isControlledRef.current = true;
+      isControlledRef.current = true
 
       return {
         startAnimation: () => controls.start('animate'),
         stopAnimation: () => controls.start('normal'),
-      };
-    });
+      }
+    })
 
     const handleMouseEnter = useCallback(
       (e: React.MouseEvent<HTMLDivElement>) => {
         if (!isControlledRef.current) {
-          controls.start('animate');
+          controls.start('animate')
         } else {
-          onMouseEnter?.(e);
+          onMouseEnter?.(e)
         }
       },
       [controls, onMouseEnter]
-    );
+    )
 
     const handleMouseLeave = useCallback(
       (e: React.MouseEvent<HTMLDivElement>) => {
         if (!isControlledRef.current) {
-          controls.start('normal');
+          controls.start('normal')
         } else {
-          onMouseLeave?.(e);
+          onMouseLeave?.(e)
         }
       },
       [controls, onMouseLeave]
-    );
+    )
 
     return (
       <div
         className={cn(
-          `cursor-pointer select-none p-2 hover:bg-accent rounded-md transition-colors duration-200 flex items-center justify-center`,
+          'cursor-pointer select-none p-2 hover:bg-accent rounded-md transition-colors duration-200 flex items-center justify-center',
           className
         )}
         onMouseEnter={handleMouseEnter}
@@ -123,10 +123,10 @@ const RocketIcon = forwardRef<RocketIconHandle, RocketIconProps>(
           <path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5" />
         </motion.svg>
       </div>
-    );
+    )
   }
-);
+)
 
-RocketIcon.displayName = 'RocketIcon';
+RocketIcon.displayName = 'RocketIcon'
 
-export { RocketIcon };
+export { RocketIcon }

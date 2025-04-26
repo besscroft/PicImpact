@@ -28,7 +28,7 @@ export default function Gallery(props : Readonly<ImageHandleProps>) {
     args: 'system-config',
   }
   const { data: configData } = useSwrHydrated(configProps)
-  const dataList = data ? [].concat(...data) : [];
+  const dataList = data ? [].concat(...data) : []
   const t = useTranslations()
 
   return (

@@ -118,7 +118,7 @@ export default function PreviewImageExif(props: Readonly<ImageDataProps>) {
                 try {
                   const exif = JSON.stringify(props.data?.exif)
                   // @ts-ignore
-                  await navigator.clipboard.writeText(exif);
+                  await navigator.clipboard.writeText(exif)
                   toast.success('复制成功！', {duration: 1500})
                 } catch (error) {
                   toast.error('复制失败！', {duration: 500})

@@ -1,4 +1,4 @@
-'use client';
+'use client'
 
 import type { Variants } from 'motion/react'
 import { motion, useAnimation } from 'motion/react'
@@ -33,7 +33,7 @@ const handVariants: Variants = {
       ease: [0.4, 0, 0.2, 1],
     },
   },
-};
+}
 
 const buttonVariants: Variants = {
   normal: {
@@ -48,48 +48,48 @@ const buttonVariants: Variants = {
       ease: [0.4, 0, 0.2, 1],
     },
   },
-};
+}
 
 const TimerIcon = forwardRef<TimerIconHandle, TimerIconProps>(
   ({ onMouseEnter, onMouseLeave, className, size = 28, ...props }, ref) => {
-    const controls = useAnimation();
-    const isControlledRef = useRef(false);
+    const controls = useAnimation()
+    const isControlledRef = useRef(false)
 
     useImperativeHandle(ref, () => {
-      isControlledRef.current = true;
+      isControlledRef.current = true
 
       return {
         startAnimation: () => controls.start('animate'),
         stopAnimation: () => controls.start('normal'),
-      };
-    });
+      }
+    })
 
     const handleMouseEnter = useCallback(
       (e: React.MouseEvent<HTMLDivElement>) => {
         if (!isControlledRef.current) {
-          controls.start('animate');
+          controls.start('animate')
         } else {
-          onMouseEnter?.(e);
+          onMouseEnter?.(e)
         }
       },
       [controls, onMouseEnter]
-    );
+    )
 
     const handleMouseLeave = useCallback(
       (e: React.MouseEvent<HTMLDivElement>) => {
         if (!isControlledRef.current) {
-          controls.start('normal');
+          controls.start('normal')
         } else {
-          onMouseLeave?.(e);
+          onMouseLeave?.(e)
         }
       },
       [controls, onMouseLeave]
-    );
+    )
 
     return (
       <div
         className={cn(
-          `cursor-pointer select-none p-2 hover:bg-accent rounded-md transition-colors duration-200 flex items-center justify-center`,
+          'cursor-pointer select-none p-2 hover:bg-accent rounded-md transition-colors duration-200 flex items-center justify-center',
           className
         )}
         onMouseEnter={handleMouseEnter}
@@ -127,10 +127,10 @@ const TimerIcon = forwardRef<TimerIconHandle, TimerIconProps>(
           <circle cx="12" cy="14" r="8" />
         </svg>
       </div>
-    );
+    )
   }
-);
+)
 
-TimerIcon.displayName = 'TimerIcon';
+TimerIcon.displayName = 'TimerIcon'
 
-export { TimerIcon };
+export { TimerIcon }

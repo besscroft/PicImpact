@@ -18,7 +18,7 @@ interface ClockIconProps extends HTMLAttributes<HTMLDivElement> {
 const handTransition: Transition = {
   duration: 0.6,
   ease: [0.4, 0, 0.2, 1],
-};
+}
 
 const handVariants: Variants = {
   normal: {
@@ -29,12 +29,12 @@ const handVariants: Variants = {
   animate: {
     rotate: 360,
   },
-};
+}
 
 const minuteHandTransition: Transition = {
   duration: 0.5,
   ease: 'easeInOut',
-};
+}
 
 const minuteHandVariants: Variants = {
   normal: {
@@ -45,48 +45,48 @@ const minuteHandVariants: Variants = {
   animate: {
     rotate: 45,
   },
-};
+}
 
 const ClockIcon = forwardRef<ClockIconHandle, ClockIconProps>(
   ({ onMouseEnter, onMouseLeave, className, size = 28, ...props }, ref) => {
-    const controls = useAnimation();
-    const isControlledRef = useRef(false);
+    const controls = useAnimation()
+    const isControlledRef = useRef(false)
 
     useImperativeHandle(ref, () => {
-      isControlledRef.current = true;
+      isControlledRef.current = true
 
       return {
         startAnimation: () => controls.start('animate'),
         stopAnimation: () => controls.start('normal'),
-      };
-    });
+      }
+    })
 
     const handleMouseEnter = useCallback(
       (e: React.MouseEvent<HTMLDivElement>) => {
         if (!isControlledRef.current) {
-          controls.start('animate');
+          controls.start('animate')
         } else {
-          onMouseEnter?.(e);
+          onMouseEnter?.(e)
         }
       },
       [controls, onMouseEnter]
-    );
+    )
 
     const handleMouseLeave = useCallback(
       (e: React.MouseEvent<HTMLDivElement>) => {
         if (!isControlledRef.current) {
-          controls.start('normal');
+          controls.start('normal')
         } else {
-          onMouseLeave?.(e);
+          onMouseLeave?.(e)
         }
       },
       [controls, onMouseLeave]
-    );
+    )
 
     return (
       <div
         className={cn(
-          `cursor-pointer select-none p-2 hover:bg-accent rounded-md transition-colors duration-200 flex items-center justify-center`,
+          'cursor-pointer select-none p-2 hover:bg-accent rounded-md transition-colors duration-200 flex items-center justify-center',
           className
         )}
         onMouseEnter={handleMouseEnter}
@@ -127,10 +127,10 @@ const ClockIcon = forwardRef<ClockIconHandle, ClockIconProps>(
           />
         </svg>
       </div>
-    );
+    )
   }
-);
+)
 
-ClockIcon.displayName = 'ClockIcon';
+ClockIcon.displayName = 'ClockIcon'
 
-export { ClockIcon };
+export { ClockIcon }

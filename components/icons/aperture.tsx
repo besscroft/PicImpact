@@ -77,22 +77,22 @@ const ApertureIcon = forwardRef<ApertureIconHandle, ApertureIconProps>(
 
       return {
         startAnimation: () => {
-          circleControls.start("animate")
-          blade1Controls.start("animate")
-          blade2Controls.start("animate")
-          blade3Controls.start("animate")
-          blade4Controls.start("animate")
-          blade5Controls.start("animate")
-          blade6Controls.start("animate")
+          circleControls.start('animate')
+          blade1Controls.start('animate')
+          blade2Controls.start('animate')
+          blade3Controls.start('animate')
+          blade4Controls.start('animate')
+          blade5Controls.start('animate')
+          blade6Controls.start('animate')
         },
         stopAnimation: () => {
-          circleControls.start("normal")
-          blade1Controls.start("normal")
-          blade2Controls.start("normal")
-          blade3Controls.start("normal")
-          blade4Controls.start("normal")
-          blade5Controls.start("normal")
-          blade6Controls.start("normal")
+          circleControls.start('normal')
+          blade1Controls.start('normal')
+          blade2Controls.start('normal')
+          blade3Controls.start('normal')
+          blade4Controls.start('normal')
+          blade5Controls.start('normal')
+          blade6Controls.start('normal')
         },
       }
     })
@@ -100,13 +100,13 @@ const ApertureIcon = forwardRef<ApertureIconHandle, ApertureIconProps>(
     const handleMouseEnter = useCallback(
       (e: React.MouseEvent<HTMLDivElement>) => {
         if (!isControlledRef.current) {
-          circleControls.start("animate")
-          blade1Controls.start("animate")
-          blade2Controls.start("animate")
-          blade3Controls.start("animate")
-          blade4Controls.start("animate")
-          blade5Controls.start("animate")
-          blade6Controls.start("animate")
+          circleControls.start('animate')
+          blade1Controls.start('animate')
+          blade2Controls.start('animate')
+          blade3Controls.start('animate')
+          blade4Controls.start('animate')
+          blade5Controls.start('animate')
+          blade6Controls.start('animate')
         } else {
           onMouseEnter?.(e)
         }
@@ -126,13 +126,13 @@ const ApertureIcon = forwardRef<ApertureIconHandle, ApertureIconProps>(
     const handleMouseLeave = useCallback(
       (e: React.MouseEvent<HTMLDivElement>) => {
         if (!isControlledRef.current) {
-          circleControls.start("normal")
-          blade1Controls.start("normal")
-          blade2Controls.start("normal")
-          blade3Controls.start("normal")
-          blade4Controls.start("normal")
-          blade5Controls.start("normal")
-          blade6Controls.start("normal")
+          circleControls.start('normal')
+          blade1Controls.start('normal')
+          blade2Controls.start('normal')
+          blade3Controls.start('normal')
+          blade4Controls.start('normal')
+          blade5Controls.start('normal')
+          blade6Controls.start('normal')
         } else {
           onMouseLeave?.(e)
         }
@@ -152,7 +152,7 @@ const ApertureIcon = forwardRef<ApertureIconHandle, ApertureIconProps>(
     return (
       <div
         className={cn(
-          `cursor-pointer select-none p-2 hover:bg-accent rounded-md transition-colors duration-200 flex items-center justify-center`,
+          'cursor-pointer select-none p-2 hover:bg-accent rounded-md transition-colors duration-200 flex items-center justify-center',
           className,
         )}
         onMouseEnter={handleMouseEnter}
@@ -231,6 +231,6 @@ const ApertureIcon = forwardRef<ApertureIconHandle, ApertureIconProps>(
   },
 )
 
-ApertureIcon.displayName = 'ApertureIcon';
+ApertureIcon.displayName = 'ApertureIcon'
 
 export { ApertureIcon }

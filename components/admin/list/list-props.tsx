@@ -68,7 +68,7 @@ export default function ListProps(props : Readonly<ImageServerHandleProps>) {
     try {
       setUpdateShowLoading(true)
       setUpdateShowId(id)
-      const res = await fetch(`/api/v1/images/update-show`, {
+      const res = await fetch('/api/v1/images/update-show', {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -99,7 +99,7 @@ export default function ListProps(props : Readonly<ImageServerHandleProps>) {
     }
     try {
       setUpdateImageAlbumLoading(true)
-      const res = await fetch(`/api/v1/images/update-Album`, {
+      const res = await fetch('/api/v1/images/update-Album', {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

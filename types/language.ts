@@ -1,1 +1,1 @@
-export type Language = Readonly<"en" | "zh" | "zh-TW" | "ja">
+export type Language = Readonly<'en' | 'zh' | 'zh-TW' | 'ja'>

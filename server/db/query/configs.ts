@@ -22,7 +22,7 @@ export async function fetchConfigsByKeys(keys: string[]) {
       config_value: true,
       detail: true
     }
-  });
+  })
 }
 
 /**
@@ -56,7 +56,7 @@ export async function queryAuthStatus() {
       config_key: true,
       config_value: true
     }
-  });
+  })
 }
 
 /**
@@ -73,7 +73,7 @@ export async function queryAuthTemplateSecret() {
       config_key: true,
       config_value: true
     }
-  });
+  })
 }
 
 /**
@@ -90,5 +90,5 @@ export async function queryAuthSecret() {
       config_key: true,
       config_value: true
     }
-  });
+  })
 }

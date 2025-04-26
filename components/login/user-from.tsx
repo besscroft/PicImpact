@@ -32,7 +32,7 @@ import { validate2FA } from '~/server/actions'
 export const UserFrom = ({
   className,
   ...props
-}: React.ComponentPropsWithoutRef<"div">) => {
+}: React.ComponentPropsWithoutRef<'div'>) => {
   const router = useRouter()
   const t = useTranslations()
 
@@ -57,9 +57,9 @@ export const UserFrom = ({
   function zHandle(): SafeParseReturnType<string | any, string | any> {
     const parsedCredentials = z
       .object({ email: z.string().email(), password: z.string().min(6) })
-      .safeParse({ email, password });
+      .safeParse({ email, password })
 
-    return parsedCredentials;
+    return parsedCredentials
   }
 
   const handleLogin = async () => {
@@ -108,7 +108,7 @@ export const UserFrom = ({
   }
 
   return (
-    <div className={cn("flex flex-col gap-6", className)} {...props}>
+    <div className={cn('flex flex-col gap-6', className)} {...props}>
       <Card>
         <CardHeader className="text-center">
           <CardTitle className="text-xl select-none">{t('Login.title')}</CardTitle>

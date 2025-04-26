@@ -13,23 +13,23 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     signIn: '/login',
   },
   session: {
-    strategy: "jwt",
+    strategy: 'jwt',
   },
   providers: [
     CredentialsProvider({
-      id: "Credentials",
-      name: "Credentials",
+      id: 'Credentials',
+      name: 'Credentials',
       credentials: {
-        email: { label: "email", type: "email", placeholder: "example@qq.com" },
-        password: { label: "Password", type: "password" }
+        email: { label: 'email', type: 'email', placeholder: 'example@qq.com' },
+        password: { label: 'Password', type: 'password' }
       },
       async authorize(credentials, req) {
         const parsedCredentials = z
           .object({ email: z.string().email(), password: z.string().min(6) })
-          .safeParse(credentials);
+          .safeParse(credentials)
 
         if (parsedCredentials.success) {
-          const { email, password } = parsedCredentials.data;
+          const { email, password } = parsedCredentials.data
 
           const user = await db.user.findFirst({
             where: {
@@ -43,7 +43,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             const hashedPassword = CryptoJS.HmacSHA512(password, secretKey?.config_value).toString()
 
             if (user && hashedPassword === user.password) {
-              return user;
+              return user
             }
           }
         }
@@ -60,10 +60,10 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         token.email = user.email
         token.image = user.image
       }
-      if(trigger == "update" && session) {
-        token.name = session.user.name;
-        token.email = session.user.email;
-        token.image = session.user.image;
+      if(trigger == 'update' && session) {
+        token.name = session.user.name
+        token.email = session.user.email
+        token.image = session.user.image
       }
       return token
     },

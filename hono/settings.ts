@@ -27,7 +27,7 @@ app.get('/get-custom-info', async (c) => {
       'umami_host',
       'umami_analytics',
       'max_upload_files'
-    ]);
+    ])
     return c.json(data)
   } catch (error) {
     console.error('Error fetching custom info:', error)
@@ -43,13 +43,13 @@ app.get('/r2-info', async (c) => {
     'r2_bucket',
     'r2_storage_folder',
     'r2_public_domain'
-  ]);
+  ])
   return c.json(data)
 })
 
-app.get("/get-user-info", async (c) => {
+app.get('/get-user-info', async (c) => {
   const { user } = await auth()
-  const data = await fetchUserById(user?.id);
+  const data = await fetchUserById(user?.id)
   
   return c.json({
     id: data?.id,
@@ -69,7 +69,7 @@ app.get('/s3-info', async (c) => {
     'force_path_style',
     's3_cdn',
     's3_cdn_url'
-  ]);
+  ])
   return c.json(data)
 })
 
@@ -79,7 +79,7 @@ app.put('/update-alist-info', async (c) => {
   const alistUrl = query?.find((item: Config) => item.config_key === 'alist_url').config_value
   const alistToken = query?.find((item: Config) => item.config_key === 'alist_token').config_value
 
-  const data = await updateAListConfig({ alistUrl, alistToken });
+  const data = await updateAListConfig({ alistUrl, alistToken })
   return c.json(data)
 })
 
@@ -93,7 +93,7 @@ app.put('/update-r2-info', async (c) => {
   const r2StorageFolder = query?.find((item: Config) => item.config_key === 'r2_storage_folder').config_value
   const r2PublicDomain = query?.find((item: Config) => item.config_key === 'r2_public_domain').config_value
 
-  const data = await updateR2Config({ r2AccesskeyId, r2AccesskeySecret, r2Endpoint, r2Bucket, r2StorageFolder, r2PublicDomain });
+  const data = await updateR2Config({ r2AccesskeyId, r2AccesskeySecret, r2Endpoint, r2Bucket, r2StorageFolder, r2PublicDomain })
   return c.json(data)
 })
 
@@ -110,7 +110,7 @@ app.put('/update-s3-info', async (c) => {
   const s3Cdn = query?.find((item: Config) => item.config_key === 's3_cdn').config_value
   const s3CdnUrl = query?.find((item: Config) => item.config_key === 's3_cdn_url').config_value
 
-  const data = await updateS3Config({ accesskeyId, accesskeySecret, region, endpoint, bucket, storageFolder, forcePathStyle, s3Cdn, s3CdnUrl });
+  const data = await updateS3Config({ accesskeyId, accesskeySecret, region, endpoint, bucket, storageFolder, forcePathStyle, s3Cdn, s3CdnUrl })
   return c.json(data)
 })
 
@@ -132,7 +132,7 @@ app.put('/update-custom-info', async (c) => {
     maxUploadFiles: number
   }
   try {
-    await updateCustomInfo(query);
+    await updateCustomInfo(query)
     return c.json({
       code: 200,
       message: 'Success'
@@ -155,7 +155,7 @@ app.put('/update-password', async (c) => {
   try {
     if (daUser && hashedOldPassword === daUser.password) {
       const hashedNewPassword = CryptoJS.HmacSHA512(pwd.newPassword, secretKey?.config_value).toString()
-      await updatePassword(user?.id, hashedNewPassword);
+      await updatePassword(user?.id, hashedNewPassword)
       return c.json({
         code: 200,
         message: 'Success'
@@ -185,7 +185,7 @@ app.put('/update-user-info', async (c) => {
     if (email) updates.email = email
     if (avatar) updates.image = avatar
     if (Object.keys(updates).length > 0) {
-      await updateUserInfo(user?.id, updates);
+      await updateUserInfo(user?.id, updates)
     }
     
     return c.json({

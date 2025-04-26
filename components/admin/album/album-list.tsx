@@ -59,7 +59,7 @@ export default function AlbumList(props : Readonly<HandleProps>) {
     try {
       setUpdateAlbumId(id)
       setUpdateAlbumLoading(true)
-      const res = await fetch(`/api/v1/albums/update-show`, {
+      const res = await fetch('/api/v1/albums/update-show', {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

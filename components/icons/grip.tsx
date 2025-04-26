@@ -25,44 +25,44 @@ const CIRCLES = [
   { cx: 5, cy: 12 }, // Middle left
   { cx: 12, cy: 19 }, // Bottom middle
   { cx: 5, cy: 19 }, // Bottom left
-];
+]
 
 const GripIcon = forwardRef<GripIconHandle, GripIconProps>(
   ({ onMouseEnter, onMouseLeave, className, size = 28, ...props }, ref) => {
-    const [isHovered, setIsHovered] = useState(false);
-    const controls = useAnimation();
-    const isControlledRef = useRef(false);
+    const [isHovered, setIsHovered] = useState(false)
+    const controls = useAnimation()
+    const isControlledRef = useRef(false)
 
     useImperativeHandle(ref, () => {
-      isControlledRef.current = true;
+      isControlledRef.current = true
 
       return {
         startAnimation: async () => setIsHovered(true),
         stopAnimation: () => setIsHovered(false),
-      };
-    });
+      }
+    })
 
     const handleMouseEnter = useCallback(
       (e: React.MouseEvent<HTMLDivElement>) => {
         if (!isControlledRef.current) {
-          setIsHovered(true);
+          setIsHovered(true)
         } else {
-          onMouseEnter?.(e);
+          onMouseEnter?.(e)
         }
       },
       [onMouseEnter]
-    );
+    )
 
     const handleMouseLeave = useCallback(
       (e: React.MouseEvent<HTMLDivElement>) => {
         if (!isControlledRef.current) {
-          setIsHovered(false);
+          setIsHovered(false)
         } else {
-          onMouseLeave?.(e);
+          onMouseLeave?.(e)
         }
       },
       [onMouseLeave]
-    );
+    )
 
     useEffect(() => {
       const animateCircles = async () => {
@@ -73,24 +73,24 @@ const GripIcon = forwardRef<GripIconHandle, GripIconProps>(
               delay: i * 0.1,
               duration: 0.2,
             },
-          }));
+          }))
           await controls.start((i) => ({
             opacity: 1,
             transition: {
               delay: i * 0.1,
               duration: 0.2,
             },
-          }));
+          }))
         }
-      };
+      }
 
-      animateCircles();
-    }, [isHovered, controls]);
+      animateCircles()
+    }, [isHovered, controls])
 
     return (
       <div
         className={cn(
-          `cursor-pointer select-none p-2 hover:bg-accent rounded-md transition-colors duration-200 flex items-center justify-center`,
+          'cursor-pointer select-none p-2 hover:bg-accent rounded-md transition-colors duration-200 flex items-center justify-center',
           className
         )}
         onMouseEnter={handleMouseEnter}
@@ -129,10 +129,10 @@ const GripIcon = forwardRef<GripIconHandle, GripIconProps>(
           </AnimatePresence>
         </svg>
       </div>
-    );
+    )
   }
-);
+)
 
-GripIcon.displayName = 'GripIcon';
+GripIcon.displayName = 'GripIcon'
 
-export { GripIcon };
+export { GripIcon }

@@ -31,7 +31,7 @@ const pathVariants: Variants = {
       },
     },
   }),
-};
+}
 
 const svgVariants: Variants = {
   normal: { opacity: 1 },
@@ -42,58 +42,58 @@ const svgVariants: Variants = {
       delayChildren: 0.2,
     },
   },
-};
+}
 
 const LanguagesIcon = forwardRef<LanguagesIconHandle, LanguagesIconProps>(
   ({ onMouseEnter, onMouseLeave, className, size = 28, ...props }, ref) => {
-    const svgControls = useAnimation();
-    const pathControls = useAnimation();
+    const svgControls = useAnimation()
+    const pathControls = useAnimation()
 
-    const isControlledRef = useRef(false);
+    const isControlledRef = useRef(false)
 
     useImperativeHandle(ref, () => {
-      isControlledRef.current = true;
+      isControlledRef.current = true
 
       return {
         startAnimation: () => {
-          svgControls.start('animate');
-          pathControls.start('animate');
+          svgControls.start('animate')
+          pathControls.start('animate')
         },
         stopAnimation: () => {
-          svgControls.start('normal');
-          pathControls.start('normal');
+          svgControls.start('normal')
+          pathControls.start('normal')
         },
-      };
-    });
+      }
+    })
 
     const handleMouseEnter = useCallback(
       (e: React.MouseEvent<HTMLDivElement>) => {
         if (!isControlledRef.current) {
-          svgControls.start('animate');
-          pathControls.start('animate');
+          svgControls.start('animate')
+          pathControls.start('animate')
         } else {
-          onMouseEnter?.(e);
+          onMouseEnter?.(e)
         }
       },
       [onMouseEnter, pathControls, svgControls]
-    );
+    )
 
     const handleMouseLeave = useCallback(
       (e: React.MouseEvent<HTMLDivElement>) => {
         if (!isControlledRef.current) {
-          svgControls.start('normal');
-          pathControls.start('normal');
+          svgControls.start('normal')
+          pathControls.start('normal')
         } else {
-          onMouseLeave?.(e);
+          onMouseLeave?.(e)
         }
       },
       [svgControls, pathControls, onMouseLeave]
-    );
+    )
 
     return (
       <div
         className={cn(
-          `cursor-pointer select-none p-2 hover:bg-accent rounded-md transition-colors duration-200 flex items-center justify-center`,
+          'cursor-pointer select-none p-2 hover:bg-accent rounded-md transition-colors duration-200 flex items-center justify-center',
           className
         )}
         onMouseEnter={handleMouseEnter}
@@ -151,10 +151,10 @@ const LanguagesIcon = forwardRef<LanguagesIconHandle, LanguagesIconProps>(
           />
         </motion.svg>
       </div>
-    );
+    )
   }
-);
+)
 
-LanguagesIcon.displayName = 'LanguagesIcon';
+LanguagesIcon.displayName = 'LanguagesIcon'
 
-export { LanguagesIcon };
+export { LanguagesIcon }

@@ -16,32 +16,32 @@ interface RefreshCCWIconProps extends HTMLAttributes<HTMLDivElement> {
 
 const RefreshCCWIcon = forwardRef<RefreshCCWIconHandle, RefreshCCWIconProps>(
   ({ onMouseEnter, onMouseLeave, className, size = 28, ...props }, ref) => {
-    const controls = useAnimation();
-    const isControlledRef = useRef(false);
+    const controls = useAnimation()
+    const isControlledRef = useRef(false)
 
     useImperativeHandle(ref, () => {
-      isControlledRef.current = true;
+      isControlledRef.current = true
       return {
         startAnimation: () => controls.start('animate'),
         stopAnimation: () => controls.start('normal'),
-      };
-    });
+      }
+    })
 
     const handleMouseEnter = useCallback(
       (e: React.MouseEvent<HTMLDivElement>) => {
-        if (!isControlledRef.current) controls.start('animate');
-        else onMouseEnter?.(e);
+        if (!isControlledRef.current) controls.start('animate')
+        else onMouseEnter?.(e)
       },
       [controls, onMouseEnter]
-    );
+    )
 
     const handleMouseLeave = useCallback(
       (e: React.MouseEvent<HTMLDivElement>) => {
-        if (!isControlledRef.current) controls.start('normal');
-        else onMouseLeave?.(e);
+        if (!isControlledRef.current) controls.start('normal')
+        else onMouseLeave?.(e)
       },
       [controls, onMouseLeave]
-    );
+    )
 
     return (
       <div
@@ -79,10 +79,10 @@ const RefreshCCWIcon = forwardRef<RefreshCCWIconHandle, RefreshCCWIconProps>(
           </motion.g>
         </svg>
       </div>
-    );
+    )
   }
-);
+)
 
-RefreshCCWIcon.displayName = 'RefreshCCWIcon';
+RefreshCCWIcon.displayName = 'RefreshCCWIcon'
 
-export { RefreshCCWIcon };
+export { RefreshCCWIcon }

@@ -101,9 +101,9 @@ export default function MultipleFileUpload() {
       } else {
         setLon('')
       }
-      const reader = new FileReader();
+      const reader = new FileReader()
       reader.onload = (e) => {
-        const img = new Image();
+        const img = new Image()
         img.onload = async () => {
           const data = {
             album: album,
@@ -131,14 +131,14 @@ export default function MultipleFileUpload() {
           } else {
             toast.error('保存失败')
           }
-        };
+        }
         // @ts-ignore
-        img.src = e.target.result;
-      };
-      reader.readAsDataURL(file);
+        img.src = e.target.result
+      }
+      reader.readAsDataURL(file)
     } catch (e) {
       console.error(e)
-      throw new Error("Upload failed")
+      throw new Error('Upload failed')
     }
   }
 
@@ -154,22 +154,22 @@ export default function MultipleFileUpload() {
           if (res?.code === 200) {
             await autoSubmit(flag ? outputBuffer : file, url, res?.data)
           } else {
-            throw new Error("Upload failed")
+            throw new Error('Upload failed')
           }
         } else {
           const compressedFileFromBlob = new File([compressedFile], flag ? outputBuffer.name : file.name, {
             type: compressedFile.type,
-          });
+          })
           const res = await uploadFile(compressedFileFromBlob, type, storage, alistMountPath)
           if (res?.code === 200) {
             await autoSubmit(flag ? outputBuffer : file, url, res?.data)
           } else {
-            throw new Error("Upload failed")
+            throw new Error('Upload failed')
           }
         }
       },
       error() {
-        throw new Error("Upload failed")
+        throw new Error('Upload failed')
       },
     })
   }
@@ -182,20 +182,20 @@ export default function MultipleFileUpload() {
         await uploadPreviewImage(file, album + '/preview', res?.data, flag, outputBuffer)
       }
     } catch (e) {
-      throw new Error("Upload failed")
+      throw new Error('Upload failed')
     }
   }
 
   async function onRequestUpload(file: File) {
-    let outputBuffer: Blob | Blob[];
-    const ext = file.name.split(".").pop()?.toLowerCase();
+    let outputBuffer: Blob | Blob[]
+    const ext = file.name.split('.').pop()?.toLowerCase()
     // 获取文件名但是去掉扩展名部分
-    const fileName = file.name.split(".").slice(0, -1).join(".");
+    const fileName = file.name.split('.').slice(0, -1).join('.')
     const flag = ext === 'heic' || ext === 'heif'
     if (flag) {
       // 把 HEIC 转成 JPEG
       const heic2any = await import('heic2any')
-      outputBuffer = await heic2any.default({ blob: file, toType: 'image/jpeg' });
+      outputBuffer = await heic2any.default({ blob: file, toType: 'image/jpeg' })
       // 添加文件名
       // @ts-ignore
       outputBuffer.name = fileName + '.jpg'
@@ -211,18 +211,18 @@ export default function MultipleFileUpload() {
               if (res.code === 200) {
                 await resHandle(res, file, flag, outputBuffer)
               } else {
-                throw new Error("Upload failed")
+                throw new Error('Upload failed')
               }
             })
           } else {
             const compressedFileFromBlob = new File([compressedFile], fileName + '.jpg', {
               type: compressedFile.type,
-            });
+            })
             await uploadFile(compressedFileFromBlob, album, storage, alistMountPath).then(async (res) => {
               if (res.code === 200) {
                 await resHandle(res, file, flag, outputBuffer)
               } else {
-                throw new Error("Upload failed")
+                throw new Error('Upload failed')
               }
             })
           }
@@ -233,7 +233,7 @@ export default function MultipleFileUpload() {
         if (res.code === 200) {
           await resHandle(res, file, flag, outputBuffer)
         } else {
-          throw new Error("Upload failed")
+          throw new Error('Upload failed')
         }
       })
     }
@@ -262,30 +262,30 @@ export default function MultipleFileUpload() {
         const uploadPromises = files.map(async (file) => {
           try {
             await onRequestUpload(file)
-            onSuccess(file);
+            onSuccess(file)
           } catch (error) {
             onError(
               file,
-              error instanceof Error ? error : new Error("Upload failed"),
-            );
+              error instanceof Error ? error : new Error('Upload failed'),
+            )
           }
-        });
+        })
 
         toast.promise(() => Promise.all(uploadPromises), {
           loading: t('Upload.uploading'),
           success: () => {
-            return t('Upload.uploadSuccess');
+            return t('Upload.uploadSuccess')
           },
           error: t('Upload.uploadError'),
-        });
+        })
       } catch (error) {
         // This handles any error that might occur outside the individual upload processes
-        console.error("Unexpected error during upload:", error);
+        console.error('Unexpected error during upload:', error)
         toast.error('Upload failed')
       }
     },
     [onRequestUpload],
-  );
+  )
 
   return (
     <div className="flex flex-col space-y-2 h-full flex-1">

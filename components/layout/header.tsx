@@ -14,5 +14,5 @@ export default async function Header(props: Readonly<AlbumDataProps>) {
         <HeaderIconGroup {...props} />
       </div>
     </div>
-  );
+  )
 }

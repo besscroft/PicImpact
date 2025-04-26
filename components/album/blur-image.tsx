@@ -17,7 +17,7 @@ export default function BlurImage({ photo, dataList }: { photo: any, dataList: a
         alt={photo.alt}
         effect="blur"
         wrapperProps={{
-          style: {transitionDelay: "0.5s"},
+          style: {transitionDelay: '0.5s'},
         }}
         onClick={() => router.push(`/preview/${photo?.id}`)}
       />
