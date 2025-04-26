@@ -14,7 +14,7 @@
     "build:node": "pnpm run prisma:deploy && npx prisma generate && next build",
     "start": "next start",
     "lint": "next lint",
-    "lint:fix": "eslint --fix \"app/**/*.{ts,tsx}\"",
+    "lint:fix": "eslint --fix \"app/**/*.{ts,tsx}\" --ignore-pattern \"components/ui/*.{tsx}\"",
     "prisma:format": "npx prisma format",
     "prisma:generate": "npx prisma generate",
     "prisma:dev": "npx prisma migrate dev",
