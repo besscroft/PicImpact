@@ -1,7 +1,11 @@
 # Ignore artifacts:
 build
-coverage
 .next
 node_modules
 .github
 .idea
+prisma
+messages
+public
+scripts
+components/ui

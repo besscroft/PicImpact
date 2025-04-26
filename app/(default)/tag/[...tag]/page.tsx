@@ -24,7 +24,7 @@ export default async function Label({params}: { params: any }) {
 
   const props: ImageHandleProps = {
     handle: getData,
-    args: `getImages-client-tag`,
+    args: 'getImages-client-tag',
     album: `${decodeURIComponent(tag)}`,
     totalHandle: getPageTotal,
     configHandle: getConfig

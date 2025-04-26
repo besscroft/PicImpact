@@ -24,5 +24,5 @@ export default async function DefaultLayout({
       <Header {...props} />
       {children}
     </>
-  );
+  )
 }

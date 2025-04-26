@@ -79,5 +79,5 @@ export default async function RootLayout({
     ></Script>
     </body>
     </html>
-  );
+  )
 }

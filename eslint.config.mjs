@@ -16,7 +16,10 @@ const eslintConfig = [
       'react/no-unescaped-entities': 'off',
       '@next/next/no-page-custom-font': 'off',
       'quotes': ['error', 'single'],
-      '@typescript-eslint/no-explicit-any': 'warn'
+      '@typescript-eslint/no-explicit-any': 'warn',
+      'no-multiple-empty-lines': ['error', { 'max': 1 }],
+      'semi': ['error', 'never'],
+      'no-unused-vars': 'warn',
     },
   }),
 ];

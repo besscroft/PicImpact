@@ -34,7 +34,7 @@ export const useButtonStore = <T,>(
   const buttonStoreContext = useContext(ButtonStoreContext)
 
   if (!buttonStoreContext) {
-    throw new Error(`useButtonStore must be use within ButtonStoreProvider`)
+    throw new Error('useButtonStore must be use within ButtonStoreProvider')
   }
 
   return useStore(buttonStoreContext, selector)
