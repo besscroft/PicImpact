@@ -14,6 +14,7 @@
     "build:node": "pnpm run prisma:deploy && npx prisma generate && next build",
     "start": "next start",
     "lint": "next lint",
+    "lint:fix": "eslint --fix \"app/**/*.{ts,tsx}\" --ignore-pattern \"components/ui/*.{tsx}\"",
     "prisma:format": "npx prisma format",
     "prisma:generate": "npx prisma generate",
     "prisma:dev": "npx prisma migrate dev",
@@ -99,6 +100,7 @@
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.1",
     "@next/bundle-analyzer": "15.3.0",
+    "@next/eslint-plugin-next": "^15.3.1",
     "@tailwindcss/postcss": "^4.0.17",
     "@types/crypto-js": "^4.2.2",
     "@types/node": "^20.17.19",
@@ -106,8 +108,10 @@
     "@types/react-dom": "19.1.2",
     "@types/react-lazy-load-image-component": "^1.6.4",
     "@types/rss": "^0.0.32",
-    "eslint": "^9.21.0",
-    "eslint-config-next": "15.3.0",
+    "eslint": "^9.25.1",
+    "eslint-config-next": "^15.3.1",
+    "eslint-config-prettier": "^10.1.2",
+    "prettier": "^3.5.3",
     "prisma": "6.4.1",
     "tailwindcss": "^4.0.17",
     "typescript": "^5.7.3"

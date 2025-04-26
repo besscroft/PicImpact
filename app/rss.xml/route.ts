@@ -11,10 +11,10 @@ export async function GET(request: Request) {
     'rss_user_id'
   ])
 
-  const url = new URL(request.url);
+  const url = new URL(request.url)
 
-  const feedId = data?.find((item: any) => item.config_key === 'rss_feed_id')?.config_value?.toString();
-  const userId = data?.find((item: any) => item.config_key === 'rss_user_id')?.config_value?.toString();
+  const feedId = data?.find((item: any) => item.config_key === 'rss_feed_id')?.config_value?.toString()
+  const userId = data?.find((item: any) => item.config_key === 'rss_user_id')?.config_value?.toString()
 
   const customElements = feedId && userId
     ? [
@@ -25,7 +25,7 @@ export async function GET(request: Request) {
         ]
       }
     ]
-    : [];
+    : []
 
   const feed = new RSS({
     title: data?.find((item: any) => item.config_key === 'custom_title')?.config_value?.toString() || '相册',
@@ -38,7 +38,7 @@ export async function GET(request: Request) {
     pubDate: new Date().toUTCString(),
     ttl: 60,
     custom_elements: customElements,
-  });
+  })
 
   const images = await getRSSImages()
   if (Array.isArray(images) && images.length > 0) {
@@ -76,5 +76,5 @@ export async function GET(request: Request) {
     headers: {
       'Content-Type': 'application/xml',
     }
-  });
+  })
 }

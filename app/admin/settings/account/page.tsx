@@ -47,26 +47,26 @@ export default function Preferences() {
         email: email,
         image: avatar
       }
-    });
+    })
   }
   useEffect(()=>{
-    setEmail(data?.email?.toString() || '');
-    setName(data?.name?.toString() || '');
-    setAvatar(data?.image?.toString() || '');
+    setEmail(data?.email?.toString() || '')
+    setName(data?.name?.toString() || '')
+    setAvatar(data?.image?.toString() || '')
   },[data])
   return (
     <div className="flex flex-col space-y-4 h-full flex-1">
       <div className="flex justify-between space-x-1">
-        <div>{t("Link.account")}</div>
+        <div>{t('Link.account')}</div>
         <Button
           variant="outline"
           disabled={loading || isValidating}
           onClick={() => updateUserInfo()}
-          aria-label={t("Button.submit")}
+          aria-label={t('Button.submit')}
           className="cursor-pointer"
         >
           {loading && <ReloadIcon className="mr-2 h-4 w-4 animate-spin"/>}
-          {t("Button.submit")}
+          {t('Button.submit')}
         </Button>
       </div>
       <div className="space-y-4">

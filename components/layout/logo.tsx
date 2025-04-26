@@ -11,5 +11,5 @@ export default async function Logo() {
     <Link href="/" className="select-none">
       <Button variant="link" className="cursor-pointer">{ data[0].config_value ?? 'PicImpact' }</Button>
     </Link>
-  );
+  )
 }

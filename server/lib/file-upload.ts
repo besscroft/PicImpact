@@ -25,13 +25,13 @@ export async function s3Upload(file: any, type: string | any) {
     'force_path_style',
     's3_cdn',
     's3_cdn_url'
-  ]);
-  const bucket = findConfig.find((item: any) => item.config_key === 'bucket')?.config_value || '';
-  const storageFolder = findConfig.find((item: any) => item.config_key === 'storage_folder')?.config_value || '';
-  const endpoint = findConfig.find((item: any) => item.config_key === 'endpoint')?.config_value || '';
-  const forcePathStyle = findConfig.find((item: any) => item.config_key === 'force_path_style')?.config_value;
-  const s3Cdn = findConfig.find((item: any) => item.config_key === 's3_cdn')?.config_value;
-  const s3CdnUrl = findConfig.find((item: any) => item.config_key === 's3_cdn_url')?.config_value || '';
+  ])
+  const bucket = findConfig.find((item: any) => item.config_key === 'bucket')?.config_value || ''
+  const storageFolder = findConfig.find((item: any) => item.config_key === 'storage_folder')?.config_value || ''
+  const endpoint = findConfig.find((item: any) => item.config_key === 'endpoint')?.config_value || ''
+  const forcePathStyle = findConfig.find((item: any) => item.config_key === 'force_path_style')?.config_value
+  const s3Cdn = findConfig.find((item: any) => item.config_key === 's3_cdn')?.config_value
+  const s3CdnUrl = findConfig.find((item: any) => item.config_key === 's3_cdn_url')?.config_value || ''
   // @ts-ignore
   const filePath = storageFolder && storageFolder !== '/'
     ? type && type !== '/' ? `${storageFolder}${type}/${file?.name}` : `${storageFolder}/${file?.name}`
@@ -46,8 +46,8 @@ export async function s3Upload(file: any, type: string | any) {
     Body: buffer,
     ContentLength: file?.size,
     ContentType: file?.type
-  };
-  const s3 = getClient(findConfig);
+  }
+  const s3 = getClient(findConfig)
   await uploadSimpleObject(s3, params)
 
   if (s3Cdn && s3Cdn === 'true') {
@@ -94,11 +94,11 @@ export async function r2Upload(file: any, type: string | any) {
     'r2_bucket',
     'r2_storage_folder',
     'r2_public_domain'
-  ]);
-  const r2Bucket = findConfig.find((item: any) => item.config_key === 'r2_bucket')?.config_value || '';
-  const r2StorageFolder = findConfig.find((item: any) => item.config_key === 'r2_storage_folder')?.config_value || '';
-  const r2Endpoint = findConfig.find((item: any) => item.config_key === 'r2_endpoint')?.config_value || '';
-  const r2PublicDomain = findConfig.find((item: any) => item.config_key === 'r2_public_domain')?.config_value || '';
+  ])
+  const r2Bucket = findConfig.find((item: any) => item.config_key === 'r2_bucket')?.config_value || ''
+  const r2StorageFolder = findConfig.find((item: any) => item.config_key === 'r2_storage_folder')?.config_value || ''
+  const r2Endpoint = findConfig.find((item: any) => item.config_key === 'r2_endpoint')?.config_value || ''
+  const r2PublicDomain = findConfig.find((item: any) => item.config_key === 'r2_public_domain')?.config_value || ''
 
   // @ts-ignore
   const filePath = r2StorageFolder && r2StorageFolder !== '/'
@@ -109,14 +109,14 @@ export async function r2Upload(file: any, type: string | any) {
   const blob = new Blob([file])
   const arrayBuffer = await blob.arrayBuffer()
   const buffer = Buffer.from(arrayBuffer)
-  const r2 = getR2Client(findConfig);
+  const r2 = getR2Client(findConfig)
   const params = {
     Bucket: r2Bucket,
     Key: filePath,
     Body: buffer,
     ContentLength: file?.size,
     ContentType: file?.type
-  };
+  }
   await uploadSimpleObject(r2, params)
   return `${
     r2PublicDomain ?
@@ -142,8 +142,8 @@ export async function alistUpload(file: any, type: string | any, mountPath: stri
     'alist_url',
     'alist_token'
   ])
-  const alistToken = findConfig.find((item: any) => item.config_key === 'alist_token')?.config_value || '';
-  const alistUrl = findConfig.find((item: any) => item.config_key === 'alist_url')?.config_value || '';
+  const alistToken = findConfig.find((item: any) => item.config_key === 'alist_token')?.config_value || ''
+  const alistUrl = findConfig.find((item: any) => item.config_key === 'alist_url')?.config_value || ''
   const filePath = encodeURIComponent(`${mountPath && mountPath.toString() === '/' ? '' : mountPath}${
     type && type !== '/' ? `${type}/${file?.name}` : `/${file?.name}`}`)
   const data = await fetch(`${alistUrl}/api/fs/put`, {

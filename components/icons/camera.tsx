@@ -123,9 +123,9 @@ const CameraIcon = forwardRef<CameraIconHandle, CameraIconProps>(
     const handleMouseLeave = useCallback(
       (e: React.MouseEvent<HTMLDivElement>) => {
         if (!isControlledRef.current) {
-          bodyControls.start("normal")
-          lensControls.start("normal")
-          flashControls.start("normal")
+          bodyControls.start('normal')
+          lensControls.start('normal')
+          flashControls.start('normal')
         } else {
           onMouseLeave?.(e)
         }
@@ -136,7 +136,7 @@ const CameraIcon = forwardRef<CameraIconHandle, CameraIconProps>(
     return (
       <div
         className={cn(
-          `cursor-pointer select-none p-2 hover:bg-accent rounded-md transition-colors duration-200 flex items-center justify-center`,
+          'cursor-pointer select-none p-2 hover:bg-accent rounded-md transition-colors duration-200 flex items-center justify-center',
           className,
         )}
         onMouseEnter={handleMouseEnter}
@@ -168,6 +168,6 @@ const CameraIcon = forwardRef<CameraIconHandle, CameraIconProps>(
   },
 )
 
-CameraIcon.displayName = 'CameraIcon';
+CameraIcon.displayName = 'CameraIcon'
 
 export { CameraIcon }

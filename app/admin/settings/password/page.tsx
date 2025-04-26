@@ -26,33 +26,33 @@ export default function PassWord() {
   const FormSchema = z.object({
     onePassword: z.string()
       .min(1, {
-        message: "旧密码必填",
+        message: '旧密码必填',
       }),
     twoPassword: z.string()
       .min(6, {
-        message: "密码不能少于6位数",
+        message: '密码不能少于6位数',
       })
       .max(20, {
-        message: "密码不能超过20位数",
+        message: '密码不能超过20位数',
       }),
     threePassword: z.string()
       .min(6, {
-        message: "密码不能少于6位数",
+        message: '密码不能少于6位数',
       })
       .max(20, {
-        message: "密码不能超过20位数",
+        message: '密码不能超过20位数',
       }),
   }).refine((data: any) => data.twoPassword === data.threePassword, {
-      message: "两次密码不一致",
-      path: ["threePassword"], // 错误信息指向 confirmPassword 字段
+      message: '两次密码不一致',
+      path: ['threePassword'], // 错误信息指向 confirmPassword 字段
     })
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
-      onePassword: "",
-      twoPassword: "",
-      threePassword: "",
+      onePassword: '',
+      twoPassword: '',
+      threePassword: '',
     },
   })
 
@@ -96,16 +96,16 @@ export default function PassWord() {
   return (
     <div className="flex flex-col space-y-4 h-full flex-1">
       <div className="flex justify-between space-x-1">
-        <div>{t("Link.password")}</div>
+        <div>{t('Link.password')}</div>
         <Button
           variant="outline"
           className="cursor-pointer"
           disabled={loading}
-          aria-label={t("Button.submit")}
+          aria-label={t('Button.submit')}
           onClick={() => formRef.current?.requestSubmit()}
         >
           {loading && <ReloadIcon className="mr-2 h-4 w-4 animate-spin"/>}
-          {t("Button.submit")}
+          {t('Button.submit')}
         </Button>
       </div>
       <Form {...form}>

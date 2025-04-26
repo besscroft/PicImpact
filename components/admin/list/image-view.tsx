@@ -45,7 +45,7 @@ export default function ImageView() {
               alt={imageViewData.detail}
               effect="blur"
               wrapperProps={{
-                style: {transitionDelay: "0.5s"},
+                style: {transitionDelay: '0.5s'},
               }}
             />
             :

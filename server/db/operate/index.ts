@@ -33,10 +33,10 @@ export async function updateUserInfo(userId: string, updates: {
     .reduce((acc, [key, value]) => ({
       ...acc,
       [key]: value
-    }), {});
+    }), {})
     
   return await db.user.update({
     where: { id: userId },
     data: updateQuery
-  });
+  })
 }

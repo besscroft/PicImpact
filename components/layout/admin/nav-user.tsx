@@ -63,7 +63,7 @@ export function NavUser() {
           </DropdownMenuTrigger>
           <DropdownMenuContent
             className="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg"
-            side={isMobile ? "bottom" : "right"}
+            side={isMobile ? 'bottom' : 'right'}
             align="end"
             sideOffset={4}
           >
@@ -82,7 +82,7 @@ export function NavUser() {
             <DropdownMenuSeparator />
             <DropdownMenuItem className="cursor-pointer" onClick={() => setTheme(resolvedTheme === 'light' ? 'dark' : 'light')}>
               {resolvedTheme === 'light' ? <SunMoonIcon size={18} /> : <SunMediumIcon size={18} />}
-              <span>{ resolvedTheme === 'light' ? t("Button.dark") : t('Button.light') }</span>
+              <span>{ resolvedTheme === 'light' ? t('Button.dark') : t('Button.light') }</span>
             </DropdownMenuItem>
             <DropdownMenuSub>
               <DropdownMenuSubTrigger className="cursor-pointer"><LanguagesIcon size={18} />{t('Button.language')}</DropdownMenuSubTrigger>
@@ -100,7 +100,7 @@ export function NavUser() {
                 await loginOut()
                 setTimeout(() => {
                   location.replace('/login')
-                }, 1000);
+                }, 1000)
               } catch (e) {
                 console.error(e)
               }

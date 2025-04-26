@@ -5,7 +5,7 @@ import { fetchContributors } from '~/lib/github/get-contributors'
 import { EvervaultCard, Icon } from '~/components/ui/origin/evervault-card'
 
 export default async function About() {
-  const contributors = await fetchContributors('besscroft', 'PicImpact');
+  const contributors = await fetchContributors('besscroft', 'PicImpact')
 
   return (
     <div className="flex flex-col space-y-4 h-full flex-1 w-full mx-auto items-center p-2">

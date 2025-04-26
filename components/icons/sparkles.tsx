@@ -1,4 +1,4 @@
-'use client';
+'use client'
 
 import type { Variants } from 'motion/react'
 import { motion, useAnimation } from 'motion/react'
@@ -28,7 +28,7 @@ const sparkleVariants: Variants = {
       bounce: 0.3,
     },
   },
-};
+}
 
 const starVariants: Variants = {
   initial: {
@@ -46,57 +46,57 @@ const starVariants: Variants = {
       mass: 0.4,
     },
   }),
-};
+}
 
 const SparklesIcon = forwardRef<SparklesIconHandle, SparklesIconProps>(
   ({ onMouseEnter, onMouseLeave, className, size = 28, ...props }, ref) => {
-    const starControls = useAnimation();
-    const sparkleControls = useAnimation();
-    const isControlledRef = useRef(false);
+    const starControls = useAnimation()
+    const sparkleControls = useAnimation()
+    const isControlledRef = useRef(false)
 
     useImperativeHandle(ref, () => {
-      isControlledRef.current = true;
+      isControlledRef.current = true
 
       return {
         startAnimation: () => {
-          sparkleControls.start('hover');
-          starControls.start('blink', { delay: 1 });
+          sparkleControls.start('hover')
+          starControls.start('blink', { delay: 1 })
         },
         stopAnimation: () => {
-          sparkleControls.start('initial');
-          starControls.start('initial');
+          sparkleControls.start('initial')
+          starControls.start('initial')
         },
-      };
-    });
+      }
+    })
 
     const handleMouseEnter = useCallback(
       (e: React.MouseEvent<HTMLDivElement>) => {
         if (!isControlledRef.current) {
-          sparkleControls.start('hover');
-          starControls.start('blink', { delay: 1 });
+          sparkleControls.start('hover')
+          starControls.start('blink', { delay: 1 })
         } else {
-          onMouseEnter?.(e);
+          onMouseEnter?.(e)
         }
       },
       [onMouseEnter, sparkleControls, starControls]
-    );
+    )
 
     const handleMouseLeave = useCallback(
       (e: React.MouseEvent<HTMLDivElement>) => {
         if (!isControlledRef.current) {
-          sparkleControls.start('initial');
-          starControls.start('initial');
+          sparkleControls.start('initial')
+          starControls.start('initial')
         } else {
-          onMouseLeave?.(e);
+          onMouseLeave?.(e)
         }
       },
       [sparkleControls, starControls, onMouseLeave]
-    );
+    )
 
     return (
       <div
         className={cn(
-          `cursor-pointer select-none p-2 hover:bg-accent rounded-md transition-colors duration-200 flex items-center justify-center`,
+          'cursor-pointer select-none p-2 hover:bg-accent rounded-md transition-colors duration-200 flex items-center justify-center',
           className
         )}
         onMouseEnter={handleMouseEnter}
@@ -141,10 +141,10 @@ const SparklesIcon = forwardRef<SparklesIconHandle, SparklesIconProps>(
           />
         </svg>
       </div>
-    );
+    )
   }
-);
+)
 
-SparklesIcon.displayName = 'SparklesIcon';
+SparklesIcon.displayName = 'SparklesIcon'
 
-export { SparklesIcon };
+export { SparklesIcon }

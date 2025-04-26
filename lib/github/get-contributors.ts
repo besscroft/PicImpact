@@ -8,9 +8,9 @@ export async function fetchContributors(
   repoOwner: string,
   repoName: string,
 ): Promise<Contributor[]> {
-  const headers = new Headers();
+  const headers = new Headers()
   if (process.env.GITHUB_TOKEN)
-    headers.set('Authorization', `Bearer ${process.env.GITHUB_TOKEN}`);
+    headers.set('Authorization', `Bearer ${process.env.GITHUB_TOKEN}`)
 
   const response = await fetch(
     `https://api.github.com/repos/${repoOwner}/${repoName}/contributors?per_page=50`,
@@ -18,14 +18,14 @@ export async function fetchContributors(
       headers,
       next: { revalidate: 1000 * 1000 },
     },
-  );
+  )
 
   if (!response.ok) {
-    throw new Error(`Failed to fetch contributors: ${response.statusText}`);
+    throw new Error(`Failed to fetch contributors: ${response.statusText}`)
   }
 
-  const contributors = (await response.json()) as Contributor[];
+  const contributors = (await response.json()) as Contributor[]
   return contributors
     .filter((contributor) => !contributor.login.endsWith('[bot]'))
-    .sort((a, b) => b.contributions - a.contributions);
+    .sort((a, b) => b.contributions - a.contributions)
 }

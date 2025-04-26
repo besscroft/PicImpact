@@ -74,16 +74,16 @@ const CrosshairIcon = forwardRef<CrosshairIconHandle, CrosshairIconProps>(
 
       return {
         startAnimation: () => {
-          circleControls.start("animate")
-          horizontalLineControls.start("animate")
-          verticalLineControls.start("animate")
-          centerDotControls.start("animate")
+          circleControls.start('animate')
+          horizontalLineControls.start('animate')
+          verticalLineControls.start('animate')
+          centerDotControls.start('animate')
         },
         stopAnimation: () => {
-          circleControls.start("normal")
-          horizontalLineControls.start("normal")
-          verticalLineControls.start("normal")
-          centerDotControls.start("normal")
+          circleControls.start('normal')
+          horizontalLineControls.start('normal')
+          verticalLineControls.start('normal')
+          centerDotControls.start('normal')
         },
       }
     })
@@ -91,10 +91,10 @@ const CrosshairIcon = forwardRef<CrosshairIconHandle, CrosshairIconProps>(
     const handleMouseEnter = useCallback(
       (e: React.MouseEvent<HTMLDivElement>) => {
         if (!isControlledRef.current) {
-          circleControls.start("animate")
-          horizontalLineControls.start("animate")
-          verticalLineControls.start("animate")
-          centerDotControls.start("animate")
+          circleControls.start('animate')
+          horizontalLineControls.start('animate')
+          verticalLineControls.start('animate')
+          centerDotControls.start('animate')
         } else {
           onMouseEnter?.(e)
         }
@@ -105,10 +105,10 @@ const CrosshairIcon = forwardRef<CrosshairIconHandle, CrosshairIconProps>(
     const handleMouseLeave = useCallback(
       (e: React.MouseEvent<HTMLDivElement>) => {
         if (!isControlledRef.current) {
-          circleControls.start("normal")
-          horizontalLineControls.start("normal")
-          verticalLineControls.start("normal")
-          centerDotControls.start("normal")
+          circleControls.start('normal')
+          horizontalLineControls.start('normal')
+          verticalLineControls.start('normal')
+          centerDotControls.start('normal')
         } else {
           onMouseLeave?.(e)
         }
@@ -119,7 +119,7 @@ const CrosshairIcon = forwardRef<CrosshairIconHandle, CrosshairIconProps>(
     return (
       <div
         className={cn(
-          `cursor-pointer select-none p-2 hover:bg-accent rounded-md transition-colors duration-200 flex items-center justify-center`,
+          'cursor-pointer select-none p-2 hover:bg-accent rounded-md transition-colors duration-200 flex items-center justify-center',
           className,
         )}
         onMouseEnter={handleMouseEnter}
@@ -163,6 +163,6 @@ const CrosshairIcon = forwardRef<CrosshairIconHandle, CrosshairIconProps>(
   },
 )
 
-CrosshairIcon.displayName = 'CrosshairIcon';
+CrosshairIcon.displayName = 'CrosshairIcon'
 
 export { CrosshairIcon }

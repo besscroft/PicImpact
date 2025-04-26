@@ -34,7 +34,7 @@ export const useConfigStore = <T,>(
   const configStoreContext = useContext(ConfigStoreContext)
 
   if (!configStoreContext) {
-    throw new Error(`useConfigStore must be use within ConfigStoreProvider`)
+    throw new Error('useConfigStore must be use within ConfigStoreProvider')
   }
 
   return useStore(configStoreContext, selector)

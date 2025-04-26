@@ -38,27 +38,27 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     navMain: [
       {
         title: t('Link.dashboard'),
-        url: "/admin",
+        url: '/admin',
         icon: SquareTerminalIcon,
       },
       {
         title: t('Link.upload'),
-        url: "/admin/upload",
+        url: '/admin/upload',
         icon: UploadIcon,
       },
       {
         title: t('Link.list'),
-        url: "/admin/list",
+        url: '/admin/list',
         icon: LayersIcon,
       },
       {
         title: t('Link.album'),
-        url: "/admin/album",
+        url: '/admin/album',
         icon: GalleryThumbnailsIcon,
       },
       {
         title: t('Link.about'),
-        url: "/admin/about",
+        url: '/admin/about',
         icon: GithubIcon,
       },
     ],
@@ -67,27 +67,27 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       items: [
         {
           name: t('Link.preferences'),
-          url: "/admin/settings/preferences",
+          url: '/admin/settings/preferences',
           icon: FrameIcon,
         },
         {
           name: t('Link.account'),
-          url: "/admin/settings/account",
+          url: '/admin/settings/account',
           icon: ShieldCheckIcon,
         },
         {
           name: t('Link.password'),
-          url: "/admin/settings/password",
+          url: '/admin/settings/password',
           icon: KeyCircleIcon,
         },
         {
           name: t('Link.storages'),
-          url: "/admin/settings/storages",
+          url: '/admin/settings/storages',
           icon: CogIcon,
         },
         {
           name: t('Link.authenticator'),
-          url: "/admin/settings/authenticator",
+          url: '/admin/settings/authenticator',
           icon: FingerprintIcon,
         },
       ],

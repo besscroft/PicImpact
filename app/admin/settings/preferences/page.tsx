@@ -98,16 +98,16 @@ export default function Preferences() {
   return (
     <div className="flex flex-col space-y-4 h-full flex-1">
       <div className="flex justify-between space-x-1">
-        <div>{t("Link.preferences")}</div>
+        <div>{t('Link.preferences')}</div>
         <Button
           variant="outline"
           disabled={loading || isValidating}
           onClick={() => updateInfo()}
-          aria-label={t("Button.submit")}
+          aria-label={t('Button.submit')}
           className="cursor-pointer"
         >
           {loading && <ReloadIcon className="mr-2 h-4 w-4 animate-spin"/>}
-          {t("Button.submit")}
+          {t('Button.submit')}
         </Button>
       </div>
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-4 lg:gap-8">
@@ -182,7 +182,7 @@ export default function Preferences() {
                   try {
                     const url = typeof window !== 'undefined' ? window.location.origin + '/rss.xml' : ''
                     // @ts-ignore
-                    await navigator.clipboard.writeText(url);
+                    await navigator.clipboard.writeText(url)
                     toast.success('复制成功！', {duration: 500})
                   } catch (error) {
                     toast.error('复制失败！', {duration: 500})

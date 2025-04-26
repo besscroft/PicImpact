@@ -26,48 +26,48 @@ const penVariants: Variants = {
     x: [0, -1, 1.5, 0],
     y: [0, 1.5, -1, 0],
   },
-};
+}
 
 const SquarePenIcon = forwardRef<SquarePenIconHandle, SquarePenIconProps>(
   ({ onMouseEnter, onMouseLeave, className, size = 28, ...props }, ref) => {
-    const controls = useAnimation();
-    const isControlledRef = useRef(false);
+    const controls = useAnimation()
+    const isControlledRef = useRef(false)
 
     useImperativeHandle(ref, () => {
-      isControlledRef.current = true;
+      isControlledRef.current = true
 
       return {
         startAnimation: () => controls.start('animate'),
         stopAnimation: () => controls.start('normal'),
-      };
-    });
+      }
+    })
 
     const handleMouseEnter = useCallback(
       (e: React.MouseEvent<HTMLDivElement>) => {
         if (!isControlledRef.current) {
-          controls.start('animate');
+          controls.start('animate')
         } else {
-          onMouseEnter?.(e);
+          onMouseEnter?.(e)
         }
       },
       [controls, onMouseEnter]
-    );
+    )
 
     const handleMouseLeave = useCallback(
       (e: React.MouseEvent<HTMLDivElement>) => {
         if (!isControlledRef.current) {
-          controls.start('normal');
+          controls.start('normal')
         } else {
-          onMouseLeave?.(e);
+          onMouseLeave?.(e)
         }
       },
       [controls, onMouseLeave]
-    );
+    )
 
     return (
       <div
         className={cn(
-          `cursor-pointer select-none p-2 hover:bg-accent rounded-md transition-colors duration-200 flex items-center justify-center`,
+          'cursor-pointer select-none p-2 hover:bg-accent rounded-md transition-colors duration-200 flex items-center justify-center',
           className
         )}
         onMouseEnter={handleMouseEnter}
@@ -94,10 +94,10 @@ const SquarePenIcon = forwardRef<SquarePenIconHandle, SquarePenIconProps>(
           />
         </svg>
       </div>
-    );
+    )
   }
-);
+)
 
-SquarePenIcon.displayName = 'SquarePenIcon';
+SquarePenIcon.displayName = 'SquarePenIcon'
 
-export { SquarePenIcon };
+export { SquarePenIcon }

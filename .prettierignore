@@ -1,0 +1,11 @@
+# Ignore artifacts:
+build
+.next
+node_modules
+.github
+.idea
+prisma
+messages
+public
+scripts
+components/ui

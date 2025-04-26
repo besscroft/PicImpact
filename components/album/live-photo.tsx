@@ -18,14 +18,14 @@ export default function LivePhoto({ url, videoUrl, className }: { url: string; v
           showsNativeControls: true,
         })
       }
-    };
+    }
 
-    initializeLivePhotosKit();
+    initializeLivePhotosKit()
   }, [livePhotoRef, url, videoUrl])
 
   return (
     <div ref={livePhotoRef} className={
-      cn(className, "w-full object-contain h-[36vh]")
+      cn(className, 'w-full object-contain h-[36vh]')
     } />
   )
 }

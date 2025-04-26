@@ -49,7 +49,7 @@ export default function LivephotoFileUpload() {
   const [lon, setLon] = useState('')
   const [detail, setDetail] = useState('')
   const [imageLabels, setImageLabels] = useState([] as string[])
-  const [activeTagIndex, setActiveTagIndex] = useState<number | null>(null);
+  const [activeTagIndex, setActiveTagIndex] = useState<number | null>(null)
   const t = useTranslations()
 
   const { data, isLoading } = useSWR('/api/v1/albums/get', fetcher)
@@ -77,20 +77,20 @@ export default function LivephotoFileUpload() {
       console.error(e)
     }
     try {
-      const reader = new FileReader();
+      const reader = new FileReader()
       reader.onload = (e) => {
-        const img = new Image();
+        const img = new Image()
         img.onload = () => {
           setWidth(Number(img.width))
           setHeight(Number(img.height))
-        };
+        }
         // @ts-ignore
-        img.src = e.target.result;
-      };
+        img.src = e.target.result
+      }
       if (flag) {
-        reader.readAsDataURL(outputBuffer);
+        reader.readAsDataURL(outputBuffer)
       } else {
-        reader.readAsDataURL(file);
+        reader.readAsDataURL(file)
       }
     } catch (e) {
       console.error(e)
@@ -199,22 +199,22 @@ export default function LivephotoFileUpload() {
           if (res?.code === 200) {
             setPreviewUrl(res?.data)
           } else {
-            throw new Error("Upload failed")
+            throw new Error('Upload failed')
           }
         } else {
           const compressedFileFromBlob = new File([compressedFile], flag ? outputBuffer.name : file.name, {
             type: compressedFile.type,
-          });
+          })
           const res = await uploadFile(compressedFileFromBlob, type, storage, alistMountPath)
           if (res?.code === 200) {
             setPreviewUrl(res?.data)
           } else {
-            throw new Error("Upload failed")
+            throw new Error('Upload failed')
           }
         }
       },
       error() {
-        throw new Error("Upload failed")
+        throw new Error('Upload failed')
       },
     })
   }
@@ -224,7 +224,7 @@ export default function LivephotoFileUpload() {
       if (res?.code === 200) {
         setVideoUrl(res?.data)
       } else {
-        throw new Error("Upload failed")
+        throw new Error('Upload failed')
       }
     } else {
       if (res?.code === 200) {
@@ -235,26 +235,26 @@ export default function LivephotoFileUpload() {
             await uploadPreviewImage(file, album + '/preview', flag, outputBuffer)
           }
         } catch (e) {
-          throw new Error("Upload failed")
+          throw new Error('Upload failed')
         }
         await loadExif(file, outputBuffer, flag)
         setUrl(res?.data)
       } else {
-        throw new Error("Upload failed")
+        throw new Error('Upload failed')
       }
     }
   }
 
   async function onRequestUpload(file: File, type: number) {
-    let outputBuffer: Blob | Blob[];
-    const ext = file.name.split(".").pop()?.toLowerCase();
+    let outputBuffer: Blob | Blob[]
+    const ext = file.name.split('.').pop()?.toLowerCase()
     // 获取文件名但是去掉扩展名部分
-    const fileName = file.name.split(".").slice(0, -1).join(".");
+    const fileName = file.name.split('.').slice(0, -1).join('.')
     const flag = ext === 'heic' || ext === 'heif'
     if (flag && type === 1) {
       // 把 HEIC 转成 JPEG
       const heic2any = await import('heic2any')
-      outputBuffer = await heic2any.default({ blob: file, toType: 'image/jpeg' });
+      outputBuffer = await heic2any.default({ blob: file, toType: 'image/jpeg' })
       // 添加文件名
       // @ts-ignore
       outputBuffer.name = fileName + '.jpg'
@@ -272,7 +272,7 @@ export default function LivephotoFileUpload() {
           } else {
             const compressedFileFromBlob = new File([compressedFile], fileName + '.jpg', {
               type: compressedFile.type,
-            });
+            })
             await uploadFile(compressedFileFromBlob, album, storage, alistMountPath).then(async (res) => {
               await resHandle(res, file, type, flag, outputBuffer)
             })
@@ -311,8 +311,8 @@ export default function LivephotoFileUpload() {
     setImageLabels([])
   }
 
-  const [images, setImages] = React.useState<File[]>([]);
-  const [videos, setVideos] = React.useState<File[]>([]);
+  const [images, setImages] = React.useState<File[]>([])
+  const [videos, setVideos] = React.useState<File[]>([])
 
   const onImageUpload = React.useCallback(
     async (
@@ -329,32 +329,32 @@ export default function LivephotoFileUpload() {
         // Process each file individually
         const uploadPromises = files.map(async (file) => {
           try {
-            await onBeforeUpload(1);
+            await onBeforeUpload(1)
             await onRequestUpload(file, 1)
-            onSuccess(file);
+            onSuccess(file)
           } catch (error) {
             onError(
               file,
-              error instanceof Error ? error : new Error("Upload failed"),
-            );
+              error instanceof Error ? error : new Error('Upload failed'),
+            )
           }
-        });
+        })
 
         toast.promise(() => Promise.all(uploadPromises), {
           loading: t('Upload.uploading'),
           success: () => {
-            return t('Upload.uploadSuccess');
+            return t('Upload.uploadSuccess')
           },
           error: t('Upload.uploadError'),
-        });
+        })
       } catch (error) {
         // This handles any error that might occur outside the individual upload processes
-        console.error("Unexpected error during upload:", error);
+        console.error('Unexpected error during upload:', error)
         toast.error('Upload failed')
       }
     },
     [],
-  );
+  )
 
   const onVideoUpload = React.useCallback(
     async (
@@ -372,32 +372,32 @@ export default function LivephotoFileUpload() {
         // Process each file individually
         const uploadPromises = files.map(async (file) => {
           try {
-            await onBeforeUpload(2);
+            await onBeforeUpload(2)
             await onRequestUpload(file, 2)
-            onSuccess(file);
+            onSuccess(file)
           } catch (error) {
             onError(
               file,
-              error instanceof Error ? error : new Error("Upload failed"),
-            );
+              error instanceof Error ? error : new Error('Upload failed'),
+            )
           }
-        });
+        })
 
         toast.promise(() => Promise.all(uploadPromises), {
           loading: t('Upload.uploading'),
           success: () => {
-            return t('Upload.uploadSuccess');
+            return t('Upload.uploadSuccess')
           },
           error: t('Upload.uploadError'),
-        });
+        })
       } catch (error) {
         // This handles any error that might occur outside the individual upload processes
-        console.error("Unexpected error during upload:", error);
+        console.error('Unexpected error during upload:', error)
         toast.error('Upload failed')
       }
     },
     [onRequestUpload],
-  );
+  )
 
   return (
     <div className="flex flex-col space-y-2 h-full flex-1">
@@ -700,12 +700,12 @@ export default function LivephotoFileUpload() {
             placeholder={t('Upload.indexTag')}
             styleClasses={{
               inlineTagsContainer:
-                "border-input rounded-lg bg-background shadow-sm shadow-black/5 transition-shadow focus-within:border-ring focus-within:outline-none focus-within:ring-[3px] focus-within:ring-ring/20 p-1 gap-1",
-              input: "w-full min-w-[80px] focus-visible:outline-none shadow-none px-2 h-7",
+                'border-input rounded-lg bg-background shadow-sm shadow-black/5 transition-shadow focus-within:border-ring focus-within:outline-none focus-within:ring-[3px] focus-within:ring-ring/20 p-1 gap-1',
+              input: 'w-full min-w-[80px] focus-visible:outline-none shadow-none px-2 h-7',
               tag: {
-                body: "h-7 relative bg-background border border-input hover:bg-background rounded-md font-medium text-xs ps-2 pe-7",
+                body: 'h-7 relative bg-background border border-input hover:bg-background rounded-md font-medium text-xs ps-2 pe-7',
                 closeButton:
-                  "absolute -inset-y-px -end-px p-0 rounded-e-lg flex size-7 transition-colors outline-0 focus-visible:outline focus-visible:outline-2 focus-visible:outline-ring/70 text-muted-foreground/80 hover:text-foreground",
+                  'absolute -inset-y-px -end-px p-0 rounded-e-lg flex size-7 transition-colors outline-0 focus-visible:outline focus-visible:outline-2 focus-visible:outline-ring/70 text-muted-foreground/80 hover:text-foreground',
               },
             }}
             activeTagIndex={activeTagIndex}

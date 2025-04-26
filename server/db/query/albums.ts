@@ -24,7 +24,7 @@ export async function fetchAlbumsList() {
         updatedAt: 'desc'
       }
     ]
-  });
+  })
 }
 
 /**
@@ -45,5 +45,5 @@ export async function fetchAlbumsShow() {
         sort: 'desc'
       }
     ]
-  });
+  })
 }

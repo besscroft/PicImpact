@@ -12,10 +12,10 @@ export default function SearchBorder() {
 
   return (
     <Button
-      variant={"outline"}
+      variant={'outline'}
       className={cn(
-        "w-[240px] justify-start text-left font-normal",
-        "text-muted-foreground"
+        'w-[240px] justify-start text-left font-normal',
+        'text-muted-foreground'
       )}
       onClick={() => setSearchOpen(true)}
     >

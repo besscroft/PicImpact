@@ -3,13 +3,12 @@ import type { PreviewImageHandleProps } from '~/types/props'
 import PreviewImage from '~/components/album/preview-image'
 import { fetchConfigsByKeys } from '~/server/db/query/configs'
 
-
 export default async function Label({params}: { params: any }) {
   const { id } = await params
 
   const getData = async (id: string) => {
     'use server'
-    return await fetchImageByIdAndAuth(String(id));
+    return await fetchImageByIdAndAuth(String(id))
   }
 
   const getConfig = async () => {

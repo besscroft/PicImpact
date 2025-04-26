@@ -47,7 +47,7 @@ export async function fetchServerImagesListByAlbum(pageNum: number, album: strin
           albums.album_value = ${album}
       ORDER BY image.sort DESC, image.created_at DESC, image.updated_at DESC
       LIMIT 8 OFFSET ${(pageNum - 1) * 8}
-    `;
+    `
   }
   return await db.$queryRaw`
     SELECT 
@@ -64,7 +64,7 @@ export async function fetchServerImagesListByAlbum(pageNum: number, album: strin
         image.del = 0
     ORDER BY image.sort DESC, image.created_at DESC, image.updated_at DESC 
     LIMIT 8 OFFSET ${(pageNum - 1) * 8}
-  `;
+  `
 }
 
 /**
@@ -143,7 +143,7 @@ export async function fetchClientImagesListByAlbum(pageNum: number, album: strin
         image.show_on_mainpage = 0
     ORDER BY image.created_at DESC, image.updated_at DESC
     LIMIT 16 OFFSET ${(pageNum - 1) * 16}
-  `;
+  `
   }
   const albumData = await db.albums.findFirst({
     where: {
@@ -179,11 +179,11 @@ export async function fetchClientImagesListByAlbum(pageNum: number, album: strin
         albums.album_value = ${album}
     ORDER BY ${orderBy}
     LIMIT 16 OFFSET ${(pageNum - 1) * 16}
-  `;
+  `
   if (dataList && albumData && albumData.random_show === 0) {
-    return [...dataList].sort(() => Math.random() - 0.5);
+    return [...dataList].sort(() => Math.random() - 0.5)
   }
-  return dataList;
+  return dataList
 }
 
 /**
@@ -272,7 +272,7 @@ export async function fetchClientImagesListByTag(pageNum: number, tag: string) {
         image.labels::jsonb @> ${JSON.stringify([tag])}::jsonb
     ORDER BY image.sort DESC, image.created_at DESC, image.updated_at DESC
     LIMIT 16 OFFSET ${(pageNum - 1) * 16}
-  `;
+  `
 }
 
 /**
@@ -318,7 +318,7 @@ export async function fetchImagesAnalysis() {
       (SELECT COALESCE(COUNT(*), 0) FROM "public"."images" WHERE del = 0) as images_total,
       (SELECT COALESCE(COUNT(*), 0) FROM "public"."images" WHERE del = 0 AND show = 0) as images_show,
       (SELECT COALESCE(COUNT(*), 0) FROM "public"."albums" WHERE del = 0) as tags_total
-  `;
+  `
 
   const cameraStats = await db.$queryRaw`
     SELECT COUNT(*) as count, 
@@ -328,7 +328,7 @@ export async function fetchImagesAnalysis() {
     WHERE del = 0
     GROUP BY camera, lens
     ORDER BY count DESC
-  `;
+  `
 
   const result = await db.$queryRaw`
     SELECT
@@ -392,7 +392,7 @@ export async function fetchImageByIdAndAuth(id: string): Promise<ImageType[]> {
         "albums".show = 0
     AND
         "images".id = ${id}
-  `;
+  `
 }
 
 /**
@@ -420,5 +420,5 @@ export async function getRSSImages() {
     SELECT *
     FROM RankedImages
     WHERE rn <= 10;
-  `;
+  `
 }
