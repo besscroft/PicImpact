@@ -14,16 +14,12 @@ import { getLocale, getMessages } from 'next-intl/server'
 import { ConfigStoreProvider } from '~/app/providers/config-store-providers'
 import Script from 'next/script'
 
-type Props = {
+type Params = Promise<{
   params: { id: string }
   searchParams: { [key: string]: string | string[] | undefined }
-}
+}>
 
-export async function generateMetadata(
-  { params, searchParams }: Props,
-  parent: ResolvingMetadata
-): Promise<Metadata> {
-
+export async function generateMetadata(_: { params: Params }): Promise<Metadata> {
   const data = await fetchConfigsByKeys([
     'custom_title',
     'custom_favicon_url'
