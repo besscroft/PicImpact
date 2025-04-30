@@ -7,7 +7,6 @@ import { toast } from 'sonner'
 import { LinkIcon } from '~/components/icons/link'
 import { DownloadIcon } from '~/components/icons/download'
 import dayjs from 'dayjs'
-import * as React from 'react'
 import useSWR from 'swr'
 import { useRouter } from 'next-nprogress-bar'
 import { ClockIcon } from '~/components/icons/clock'
@@ -25,10 +24,17 @@ import { RefreshCWIcon } from '~/components/icons/refresh-cw'
 import { cn } from '~/lib/utils'
 import PreviewImageExif from '~/components/album/preview-image-exif'
 import { useSwrHydrated } from '~/hooks/use-swr-hydrated'
+import Lightbox from 'yet-another-react-lightbox'
+import 'yet-another-react-lightbox/styles.css'
+import { useRef, useState } from 'react'
+import { Zoom } from 'yet-another-react-lightbox/plugins'
+import { ExpandIcon } from '~/components/icons/expand'
 
 export default function PreviewImage(props: Readonly<PreviewImageHandleProps>) {
   const router = useRouter()
   const { data: download = false, mutate: setDownload } = useSWR(['masonry/download', props.data?.url ?? ''], null)
+  const [lightboxPhoto, setLightboxPhoto] = useState<any>(undefined)
+  const zoomRef = useRef(null)
 
   const exifIconClass = 'dark:text-gray-50 text-gray-500'
   const exifTextClass = 'text-tiny text-sm select-none items-center dark:text-gray-50 text-gray-500'
@@ -223,8 +229,17 @@ export default function PreviewImage(props: Readonly<PreviewImageHandleProps>) {
                 }
               </>
             }
-
             <PreviewImageExif {...exifProps} />
+            <ExpandIcon
+              className={exifIconClass}
+              size={20}
+              onClick={() => {
+                setLightboxPhoto({
+                  src: props.data.preview_url || props.data.url,
+                  alt: props.data.detail,
+                })
+              }}
+            />
           </div>
           {props.data?.labels &&
             <div className="flex flex-wrap space-x-2">
@@ -251,6 +266,17 @@ export default function PreviewImage(props: Readonly<PreviewImageHandleProps>) {
           }
         </div>
       </div>
+      <Lightbox
+        open={Boolean(lightboxPhoto)}
+        close={() => setLightboxPhoto(undefined)}
+        slides={lightboxPhoto ? [lightboxPhoto] : undefined}
+        plugins={[Zoom]}
+        zoom={{ ref: zoomRef }}
+        carousel={{ finite: true }}
+        render={{ buttonPrev: () => null, buttonNext: () => null }}
+        styles={{ root: { '--yarl__color_backdrop': 'rgba(0, 0, 0, .8)' } }}
+        controller={{ closeOnBackdropClick: true, closeOnPullUp: true, closeOnPullDown: true }}
+      />
     </div>
   )
 }

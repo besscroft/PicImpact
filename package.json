@@ -94,6 +94,7 @@
     "tailwind-merge": "^3.0.2",
     "tw-animate-css": "^1.2.4",
     "vaul": "^1.1.2",
+    "yet-another-react-lightbox": "^3.23.0",
     "zod": "^3.24.2",
     "zustand": "^4.5.6"
   },
