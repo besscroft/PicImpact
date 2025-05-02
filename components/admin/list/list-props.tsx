@@ -85,7 +85,7 @@ export default function ListProps(props : Readonly<ImageServerHandleProps>) {
       } else {
         toast.error('更新失败！')
       }
-    } catch (e) {
+    } catch {
       toast.error('更新失败！')
     } finally {
       setUpdateShowId('')
@@ -118,7 +118,7 @@ export default function ListProps(props : Readonly<ImageServerHandleProps>) {
       } else {
         toast.error('更新失败！')
       }
-    } catch (e) {
+    } catch {
       toast.error('更新失败！')
     } finally {
       setUpdateImageAlbumLoading(false)
@@ -133,6 +133,7 @@ export default function ListProps(props : Readonly<ImageServerHandleProps>) {
             disabled={albumsLoading}
             onValueChange={async (value: string) => {
               setAlbum(value)
+              setShowStatus(-1)
               await totalMutate()
               await mutate()
             }}
@@ -153,6 +154,7 @@ export default function ListProps(props : Readonly<ImageServerHandleProps>) {
             </SelectContent>
           </Select>
           <Select
+            value={showStatus.toString()}
             onValueChange={async (value: string) => {
               setShowStatus(Number(value))
               await totalMutate()
