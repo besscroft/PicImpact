@@ -18,9 +18,10 @@ const ALBUM_IMAGE_SORTING_ORDER = [
  * 根据相册获取图片分页列表（服务端）
  * @param pageNum 页码
  * @param album 相册
+ * @param showStatus 公开状态 (0: 公开, 1: 未公开, -1: 全部)
  * @returns {Promise<[ImageType]>} 图片列表
  */
-export async function fetchServerImagesListByAlbum(pageNum: number, album: string) {
+export async function fetchServerImagesListByAlbum(pageNum: number, album: string, showStatus: number = -1) {
   if (album === 'all') {
     album = ''
   }
@@ -45,6 +46,7 @@ export async function fetchServerImagesListByAlbum(pageNum: number, album: strin
           albums.del = 0
       AND
           albums.album_value = ${album}
+      ${showStatus !== -1 ? Prisma.sql`AND image.show = ${showStatus}` : Prisma.empty}
       ORDER BY image.sort DESC, image.created_at DESC, image.updated_at DESC
       LIMIT 8 OFFSET ${(pageNum - 1) * 8}
     `
@@ -62,6 +64,7 @@ export async function fetchServerImagesListByAlbum(pageNum: number, album: strin
         ON relation.album_value = albums.album_value
     WHERE 
         image.del = 0
+        ${showStatus !== -1 ? Prisma.sql`AND image.show = ${showStatus}` : Prisma.empty}
     ORDER BY image.sort DESC, image.created_at DESC, image.updated_at DESC 
     LIMIT 8 OFFSET ${(pageNum - 1) * 8}
   `
@@ -70,9 +73,10 @@ export async function fetchServerImagesListByAlbum(pageNum: number, album: strin
 /**
  * 根据相册获取图片分页总数（服务端）
  * @param album 相册
+ * @param showStatus 公开状态 (0: 公开, 1: 未公开, -1: 全部)
  * @returns 图片总数
  */
-export async function fetchServerImagesPageTotalByAlbum(album: string) {
+export async function fetchServerImagesPageTotalByAlbum(album: string, showStatus: number = -1) {
   if (album === 'all') {
     album = ''
   }
@@ -94,6 +98,7 @@ export async function fetchServerImagesPageTotalByAlbum(album: string) {
             albums.del = 0
         AND
             albums.album_value = ${album}
+            ${showStatus !== -1 ? Prisma.sql`AND image.show = ${showStatus}` : Prisma.empty}
       ) AS unique_images;
     `
     // @ts-ignore
@@ -112,10 +117,10 @@ export async function fetchServerImagesPageTotalByAlbum(album: string) {
           ON relation.album_value = albums.album_value
       WHERE
           image.del = 0
+          ${showStatus !== -1 ? Prisma.sql`AND image.show = ${showStatus}` : Prisma.empty}
      ) AS unique_images;
   `
   // @ts-ignore
-  // return Number(pageTotal[0].total) > 0 ? Math.ceil(Number(pageTotal[0].total) / 8) : 0
   return Number(pageTotal[0].total) ?? 0
 }
 

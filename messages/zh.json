@@ -5,7 +5,10 @@
     "all": "全部",
     "sort": "排序",
     "type": "类型",
-    "default": "默认"
+    "default": "默认",
+    "showStatus": "公开状态",
+    "public": "已公开",
+    "private": "未公开"
   },
   "Login": {
     "title": "欢迎登录",
@@ -108,7 +111,8 @@
     "selectAlbum": "请选择相册",
     "bindAlbum": "绑定相册",
     "rule": "从高到低",
-    "pleaseSelectAlbum": "请选择相册"
+    "pleaseSelectAlbum": "请选择相册",
+    "selectShowStatus": "选择公开状态"
   },
   "Album": {
     "router": "路由",

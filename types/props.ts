@@ -12,9 +12,9 @@ export type HandleProps = {
 }
 
 export type ImageServerHandleProps = {
-  handle: (pageNum: number, tag: string) => any
+  handle: (pageNum: number, tag: string, showStatus?: number) => any
   args: string
-  totalHandle: (tag: string) => any
+  totalHandle: (tag: string, showStatus?: number) => any
 }
 
 export type ImageHandleProps = {

@@ -5,7 +5,10 @@
     "all": "All",
     "sort": "Sort",
     "type": "Type",
-    "default": "Default"
+    "default": "Default",
+    "showStatus": "Show Status",
+    "public": "Public",
+    "private": "Private"
   },
   "Login": {
     "title": "Welcome Login",
@@ -108,7 +111,8 @@
     "selectAlbum": "Please select an album",
     "bindAlbum": "Bind Album",
     "rule": "From high to low",
-    "pleaseSelectAlbum": "Please select an album"
+    "pleaseSelectAlbum": "Please select an album",
+    "selectShowStatus": "Select Show Status"
   },
   "Album": {
     "router": "Router",
