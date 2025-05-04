@@ -10,7 +10,7 @@ import { Button } from '~/components/ui/button'
 import { Progress } from '~/components/ui/progress'
 import type { AnalysisDataProps } from '~/types/props'
 import Link from 'next/link'
-import { MessageSquareHeart, Star, Send } from 'lucide-react'
+import { MessageSquareHeart, Star, Send, ArrowUpDown } from 'lucide-react'
 import TextCounter from '~/components/ui/origin/text-counter'
 import {
   Table,
@@ -21,9 +21,53 @@ import {
   TableRow,
 } from '~/components/ui/table'
 import { useTranslations } from 'next-intl'
+import { useState } from 'react'
 
 export default function CardList(props: Readonly<AnalysisDataProps>) {
   const t = useTranslations()
+  const [sortConfig, setSortConfig] = useState<{
+    key: 'camera' | 'lens' | 'count' | null;
+    direction: 'ascending' | 'descending';
+  }>({
+    key: null,
+    direction: 'ascending'
+  })
+
+  const sortedCameraStats = [...(props.data?.cameraStats || [])].sort((a, b) => {
+    if (!sortConfig.key) return 0
+
+    const aValue = a[sortConfig.key]
+    const bValue = b[sortConfig.key]
+
+    if (sortConfig.key === 'count') {
+      return sortConfig.direction === 'ascending' 
+        ? Number(aValue) - Number(bValue)
+        : Number(bValue) - Number(aValue)
+    }
+
+    // For camera and lens, we know they are strings
+    const aStr = String(aValue)
+    const bStr = String(bValue)
+    if (sortConfig.direction === 'ascending') {
+      return aStr.localeCompare(bStr)
+    }
+    return bStr.localeCompare(aStr)
+  })
+
+  const requestSort = (key: 'camera' | 'lens' | 'count') => {
+    let direction: 'ascending' | 'descending' = 'ascending'
+    if (sortConfig.key === key && sortConfig.direction === 'ascending') {
+      direction = 'descending'
+    }
+    setSortConfig({ key, direction })
+  }
+
+  const getSortIcon = (key: 'camera' | 'lens' | 'count') => {
+    if (sortConfig.key !== key) return <ArrowUpDown className="ml-2 h-4 w-4" />
+    return sortConfig.direction === 'ascending' 
+      ? <ArrowUpDown className="ml-2 h-4 w-4 rotate-180" />
+      : <ArrowUpDown className="ml-2 h-4 w-4" />
+  }
 
   return (
     <div className="flex flex-col space-y-2">
@@ -125,13 +169,37 @@ export default function CardList(props: Readonly<AnalysisDataProps>) {
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>{t('Dashboard.camera')}</TableHead>
-            <TableHead>{t('Dashboard.lens')}</TableHead>
-            <TableHead className="text-right font-normal">{t('Dashboard.count')}</TableHead>
+            <TableHead 
+              className="cursor-pointer"
+              onClick={() => requestSort('camera')}
+            >
+              <div className="flex items-center">
+                {t('Dashboard.camera')}
+                {getSortIcon('camera')}
+              </div>
+            </TableHead>
+            <TableHead 
+              className="cursor-pointer"
+              onClick={() => requestSort('lens')}
+            >
+              <div className="flex items-center">
+                {t('Dashboard.lens')}
+                {getSortIcon('lens')}
+              </div>
+            </TableHead>
+            <TableHead 
+              className="text-right cursor-pointer"
+              onClick={() => requestSort('count')}
+            >
+              <div className="flex items-center justify-end">
+                {t('Dashboard.count')}
+                {getSortIcon('count')}
+              </div>
+            </TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
-          {props.data?.cameraStats.map((stat: any, index: number) => (
+          {sortedCameraStats.map((stat: any, index: number) => (
             <TableRow key={index}>
               <TableCell className="font-medium">{stat.camera}</TableCell>
               <TableCell>{stat.lens}</TableCell>
