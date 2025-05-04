@@ -5,7 +5,10 @@
     "all": "すべて",
     "sort": "ソート",
     "type": "タイプ",
-    "default": "デフォルト"
+    "default": "デフォルト",
+    "showStatus": "表示状態",
+    "public": "公開済み",
+    "private": "非公開"
   },
   "Login": {
     "title": "歓迎ログイン",
@@ -108,7 +111,8 @@
     "selectAlbum": "アルバムを選択してください",
     "bindAlbum": "アルバムをバインド",
     "rule": "高い順から低い順",
-    "pleaseSelectAlbum": "アルバムを選択してください"
+    "pleaseSelectAlbum": "アルバムを選択してください",
+    "selectShowStatus": "表示状態を選択"
   },
   "Album": {
     "router": "ルーター",

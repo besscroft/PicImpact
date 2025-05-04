@@ -1,10 +1,10 @@
 import useSWR from 'swr'
 import type { ImageServerHandleProps } from '~/types/props'
 
-export const useSwrInfiniteServerHook = ({ handle, args }: ImageServerHandleProps, pageNum: number, tag: string)   => {
-  const { data, error, isLoading, isValidating, mutate } = useSWR([args, pageNum],
+export const useSwrInfiniteServerHook = ({ handle, args }: ImageServerHandleProps, pageNum: number, tag: string, showStatus: number = -1)   => {
+  const { data, error, isLoading, isValidating, mutate } = useSWR([args, pageNum, showStatus],
     () => {
-      return handle(pageNum, tag)
+      return handle(pageNum, tag, showStatus)
     }, {
     revalidateOnFocus: false,
     keepPreviousData: true,

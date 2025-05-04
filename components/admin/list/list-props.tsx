@@ -47,9 +47,10 @@ import { ChevronRightIcon } from '~/components/icons/chevron-right'
 export default function ListProps(props : Readonly<ImageServerHandleProps>) {
   const [pageNum, setPageNum] = useState(1)
   const [album, setAlbum] = useState('')
+  const [showStatus, setShowStatus] = useState(-1)
   const [imageAlbum, setImageAlbum] = useState('')
-  const { data, isLoading, mutate } = useSwrInfiniteServerHook(props, pageNum, album)
-  const { data: total, mutate: totalMutate } = useSwrPageTotalServerHook(props, album)
+  const { data, isLoading, mutate } = useSwrInfiniteServerHook(props, pageNum, album, showStatus)
+  const { data: total, mutate: totalMutate } = useSwrPageTotalServerHook(props, album, showStatus)
   const [image, setImage] = useState({} as ImageType)
   const [updateShowLoading, setUpdateShowLoading] = useState(false)
   const [updateImageAlbumLoading, setUpdateImageAlbumLoading] = useState(false)
@@ -84,7 +85,7 @@ export default function ListProps(props : Readonly<ImageServerHandleProps>) {
       } else {
         toast.error('更新失败！')
       }
-    } catch (e) {
+    } catch {
       toast.error('更新失败！')
     } finally {
       setUpdateShowId('')
@@ -117,7 +118,7 @@ export default function ListProps(props : Readonly<ImageServerHandleProps>) {
       } else {
         toast.error('更新失败！')
       }
-    } catch (e) {
+    } catch {
       toast.error('更新失败！')
     } finally {
       setUpdateImageAlbumLoading(false)
@@ -127,11 +128,12 @@ export default function ListProps(props : Readonly<ImageServerHandleProps>) {
   return (
     <div className="flex flex-col space-y-2 h-full flex-1">
       <div className="flex justify-between space-x-1">
-        <div className="flex items-center w-full sm:w-64 md:w-80">
+        <div className="flex items-center space-x-2 w-full sm:w-96 md:w-[32rem]">
           <Select
             disabled={albumsLoading}
             onValueChange={async (value: string) => {
               setAlbum(value)
+              setShowStatus(-1)
               await totalMutate()
               await mutate()
             }}
@@ -148,6 +150,26 @@ export default function ListProps(props : Readonly<ImageServerHandleProps>) {
                     {album.name}
                   </SelectItem>
                 ))}
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+          <Select
+            value={showStatus.toString()}
+            onValueChange={async (value: string) => {
+              setShowStatus(Number(value))
+              await totalMutate()
+              await mutate()
+            }}
+          >
+            <SelectTrigger className="cursor-pointer">
+              <SelectValue placeholder={t('List.selectShowStatus')} />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectGroup>
+                <SelectLabel>{t('Words.showStatus')}</SelectLabel>
+                <SelectItem className="cursor-pointer" value="-1">{t('Words.all')}</SelectItem>
+                <SelectItem className="cursor-pointer" value="0">{t('Words.public')}</SelectItem>
+                <SelectItem className="cursor-pointer" value="1">{t('Words.private')}</SelectItem>
               </SelectGroup>
             </SelectContent>
           </Select>
