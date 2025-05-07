@@ -1,4 +1,4 @@
-import type { Metadata, ResolvingMetadata } from 'next'
+import type { Metadata } from 'next'
 
 import { ThemeProvider } from '~/app/providers/next-ui-providers'
 import { ToasterProviders } from '~/app/providers/toaster-providers'
