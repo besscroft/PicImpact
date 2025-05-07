@@ -21,25 +21,7 @@ export default async function About() {
           height={64}
         />
       </Link>
-      <span className="inline-flex items-center justify-center rounded-full bg-emerald-100 px-2.5 py-0.5 text-emerald-700">
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-          strokeWidth="1.5"
-          stroke="currentColor"
-          className="-ms-1 me-1.5 size-4"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-          />
-        </svg>
-
-        <p className="whitespace-nowrap text-sm select-none">v2.4.3</p>
-      </span>
-      <span className="select-none">PicImpact 是一个支持自部署的摄影师专用的摄影作品展示网站，基于 Next.js + Hono.js 开发。</span>
+      <span className="select-none">PicImpact 是一个支持自部署的摄影作品展示网站，基于 Next.js + Hono.js 开发。</span>
       <div className="grid grid-cols-1 gap-2 md:grid-cols-2 md:gap-4 lg:grid-cols-3 lg:gap-6 xl:grid-cols-4 xl:gap-8">
         {
           contributors.map((item: any) => {
