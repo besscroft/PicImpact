@@ -1,11 +1,19 @@
 import useSWR from 'swr'
 import type { ImageServerHandleProps } from '~/types/props'
 
-export const useSwrPageTotalServerHook = ({ args, totalHandle }: ImageServerHandleProps, tag: string, showStatus: number = -1)   => {
-  const { data, error, isLoading, isValidating, mutate } = useSWR([args, tag, showStatus],
+export const useSwrPageTotalServerHook = (
+  { args, totalHandle }: ImageServerHandleProps,
+  tag: string,
+  showStatus: number = -1,
+  camera: string = '',
+  lens: string = ''
+) => {
+  const { data, error, isLoading, isValidating, mutate } = useSWR(
+    [args, tag, showStatus, camera, lens],
     () => {
-      return totalHandle(tag, showStatus)
-    })
+      return totalHandle(tag, showStatus, camera, lens)
+    }
+  )
 
   return {
     data,

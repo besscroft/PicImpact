@@ -8,7 +8,9 @@
     "default": "デフォルト",
     "showStatus": "表示状態",
     "public": "公開済み",
-    "private": "非公開"
+    "private": "非公開",
+    "camera": "カメラ",
+    "lens": "レンズ"
   },
   "Login": {
     "title": "歓迎ログイン",
@@ -112,7 +114,11 @@
     "bindAlbum": "アルバムをバインド",
     "rule": "高い順から低い順",
     "pleaseSelectAlbum": "アルバムを選択してください",
-    "selectShowStatus": "表示状態を選択"
+    "selectShowStatus": "表示状態を選択",
+    "selectCamera": "カメラを選択",
+    "selectLens": "レンズを選択",
+    "camera": "カメラ",
+    "lens": "レンズ"
   },
   "Album": {
     "router": "ルーター",

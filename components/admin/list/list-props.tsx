@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import type { ImageType, AlbumType } from '~/types'
 import type { ImageListDataProps, ImageServerHandleProps } from '~/types/props'
 import { useSwrInfiniteServerHook } from '~/hooks/use-swr-infinite-server-hook'
@@ -49,8 +49,12 @@ export default function ListProps(props : Readonly<ImageServerHandleProps>) {
   const [album, setAlbum] = useState('')
   const [showStatus, setShowStatus] = useState(-1)
   const [imageAlbum, setImageAlbum] = useState('')
-  const { data, isLoading, mutate } = useSwrInfiniteServerHook(props, pageNum, album, showStatus)
-  const { data: total, mutate: totalMutate } = useSwrPageTotalServerHook(props, album, showStatus)
+  const [selectedCamera, setSelectedCamera] = useState('all')
+  const [selectedLens, setSelectedLens] = useState('all')
+  const [cameras, setCameras] = useState<string[]>([])
+  const [lenses, setLenses] = useState<string[]>([])
+  const { data, isLoading, mutate } = useSwrInfiniteServerHook(props, pageNum, album, showStatus, selectedCamera === 'all' ? '' : selectedCamera, selectedLens === 'all' ? '' : selectedLens)
+  const { data: total, mutate: totalMutate } = useSwrPageTotalServerHook(props, album, showStatus, selectedCamera === 'all' ? '' : selectedCamera, selectedLens === 'all' ? '' : selectedLens)
   const [image, setImage] = useState({} as ImageType)
   const [updateShowLoading, setUpdateShowLoading] = useState(false)
   const [updateImageAlbumLoading, setUpdateImageAlbumLoading] = useState(false)
@@ -64,6 +68,23 @@ export default function ListProps(props : Readonly<ImageServerHandleProps>) {
   const dataProps: ImageListDataProps = {
     data: data,
   }
+
+  useEffect(() => {
+    const fetchCameraAndLensList = async () => {
+      try {
+        const response = await fetch('/api/v1/images/camera-lens-list')
+        if (response.ok) {
+          const data = await response.json()
+          setCameras(data.cameras)
+          setLenses(data.lenses)
+        }
+      } catch (error) {
+        console.error('Failed to fetch camera and lens list:', error)
+      }
+    }
+
+    fetchCameraAndLensList()
+  }, [])
 
   async function updateImageShow(id: string, show: number) {
     try {
@@ -170,6 +191,52 @@ export default function ListProps(props : Readonly<ImageServerHandleProps>) {
                 <SelectItem className="cursor-pointer" value="-1">{t('Words.all')}</SelectItem>
                 <SelectItem className="cursor-pointer" value="0">{t('Words.public')}</SelectItem>
                 <SelectItem className="cursor-pointer" value="1">{t('Words.private')}</SelectItem>
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+          <Select
+            value={selectedCamera}
+            onValueChange={async (value: string) => {
+              setSelectedCamera(value)
+              await totalMutate()
+              await mutate()
+            }}
+          >
+            <SelectTrigger className="cursor-pointer">
+              <SelectValue placeholder={t('List.selectCamera')} />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectGroup>
+                <SelectLabel>{t('Words.camera')}</SelectLabel>
+                <SelectItem className="cursor-pointer" value="all">{t('Words.all')}</SelectItem>
+                {cameras.map((camera) => (
+                  <SelectItem className="cursor-pointer" key={camera} value={camera}>
+                    {camera}
+                  </SelectItem>
+                ))}
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+          <Select
+            value={selectedLens}
+            onValueChange={async (value: string) => {
+              setSelectedLens(value)
+              await totalMutate()
+              await mutate()
+            }}
+          >
+            <SelectTrigger className="cursor-pointer">
+              <SelectValue placeholder={t('List.selectLens')} />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectGroup>
+                <SelectLabel>{t('Words.lens')}</SelectLabel>
+                <SelectItem className="cursor-pointer" value="all">{t('Words.all')}</SelectItem>
+                {lenses.map((lens) => (
+                  <SelectItem className="cursor-pointer" key={lens} value={lens}>
+                    {lens}
+                  </SelectItem>
+                ))}
               </SelectGroup>
             </SelectContent>
           </Select>
