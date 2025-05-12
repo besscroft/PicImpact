@@ -8,7 +8,9 @@
     "default": "Default",
     "showStatus": "Show Status",
     "public": "Public",
-    "private": "Private"
+    "private": "Private",
+    "camera": "Camera",
+    "lens": "Lens"
   },
   "Login": {
     "title": "Welcome Login",
@@ -112,7 +114,11 @@
     "bindAlbum": "Bind Album",
     "rule": "From high to low",
     "pleaseSelectAlbum": "Please select an album",
-    "selectShowStatus": "Select Show Status"
+    "selectShowStatus": "Select Show Status",
+    "selectCamera": "Select Camera",
+    "selectLens": "Select Lens",
+    "camera": "Camera",
+    "lens": "Lens"
   },
   "Album": {
     "router": "Router",

@@ -19,9 +19,17 @@ const ALBUM_IMAGE_SORTING_ORDER = [
  * @param pageNum 页码
  * @param album 相册
  * @param showStatus 公开状态 (0: 公开, 1: 未公开, -1: 全部)
+ * @param camera 相机型号
+ * @param lens 镜头型号
  * @returns {Promise<[ImageType]>} 图片列表
  */
-export async function fetchServerImagesListByAlbum(pageNum: number, album: string, showStatus: number = -1) {
+export async function fetchServerImagesListByAlbum(
+  pageNum: number,
+  album: string,
+  showStatus: number = -1,
+  camera?: string,
+  lens?: string
+) {
   if (album === 'all') {
     album = ''
   }
@@ -46,7 +54,9 @@ export async function fetchServerImagesListByAlbum(pageNum: number, album: strin
           albums.del = 0
       AND
           albums.album_value = ${album}
-      ${showStatus !== -1 ? Prisma.sql`AND image.show = ${showStatus}` : Prisma.empty}
+          ${showStatus !== -1 ? Prisma.sql`AND image.show = ${showStatus}` : Prisma.empty}
+          ${camera ? Prisma.sql`AND COALESCE(image.exif->>'model', 'Unknown') = ${camera}` : Prisma.empty}
+          ${lens ? Prisma.sql`AND COALESCE(image.exif->>'lens_model', 'Unknown') = ${lens}` : Prisma.empty}
       ORDER BY image.sort DESC, image.created_at DESC, image.updated_at DESC
       LIMIT 8 OFFSET ${(pageNum - 1) * 8}
     `
@@ -65,6 +75,8 @@ export async function fetchServerImagesListByAlbum(pageNum: number, album: strin
     WHERE 
         image.del = 0
         ${showStatus !== -1 ? Prisma.sql`AND image.show = ${showStatus}` : Prisma.empty}
+        ${camera ? Prisma.sql`AND COALESCE(image.exif->>'model', 'Unknown') = ${camera}` : Prisma.empty}
+        ${lens ? Prisma.sql`AND COALESCE(image.exif->>'lens_model', 'Unknown') = ${lens}` : Prisma.empty}
     ORDER BY image.sort DESC, image.created_at DESC, image.updated_at DESC 
     LIMIT 8 OFFSET ${(pageNum - 1) * 8}
   `
@@ -74,9 +86,16 @@ export async function fetchServerImagesListByAlbum(pageNum: number, album: strin
  * 根据相册获取图片分页总数（服务端）
  * @param album 相册
  * @param showStatus 公开状态 (0: 公开, 1: 未公开, -1: 全部)
+ * @param camera 相机型号
+ * @param lens 镜头型号
  * @returns 图片总数
  */
-export async function fetchServerImagesPageTotalByAlbum(album: string, showStatus: number = -1) {
+export async function fetchServerImagesPageTotalByAlbum(
+  album: string,
+  showStatus: number = -1,
+  camera?: string,
+  lens?: string
+) {
   if (album === 'all') {
     album = ''
   }
@@ -99,28 +118,32 @@ export async function fetchServerImagesPageTotalByAlbum(album: string, showStatu
         AND
             albums.album_value = ${album}
             ${showStatus !== -1 ? Prisma.sql`AND image.show = ${showStatus}` : Prisma.empty}
+            ${camera ? Prisma.sql`AND COALESCE(image.exif->>'model', 'Unknown') = ${camera}` : Prisma.empty}
+            ${lens ? Prisma.sql`AND COALESCE(image.exif->>'lens_model', 'Unknown') = ${lens}` : Prisma.empty}
       ) AS unique_images;
     `
-    // @ts-ignore
+    // @ts-expect-error - The query result is guaranteed to have a total field
     return Number(pageTotal[0].total) ?? 0
   }
   const pageTotal = await db.$queryRaw`
     SELECT COALESCE(COUNT(1),0) AS total
     FROM (
-      SELECT DISTINCT ON (image.id)
-          image.id
-      FROM
-          "public"."images" AS image
-      LEFT JOIN "public"."images_albums_relation" AS relation
-          ON image.id = relation."imageId"
-      LEFT JOIN "public"."albums" AS albums
-          ON relation.album_value = albums.album_value
-      WHERE
-          image.del = 0
-          ${showStatus !== -1 ? Prisma.sql`AND image.show = ${showStatus}` : Prisma.empty}
+        SELECT DISTINCT ON (image.id)
+            image.id
+        FROM
+            "public"."images" AS image
+        LEFT JOIN "public"."images_albums_relation" AS relation
+            ON image.id = relation."imageId"
+        LEFT JOIN "public"."albums" AS albums
+            ON relation.album_value = albums.album_value
+        WHERE
+            image.del = 0
+            ${showStatus !== -1 ? Prisma.sql`AND image.show = ${showStatus}` : Prisma.empty}
+            ${camera ? Prisma.sql`AND COALESCE(image.exif->>'model', 'Unknown') = ${camera}` : Prisma.empty}
+            ${lens ? Prisma.sql`AND COALESCE(image.exif->>'lens_model', 'Unknown') = ${lens}` : Prisma.empty}
      ) AS unique_images;
   `
-  // @ts-ignore
+  // @ts-expect-error - The query result is guaranteed to have a total field
   return Number(pageTotal[0].total) ?? 0
 }
 
@@ -426,4 +449,27 @@ export async function getRSSImages() {
     FROM RankedImages
     WHERE rn <= 10;
   `
+}
+
+/**
+ * 获取所有相机和镜头型号列表
+ * @returns {Promise<{ cameras: string[], lenses: string[] }>} 相机和镜头列表
+ */
+export async function fetchCameraAndLensList() {
+  const stats = await db.$queryRaw<Array<{ camera: string; lens: string }>>`
+    SELECT DISTINCT
+      COALESCE(exif->>'model', 'Unknown') as camera,
+      COALESCE(exif->>'lens_model', 'Unknown') as lens
+    FROM "public"."images"
+    WHERE del = 0
+    ORDER BY camera, lens
+  `
+
+  const cameras = [...new Set(stats.map(item => item.camera))]
+  const lenses = [...new Set(stats.map(item => item.lens))]
+
+  return {
+    cameras,
+    lenses
+  }
 }

@@ -8,7 +8,9 @@
     "default": "默认",
     "showStatus": "公开状态",
     "public": "已公开",
-    "private": "未公开"
+    "private": "未公开",
+    "camera": "相机",
+    "lens": "镜头"
   },
   "Login": {
     "title": "欢迎登录",
@@ -112,7 +114,11 @@
     "bindAlbum": "绑定相册",
     "rule": "从高到低",
     "pleaseSelectAlbum": "请选择相册",
-    "selectShowStatus": "选择公开状态"
+    "selectShowStatus": "选择公开状态",
+    "selectCamera": "选择相机",
+    "selectLens": "选择镜头",
+    "camera": "相机",
+    "lens": "镜头"
   },
   "Album": {
     "router": "路由",

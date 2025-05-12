@@ -5,7 +5,12 @@
     "all": "全部",
     "sort": "排序",
     "type": "類型",
-    "default": "預設"
+    "default": "預設",
+    "showStatus": "公開狀態",
+    "public": "已公開",
+    "private": "未公開",
+    "camera": "相機",
+    "lens": "鏡頭"
   },
   "Login": {
     "title": "歡迎登入",
@@ -108,7 +113,12 @@
     "selectAlbum": "請選擇相簿",
     "bindAlbum": "綁定相簿",
     "rule": "從高到低",
-    "pleaseSelectAlbum": "請選擇相簿"
+    "pleaseSelectAlbum": "請選擇相簿",
+    "selectShowStatus": "選擇公開狀態",
+    "selectCamera": "選擇相機",
+    "selectLens": "選擇鏡頭",
+    "camera": "相機",
+    "lens": "鏡頭"
   },
   "Album": {
     "router": "路由",
