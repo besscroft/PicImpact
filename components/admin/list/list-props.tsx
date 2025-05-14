@@ -43,6 +43,13 @@ import { useTranslations } from 'next-intl'
 import { Badge } from '~/components/ui/badge'
 import { ChevronLeftIcon } from '~/components/icons/chevron-left'
 import { ChevronRightIcon } from '~/components/icons/chevron-right'
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '~/components/ui/popover'
+import { RefreshCWIcon } from '~/components/icons/refresh-cw.tsx'
+import { CircleChevronDownIcon } from '~/components/icons/circle-chevron-down.tsx'
 
 export default function ListProps(props : Readonly<ImageServerHandleProps>) {
   const [pageNum, setPageNum] = useState(1)
@@ -149,7 +156,7 @@ export default function ListProps(props : Readonly<ImageServerHandleProps>) {
   return (
     <div className="flex flex-col space-y-2 h-full flex-1">
       <div className="flex justify-between space-x-1">
-        <div className="flex items-center space-x-2 w-full sm:w-96 md:w-[32rem]">
+        <div className="flex justify-between items-center space-x-2">
           <Select
             disabled={albumsLoading}
             onValueChange={async (value: string) => {
@@ -174,72 +181,74 @@ export default function ListProps(props : Readonly<ImageServerHandleProps>) {
               </SelectGroup>
             </SelectContent>
           </Select>
-          <Select
-            value={showStatus}
-            onValueChange={async (value: string) => {
-              setShowStatus(value)
-              await totalMutate()
-              await mutate()
-            }}
-          >
-            <SelectTrigger className="cursor-pointer">
-              <SelectValue placeholder={t('List.selectShowStatus')} />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectGroup>
-                <SelectLabel>{t('Words.showStatus')}</SelectLabel>
-                <SelectItem className="cursor-pointer" value="all">{t('Words.all')}</SelectItem>
-                <SelectItem className="cursor-pointer" value="0">{t('Words.public')}</SelectItem>
-                <SelectItem className="cursor-pointer" value="1">{t('Words.private')}</SelectItem>
-              </SelectGroup>
-            </SelectContent>
-          </Select>
-          <Select
-            value={selectedCamera}
-            onValueChange={async (value: string) => {
-              setSelectedCamera(value)
-              await totalMutate()
-              await mutate()
-            }}
-          >
-            <SelectTrigger className="cursor-pointer">
-              <SelectValue placeholder={t('List.selectCamera')} />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectGroup>
-                <SelectLabel>{t('Words.camera')}</SelectLabel>
-                <SelectItem className="cursor-pointer" value="all">{t('Words.all')}</SelectItem>
-                {cameras.map((camera) => (
-                  <SelectItem className="cursor-pointer" key={camera} value={camera}>
-                    {camera}
-                  </SelectItem>
-                ))}
-              </SelectGroup>
-            </SelectContent>
-          </Select>
-          <Select
-            value={selectedLens}
-            onValueChange={async (value: string) => {
-              setSelectedLens(value)
-              await totalMutate()
-              await mutate()
-            }}
-          >
-            <SelectTrigger className="cursor-pointer">
-              <SelectValue placeholder={t('List.selectLens')} />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectGroup>
-                <SelectLabel>{t('Words.lens')}</SelectLabel>
-                <SelectItem className="cursor-pointer" value="all">{t('Words.all')}</SelectItem>
-                {lenses.map((lens) => (
-                  <SelectItem className="cursor-pointer" key={lens} value={lens}>
-                    {lens}
-                  </SelectItem>
-                ))}
-              </SelectGroup>
-            </SelectContent>
-          </Select>
+          <div className="hidden sm:flex items-center space-x-2">
+            <Select
+              value={showStatus}
+              onValueChange={async (value: string) => {
+                setShowStatus(value)
+                await totalMutate()
+                await mutate()
+              }}
+            >
+              <SelectTrigger className="cursor-pointer">
+                <SelectValue placeholder={t('List.selectShowStatus')} />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  <SelectLabel>{t('Words.showStatus')}</SelectLabel>
+                  <SelectItem className="cursor-pointer" value="all">{t('Words.all')}</SelectItem>
+                  <SelectItem className="cursor-pointer" value="0">{t('Words.public')}</SelectItem>
+                  <SelectItem className="cursor-pointer" value="1">{t('Words.private')}</SelectItem>
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+            <Select
+              value={selectedCamera}
+              onValueChange={async (value: string) => {
+                setSelectedCamera(value)
+                await totalMutate()
+                await mutate()
+              }}
+            >
+              <SelectTrigger className="cursor-pointer">
+                <SelectValue placeholder={t('List.selectCamera')} />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  <SelectLabel>{t('Words.camera')}</SelectLabel>
+                  <SelectItem className="cursor-pointer" value="all">{t('Words.all')}</SelectItem>
+                  {cameras.map((camera) => (
+                    <SelectItem className="cursor-pointer" key={camera} value={camera}>
+                      {camera}
+                    </SelectItem>
+                  ))}
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+            <Select
+              value={selectedLens}
+              onValueChange={async (value: string) => {
+                setSelectedLens(value)
+                await totalMutate()
+                await mutate()
+              }}
+            >
+              <SelectTrigger className="cursor-pointer">
+                <SelectValue placeholder={t('List.selectLens')} />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  <SelectLabel>{t('Words.lens')}</SelectLabel>
+                  <SelectItem className="cursor-pointer" value="all">{t('Words.all')}</SelectItem>
+                  {lenses.map((lens) => (
+                    <SelectItem className="cursor-pointer" key={lens} value={lens}>
+                      {lens}
+                    </SelectItem>
+                  ))}
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+          </div>
         </div>
         <div className="flex items-center space-x-1">
           <Button
@@ -253,6 +262,7 @@ export default function ListProps(props : Readonly<ImageServerHandleProps>) {
           <Button
             className="cursor-pointer"
             variant="outline"
+            size="icon"
             disabled={isLoading}
             onClick={async () => {
               await totalMutate()
@@ -260,9 +270,89 @@ export default function ListProps(props : Readonly<ImageServerHandleProps>) {
             }}
             aria-label={t('Button.refresh')}
           >
-            {isLoading && <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />}
-            {t('Button.refresh')}
+            <RefreshCWIcon />
           </Button>
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button
+                className="flex sm:hidden cursor-pointer"
+                variant="outline"
+                size="icon"
+              >
+                <CircleChevronDownIcon />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-80">
+              <div className="flex flex-col items-center space-y-1">
+                <Select
+                  value={showStatus}
+                  onValueChange={async (value: string) => {
+                    setShowStatus(value)
+                    await totalMutate()
+                    await mutate()
+                  }}
+                >
+                  <SelectTrigger className="w-full cursor-pointer">
+                    <SelectValue placeholder={t('List.selectShowStatus')} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectGroup>
+                      <SelectLabel>{t('Words.showStatus')}</SelectLabel>
+                      <SelectItem className="cursor-pointer" value="all">{t('Words.all')}</SelectItem>
+                      <SelectItem className="cursor-pointer" value="0">{t('Words.public')}</SelectItem>
+                      <SelectItem className="cursor-pointer" value="1">{t('Words.private')}</SelectItem>
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
+                <Select
+                  value={selectedCamera}
+                  onValueChange={async (value: string) => {
+                    setSelectedCamera(value)
+                    await totalMutate()
+                    await mutate()
+                  }}
+                >
+                  <SelectTrigger className="w-full cursor-pointer">
+                    <SelectValue placeholder={t('List.selectCamera')} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectGroup>
+                      <SelectLabel>{t('Words.camera')}</SelectLabel>
+                      <SelectItem className="cursor-pointer" value="all">{t('Words.all')}</SelectItem>
+                      {cameras.map((camera) => (
+                        <SelectItem className="cursor-pointer" key={camera} value={camera}>
+                          {camera}
+                        </SelectItem>
+                      ))}
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
+                <Select
+                  value={selectedLens}
+                  onValueChange={async (value: string) => {
+                    setSelectedLens(value)
+                    await totalMutate()
+                    await mutate()
+                  }}
+                >
+                  <SelectTrigger className="w-full cursor-pointer">
+                    <SelectValue placeholder={t('List.selectLens')} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectGroup>
+                      <SelectLabel>{t('Words.lens')}</SelectLabel>
+                      <SelectItem className="cursor-pointer" value="all">{t('Words.all')}</SelectItem>
+                      {lenses.map((lens) => (
+                        <SelectItem className="cursor-pointer" key={lens} value={lens}>
+                          {lens}
+                        </SelectItem>
+                      ))}
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
+              </div>
+            </PopoverContent>
+          </Popover>
         </div>
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
