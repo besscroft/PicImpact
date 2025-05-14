@@ -47,14 +47,14 @@ import { ChevronRightIcon } from '~/components/icons/chevron-right'
 export default function ListProps(props : Readonly<ImageServerHandleProps>) {
   const [pageNum, setPageNum] = useState(1)
   const [album, setAlbum] = useState('')
-  const [showStatus, setShowStatus] = useState(-1)
+  const [showStatus, setShowStatus] = useState('')
   const [imageAlbum, setImageAlbum] = useState('')
-  const [selectedCamera, setSelectedCamera] = useState('all')
-  const [selectedLens, setSelectedLens] = useState('all')
+  const [selectedCamera, setSelectedCamera] = useState('')
+  const [selectedLens, setSelectedLens] = useState('')
   const [cameras, setCameras] = useState<string[]>([])
   const [lenses, setLenses] = useState<string[]>([])
-  const { data, isLoading, mutate } = useSwrInfiniteServerHook(props, pageNum, album, showStatus, selectedCamera === 'all' ? '' : selectedCamera, selectedLens === 'all' ? '' : selectedLens)
-  const { data: total, mutate: totalMutate } = useSwrPageTotalServerHook(props, album, showStatus, selectedCamera === 'all' ? '' : selectedCamera, selectedLens === 'all' ? '' : selectedLens)
+  const { data, isLoading, mutate } = useSwrInfiniteServerHook(props, pageNum, album, showStatus === '' ? -1 : Number(showStatus), selectedCamera === '' ? '' : selectedCamera, selectedLens === '' ? '' : selectedLens)
+  const { data: total, mutate: totalMutate } = useSwrPageTotalServerHook(props, album, showStatus === '' ? -1 : Number(showStatus), selectedCamera === '' ? '' : selectedCamera, selectedLens === '' ? '' : selectedLens)
   const [image, setImage] = useState({} as ImageType)
   const [updateShowLoading, setUpdateShowLoading] = useState(false)
   const [updateImageAlbumLoading, setUpdateImageAlbumLoading] = useState(false)
@@ -154,7 +154,7 @@ export default function ListProps(props : Readonly<ImageServerHandleProps>) {
             disabled={albumsLoading}
             onValueChange={async (value: string) => {
               setAlbum(value)
-              setShowStatus(-1)
+              setShowStatus('')
               await totalMutate()
               await mutate()
             }}
@@ -175,9 +175,9 @@ export default function ListProps(props : Readonly<ImageServerHandleProps>) {
             </SelectContent>
           </Select>
           <Select
-            value={showStatus.toString()}
+            value={showStatus}
             onValueChange={async (value: string) => {
-              setShowStatus(Number(value))
+              setShowStatus(value)
               await totalMutate()
               await mutate()
             }}
@@ -188,7 +188,7 @@ export default function ListProps(props : Readonly<ImageServerHandleProps>) {
             <SelectContent>
               <SelectGroup>
                 <SelectLabel>{t('Words.showStatus')}</SelectLabel>
-                <SelectItem className="cursor-pointer" value="-1">{t('Words.all')}</SelectItem>
+                <SelectItem className="cursor-pointer" value="all">{t('Words.all')}</SelectItem>
                 <SelectItem className="cursor-pointer" value="0">{t('Words.public')}</SelectItem>
                 <SelectItem className="cursor-pointer" value="1">{t('Words.private')}</SelectItem>
               </SelectGroup>
