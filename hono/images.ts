@@ -24,6 +24,17 @@ app.post('/add', async (c) => {
     throw new HTTPException(400, { message: 'Missing body' })
   }
 
+  // 验证基本图片信息
+  if (!body.url) {
+    throw new HTTPException(500, { message: 'Image link cannot be empty' })
+  }
+  if (!body.height || body.height <= 0) {
+    throw new HTTPException(500, { message: 'Image height cannot be empty and must be greater than 0' })
+  }
+  if (!body.width || body.width <= 0) {
+    throw new HTTPException(500, { message: 'Image width cannot be empty and must be greater than 0' })
+  }
+
   try {
     // 获取存储配置
     const configs = await fetchConfigsByKeys([

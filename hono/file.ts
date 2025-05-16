@@ -2,7 +2,6 @@ import 'server-only'
 
 import { Hono } from 'hono'
 import { HTTPException } from 'hono/http-exception'
-import { cors } from 'hono/cors'
 import { alistUpload, r2Upload, s3Upload } from '~/server/lib/file-upload'
 import { fetchConfigsByKeys } from '~/server/db/query/configs'
 import { getClient, generatePresignedUrl as generateS3PresignedUrl } from '~/server/lib/s3'
