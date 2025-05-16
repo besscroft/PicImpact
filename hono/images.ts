@@ -9,7 +9,6 @@ import {
 } from '~/server/db/operate/images'
 import { Hono } from 'hono'
 import { HTTPException } from 'hono/http-exception'
-import { cors } from 'hono/cors'
 import { fetchConfigsByKeys } from '~/server/db/query/configs'
 import { getClient } from '~/server/lib/s3'
 import { getR2Client } from '~/server/lib/r2'
@@ -18,16 +17,6 @@ import { GetObjectCommand } from '@aws-sdk/client-s3'
 import sharp from 'sharp'
 
 const app = new Hono()
-
-// 添加 CORS 中间件
-app.use('/*', cors({
-  origin: '*',
-  allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowHeaders: ['Content-Type', 'Authorization'],
-  exposeHeaders: ['Content-Length', 'X-Kuma-Revision'],
-  maxAge: 600,
-  credentials: true,
-}))
 
 app.post('/add', async (c) => {
   const body = await c.req.json()
@@ -38,21 +27,9 @@ app.post('/add', async (c) => {
   try {
     // 获取存储配置
     const configs = await fetchConfigsByKeys([
-      'accesskey_id',
-      'accesskey_secret',
-      'region',
-      'endpoint',
-      'bucket',
-      'storage_folder',
-      'force_path_style',
       's3_cdn',
       's3_cdn_url',
       's3_direct_upload',
-      'r2_accesskey_id',
-      'r2_accesskey_secret',
-      'r2_endpoint',
-      'r2_bucket',
-      'r2_storage_folder',
       'r2_public_domain',
       'r2_direct_upload'
     ])
