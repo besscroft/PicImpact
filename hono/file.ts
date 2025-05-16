@@ -10,16 +10,6 @@ import { getR2Client, generatePresignedUrl as generateR2PresignedUrl } from '~/s
 
 const app = new Hono()
 
-// 添加 CORS 中间件
-app.use('/*', cors({
-  origin: '*',
-  allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowHeaders: ['Content-Type', 'Authorization'],
-  exposeHeaders: ['Content-Length', 'X-Kuma-Revision'],
-  maxAge: 600,
-  credentials: true,
-}))
-
 app.post('/upload', async (c) => {
   const formData = await c.req.formData()
 
