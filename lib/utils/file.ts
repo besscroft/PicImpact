@@ -56,14 +56,49 @@ export async function exifReader(file: ArrayBuffer | SharedArrayBuffer | Buffer)
  * @param storage storage 存储类型
  * @param mountPath 文件挂载路径（目前只有 alist 用得到
  */
-export async function uploadFile(file: any, type: string, storage: string, mountPath: string) {
+export async function uploadFile(file: File, type: string, storage: string, mountPath: string) {
   const formData = new FormData()
   formData.append('file', file)
   formData.append('storage', storage)
   formData.append('type', type)
-  formData.append('mountPath', mountPath)
-  return await fetch('/api/v1/file/upload', {
+  if (mountPath) {
+    formData.append('mountPath', mountPath)
+  }
+
+  const res = await fetch('/api/v1/file/upload', {
     method: 'POST',
-    body: formData
-  }).then((res) => res.json())
+    body: formData,
+    credentials: 'include',
+    headers: {
+      'Accept': 'application/json',
+    }
+  }).then(res => res.json())
+
+  if (res?.code === 200) {
+    if (res.data.upload_url) {
+      // 直传模式
+      try {
+        const response = await fetch(res.data.upload_url, {
+          method: 'PUT',
+          body: file,
+          headers: {
+            'Content-Type': file.type,
+          },
+          credentials: 'omit'
+        })
+        if (!response.ok) {
+          throw new Error(`Upload failed with status: ${response.status}`)
+        }
+        return {
+          code: 200,
+          data: res.data.key
+        }
+      } catch (error) {
+        console.error('Direct upload failed:', error)
+        throw new Error('Upload failed')
+      }
+    }
+    return res
+  }
+  throw new Error('Upload failed')
 }
