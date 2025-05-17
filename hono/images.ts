@@ -12,11 +12,119 @@ import { HTTPException } from 'hono/http-exception'
 import { fetchConfigsByKeys } from '~/server/db/query/configs'
 import { getClient } from '~/server/lib/s3'
 import { getR2Client } from '~/server/lib/r2'
-import { uploadSimpleObject } from '~/server/lib/s3api'
-import { GetObjectCommand } from '@aws-sdk/client-s3'
-import sharp from 'sharp'
+import { PutObjectCommand } from '@aws-sdk/client-s3'
+import { getSignedUrl } from '@aws-sdk/s3-request-presigner'
 
 const app = new Hono()
+
+// 生成预签名 URL
+app.post('/presigned-url', async (c) => {
+  try {
+    const { filename, contentType, type = '/', storage } = await c.req.json()
+    if (!filename) {
+      throw new HTTPException(400, { message: 'Filename is required' })
+    }
+    if (!storage) {
+      throw new HTTPException(400, { message: 'Storage type is required' })
+    }
+
+    switch (storage) {
+      case 's3': {
+        // 获取 S3 配置
+        const configs = await fetchConfigsByKeys([
+          'accesskey_id',
+          'accesskey_secret',
+          'region',
+          'endpoint',
+          'bucket',
+          'storage_folder',
+          'force_path_style',
+          's3_cdn',
+          's3_cdn_url',
+          's3_direct_upload'
+        ])
+
+        const directUpload = configs.find((item: any) => item.config_key === 's3_direct_upload')?.config_value === 'true'
+        if (!directUpload) {
+          throw new HTTPException(400, { message: 'S3 direct upload is not enabled' })
+        }
+
+        const bucket = configs.find((item: any) => item.config_key === 'bucket')?.config_value || ''
+        const storageFolder = configs.find((item: any) => item.config_key === 'storage_folder')?.config_value || ''
+
+        // 构建文件路径
+        const filePath = storageFolder && storageFolder !== '/'
+          ? type && type !== '/' ? `${storageFolder}${type}/${filename}` : `${storageFolder}/${filename}`
+          : type && type !== '/' ? `${type.slice(1)}/${filename}` : `${filename}`
+
+        const client = getClient(configs)
+        const command = new PutObjectCommand({
+          Bucket: bucket,
+          Key: filePath,
+          ContentType: contentType || undefined
+        })
+
+        const presignedUrl = await getSignedUrl(client as any, command as any, { expiresIn: 3600 })
+
+        return c.json({
+          code: 200,
+          data: {
+            presignedUrl,
+            key: filePath
+          }
+        })
+      }
+
+      case 'r2': {
+        // 获取 R2 配置
+        const configs = await fetchConfigsByKeys([
+          'r2_accesskey_id',
+          'r2_accesskey_secret',
+          'r2_endpoint',
+          'r2_bucket',
+          'r2_storage_folder',
+          'r2_public_domain',
+          'r2_direct_upload'
+        ])
+
+        const directUpload = configs.find((item: any) => item.config_key === 'r2_direct_upload')?.config_value === 'true'
+        if (!directUpload) {
+          throw new HTTPException(400, { message: 'R2 direct upload is not enabled' })
+        }
+
+        const bucket = configs.find((item: any) => item.config_key === 'r2_bucket')?.config_value || ''
+        const storageFolder = configs.find((item: any) => item.config_key === 'r2_storage_folder')?.config_value || ''
+
+        // 构建文件路径
+        const filePath = storageFolder && storageFolder !== '/'
+          ? type && type !== '/' ? `${storageFolder}${type}/${filename}` : `${storageFolder}/${filename}`
+          : type && type !== '/' ? `${type.slice(1)}/${filename}` : `${filename}`
+
+        const client = getR2Client(configs)
+        const command = new PutObjectCommand({
+          Bucket: bucket,
+          Key: filePath,
+          ContentType: contentType || undefined
+        })
+
+        const presignedUrl = await getSignedUrl(client as any, command as any, { expiresIn: 3600 })
+
+        return c.json({
+          code: 200,
+          data: {
+            presignedUrl,
+            key: filePath
+          }
+        })
+      }
+
+      default:
+        throw new HTTPException(400, { message: 'Unsupported storage type' })
+    }
+  } catch (e) {
+    throw new HTTPException(500, { message: 'Failed to generate presigned URL', cause: e })
+  }
+})
 
 app.post('/add', async (c) => {
   const body = await c.req.json()
@@ -53,6 +161,10 @@ app.post('/add', async (c) => {
     if (s3DirectUpload || r2DirectUpload) {
       const url = body.url
       const previewUrl = body.preview_url
+
+      // 如果原始文件是 webp 格式，说明已经是压缩后的文件
+      const isCompressedWebp = url.toLowerCase().endsWith('.webp')
+      
       if (!url) {
         throw new HTTPException(400, { message: 'Missing file URL' })
       }
@@ -87,6 +199,11 @@ app.post('/add', async (c) => {
             body.preview_url = `https://${publicDomain}/${previewUrl}`
           }
         }
+      }
+
+      // 如果原始文件是压缩后的 webp，且没有预览 URL，则将原始文件作为预览文件
+      if (isCompressedWebp && !previewUrl) {
+        body.preview_url = body.url
       }
     }
 
