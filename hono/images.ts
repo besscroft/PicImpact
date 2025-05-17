@@ -20,7 +20,7 @@ const app = new Hono()
 // 生成预签名 URL
 app.post('/presigned-url', async (c) => {
   try {
-    const { filename, contentType, storage } = await c.req.json()
+    const { filename, contentType, type = '/', storage } = await c.req.json()
     if (!filename) {
       throw new HTTPException(400, { message: 'Filename is required' })
     }
@@ -54,8 +54,8 @@ app.post('/presigned-url', async (c) => {
 
         // 构建文件路径
         const filePath = storageFolder && storageFolder !== '/'
-          ? `${storageFolder}/${filename}`
-          : filename
+          ? type && type !== '/' ? `${storageFolder}${type}/${filename}` : `${storageFolder}/${filename}`
+          : type && type !== '/' ? `${type.slice(1)}/${filename}` : `${filename}`
 
         const client = getClient(configs)
         const command = new PutObjectCommand({
@@ -97,8 +97,8 @@ app.post('/presigned-url', async (c) => {
 
         // 构建文件路径
         const filePath = storageFolder && storageFolder !== '/'
-          ? `${storageFolder}/${filename}`
-          : filename
+          ? type && type !== '/' ? `${storageFolder}${type}/${filename}` : `${storageFolder}/${filename}`
+          : type && type !== '/' ? `${type.slice(1)}/${filename}` : `${filename}`
 
         const client = getR2Client(configs)
         const command = new PutObjectCommand({
@@ -161,6 +161,10 @@ app.post('/add', async (c) => {
     if (s3DirectUpload || r2DirectUpload) {
       const url = body.url
       const previewUrl = body.preview_url
+
+      // 如果原始文件是 webp 格式，说明已经是压缩后的文件
+      const isCompressedWebp = url.toLowerCase().endsWith('.webp')
+      
       if (!url) {
         throw new HTTPException(400, { message: 'Missing file URL' })
       }
@@ -195,6 +199,11 @@ app.post('/add', async (c) => {
             body.preview_url = `https://${publicDomain}/${previewUrl}`
           }
         }
+      }
+
+      // 如果原始文件是压缩后的 webp，且没有预览 URL，则将原始文件作为预览文件
+      if (isCompressedWebp && !previewUrl) {
+        body.preview_url = body.url
       }
     }
 
