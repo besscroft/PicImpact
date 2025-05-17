@@ -66,19 +66,29 @@ export default function PreviewImage(props: Readonly<PreviewImageHandleProps>) {
       }
 
       toast.warning(msg, { duration: 1500 })
-      await fetch(`/api/open/get-image-blob?imageUrl=${props.data?.url}`)
-        .then((response) => response.blob())
-        .then((blob) => {
-          const url = window.URL.createObjectURL(new Blob([blob]))
-          const link = document.createElement('a')
-          link.href = url
-          const parsedUrl = new URL(props.data?.url ?? '')
-          const filename = parsedUrl.pathname.split('/').pop()
-          link.download = filename || 'downloaded-file'
-          document.body.appendChild(link)
-          link.click()
-          document.body.removeChild(link)
-        })
+      
+      // 获取存储类型
+      const storageType = props.data?.url?.includes('s3') ? 's3' : 'r2'
+      
+      // 使用新的下载 API
+      const response = await fetch(`/api/v1/download/${props.id}?storage=${storageType}`)
+      
+      if (response.redirected) {
+        // 如果是直接下载，重定向到预签名 URL
+        window.location.href = response.url
+      } else {
+        // 如果不是直接下载，通过服务器下载
+        const blob = await response.blob()
+        const url = window.URL.createObjectURL(new Blob([blob]))
+        const link = document.createElement('a')
+        link.href = url
+        const parsedUrl = new URL(props.data?.url ?? '')
+        const filename = parsedUrl.pathname.split('/').pop()
+        link.download = filename || 'downloaded-file'
+        document.body.appendChild(link)
+        link.click()
+        document.body.removeChild(link)
+      }
     } catch (e) {
       toast.error('下载失败！', { duration: 500 })
     } finally {
