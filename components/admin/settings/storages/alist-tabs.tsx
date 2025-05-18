@@ -17,16 +17,22 @@ import { Button } from '~/components/ui/button'
 import { ReloadIcon } from '@radix-ui/react-icons'
 import React from 'react'
 import AlistEditSheet from '~/components/admin/settings/storages/alist-edit-sheet'
+import { useSWRConfig } from 'swr'
+import { useTranslations } from 'next-intl'
 
 export default function AlistTabs() {
-  const { data, error, isValidating, mutate } = useSWR('/api/v1/storage/alist/info', fetcher
-    , { revalidateOnFocus: false })
-  const { setAListEdit, setAListEditData } = useButtonStore(
+  const { mutate } = useSWRConfig()
+  const { setAlistEdit, setAlistEditData, alistData } = useButtonStore(
     (state) => state,
   )
+  const t = useTranslations()
 
-  if (error) {
-    toast.error('请求失败！')
+  async function refresh() {
+    try {
+      await mutate('/api/v1/settings/alist-info')
+    } catch (e) {
+      toast.error(t('Config.requestFailed'))
+    }
   }
 
   return (
@@ -35,46 +41,44 @@ export default function AlistTabs() {
         <div className="flex justify-between p-2">
           <div className="flex gap-5">
             <div className="flex flex-col gap-1 items-start justify-center">
-              <h4 className="text-small font-semibold leading-none text-default-600">AList 配置</h4>
+              <h4 className="text-small font-semibold leading-none text-default-600">{t('Config.alistTitle')}</h4>
             </div>
           </div>
           <div className="flex items-center space-x-2">
             <Button
               variant="outline"
               className="cursor-pointer"
-              disabled={isValidating}
-              onClick={() => mutate()}
+              onClick={() => refresh()}
               aria-label="刷新"
             >
-              {isValidating && <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />}
-              刷新
+              <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
             </Button>
             <Button
               variant="outline"
               className="cursor-pointer"
               onClick={() => {
-                setAListEdit(true)
-                setAListEditData(JSON.parse(JSON.stringify(data)))
+                setAlistEdit(true)
+                setAlistEditData(alistData)
               }}
               aria-label="编辑"
             >
-              编辑
+              {t('Config.edit')}
             </Button>
           </div>
         </div>
       </Card>
       {
-        data &&
+        alistData &&
         <Card className="p-2">
-          <Table aria-label="Alist 设置">
+          <Table aria-label={t('Config.alistTitle')}>
             <TableHeader>
               <TableRow>
-                <TableHead>Key</TableHead>
-                <TableHead>Value</TableHead>
+                <TableHead>{t('Config.key')}</TableHead>
+                <TableHead>{t('Config.value')}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {data.map((item: any) => (
+              {alistData.map((item: any) => (
                 <TableRow key={item.id}>
                   <TableCell className="font-medium">{item.config_key}</TableCell>
                   <TableCell className="truncate max-w-48">{item.config_value || 'N&A'}</TableCell>
@@ -84,7 +88,7 @@ export default function AlistTabs() {
           </Table>
         </Card>
       }
-      {Array.isArray(data) && data.length > 0 && <AlistEditSheet />}
+      {Array.isArray(alistData) && alistData.length > 0 && <AlistEditSheet />}
     </div>
   )
 }

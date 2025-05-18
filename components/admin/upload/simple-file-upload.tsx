@@ -99,40 +99,39 @@ export default function SimpleFileUpload() {
     }
   }
 
-  async function submit() {
+  const handleSubmit = async () => {
+    if (!url || url === '') {
+      toast.warning(t('Tips.uploadFileFirst'))
+      return
+    }
+    if (album === '') {
+      toast.warning(t('Tips.selectAlbumFirst'))
+      return
+    }
+    if (!height || height <= 0) {
+      toast.warning(t('Tips.imageHeightRequired'))
+      return
+    }
+    if (!width || width <= 0) {
+      toast.warning(t('Tips.imageWidthRequired'))
+      return
+    }
+    const data = {
+      album: album,
+      url: url,
+      title: title,
+      preview_url: previewUrl,
+      video_url: videoUrl,
+      exif: exif,
+      labels: imageLabels,
+      detail: detail,
+      width: width,
+      height: height,
+      type: 1,
+      lat: lat,
+      lon: lon,
+    } as ImageType
     try {
-      setLoading(true)
-      if (!url || url === '') {
-        toast.warning('请先上传文件！')
-        return
-      }
-      if (album === '') {
-        toast.warning('请先选择相册！')
-        return
-      }
-      if (!height || height <= 0) {
-        toast.warning('图片高度不能为空且必须大于 0！')
-        return
-      }
-      if (!width || width <= 0) {
-        toast.warning('图片宽度不能为空且必须大于 0！')
-        return
-      }
-      const data = {
-        album: album,
-        url: url,
-        title: title,
-        preview_url: previewUrl,
-        video_url: videoUrl,
-        exif: exif,
-        labels: imageLabels,
-        detail: detail,
-        width: width,
-        height: height,
-        type: 1,
-        lat: lat,
-        lon: lon,
-      } as ImageType
       const res = await fetch('/api/v1/images/add', {
         headers: {
           'Content-Type': 'application/json',
@@ -142,12 +141,12 @@ export default function SimpleFileUpload() {
         body: JSON.stringify(data),
       }).then(res => res.json())
       if (res?.code === 200) {
-        toast.success('保存成功')
+        toast.success(t('Tips.saveSuccess'))
       } else {
-        toast.error('保存失败')
+        toast.error(t('Tips.saveFailed'))
       }
     } catch (e) {
-      toast.error('保存失败')
+      toast.error(t('Tips.saveFailed'))
     } finally {
       setLoading(false)
     }
@@ -159,7 +158,7 @@ export default function SimpleFileUpload() {
       return
     }
     try {
-      toast.info('正在获取 AList 挂载目录')
+      toast.info(t('Tips.gettingAlistDirs'))
       const res = await fetch('/api/v1/storage/alist/storages', {
         method: 'GET',
       }).then(res => res.json())
@@ -167,10 +166,10 @@ export default function SimpleFileUpload() {
         setAlistStorage(res.data?.content)
         setStorageSelect(true)
       } else {
-        toast.error('获取失败')
+        toast.error(t('Tips.getFailed'))
       }
     } catch (e) {
-      toast.error('获取失败')
+      toast.error(t('Tips.getFailed'))
     }
   }
 
@@ -413,7 +412,7 @@ export default function SimpleFileUpload() {
           /> :
           <RocketIcon
             size={20}
-            onClick={() => submit()}
+            onClick={() => handleSubmit()}
             aria-label={t('Button.submit')}
           />
         }

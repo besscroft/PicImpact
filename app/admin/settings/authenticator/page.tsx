@@ -27,8 +27,10 @@ import {
   DialogTrigger
 } from '~/components/ui/dialog'
 import Link from 'next/link'
+import { useTranslations } from 'next-intl'
 
 export default function Authenticator() {
+  const t = useTranslations()
   const [password, setPassword] = useState('')
   const [uri, setUri] = useState('')
   const [secret, setSecret] = useState('')
@@ -53,8 +55,8 @@ export default function Authenticator() {
         setUri(res.data.uri)
         setSecret(res.data.secret)
       }
-    } catch (e) {
-      toast.error('令牌颁发失败！')
+    } catch {
+      toast.error(t('Tips.tokenIssuanceFailed'))
     }
   }
 
@@ -70,12 +72,12 @@ export default function Authenticator() {
         body: JSON.stringify({ token: password })
       }).then(res => res.json())
       if (res.code === 200) {
-        toast.success('设置成功！')
+        toast.success(t('Tips.setupSuccess'))
       } else {
-        toast.error('设置失败！')
+        toast.error(t('Tips.setupFailed'))
       }
-    } catch (e) {
-      toast.error('设置失败！')
+    } catch {
+      toast.error(t('Tips.setupFailed'))
     } finally {
       await mutate()
     }
@@ -91,12 +93,12 @@ export default function Authenticator() {
         }
       }).then(res => res.json())
       if (res.code === 200) {
-        toast.success('移除成功！')
+        toast.success(t('Tips.removeSuccess'))
       } else {
-        toast.error('移除失败！')
+        toast.error(t('Tips.removeFailed'))
       }
-    } catch (e) {
-      toast.error('移除失败！')
+    } catch {
+      toast.error(t('Tips.removeFailed'))
     } finally {
       setPassword('')
       setUri('')
@@ -114,25 +116,25 @@ export default function Authenticator() {
   return (
     <div className="flex flex-col space-y-2 h-full flex-1">
       {
-        isValidating ? <p className="m-2">同步状态中...</p>
+        isValidating ? <p className="m-2">{t('Tips.syncingStatus')}</p>
           : data?.data?.auth_enable === 'true' ?
             <div className="flex flex-col space-y-2">
               <Alert className="!md:w-64">
                 <RocketIcon className="h-4 w-4" />
-                <AlertTitle>恭喜!</AlertTitle>
+                <AlertTitle>{t('Tips.congratulations')}</AlertTitle>
                 <AlertDescription>
-                  双因素验证已启用
+                  {t('Tips.twoFactorEnabled')}
                 </AlertDescription>
               </Alert>
               <Dialog>
                 <DialogTrigger asChild>
                   <Button className="cursor-pointer w-36" variant="destructive">
-                    移除双因素验证
+                    {t('Button.removeTwoFactor')}
                   </Button>
                 </DialogTrigger>
                 <DialogContent className="sm:max-w-[425px]">
                   <DialogHeader>
-                    <DialogTitle>确定要移除双因素验证？</DialogTitle>
+                    <DialogTitle>{t('Tips.confirmRemoveTwoFactor')}</DialogTitle>
                   </DialogHeader>
                   <DialogFooter>
                     <Button
@@ -142,15 +144,15 @@ export default function Authenticator() {
                       variant="destructive"
                     >
                       {deleteLoading && <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />}
-                      是的
+                      {t('Tips.yes')}
                     </Button>
                   </DialogFooter>
                 </DialogContent>
               </Dialog>
             </div>
             : <div className="space-y-2">
-              <h4 className="text-medium font-medium">第一步</h4>
-              <p className="text-small text-default-400">下载任意两步验证手机应用：</p>
+              <h4 className="text-medium font-medium">{t('Tips.stepOne')}</h4>
+              <p className="text-small text-default-400">{t('Tips.downloadAnyApp')}</p>
               <Link
                 className="mx-2"
                 target='_blank'
@@ -170,8 +172,8 @@ export default function Authenticator() {
               >
                 1Password
               </Link>
-              <h4 className="text-medium font-medium">第二步</h4>
-              <p className="text-small text-default-400">使用手机应用扫描二维码：</p>
+              <h4 className="text-medium font-medium">{t('Tips.stepTwo')}</h4>
+              <p className="text-small text-default-400">{t('Tips.scanQRCode')}</p>
               {
                 uri &&
                 <SVG
@@ -186,10 +188,10 @@ export default function Authenticator() {
                   }}
                 />
               }
-              <p className="text-small text-default-400">或者输入秘钥：</p>
+              <p className="text-small text-default-400">{t('Tips.orEnterSecret')}</p>
               <div className="w-full sm:w-64">{secret || 'N&A'}</div>
-              <h4 className="text-medium font-medium">第三步</h4>
-              <p className="text-small text-default-400">输入手机应用上的6位数字：</p>
+              <h4 className="text-medium font-medium">{t('Tips.stepThree')}</h4>
+              <p className="text-small text-default-400">{t('Tips.enterSixDigits')}</p>
               <InputOTP
                 maxLength={6}
                 value={password}
@@ -219,7 +221,7 @@ export default function Authenticator() {
                     await getQRCode()
                   }}
                 >
-                  重新获取
+                  {t('Tips.regenerate')}
                 </Button>
                 <Button
                   variant="outline"
@@ -227,7 +229,7 @@ export default function Authenticator() {
                   className="cursor-pointer w-full sm:w-64"
                   disabled={password.length !== 6}
                 >
-                  完成设置
+                  {t('Tips.completeSetup')}
                 </Button>
               </div>
             </div>

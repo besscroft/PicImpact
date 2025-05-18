@@ -37,12 +37,12 @@ export default function Command(props: Readonly<AlbumDataProps>) {
   return (
     <>
       <CommandDialog open={command} onOpenChange={setCommand}>
-        <CommandInput placeholder="Type a command or search..." />
+        <CommandInput placeholder={t('Command.placeholder', { defaultValue: 'Type a command or search...' })} />
         <CommandList>
-          <CommandEmpty>No results found.</CommandEmpty>
+          <CommandEmpty>{t('Command.noResults', { defaultValue: 'No results found.' })}</CommandEmpty>
           {Array.isArray(props.data) && props.data.length > 0 &&
             <>
-              <CommandGroup heading="Album">
+              <CommandGroup heading={t('Command.album', { defaultValue: 'Album' })}>
                 <CommandItem
                   className={closeClasses}
                   onSelect={() => {
@@ -71,7 +71,7 @@ export default function Command(props: Readonly<AlbumDataProps>) {
             </>
           }
           {session ?
-            <CommandGroup heading="Menu">
+            <CommandGroup heading={t('Command.menu', { defaultValue: 'Menu' })}>
               <CommandItem className={closeClasses} onSelect={() => {
                 router.push('/admin')
                 setCommand(false)
@@ -80,7 +80,7 @@ export default function Command(props: Readonly<AlbumDataProps>) {
                 <span>{t('Link.dashboard')}</span>
               </CommandItem>
             </CommandGroup> :
-            <CommandGroup heading="Menu">
+            <CommandGroup heading={t('Command.menu', { defaultValue: 'Menu' })}>
               <CommandItem className={closeClasses} onSelect={() => {
                 router.push('/login')
                 setCommand(false)
@@ -91,10 +91,10 @@ export default function Command(props: Readonly<AlbumDataProps>) {
             </CommandGroup>
           }
           <CommandSeparator />
-          <CommandGroup heading="Settings">
+          <CommandGroup heading={t('Command.settings', { defaultValue: 'Settings' })}>
             <CommandItem className={closeClasses} onSelect={() => setTheme(resolvedTheme === 'light' ? 'dark' : 'light')}>
               {resolvedTheme === 'light' ? <SunMoonIcon size={18} /> : <SunMediumIcon size={18} />}
-              <p>{ resolvedTheme === 'light' ? '切换至⌈常夜⌋' : '切换至⌈白夜⌋' }</p>
+              <p>{t(resolvedTheme === 'light' ? 'Button.dark' : 'Button.light')}</p>
             </CommandItem>
             <CommandItem className="justify-end">
               <a
@@ -102,7 +102,7 @@ export default function Command(props: Readonly<AlbumDataProps>) {
                 href="https://github.com/besscroft/PicImpact"
                 target="_blank"
               >
-                GitHub
+                {t('Command.github', { defaultValue: 'GitHub' })}
                 <svg
                   fill="none"
                   height="16"

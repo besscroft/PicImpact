@@ -17,6 +17,7 @@ import { fetcher } from '~/lib/utils/fetcher'
 import { toast } from 'sonner'
 import { useButtonStore } from '~/app/providers/button-store-providers'
 import R2EditSheet from '~/components/admin/settings/storages/r2-edit-sheet'
+import { useTranslations } from 'next-intl'
 
 export default function R2Tabs() {
   const { data, error, isValidating, mutate } = useSWR('/api/v1/settings/r2-info', fetcher
@@ -24,9 +25,10 @@ export default function R2Tabs() {
   const { setR2Edit, setR2EditData } = useButtonStore(
     (state) => state,
   )
+  const t = useTranslations()
 
   if (error) {
-    toast.error('请求失败！')
+    toast.error(t('Config.requestFailed'))
   }
 
   return (
@@ -35,7 +37,7 @@ export default function R2Tabs() {
         <div className="flex justify-between p-2">
           <div className="flex gap-5">
             <div className="flex flex-col gap-1 items-start justify-center">
-              <h4 className="text-small font-semibold leading-none text-default-600">Cloudflare R2 配置</h4>
+              <h4 className="text-small font-semibold leading-none text-default-600">{t('Config.r2Title')}</h4>
             </div>
           </div>
           <div className="flex items-center space-x-2">
@@ -44,10 +46,10 @@ export default function R2Tabs() {
               className="cursor-pointer"
               disabled={isValidating}
               onClick={() => mutate()}
-              aria-label="刷新"
+              aria-label={t('Config.refresh')}
             >
               {isValidating && <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />}
-              刷新
+              {t('Config.refresh')}
             </Button>
             <Button
               variant="outline"
@@ -56,17 +58,17 @@ export default function R2Tabs() {
                 setR2Edit(true)
                 setR2EditData(JSON.parse(JSON.stringify(data)))
               }}
-              aria-label="编辑"
+              aria-label={t('Config.edit')}
             >
-              编辑
+              {t('Config.edit')}
             </Button>
           </div>
         </div>
-      </ Card>
+      </Card>
       {
         data &&
         <Card className="p-2">
-          <Table aria-label="Cloudflare R2 设置">
+          <Table aria-label={t('Config.r2Title')}>
             <TableHeader>
               <TableRow>
                 <TableHead>Key</TableHead>
