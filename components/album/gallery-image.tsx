@@ -50,12 +50,15 @@ export default function GalleryImage({ photo, configData }: { photo: ImageType, 
       
       // 使用新的下载 API
       const response = await fetch(`/api/v1/download/${photo.id}?storage=${storageType}`)
+      const contentType = response.headers.get('content-type')
       
-      if (response.redirected) {
-        // 如果是直接下载，重定向到预签名 URL
-        window.location.href = response.url
+      if (contentType?.includes('application/json')) {
+        // 如果是 JSON 响应，说明是直接下载模式
+        const data = await response.json()
+        // 直接使用 window.location.href 触发下载
+        window.location.href = data.url
       } else {
-        // 如果不是直接下载，通过服务器下载
+        // 如果不是 JSON 响应，说明是服务器下载模式
         const blob = await response.blob()
         const url = window.URL.createObjectURL(new Blob([blob]))
         const link = document.createElement('a')

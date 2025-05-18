@@ -5,7 +5,6 @@ import { HTTPException } from 'hono/http-exception'
 import { fetchConfigsByKeys } from '~/server/db/query/configs'
 import { getClient, generatePresignedUrl as generateS3PresignedUrl } from '~/server/lib/s3'
 import { getR2Client, generatePresignedUrl as generateR2PresignedUrl } from '~/server/lib/r2'
-import { GetObjectCommand } from '@aws-sdk/client-s3'
 import { fetchImageByIdAndAuth } from '~/server/db/query/images'
 
 const app = new Hono()
@@ -95,15 +94,11 @@ app.get('/:id', async (c) => {
         const filePath = key.startsWith(storageFolder) ? key : `${storageFolder}${key}`
         const client = getClient(configs)
         const presignedUrl = await generateS3PresignedUrl(client, bucket, filePath)
-        // 对于直接下载，返回带有 Content-Disposition 的响应
-        const response = await fetch(presignedUrl)
-        const blob = await response.blob()
-        const filename = key.split('/').pop() || 'download'
-        return new Response(blob, {
-          headers: {
-            'Content-Type': response.headers.get('Content-Type') || 'application/octet-stream',
-            'Content-Disposition': `attachment; filename="${filename}"`
-          }
+        
+        // 直接返回预签名 URL
+        return c.json({
+          url: presignedUrl,
+          filename: key.split('/').pop() || 'download'
         })
       }
       case 'r2': {
@@ -123,15 +118,11 @@ app.get('/:id', async (c) => {
         const filePath = key.startsWith(storageFolder) ? key : `${storageFolder}${key}`
         const client = getR2Client(configs)
         const presignedUrl = await generateR2PresignedUrl(client, bucket, filePath)
-        // 对于直接下载，返回带有 Content-Disposition 的响应
-        const response = await fetch(presignedUrl)
-        const blob = await response.blob()
-        const filename = key.split('/').pop() || 'download'
-        return new Response(blob, {
-          headers: {
-            'Content-Type': response.headers.get('Content-Type') || 'application/octet-stream',
-            'Content-Disposition': `attachment; filename="${filename}"`
-          }
+        
+        // 直接返回预签名 URL
+        return c.json({
+          url: presignedUrl,
+          filename: key.split('/').pop() || 'download'
         })
       }
       default:
