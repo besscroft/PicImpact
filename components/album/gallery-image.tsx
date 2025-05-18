@@ -39,24 +39,33 @@ export default function GalleryImage({ photo, configData }: { photo: ImageType, 
     setDownload(true)
     try {
       let msg = '开始下载，原图较大，请耐心等待！'
-      if (photo.album_license != null) {
+      if (photo?.album_license != null) {
         msg += '图片版权归作者所有, 分享转载需遵循 ' + photo.album_license + ' 许可协议！'
       }
 
       toast.warning(msg, { duration: 1500 })
-      await fetch(`/api/open/get-image-blob?imageUrl=${photo.url}`)
-        .then((response) => response.blob())
-        .then((blob) => {
-          const url = window.URL.createObjectURL(new Blob([blob]))
-          const link = document.createElement('a')
-          link.href = url
-          const parsedUrl = new URL(photo.url)
-          const filename = parsedUrl.pathname.split('/').pop()
-          link.download = filename || 'downloaded-file'
-          document.body.appendChild(link)
-          link.click()
-          document.body.removeChild(link)
-        })
+      
+      // 获取存储类型
+      const storageType = photo?.url?.includes('s3') ? 's3' : 'r2'
+      
+      // 使用新的下载 API
+      let response = await fetch(`/api/v1/download/${photo.id}?storage=${storageType}`)
+      const contentType = response.headers.get('content-type')
+      
+      if (contentType?.includes('application/json')) {
+        const data = await response.json()
+        response = await fetch(data.url)
+      }
+      const blob = await response.blob()
+      const url = window.URL.createObjectURL(new Blob([blob]))
+      const link = document.createElement('a')
+      link.href = url
+      const parsedUrl = new URL(photo?.url ?? '')
+      const filename = parsedUrl.pathname.split('/').pop()
+      link.download = filename || 'downloaded-file'
+      document.body.appendChild(link)
+      link.click()
+      document.body.removeChild(link)
     } catch (e) {
       toast.error('下载失败！', { duration: 500 })
     } finally {

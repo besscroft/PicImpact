@@ -1,4 +1,4 @@
-import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3'
+import { S3Client, PutObjectCommand, GetObjectCommand } from '@aws-sdk/client-s3'
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner'
 
 let s3R2Client: S3Client | null = null
@@ -25,11 +25,22 @@ export function getR2Client(findConfig: any[]) {
   return s3R2Client
 }
 
-export async function generatePresignedUrl(client: S3Client, bucket: string, key: string, expiresIn: number = 3600) {
-  const command = new PutObjectCommand({
-    Bucket: bucket,
-    Key: key,
-  })
+export async function generatePresignedUrl(
+  r2Client: S3Client,
+  bucket: string,
+  key: string,
+  operation: 'get' | 'put' = 'get',
+  expiresIn: number = 3600,
+) {
+  const command = operation === 'get'
+    ? new GetObjectCommand({
+        Bucket: bucket,
+        Key: key,
+      })
+    : new PutObjectCommand({
+        Bucket: bucket,
+        Key: key,
+      })
 
-  return await getSignedUrl(client, command, { expiresIn })
+  return await getSignedUrl(r2Client, command, { expiresIn })
 }
