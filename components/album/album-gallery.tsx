@@ -73,9 +73,9 @@ export default function AlbumGallery(props : Readonly<ImageHandleProps>) {
                   setSize(size + 1)
                 }}
                 className="select-none cursor-pointer"
-                aria-label="加载更多"
+                aria-label={t('Button.loadMore')}
               >
-                加载更多
+                {t('Button.loadMore')}
               </Button>
               : t('Tips.noImg')
         }

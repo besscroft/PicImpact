@@ -8,13 +8,15 @@ import { toast } from 'sonner'
 import { useSWRConfig } from 'swr'
 import { ReloadIcon } from '@radix-ui/react-icons'
 import { Button } from '~/components/ui/button'
+import { useTranslations } from 'next-intl'
 
 export default function AlistEditSheet() {
   const [loading, setLoading] = useState(false)
   const { mutate } = useSWRConfig()
-  const { aListEdit, setAListEdit, setAListEditData, aListData } = useButtonStore(
+  const { alistEdit, setAlistEdit, setAlistEditData, alistData } = useButtonStore(
     (state) => state,
   )
+  const t = useTranslations()
 
   async function submit() {
     setLoading(true)
@@ -24,14 +26,14 @@ export default function AlistEditSheet() {
           'Content-Type': 'application/json',
         },
         method: 'PUT',
-        body: JSON.stringify(aListData),
+        body: JSON.stringify(alistData),
       }).then(res => res.json())
-      toast.success('更新成功！')
-      mutate('/api/v1/storage/alist/info')
-      setAListEdit(false)
-      setAListEditData([] as Config[])
+      toast.success(t('Config.updateSuccess'))
+      mutate('/api/v1/settings/alist-info')
+      setAlistEdit(false)
+      setAlistEditData([] as Config[])
     } catch (e) {
-      toast.error('更新失败！')
+      toast.error(t('Config.updateFailed'))
     } finally {
       setLoading(false)
     }
@@ -40,22 +42,22 @@ export default function AlistEditSheet() {
   return (
     <Sheet
       defaultOpen={false}
-      open={aListEdit}
+      open={alistEdit}
       onOpenChange={(open: boolean) => {
         if (!open) {
-          setAListEdit(false)
-          setAListEditData([] as Config[])
+          setAlistEdit(false)
+          setAlistEditData([] as Config[])
         }
       }}
       modal={false}
     >
       <SheetContent side="left" className="w-full overflow-y-auto scrollbar-hide p-2" onInteractOutside={(event: any) => event.preventDefault()}>
         <SheetHeader>
-          <SheetTitle>编辑 AList</SheetTitle>
+          <SheetTitle>{t('Config.editAlist')}</SheetTitle>
         </SheetHeader>
         <div className="flex flex-col space-y-2">
           {
-            aListData?.map((config: Config) => (
+            alistData?.map((config: Config) => (
               <label
                 htmlFor="text"
                 key={config.id}
@@ -67,9 +69,9 @@ export default function AlistEditSheet() {
                   type="text"
                   id="name"
                   value={config.config_value || ''}
-                  placeholder={`输入${config.config_key}`}
-                  onChange={(e) => setAListEditData(
-                    aListData?.map((c: Config) => {
+                  placeholder={t('Config.' + config.config_key)}
+                  onChange={(e) => setAlistEditData(
+                    alistData?.map((c: Config) => {
                       if (c.config_key === config.config_key) {
                         c.config_value = e.target.value
                       }
@@ -84,7 +86,7 @@ export default function AlistEditSheet() {
         </div>
         <Button className="cursor-pointer my-2" onClick={() => submit()} disabled={loading}>
           {loading && <ReloadIcon className="mr-2 h-4 w-4 animate-spin"/>}
-          提交
+          {t('Config.submit')}
         </Button>
       </SheetContent>
     </Sheet>

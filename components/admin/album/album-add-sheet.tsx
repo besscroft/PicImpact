@@ -11,6 +11,7 @@ import { ReloadIcon } from '@radix-ui/react-icons'
 import { Button } from '~/components/ui/button'
 import { Switch } from '~/components/ui/switch'
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from '~/components/ui/select'
+import { useTranslations } from 'next-intl'
 
 export default function AlbumAddSheet(props : Readonly<HandleProps>) {
   const { mutate } = useSwrHydrated(props)
@@ -19,14 +20,15 @@ export default function AlbumAddSheet(props : Readonly<HandleProps>) {
   )
   const [data, setData] = useState({} as AlbumType)
   const [loading, setLoading] = useState(false)
+  const t = useTranslations()
 
   async function submit() {
     if (!data.name || !data.album_value) {
-      toast.error('请先填写必填项！')
+      toast.error(t('Album.requiredFields'))
       return
     }
     if (data.album_value && data.album_value.charAt(0) !== '/') {
-      toast.error('路由必须以 / 开头！')
+      toast.error(t('Album.routerStartWithSlash'))
       return
     }
     try {
@@ -39,15 +41,15 @@ export default function AlbumAddSheet(props : Readonly<HandleProps>) {
         method: 'POST',
       }).then(response => response.json())
       if (res.code === 200) {
-        toast.success('添加成功！')
+        toast.success(t('Tips.addSuccess'))
         setAlbumAdd(false)
         setData({} as AlbumType)
         await mutate()
       } else {
         toast.error(res.message)
       }
-    } catch (e) {
-      toast.error('添加失败！')
+    } catch {
+      toast.error(t('Tips.addFailed'))
     } finally {
       setLoading(false)
     }
@@ -62,19 +64,19 @@ export default function AlbumAddSheet(props : Readonly<HandleProps>) {
     >
       <SheetContent side="left" className="w-full overflow-y-auto scrollbar-hide" onInteractOutside={(event: any) => event.preventDefault()}>
         <SheetHeader>
-          <SheetTitle>新增相册</SheetTitle>
+          <SheetTitle>{t('Album.addAlbum')}</SheetTitle>
           <SheetDescription className="space-y-2">
             <label
               htmlFor="name"
               className="block overflow-hidden rounded-md border border-gray-200 px-3 py-2 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600"
             >
-              <span className="text-xs font-medium text-gray-700"> 相册名称 </span>
+              <span className="text-xs font-medium text-gray-700">{t('Album.name')}</span>
 
               <input
                 type="text"
                 id="name"
                 value={data?.name}
-                placeholder="输入相册名称"
+                placeholder={t('Album.inputName')}
                 onChange={(e) => setData({...data, name: e.target.value})}
                 className="mt-1 w-full border-none p-0 focus:border-transparent focus:outline-none focus:ring-0 sm:text-sm"
               />
@@ -83,13 +85,13 @@ export default function AlbumAddSheet(props : Readonly<HandleProps>) {
               htmlFor="album_value"
               className="block overflow-hidden rounded-md border border-gray-200 px-3 py-2 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600"
             >
-              <span className="text-xs font-medium text-gray-700"> 路由 </span>
+              <span className="text-xs font-medium text-gray-700">{t('Album.router')}</span>
 
               <input
                 type="text"
                 id="album_value"
                 value={data?.album_value}
-                placeholder="输入路由，如：/tietie"
+                placeholder={t('Album.inputRouter')}
                 onChange={(e) => setData({...data, album_value: e.target.value})}
                 className="mt-1 w-full border-none p-0 focus:border-transparent focus:outline-none focus:ring-0 sm:text-sm"
               />
@@ -98,13 +100,13 @@ export default function AlbumAddSheet(props : Readonly<HandleProps>) {
               htmlFor="detail"
               className="block overflow-hidden rounded-md border border-gray-200 px-3 py-2 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600"
             >
-              <span className="text-xs font-medium text-gray-700"> 详情 </span>
+              <span className="text-xs font-medium text-gray-700">{t('Album.detail')}</span>
 
               <input
                 type="text"
                 id="detail"
-                value={data?.detail}
-                placeholder="输入详情"
+                value={data?.detail || ''}
+                placeholder={t('Album.inputDetail')}
                 onChange={(e) => setData({...data, detail: e.target.value})}
                 className="mt-1 w-full border-none p-0 focus:border-transparent focus:outline-none focus:ring-0 sm:text-sm"
               />
@@ -113,7 +115,7 @@ export default function AlbumAddSheet(props : Readonly<HandleProps>) {
               htmlFor="sort"
               className="block overflow-hidden rounded-md border border-gray-200 px-3 py-2 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600"
             >
-              <span className="text-xs font-medium text-gray-700"> 排序 </span>
+              <span className="text-xs font-medium text-gray-700">{t('Album.sort')}</span>
 
               <input
                 type="number"
@@ -128,22 +130,22 @@ export default function AlbumAddSheet(props : Readonly<HandleProps>) {
             htmlFor="detail"
             className="block overflow-hidden rounded-md border border-gray-200 px-3 py-2 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600"
           >
-            <span className="text-xs font-medium text-gray-700"> 许可协议 </span>
+            <span className="text-xs font-medium text-gray-700">{t('Album.license')}</span>
 
             <input
               type="text"
               id="detail"
-              value={data?.license}
-              placeholder="CC BY-NC-SA 4.0"
+              value={data?.license || ''}
+              placeholder={t('Album.licensePlaceholder')}
               onChange={(e) => setData({...data, license: e.target.value})}
               className="mt-1 w-full border-none p-0 focus:border-transparent focus:outline-none focus:ring-0 sm:text-sm"
             />
             </label>
             <div className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
               <div className="flex flex-col gap-1">
-                <div className="text-medium">显示状态</div>
+                <div className="text-medium">{t('Album.showStatus')}</div>
                 <div className="text-tiny text-default-400">
-                  是否需要在首页以路由形式呈现，点击后跳转页面。
+                  {t('Album.showStatusDesc')}
                 </div>
               </div>
               <Switch
@@ -156,9 +158,9 @@ export default function AlbumAddSheet(props : Readonly<HandleProps>) {
             </div>
             <div className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
               <div className="flex flex-col gap-1">
-                <div className="text-medium">随机排序</div>
+                <div className="text-medium">{t('Album.randomSort')}</div>
                 <div className="text-tiny text-default-400">
-                  开启后，每次加载相册时会随机打乱图片顺序。
+                  {t('Album.randomSortDesc')}
                 </div>
               </div>
               <Switch
@@ -170,7 +172,7 @@ export default function AlbumAddSheet(props : Readonly<HandleProps>) {
               />
             </div>
             <div className="flex flex-col gap-1 rounded-lg border p-3 shadow-sm">
-              <div className="text-medium">相册内图片排序规则</div>
+              <div className="text-medium">{t('Album.imageSortRule')}</div>
               <Select
                 value={typeof data.image_sorting === 'number' ? data.image_sorting.toString() : '1'}
                 onValueChange={(value) => {
@@ -181,14 +183,14 @@ export default function AlbumAddSheet(props : Readonly<HandleProps>) {
                 }}
               >
                 <SelectTrigger className="w-full cursor-pointer">
-                  <SelectValue placeholder="选择排序规则" />
+                  <SelectValue placeholder={t('Album.selectSortRule')} />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectGroup>
-                    <SelectItem className="cursor-pointer" value="1">上传时间从新到旧</SelectItem>
-                    <SelectItem className="cursor-pointer" value="2">拍摄时间从新到旧</SelectItem>
-                    <SelectItem className="cursor-pointer" value="3">上传时间从旧到新</SelectItem>
-                    <SelectItem className="cursor-pointer" value="4">拍摄时间从旧到新</SelectItem>
+                    <SelectItem className="cursor-pointer" value="1">{t('Album.uploadTimeNewToOld')}</SelectItem>
+                    <SelectItem className="cursor-pointer" value="2">{t('Album.shootTimeNewToOld')}</SelectItem>
+                    <SelectItem className="cursor-pointer" value="3">{t('Album.uploadTimeOldToNew')}</SelectItem>
+                    <SelectItem className="cursor-pointer" value="4">{t('Album.shootTimeOldToNew')}</SelectItem>
                   </SelectGroup>
                 </SelectContent>
               </Select>
@@ -197,10 +199,10 @@ export default function AlbumAddSheet(props : Readonly<HandleProps>) {
               className="cursor-pointer"
               disabled={loading}
               onClick={() => submit()}
-              aria-label="提交"
+              aria-label={t('Album.submit')}
             >
               {loading && <ReloadIcon className="mr-2 h-4 w-4 animate-spin"/>}
-              提交
+              {t('Album.submit')}
             </Button>
           </SheetDescription>
         </SheetHeader>

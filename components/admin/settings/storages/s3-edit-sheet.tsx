@@ -8,6 +8,7 @@ import { toast } from 'sonner'
 import { useSWRConfig } from 'swr'
 import { ReloadIcon } from '@radix-ui/react-icons'
 import { Button } from '~/components/ui/button'
+import { useTranslations } from 'next-intl'
 
 export default function S3EditSheet() {
   const [loading, setLoading] = useState(false)
@@ -15,6 +16,7 @@ export default function S3EditSheet() {
   const { s3Edit, setS3Edit, setS3EditData, s3Data } = useButtonStore(
     (state) => state,
   )
+  const t = useTranslations()
 
   async function submit() {
     setLoading(true)
@@ -26,12 +28,12 @@ export default function S3EditSheet() {
         method: 'PUT',
         body: JSON.stringify(s3Data),
       }).then(res => res.json())
-      toast.success('更新成功！')
+      toast.success(t('Config.updateSuccess'))
       mutate('/api/v1/settings/s3-info')
       setS3Edit(false)
       setS3EditData([] as Config[])
     } catch (e) {
-      toast.error('更新失败！')
+      toast.error(t('Config.updateFailed'))
     } finally {
       setLoading(false)
     }
@@ -51,7 +53,7 @@ export default function S3EditSheet() {
     >
       <SheetContent side="left" className="w-full overflow-y-auto scrollbar-hide p-2" onInteractOutside={(event: any) => event.preventDefault()}>
         <SheetHeader>
-          <SheetTitle>编辑 S3</SheetTitle>
+          <SheetTitle>{t('Config.editS3')}</SheetTitle>
         </SheetHeader>
         <div className="flex flex-col space-y-2">
           {
@@ -67,7 +69,7 @@ export default function S3EditSheet() {
                   type="text"
                   id="name"
                   value={config.config_value || ''}
-                  placeholder={`输入${config.config_key}`}
+                  placeholder={t('Config.' + config.config_key)}
                   onChange={(e) => setS3EditData(
                     s3Data?.map((c: Config) => {
                       if (c.config_key === config.config_key) {
@@ -84,7 +86,7 @@ export default function S3EditSheet() {
         </div>
         <Button className="cursor-pointer my-2" onClick={() => submit()} disabled={loading}>
           {loading && <ReloadIcon className="mr-2 h-4 w-4 animate-spin"/>}
-          提交
+          {t('Config.submit')}
         </Button>
       </SheetContent>
     </Sheet>

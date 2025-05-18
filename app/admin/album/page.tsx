@@ -6,9 +6,9 @@ import React from 'react'
 import AlbumAddSheet from '~/components/admin/album/album-add-sheet'
 import AlbumAddButton from '~/components/admin/album/album-add-button'
 import AlbumEditSheet from '~/components/admin/album/album-edit-sheet'
+import AlbumTitle from '~/components/admin/album/album-title'
 
 export default async function List() {
-
   const getData = async () => {
     'use server'
     return await fetchAlbumsList()
@@ -24,7 +24,7 @@ export default async function List() {
       <div className="flex justify-between">
         <div className="flex gap-5">
           <div className="flex flex-col gap-1 items-start justify-center">
-            <h4 className="text-small font-semibold leading-none text-default-600 select-none">相册管理</h4>
+            <AlbumTitle />
           </div>
         </div>
         <div className="flex items-center space-x-2">

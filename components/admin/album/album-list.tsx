@@ -43,13 +43,13 @@ export default function AlbumList(props : Readonly<HandleProps>) {
         method: 'DELETE',
       })
       if (res.status === 200) {
-        toast.success('删除成功！')
+        toast.success(t('Tips.deleteSuccess'))
         await mutate()
       } else {
-        toast.error('删除失败！')
+        toast.error(t('Tips.deleteFailed'))
       }
-    } catch (e) {
-      toast.error('删除失败！')
+    } catch {
+      toast.error(t('Tips.deleteFailed'))
     } finally {
       setDeleteLoading(false)
     }
@@ -70,13 +70,13 @@ export default function AlbumList(props : Readonly<HandleProps>) {
         }),
       })
       if (res.status === 200) {
-        toast.success('更新成功！')
+        toast.success(t('Tips.updateSuccess'))
         await mutate()
       } else {
-        toast.error('更新失败！')
+        toast.error(t('Tips.updateFailed'))
       }
-    } catch (e) {
-      toast.error('更新失败！')
+    } catch {
+      toast.error(t('Tips.updateFailed'))
     } finally {
       setUpdateAlbumId('')
       setUpdateAlbumLoading(false)

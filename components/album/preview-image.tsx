@@ -29,9 +29,11 @@ import 'yet-another-react-lightbox/styles.css'
 import { useRef, useState } from 'react'
 import { Zoom } from 'yet-another-react-lightbox/plugins'
 import { ExpandIcon } from '~/components/icons/expand'
+import { useTranslations } from 'next-intl'
 
 export default function PreviewImage(props: Readonly<PreviewImageHandleProps>) {
   const router = useRouter()
+  const t = useTranslations()
   const { data: download = false, mutate: setDownload } = useSWR(['masonry/download', props.data?.url ?? ''], null)
   const [lightboxPhoto, setLightboxPhoto] = useState<any>(undefined)
   const zoomRef = useRef(null)
@@ -57,12 +59,12 @@ export default function PreviewImage(props: Readonly<PreviewImageHandleProps>) {
     }
   }
 
-  async function downloadImg() {
+  const handleDownload = async () => {
     setDownload(true)
     try {
-      let msg = '开始下载，原图较大，请耐心等待！'
+      let msg = t('Tips.downloadStart')
       if (props.data?.album_license != null) {
-        msg += '图片版权归作者所有, 分享转载需遵循 ' + props.data.album_license + ' 许可协议！'
+        msg += t('Tips.downloadLicense', { license: props.data.album_license })
       }
 
       toast.warning(msg, { duration: 1500 })
@@ -90,8 +92,8 @@ export default function PreviewImage(props: Readonly<PreviewImageHandleProps>) {
       document.body.appendChild(link)
       link.click()
       document.body.removeChild(link)
-    } catch (e) {
-      toast.error('下载失败！', { duration: 500 })
+    } catch {
+      toast.error(t('Tips.downloadFailed'), { duration: 500 })
     } finally {
       setDownload(false)
     }
@@ -100,7 +102,7 @@ export default function PreviewImage(props: Readonly<PreviewImageHandleProps>) {
   if (!props.data) {
     return (
       <div className="flex items-center justify-center h-full">
-        <p className="text-gray-500">加载中...</p>
+        <p className="text-gray-500">{t('Tips.loading')}</p>
       </div>
     )
   }
@@ -134,7 +136,7 @@ export default function PreviewImage(props: Readonly<PreviewImageHandleProps>) {
             <button
               onClick={handleClose}
               className="z-50"
-              aria-label="返回"
+              aria-label={t('Button.goBack')}
             >
               <XIcon className={exifIconClass} size={18} />
             </button>
@@ -199,15 +201,14 @@ export default function PreviewImage(props: Readonly<PreviewImageHandleProps>) {
               onClick={async () => {
                 try {
                   const url = props.data?.url
-                  // @ts-ignore
                   await navigator.clipboard.writeText(url)
-                  let msg = '复制图片链接成功！'
+                  let msg = t('Tips.copyImageSuccess')
                   if (props.data?.album_license != null) {
-                    msg = '图片版权归作者所有, 分享转载需遵循 ' + props.data?.album_license + ' 许可协议！'
+                    msg = t('Tips.downloadLicense', { license: props.data?.album_license })
                   }
                   toast.success(msg, {duration: 1500})
-                } catch (error) {
-                  toast.error('复制图片链接失败！', {duration: 500})
+                } catch {
+                  toast.error(t('Tips.copyImageFailed'), {duration: 500})
                 }
               }}
             />
@@ -217,11 +218,10 @@ export default function PreviewImage(props: Readonly<PreviewImageHandleProps>) {
               onClick={async () => {
                 try {
                   const url = window.location.origin + '/preview/' + props.id
-                  // @ts-ignore
                   await navigator.clipboard.writeText(url)
-                  toast.success('复制分享直链成功！', {duration: 500})
-                } catch (error) {
-                  toast.error('复制分享直链失败！', {duration: 500})
+                  toast.success(t('Tips.copyShareSuccess'), {duration: 500})
+                } catch {
+                  toast.error(t('Tips.copyShareFailed'), {duration: 500})
                 }
               }}
             />
@@ -235,7 +235,7 @@ export default function PreviewImage(props: Readonly<PreviewImageHandleProps>) {
                   <DownloadIcon
                     className={exifIconClass}
                     size={20}
-                    onClick={() => downloadImg()}
+                    onClick={() => handleDownload()}
                   />
                 }
               </>

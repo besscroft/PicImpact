@@ -41,7 +41,7 @@ export default function TagGallery(props : Readonly<ImageHandleProps>) {
     handle: props.configHandle,
     args: 'system-config',
   }
-  const { data: _ } = useSwrHydrated(configProps)
+  const { data: configData } = useSwrHydrated(configProps)
   const dataList = data ? [].concat(...data) : []
   const t = useTranslations()
   const router = useRouter()
@@ -98,9 +98,9 @@ export default function TagGallery(props : Readonly<ImageHandleProps>) {
                   setSize(size + 1)
                 }}
                 className="select-none cursor-pointer"
-                aria-label="加载更多"
+                aria-label={t('Button.loadMore')}
               >
-                加载更多
+                {t('Button.loadMore')}
               </Button>
               : t('Tips.noImg')
         }
