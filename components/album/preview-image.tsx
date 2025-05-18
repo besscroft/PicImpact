@@ -71,27 +71,25 @@ export default function PreviewImage(props: Readonly<PreviewImageHandleProps>) {
       const storageType = props.data?.url?.includes('s3') ? 's3' : 'r2'
       
       // 使用新的下载 API
-      const response = await fetch(`/api/v1/download/${props.id}?storage=${storageType}`)
+      let response = await fetch(`/api/v1/download/${props.id}?storage=${storageType}`)
       const contentType = response.headers.get('content-type')
       
       if (contentType?.includes('application/json')) {
         // 如果是 JSON 响应，说明是直接下载模式
         const data = await response.json()
         // 直接使用 window.location.href 触发下载
-        window.location.href = data.url
-      } else {
-        // 如果不是 JSON 响应，说明是服务器下载模式
-        const blob = await response.blob()
-        const url = window.URL.createObjectURL(new Blob([blob]))
-        const link = document.createElement('a')
-        link.href = url
-        const parsedUrl = new URL(props.data?.url ?? '')
-        const filename = parsedUrl.pathname.split('/').pop()
-        link.download = filename || 'downloaded-file'
-        document.body.appendChild(link)
-        link.click()
-        document.body.removeChild(link)
+        response = await fetch(data.url)
       }
+      const blob = await response.blob()
+      const url = window.URL.createObjectURL(new Blob([blob]))
+      const link = document.createElement('a')
+      link.href = url
+      const parsedUrl = new URL(props.data?.url ?? '')
+      const filename = parsedUrl.pathname.split('/').pop()
+      link.download = filename || 'downloaded-file'
+      document.body.appendChild(link)
+      link.click()
+      document.body.removeChild(link)
     } catch (e) {
       toast.error('下载失败！', { duration: 500 })
     } finally {
