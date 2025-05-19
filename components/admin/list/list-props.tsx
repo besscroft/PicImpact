@@ -53,6 +53,7 @@ import { CircleChevronDownIcon } from '~/components/icons/circle-chevron-down.ts
 
 export default function ListProps(props : Readonly<ImageServerHandleProps>) {
   const [pageNum, setPageNum] = useState(1)
+  const [pageSize, setPageSize] = useState(8)
   const [album, setAlbum] = useState('')
   const [showStatus, setShowStatus] = useState('')
   const [imageAlbum, setImageAlbum] = useState('')
@@ -60,8 +61,8 @@ export default function ListProps(props : Readonly<ImageServerHandleProps>) {
   const [selectedLens, setSelectedLens] = useState('')
   const [cameras, setCameras] = useState<string[]>([])
   const [lenses, setLenses] = useState<string[]>([])
-  const { data, isLoading, mutate } = useSwrInfiniteServerHook(props, pageNum, album, showStatus === '' ? -1 : Number(showStatus), selectedCamera === '' ? '' : selectedCamera, selectedLens === '' ? '' : selectedLens)
-  const { data: total, mutate: totalMutate } = useSwrPageTotalServerHook(props, album, showStatus === '' ? -1 : Number(showStatus), selectedCamera === '' ? '' : selectedCamera, selectedLens === '' ? '' : selectedLens)
+  const { data, isLoading, mutate } = useSwrInfiniteServerHook(props, pageNum, pageSize, album, showStatus === '' ? -1 : Number(showStatus), selectedCamera === '' ? '' : selectedCamera, selectedLens === '' ? '' : selectedLens)
+  const { data: total, mutate: totalMutate } = useSwrPageTotalServerHook(props, pageSize, album, showStatus === '' ? -1 : Number(showStatus), selectedCamera === '' ? '' : selectedCamera, selectedLens === '' ? '' : selectedLens)
   const [image, setImage] = useState({} as ImageType)
   const [updateShowLoading, setUpdateShowLoading] = useState(false)
   const [updateImageAlbumLoading, setUpdateImageAlbumLoading] = useState(false)
@@ -471,19 +472,20 @@ export default function ListProps(props : Readonly<ImageServerHandleProps>) {
       {total !== 0 &&
         <div className="flex space-x-2">
           <Select
-            value={pageNum.toString()}
+            value={pageSize.toString()}
             onValueChange={async (page: string) => {
-              setPageNum(Number(page))
+              setPageSize(Number(page))
+              await totalMutate()
               await mutate()
             }}
           >
             <SelectTrigger className="h-8">
-              <SelectValue placeholder={pageNum} />
+              <SelectValue placeholder={pageSize} />
             </SelectTrigger>
             <SelectContent side="top">
-              {Array.from({ length: Math.ceil(total / 8) }, (_, i) => i + 1).map((num) => (
+              {Array.from({ length: 5 }, (_, i) => 4 * (i + 1)).map((num) => (
                 <SelectItem key={num} value={num.toString()}>
-                  {num}
+                  {num}张每页
                 </SelectItem>
               ))}
             </SelectContent>
@@ -497,9 +499,27 @@ export default function ListProps(props : Readonly<ImageServerHandleProps>) {
             }}
             size={18}
           />
+          <Select
+            value={pageNum.toString()}
+            onValueChange={async (page: string) => {
+              setPageNum(Number(page))
+              await mutate()
+            }}
+          >
+            <SelectTrigger className="h-8">
+              <SelectValue placeholder={pageNum} />
+            </SelectTrigger>
+            <SelectContent side="top">
+              {Array.from({ length: total }, (_, i) => i + 1).map((num) => (
+                <SelectItem key={num} value={num.toString()}>
+                  {num}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
           <ChevronRightIcon
             onClick={async () => {
-              if (pageNum < Math.ceil(total / 8)) {
+              if (pageNum < total) {
                 setPageNum(pageNum + 1)
                 await mutate()
               }

@@ -25,6 +25,7 @@ const ALBUM_IMAGE_SORTING_ORDER = [
  */
 export async function fetchServerImagesListByAlbum(
   pageNum: number,
+  pageSize: number,
   album: string,
   showStatus: number = -1,
   camera?: string,
@@ -58,7 +59,7 @@ export async function fetchServerImagesListByAlbum(
           ${camera ? Prisma.sql`AND COALESCE(image.exif->>'model', 'Unknown') = ${camera}` : Prisma.empty}
           ${lens ? Prisma.sql`AND COALESCE(image.exif->>'lens_model', 'Unknown') = ${lens}` : Prisma.empty}
       ORDER BY image.sort DESC, image.created_at DESC, image.updated_at DESC
-      LIMIT 8 OFFSET ${(pageNum - 1) * 8}
+      LIMIT ${pageSize} OFFSET ${(pageNum - 1) * pageSize}
     `
   }
   return await db.$queryRaw`
@@ -78,7 +79,7 @@ export async function fetchServerImagesListByAlbum(
         ${camera ? Prisma.sql`AND COALESCE(image.exif->>'model', 'Unknown') = ${camera}` : Prisma.empty}
         ${lens ? Prisma.sql`AND COALESCE(image.exif->>'lens_model', 'Unknown') = ${lens}` : Prisma.empty}
     ORDER BY image.sort DESC, image.created_at DESC, image.updated_at DESC 
-    LIMIT 8 OFFSET ${(pageNum - 1) * 8}
+    LIMIT ${pageSize} OFFSET ${(pageNum - 1) * pageSize}
   `
 }
 
@@ -94,7 +95,8 @@ export async function fetchServerImagesPageTotalByAlbum(
   album: string,
   showStatus: number = -1,
   camera?: string,
-  lens?: string
+  lens?: string,
+  pageSize?: number
 ) {
   if (album === 'all') {
     album = ''
@@ -123,7 +125,8 @@ export async function fetchServerImagesPageTotalByAlbum(
       ) AS unique_images;
     `
     // @ts-expect-error - The query result is guaranteed to have a total field
-    return Number(pageTotal[0].total) ?? 0
+    const total = Number(pageTotal[0].total) ?? 0
+    return pageSize ? Math.ceil(total / pageSize) : total
   }
   const pageTotal = await db.$queryRaw`
     SELECT COALESCE(COUNT(1),0) AS total
@@ -144,7 +147,8 @@ export async function fetchServerImagesPageTotalByAlbum(
      ) AS unique_images;
   `
   // @ts-expect-error - The query result is guaranteed to have a total field
-  return Number(pageTotal[0].total) ?? 0
+  const total = Number(pageTotal[0].total) ?? 0
+  return pageSize ? Math.ceil(total / pageSize) : total
 }
 
 /**
@@ -308,7 +312,7 @@ export async function fetchClientImagesListByTag(pageNum: number, tag: string) {
  * @param tag 标签
  * @returns 图片总数
  */
-export async function fetchClientImagesPageTotalByTag(tag: string) {
+export async function fetchClientImagesPageTotalByTag(tag: string, pageSize?: number) {
   const pageTotal = await db.$queryRaw`
     SELECT COALESCE(COUNT(1),0) AS total
     FROM (
@@ -332,8 +336,9 @@ export async function fetchClientImagesPageTotalByTag(tag: string) {
             image.labels::jsonb @> ${JSON.stringify([tag])}::jsonb
     ) AS unique_images;
   `
-  // @ts-ignore
-  return Number(pageTotal[0].total) > 0 ? Math.ceil(Number(pageTotal[0].total) / 16) : 0
+  // @ts-expect-error
+  const total = Number(pageTotal[0].total) ?? 0
+  return pageSize ? Math.ceil(total / pageSize) : total
 }
 
 /**
