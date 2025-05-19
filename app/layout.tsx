@@ -31,18 +31,19 @@ export async function generateMetadata(): Promise<Metadata> {
     title: data?.find((item: ConfigItem) => item.config_key === 'custom_title')?.config_value || 'PicImpact',
     icons: { icon: data?.find((item: ConfigItem) => item.config_key === 'custom_favicon_url')?.config_value || './favicon.ico' },
     manifest: '/manifest.json',
-    themeColor: '#000000',
     appleWebApp: {
       capable: true,
       statusBarStyle: 'default',
       title: 'PicImpact',
-    },
-    viewport: {
-      width: 'device-width',
-      initialScale: 1,
-      maximumScale: 1,
-    },
+    }
   }
+}
+
+export const viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1,
+  themeColor: '#000000',
 }
 
 export default async function RootLayout({
