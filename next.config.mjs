@@ -1,5 +1,6 @@
 import createNextIntlPlugin from 'next-intl/plugin'
 import bundleAnalyzer from '@next/bundle-analyzer'
+import withPWA from 'next-pwa'
 
 const withNextIntl = createNextIntlPlugin('./i18n.ts')
 
@@ -39,4 +40,12 @@ if (process.env.ANALYZE === 'true') {
   })(nextConfig)
 }
 
-export default withNextIntl(nextConfig)
+// 添加 PWA 配置
+const pwaConfig = withPWA({
+  dest: 'public',
+  register: true,
+  skipWaiting: true,
+  disable: process.env.NODE_ENV === 'development'
+})(nextConfig)
+
+export default withNextIntl(pwaConfig)
