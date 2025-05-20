@@ -624,3 +624,42 @@ export default function SimpleFileUpload() {
     </div>
   )
 }
+
+async function uploadFile(file: File, type: string, storage: string, mountPath: string) {
+  const formData = new FormData()
+  formData.append('file', file)
+  formData.append('storage', storage)
+  formData.append('type', type)
+  if (mountPath) {
+    formData.append('mountPath', mountPath)
+  }
+
+  const res = await fetch('/api/v1/file/upload', {
+    method: 'POST',
+    body: formData,
+  }).then(res => res.json())
+
+  if (res?.code === 200) {
+    if (res.data.upload_url) {
+      // 直传模式
+      try {
+        await fetch(res.data.upload_url, {
+          method: 'PUT',
+          body: file,
+          headers: {
+            'Content-Type': file.type,
+          },
+        })
+        return {
+          code: 200,
+          data: res.data.key
+        }
+      } catch (e) {
+        throw new Error('Upload failed')
+      }
+    }
+    return res
+  } else {
+    throw new Error('Upload failed')
+  }
+}
