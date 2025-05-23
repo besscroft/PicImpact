@@ -1,14 +1,11 @@
 import { createStore } from 'zustand/vanilla'
 import { persist, createJSONStorage } from 'zustand/middleware'
-import type { AlbumType, ImageType, Config, CopyrightType } from '~/types'
+import type { AlbumType, ImageType, Config } from '~/types'
 
 export type ButtonState = {
   albumAdd: boolean
   albumEdit: boolean
   album: AlbumType
-  copyrightAdd: boolean
-  copyrightEdit: boolean
-  copyright: CopyrightType
   image: ImageType
   imageEdit: boolean
   imageViewData: ImageType
@@ -32,9 +29,6 @@ export type ButtonActions = {
   setAlbumAdd: (albumAdd: boolean) => void
   setAlbumEdit: (albumEdit: boolean) => void
   setAlbumEditData: (album: AlbumType) => void
-  setCopyrightAdd: (copyrightAdd: boolean) => void
-  setCopyrightEdit: (copyrightEdit: boolean) => void
-  setCopyrightEditData: (copyright: CopyrightType) => void
   setImageEdit: (imageEdit: boolean) => void
   setImageEditData: (image: ImageType) => void
   setImageView: (imageView: boolean) => void
@@ -61,9 +55,6 @@ export const initButtonStore = (): ButtonState => {
     albumAdd: false,
     albumEdit: false,
     album: {} as AlbumType,
-    copyrightAdd: false,
-    copyrightEdit: false,
-    copyright: {} as CopyrightType,
     imageEdit: false,
     image: {} as ImageType,
     imageView: false,
@@ -88,9 +79,6 @@ export const defaultInitState: ButtonState = {
   albumAdd: false,
   albumEdit: false,
   album: {} as AlbumType,
-  copyrightAdd: false,
-  copyrightEdit: false,
-  copyright: {} as CopyrightType,
   imageEdit: false,
   image: {} as ImageType,
   imageView: false,
@@ -125,15 +113,6 @@ export const createButtonStore = (
         })),
         setAlbumEditData: (albumValue) => set(() => ({
           album: albumValue,
-        })),
-        setCopyrightAdd: (copyrightAddValue) => set(() => ({
-          copyrightAdd: copyrightAddValue,
-        })),
-        setCopyrightEdit: (copyrightEditValue) => set(() => ({
-          copyrightEdit: copyrightEditValue,
-        })),
-        setCopyrightEditData: (copyrightValue) => set(() => ({
-          copyright: copyrightValue,
         })),
         setImageEdit: (imageEditValue) => set(() => ({
           imageEdit: imageEditValue,
