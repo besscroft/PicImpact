@@ -177,7 +177,6 @@
     "editAlbumTitle": "アルバムを編集",
     "name": "アルバム名",
     "inputName": "アルバム名を入力",
-    "router": "ルーター",
     "inputRouter": "ルーターを入力、例：/tietie",
     "detail": "詳細",
     "inputDetail": "詳細を入力",
