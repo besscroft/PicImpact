@@ -13,7 +13,7 @@ import { useTranslations } from 'next-intl'
 export default function AlistEditSheet() {
   const [loading, setLoading] = useState(false)
   const { mutate } = useSWRConfig()
-  const { alistEdit, setAlistEdit, setAlistEditData, alistData } = useButtonStore(
+  const { aListEdit, setAListEdit, setAListEditData, aListData } = useButtonStore(
     (state) => state,
   )
   const t = useTranslations()
@@ -26,12 +26,12 @@ export default function AlistEditSheet() {
           'Content-Type': 'application/json',
         },
         method: 'PUT',
-        body: JSON.stringify(alistData),
+        body: JSON.stringify(aListData),
       }).then(res => res.json())
       toast.success(t('Config.updateSuccess'))
-      mutate('/api/v1/settings/alist-info')
-      setAlistEdit(false)
-      setAlistEditData([] as Config[])
+      mutate('/api/v1/storage/alist/info')
+      setAListEdit(false)
+      setAListEditData([] as Config[])
     } catch (e) {
       toast.error(t('Config.updateFailed'))
     } finally {
@@ -42,11 +42,11 @@ export default function AlistEditSheet() {
   return (
     <Sheet
       defaultOpen={false}
-      open={alistEdit}
+      open={aListEdit}
       onOpenChange={(open: boolean) => {
         if (!open) {
-          setAlistEdit(false)
-          setAlistEditData([] as Config[])
+          setAListEdit(false)
+          setAListEditData([] as Config[])
         }
       }}
       modal={false}
@@ -57,7 +57,7 @@ export default function AlistEditSheet() {
         </SheetHeader>
         <div className="flex flex-col space-y-2">
           {
-            alistData?.map((config: Config) => (
+            aListData?.map((config: Config) => (
               <label
                 htmlFor="text"
                 key={config.id}
@@ -70,8 +70,8 @@ export default function AlistEditSheet() {
                   id="name"
                   value={config.config_value || ''}
                   placeholder={t('Config.' + config.config_key)}
-                  onChange={(e) => setAlistEditData(
-                    alistData?.map((c: Config) => {
+                  onChange={(e) => setAListEditData(
+                    aListData?.map((c: Config) => {
                       if (c.config_key === config.config_key) {
                         c.config_value = e.target.value
                       }
