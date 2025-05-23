@@ -1,6 +1,6 @@
 name: Push And PR Docker Multi-arch Image CI & CD
 
-on: [ push, pull_request ]
+on: [ pull_request ]
 
 jobs:
   build:
@@ -28,6 +28,6 @@ jobs:
         with:
           context: ./
           file: ./Dockerfile
-          platforms: linux/amd64,linux/arm64
+          platforms: linux/amd64
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/picimpact:dev
