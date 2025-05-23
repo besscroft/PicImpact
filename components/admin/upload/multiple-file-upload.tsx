@@ -240,8 +240,6 @@ export default function MultipleFileUpload() {
   }
 
   function onRemoveFile() {
-    setStorageSelect(false)
-    setAlistMountPath('')
     setLat('')
     setLon('')
   }

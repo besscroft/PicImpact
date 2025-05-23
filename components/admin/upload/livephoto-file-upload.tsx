@@ -296,8 +296,6 @@ export default function LivephotoFileUpload() {
   }
 
   function onRemoveFile() {
-    setStorageSelect(false)
-    setAlistMountPath('')
     setExif({} as ExifType)
     setUrl('')
     setTitle('')
