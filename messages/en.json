@@ -177,7 +177,6 @@
     "editAlbumTitle": "Edit Album",
     "name": "Album Name",
     "inputName": "Enter album name",
-    "router": "Router",
     "inputRouter": "Enter router, e.g., /tietie",
     "detail": "Detail",
     "inputDetail": "Enter detail",

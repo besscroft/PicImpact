@@ -177,7 +177,6 @@
     "editAlbumTitle": "編輯相簿",
     "name": "相簿名稱",
     "inputName": "輸入相簿名稱",
-    "router": "路由",
     "inputRouter": "輸入路由，如：/tietie",
     "detail": "詳情",
     "inputDetail": "輸入詳情",
