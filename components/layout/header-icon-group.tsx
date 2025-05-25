@@ -7,12 +7,25 @@ import { useRouter } from 'next-nprogress-bar'
 import { useButtonStore } from '~/app/providers/button-store-providers'
 import Command from '~/components/layout/command'
 import type { AlbumDataProps } from '~/types/props'
+import { useEffect } from 'react'
 
 export default function HeaderIconGroup(props: Readonly<AlbumDataProps>) {
   const router = useRouter()
   const { setCommand } = useButtonStore(
     (state) => state,
   )
+
+  useEffect(() => {
+    const down = (e: KeyboardEvent) => {
+      if (e.key === 'k' && (e.metaKey || e.ctrlKey)) {
+        e.preventDefault()
+        setCommand(true)
+      }
+    }
+
+    document.addEventListener('keydown', down)
+    return () => document.removeEventListener('keydown', down)
+  }, [setCommand])
 
   return (
     <>
