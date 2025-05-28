@@ -21,12 +21,11 @@ export async function updateS3Config(configs: any) {
        WHEN config_key = 'force_path_style' THEN ${configs.forcePathStyle}
        WHEN config_key = 's3_cdn' THEN ${configs.s3Cdn}
        WHEN config_key = 's3_cdn_url' THEN ${configs.s3CdnUrl}
-       WHEN config_key = 's3_direct_upload' THEN ${configs.s3DirectUpload}
        WHEN config_key = 's3_direct_download' THEN ${configs.s3DirectDownload}
        ELSE 'N&A'
     END,
         updated_at = NOW()
-    WHERE config_key IN ('accesskey_id', 'accesskey_secret', 'region', 'endpoint', 'bucket', 'storage_folder', 'force_path_style', 's3_cdn', 's3_cdn_url', 's3_direct_upload', 's3_direct_download');
+    WHERE config_key IN ('accesskey_id', 'accesskey_secret', 'region', 'endpoint', 'bucket', 'storage_folder', 'force_path_style', 's3_cdn', 's3_cdn_url', 's3_direct_download');
   `
 }
 
@@ -44,12 +43,11 @@ export async function updateR2Config(configs: any) {
        WHEN config_key = 'r2_bucket' THEN ${configs.r2Bucket}
        WHEN config_key = 'r2_storage_folder' THEN ${configs.r2StorageFolder}
        WHEN config_key = 'r2_public_domain' THEN ${configs.r2PublicDomain}
-       WHEN config_key = 'r2_direct_upload' THEN ${configs.r2DirectUpload}
        WHEN config_key = 'r2_direct_download' THEN ${configs.r2DirectDownload}
        ELSE 'N&A'
     END,
         updated_at = NOW()
-    WHERE config_key IN ('r2_accesskey_id', 'r2_accesskey_secret', 'r2_endpoint', 'r2_bucket', 'r2_storage_folder', 'r2_public_domain', 'r2_direct_upload', 'r2_direct_download');
+    WHERE config_key IN ('r2_accesskey_id', 'r2_accesskey_secret', 'r2_endpoint', 'r2_bucket', 'r2_storage_folder', 'r2_public_domain', 'r2_direct_download');
   `
 }
 
