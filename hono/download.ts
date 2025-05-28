@@ -21,11 +21,11 @@ app.get('/:id', async (c) => {
   try {
     // 从数据库获取图片信息
     const imageData = await fetchImageByIdAndAuth(id)
-    if (!imageData || imageData.length === 0) {
+    if (!imageData) {
       throw new HTTPException(404, { message: 'Image not found' })
     }
 
-    const imageUrl = imageData[0].url
+    const imageUrl = imageData.url
     if (!imageUrl) {
       throw new HTTPException(404, { message: 'Image URL not found' })
     }

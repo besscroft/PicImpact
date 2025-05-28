@@ -407,7 +407,7 @@ export async function fetchImagesAnalysis():
  * @returns {Promise<ImageType>} 图片详情
  */
 export async function fetchImageByIdAndAuth(id: string): Promise<ImageType> {
-  return await db.$queryRaw`
+  const data: ImageType[] = await db.$queryRaw`
     SELECT
         "images".*,
         "albums".license AS album_license,
@@ -429,6 +429,7 @@ export async function fetchImageByIdAndAuth(id: string): Promise<ImageType> {
     AND
         "images".id = ${id}
   `
+  return data[0]
 }
 
 /**
