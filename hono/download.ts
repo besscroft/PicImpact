@@ -6,6 +6,7 @@ import { fetchConfigsByKeys } from '~/server/db/query/configs'
 import { getClient, generatePresignedUrl as generateS3PresignedUrl } from '~/server/lib/s3'
 import { getR2Client, generatePresignedUrl as generateR2PresignedUrl } from '~/server/lib/r2'
 import { fetchImageByIdAndAuth } from '~/server/db/query/images'
+import type { Config } from '~/types'
 
 const app = new Hono()
 
@@ -34,8 +35,8 @@ app.get('/:id', async (c) => {
       's3_direct_download',
       'r2_direct_download'
     ])
-    const s3DirectDownload = configs.find((item: any) => item.config_key === 's3_direct_download')?.config_value === 'true'
-    const r2DirectDownload = configs.find((item: any) => item.config_key === 'r2_direct_download')?.config_value === 'true'
+    const s3DirectDownload = configs.find((item: Config) => item.config_key === 's3_direct_download')?.config_value === 'true'
+    const r2DirectDownload = configs.find((item: Config) => item.config_key === 'r2_direct_download')?.config_value === 'true'
 
     if ((storage === 's3' && !s3DirectDownload) || (storage === 'r2' && !r2DirectDownload)) {
       // 对于非直接下载，返回带有 Content-Disposition 的响应
@@ -59,12 +60,12 @@ app.get('/:id', async (c) => {
       key = url.pathname.startsWith('/') ? url.pathname.slice(1) : url.pathname
       // 如果路径以 storage_folder 开头，移除它
       if (storage === 's3') {
-        const s3StorageFolder = configs.find((item: any) => item.config_key === 'storage_folder')?.config_value || ''
+        const s3StorageFolder = configs.find((item: Config) => item.config_key === 'storage_folder')?.config_value || ''
         if (s3StorageFolder && key.startsWith(s3StorageFolder)) {
           key = key.slice(s3StorageFolder.length)
         }
       } else if (storage === 'r2') {
-        const r2StorageFolder = configs.find((item: any) => item.config_key === 'r2_storage_folder')?.config_value || ''
+        const r2StorageFolder = configs.find((item: Config) => item.config_key === 'r2_storage_folder')?.config_value || ''
         if (r2StorageFolder && key.startsWith(r2StorageFolder)) {
           key = key.slice(r2StorageFolder.length)
         }
@@ -87,8 +88,8 @@ app.get('/:id', async (c) => {
           's3_cdn_url',
           's3_direct_download'
         ])
-        const bucket = configs.find((item: any) => item.config_key === 'bucket')?.config_value || ''
-        const storageFolder = configs.find((item: any) => item.config_key === 'storage_folder')?.config_value || ''
+        const bucket = configs.find((item: Config) => item.config_key === 'bucket')?.config_value || ''
+        const storageFolder = configs.find((item: Config) => item.config_key === 'storage_folder')?.config_value || ''
 
         // 如果 key 已经包含了 storage_folder，就不再添加
         const filePath = key.startsWith(storageFolder) ? key : `${storageFolder}${key}`
@@ -111,8 +112,8 @@ app.get('/:id', async (c) => {
           'r2_public_domain',
           'r2_direct_download'
         ])
-        const bucket = configs.find((item: any) => item.config_key === 'r2_bucket')?.config_value || ''
-        const storageFolder = configs.find((item: any) => item.config_key === 'r2_storage_folder')?.config_value || ''
+        const bucket = configs.find((item: Config) => item.config_key === 'r2_bucket')?.config_value || ''
+        const storageFolder = configs.find((item: Config) => item.config_key === 'r2_storage_folder')?.config_value || ''
 
         // 如果 key 已经包含了 storage_folder，就不再添加
         const filePath = key.startsWith(storageFolder) ? key : `${storageFolder}${key}`

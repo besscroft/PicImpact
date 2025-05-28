@@ -21,7 +21,7 @@ const ALBUM_IMAGE_SORTING_ORDER = [
  * @param showStatus 公开状态 (0: 公开, 1: 未公开, -1: 全部)
  * @param camera 相机型号
  * @param lens 镜头型号
- * @returns {Promise<[ImageType]>} 图片列表
+ * @returns {Promise<ImageType[]>} 图片列表
  */
 export async function fetchServerImagesListByAlbum(
   pageNum: number,
@@ -29,7 +29,7 @@ export async function fetchServerImagesListByAlbum(
   showStatus: number = -1,
   camera?: string,
   lens?: string
-) {
+): Promise<ImageType[]> {
   if (album === 'all') {
     album = ''
   }
@@ -88,14 +88,14 @@ export async function fetchServerImagesListByAlbum(
  * @param showStatus 公开状态 (0: 公开, 1: 未公开, -1: 全部)
  * @param camera 相机型号
  * @param lens 镜头型号
- * @returns 图片总数
+ * @returns {Promise<number>} 图片总数
  */
 export async function fetchServerImagesPageTotalByAlbum(
   album: string,
   showStatus: number = -1,
   camera?: string,
   lens?: string
-) {
+): Promise<number> {
   if (album === 'all') {
     album = ''
   }
@@ -151,9 +151,9 @@ export async function fetchServerImagesPageTotalByAlbum(
  * 根据相册获取图片分页列表（客户端）
  * @param pageNum 页码
  * @param album 相册
- * @returns {Promise<[ImageType]>} 图片列表
+ * @returns {Promise<ImageType[]>} 图片列表
  */
-export async function fetchClientImagesListByAlbum(pageNum: number, album: string) {
+export async function fetchClientImagesListByAlbum(pageNum: number, album: string): Promise<ImageType[]> {
   if (pageNum < 1) {
     pageNum = 1
   }
@@ -217,9 +217,9 @@ export async function fetchClientImagesListByAlbum(pageNum: number, album: strin
 /**
  * 根据相册获取图片分页总数（客户端）
  * @param album 相册
- * @returns 图片总数
+ * @returns {Promise<number>} 图片总数
  */
-export async function fetchClientImagesPageTotalByAlbum(album: string) {
+export async function fetchClientImagesPageTotalByAlbum(album: string): Promise<number> {
   if (album === '/') {
     const pageTotal = await db.$queryRaw`
     SELECT COALESCE(COUNT(1),0) AS total
@@ -270,9 +270,9 @@ export async function fetchClientImagesPageTotalByAlbum(album: string) {
  * 根据图片标签获取图片分页列表（客户端）
  * @param pageNum 页码
  * @param tag 标签
- * @returns {Promise<[ImageType]>} 图片列表
+ * @returns {Promise<ImageType[]>} 图片列表
  */
-export async function fetchClientImagesListByTag(pageNum: number, tag: string) {
+export async function fetchClientImagesListByTag(pageNum: number, tag: string): Promise<ImageType[]> {
   if (pageNum < 1) {
     pageNum = 1
   }
@@ -306,9 +306,9 @@ export async function fetchClientImagesListByTag(pageNum: number, tag: string) {
 /**
  * 根据图片标签获取图片分页总数（客户端）
  * @param tag 标签
- * @returns 图片总数
+ * @returns {Promise<number>} 图片总数
  */
-export async function fetchClientImagesPageTotalByTag(tag: string) {
+export async function fetchClientImagesPageTotalByTag(tag: string): Promise<number> {
   const pageTotal = await db.$queryRaw`
     SELECT COALESCE(COUNT(1),0) AS total
     FROM (
@@ -340,7 +340,15 @@ export async function fetchClientImagesPageTotalByTag(tag: string) {
  * 获取图片分析数据
  * @returns {Promise<{ total: number, showTotal: number, crTotal: number, tagsTotal: number, cameraStats: any[], result: any[] }>} 图片分析数据
  */
-export async function fetchImagesAnalysis() {
+export async function fetchImagesAnalysis():
+  Promise<{
+    total: number,
+    showTotal: number,
+    crTotal: number,
+    tagsTotal: number,
+    cameraStats: any[],
+    result: any[]
+  }> {
   const counts = await db.$queryRaw<[{ images_total: number, images_show: number, cr_total: number, tags_total: number }]>`
     SELECT 
       (SELECT COALESCE(COUNT(*), 0) FROM "public"."images" WHERE del = 0) as images_total,
@@ -356,7 +364,7 @@ export async function fetchImagesAnalysis() {
     WHERE del = 0
     GROUP BY camera, lens
     ORDER BY count DESC
-  `
+  ` as any[]
 
   const result = await db.$queryRaw`
     SELECT
@@ -376,7 +384,7 @@ export async function fetchImagesAnalysis() {
         albums.del = 0
     GROUP BY albums.name, albums.album_value
     ORDER BY total DESC
-  `
+  ` as any[]
 
   // @ts-ignore
   result.total = Number(result.total)
@@ -398,7 +406,7 @@ export async function fetchImagesAnalysis() {
  * @param id 图片 ID
  * @returns {Promise<ImageType>} 图片详情
  */
-export async function fetchImageByIdAndAuth(id: string): Promise<ImageType[]> {
+export async function fetchImageByIdAndAuth(id: string): Promise<ImageType> {
   return await db.$queryRaw`
     SELECT
         "images".*,
@@ -427,7 +435,7 @@ export async function fetchImageByIdAndAuth(id: string): Promise<ImageType[]> {
  * 获取最新的 10 张图片
  * @returns {Promise<ImageType[]>} 图片列表
  */
-export async function getRSSImages() {
+export async function getRSSImages(): Promise<ImageType[]> {
   // 每个相册取最新 10 张照片
   return await db.$queryRaw`
     WITH RankedImages AS (
@@ -455,7 +463,7 @@ export async function getRSSImages() {
  * 获取所有相机和镜头型号列表
  * @returns {Promise<{ cameras: string[], lenses: string[] }>} 相机和镜头列表
  */
-export async function fetchCameraAndLensList() {
+export async function fetchCameraAndLensList(): Promise<{ cameras: string[], lenses: string[] }> {
   const stats = await db.$queryRaw<Array<{ camera: string; lens: string }>>`
     SELECT DISTINCT
       COALESCE(exif->>'model', 'Unknown') as camera,
