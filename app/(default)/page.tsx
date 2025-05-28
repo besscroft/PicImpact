@@ -4,6 +4,7 @@ import Gallery from '~/components/album/gallery'
 import { fetchConfigsByKeys } from '~/server/db/query/configs'
 import AlbumGallery from '~/components/album/album-gallery'
 import 'react-photo-album/masonry.css'
+import type { Config } from '~/types'
 
 export default async function Home() {
   const getData = async (pageNum: number, album: string) => {
@@ -30,7 +31,7 @@ export default async function Home() {
     ])
   }
 
-  const style = await getStyleConfig()
+  const style: Config[] = await getStyleConfig()
   const currentStyle = style?.find(a => a.config_key === 'custom_index_style').config_value
 
   const props: ImageHandleProps = {

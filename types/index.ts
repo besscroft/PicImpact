@@ -59,6 +59,6 @@ export type ImageType = {
 export type Config = {
   id: string;
   config_key: string;
-  config_value: string;
-  detail: string;
+  config_value: string | null;
+  detail: string | null;
 }

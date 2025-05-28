@@ -43,7 +43,6 @@ app.get('/r2-info', async (c) => {
     'r2_bucket',
     'r2_storage_folder',
     'r2_public_domain',
-    'r2_direct_upload',
     'r2_direct_download'
   ])
   return c.json(data)
@@ -71,7 +70,6 @@ app.get('/s3-info', async (c) => {
     'force_path_style',
     's3_cdn',
     's3_cdn_url',
-    's3_direct_upload',
     's3_direct_download'
   ])
   return c.json(data)
@@ -96,10 +94,9 @@ app.put('/update-r2-info', async (c) => {
   const r2Bucket = query?.find((item: Config) => item.config_key === 'r2_bucket').config_value
   const r2StorageFolder = query?.find((item: Config) => item.config_key === 'r2_storage_folder').config_value
   const r2PublicDomain = query?.find((item: Config) => item.config_key === 'r2_public_domain').config_value
-  const r2DirectUpload = query?.find((item: Config) => item.config_key === 'r2_direct_upload').config_value
   const r2DirectDownload = query?.find((item: Config) => item.config_key === 'r2_direct_download').config_value
 
-  const data = await updateR2Config({ r2AccesskeyId, r2AccesskeySecret, r2Endpoint, r2Bucket, r2StorageFolder, r2PublicDomain, r2DirectUpload, r2DirectDownload })
+  const data = await updateR2Config({ r2AccesskeyId, r2AccesskeySecret, r2Endpoint, r2Bucket, r2StorageFolder, r2PublicDomain, r2DirectDownload })
   return c.json(data)
 })
 
@@ -115,10 +112,9 @@ app.put('/update-s3-info', async (c) => {
   const forcePathStyle = query?.find((item: Config) => item.config_key === 'force_path_style').config_value
   const s3Cdn = query?.find((item: Config) => item.config_key === 's3_cdn').config_value
   const s3CdnUrl = query?.find((item: Config) => item.config_key === 's3_cdn_url').config_value
-  const s3DirectUpload = query?.find((item: Config) => item.config_key === 's3_direct_upload').config_value
   const s3DirectDownload = query?.find((item: Config) => item.config_key === 's3_direct_download').config_value
 
-  const data = await updateS3Config({ accesskeyId, accesskeySecret, region, endpoint, bucket, storageFolder, forcePathStyle, s3Cdn, s3CdnUrl, s3DirectUpload, s3DirectDownload })
+  const data = await updateS3Config({ accesskeyId, accesskeySecret, region, endpoint, bucket, storageFolder, forcePathStyle, s3Cdn, s3CdnUrl, s3DirectDownload })
   return c.json(data)
 })
 

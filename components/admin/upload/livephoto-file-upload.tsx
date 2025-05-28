@@ -30,6 +30,7 @@ import {
 import { Button } from '~/components/ui/button'
 import { X } from 'lucide-react'
 import { UploadIcon } from '~/components/icons/upload'
+import { heicTo, isHeic } from 'heic-to'
 
 export default function LivephotoFileUpload() {
   const [alistStorage, setAlistStorage] = useState([])
@@ -59,7 +60,7 @@ export default function LivephotoFileUpload() {
   const previewImageMaxWidthLimit = parseInt(configs?.find(config => config.config_key === 'preview_max_width_limit')?.config_value || '0')
   const previewCompressQuality = parseFloat(configs?.find(config => config.config_key === 'preview_quality')?.config_value || '0.2')
 
-  async function loadExif(file: File | any, outputBuffer: any, flag: boolean) {
+  async function loadExif(file: File | any) {
     try {
       const { tags, exifObj } = await exifReader(file)
       setExif(exifObj)
@@ -87,11 +88,7 @@ export default function LivephotoFileUpload() {
         // @ts-ignore
         img.src = e.target.result
       }
-      if (flag) {
-        reader.readAsDataURL(outputBuffer)
-      } else {
-        reader.readAsDataURL(file)
-      }
+      reader.readAsDataURL(file)
     } catch (e) {
       console.error(e)
     }
@@ -187,30 +184,18 @@ export default function LivephotoFileUpload() {
     }
   ]
 
-  async function uploadPreviewImage(file: File, type: string, flag: boolean, outputBuffer: any) {
-    new Compressor(flag ? outputBuffer : file, {
+  async function uploadPreviewImage(file: File, type: string) {
+    new Compressor(file, {
       quality: previewCompressQuality,
       checkOrientation: false,
       mimeType: 'image/webp',
       maxWidth: previewImageMaxWidthLimitSwitchOn && previewImageMaxWidthLimit > 0 ? previewImageMaxWidthLimit : undefined,
       async success(compressedFile) {
-        if (compressedFile instanceof File) {
-          const res = await uploadFile(compressedFile, type, storage, alistMountPath)
-          if (res?.code === 200) {
-            setPreviewUrl(res?.data)
-          } else {
-            throw new Error('Upload failed')
-          }
+        const res = await uploadFile(compressedFile, type, storage, alistMountPath)
+        if (res?.code === 200) {
+          setPreviewUrl(res?.data)
         } else {
-          const compressedFileFromBlob = new File([compressedFile], flag ? outputBuffer.name : file.name, {
-            type: compressedFile.type,
-          })
-          const res = await uploadFile(compressedFileFromBlob, type, storage, alistMountPath)
-          if (res?.code === 200) {
-            setPreviewUrl(res?.data)
-          } else {
-            throw new Error('Upload failed')
-          }
+          throw new Error('Upload failed')
         }
       },
       error() {
@@ -219,7 +204,7 @@ export default function LivephotoFileUpload() {
     })
   }
 
-  async function resHandle(res: any, file: File, type: number, flag: boolean, outputBuffer: any) {
+  async function resHandle(res: any, file: File, type: number) {
     if (type === 2) {
       if (res?.code === 200) {
         setVideoUrl(res?.data)
@@ -230,14 +215,14 @@ export default function LivephotoFileUpload() {
       if (res?.code === 200) {
         try {
           if (album === '/') {
-            await uploadPreviewImage(file, '/preview', flag, outputBuffer)
+            await uploadPreviewImage(file, '/preview')
           } else {
-            await uploadPreviewImage(file, album + '/preview', flag, outputBuffer)
+            await uploadPreviewImage(file, album + '/preview')
           }
         } catch (e) {
           throw new Error('Upload failed')
         }
-        await loadExif(file, outputBuffer, flag)
+        await loadExif(file)
         setUrl(res?.data)
       } else {
         throw new Error('Upload failed')
@@ -246,42 +231,25 @@ export default function LivephotoFileUpload() {
   }
 
   async function onRequestUpload(file: File, type: number) {
-    let outputBuffer: Blob | Blob[]
-    const ext = file.name.split('.').pop()?.toLowerCase()
     // 获取文件名但是去掉扩展名部分
     const fileName = file.name.split('.').slice(0, -1).join('.')
-    const flag = ext === 'heic' || ext === 'heif'
-    if (flag && type === 1) {
+    if (await isHeic(file) && type === 1) {
       // 把 HEIC 转成 JPEG
-      const heic2any = await import('heic2any')
-      outputBuffer = await heic2any.default({ blob: file, toType: 'image/jpeg' })
-      // 添加文件名
-      // @ts-ignore
-      outputBuffer.name = fileName + '.jpg'
-      // @ts-ignore
-      new Compressor(outputBuffer, {
-        quality: previewCompressQuality,
-        checkOrientation: false,
-        mimeType: 'image/jpeg',
-        maxWidth: previewImageMaxWidthLimitSwitchOn && previewImageMaxWidthLimit > 0 ? previewImageMaxWidthLimit : undefined,
-        async success(compressedFile) {
-          if (compressedFile instanceof File) {
-            await uploadFile(compressedFile, album, storage, alistMountPath).then(async (res) => {
-              await resHandle(res, file, type, flag, outputBuffer)
-            })
-          } else {
-            const compressedFileFromBlob = new File([compressedFile], fileName + '.jpg', {
-              type: compressedFile.type,
-            })
-            await uploadFile(compressedFileFromBlob, album, storage, alistMountPath).then(async (res) => {
-              await resHandle(res, file, type, flag, outputBuffer)
-            })
-          }
+      const outputBuffer: Blob | Blob[] = await heicTo({
+        blob: file,
+        type: 'image/jpeg',
+      })
+      const outputFile = new File([outputBuffer], fileName + '.jpg', { type: 'image/jpeg' })
+      await uploadFile(outputFile, album, storage, alistMountPath).then(async (res) => {
+        if (res.code === 200) {
+          await resHandle(res, outputFile, type)
+        } else {
+          throw new Error('Upload failed')
         }
       })
     } else {
       await uploadFile(file, album, storage, alistMountPath).then(async (res) => {
-        await resHandle(res, file, type, flag, outputBuffer)
+        await resHandle(res, file, type)
       })
     }
   }
