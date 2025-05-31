@@ -52,6 +52,12 @@ export default function PreviewImage(props: Readonly<PreviewImageHandleProps>) {
   const { data: configData } = useSwrHydrated(configProps)
 
   const handleClose = () => {
+    if (window != undefined) {
+      if (window.history.length > 1) {
+        router.back()
+        return
+      }
+    }
     if (props.data?.album_value) {
       router.push(`${props.data.album_value}`)
     } else {
@@ -68,14 +74,14 @@ export default function PreviewImage(props: Readonly<PreviewImageHandleProps>) {
       }
 
       toast.warning(msg, { duration: 1500 })
-      
+
       // 获取存储类型
       const storageType = props.data?.url?.includes('s3') ? 's3' : 'r2'
-      
+
       // 使用新的下载 API
       let response = await fetch(`/api/v1/download/${props.id}?storage=${storageType}`)
       const contentType = response.headers.get('content-type')
-      
+
       if (contentType?.includes('application/json')) {
         // 如果是 JSON 响应，说明是直接下载模式
         const data = await response.json()
@@ -120,7 +126,7 @@ export default function PreviewImage(props: Readonly<PreviewImageHandleProps>) {
                 className="object-contain md:max-h-[90vh]"
                 effect="blur"
                 wrapperProps={{
-                  style: {transitionDelay: '0.5s'},
+                  style: { transitionDelay: '0.5s' },
                 }}
               />
               : <LivePhoto
@@ -206,9 +212,9 @@ export default function PreviewImage(props: Readonly<PreviewImageHandleProps>) {
                   if (props.data?.album_license != null) {
                     msg = t('Tips.downloadLicense', { license: props.data?.album_license })
                   }
-                  toast.success(msg, {duration: 1500})
+                  toast.success(msg, { duration: 1500 })
                 } catch {
-                  toast.error(t('Tips.copyImageFailed'), {duration: 500})
+                  toast.error(t('Tips.copyImageFailed'), { duration: 500 })
                 }
               }}
             />
@@ -219,9 +225,9 @@ export default function PreviewImage(props: Readonly<PreviewImageHandleProps>) {
                 try {
                   const url = window.location.origin + '/preview/' + props.id
                   await navigator.clipboard.writeText(url)
-                  toast.success(t('Tips.copyShareSuccess'), {duration: 500})
+                  toast.success(t('Tips.copyShareSuccess'), { duration: 500 })
                 } catch {
-                  toast.error(t('Tips.copyShareFailed'), {duration: 500})
+                  toast.error(t('Tips.copyShareFailed'), { duration: 500 })
                 }
               }}
             />
@@ -231,7 +237,7 @@ export default function PreviewImage(props: Readonly<PreviewImageHandleProps>) {
                   <RefreshCWIcon
                     className={cn(exifIconClass, 'animate-spin cursor-not-allowed')}
                     size={20}
-                  />:
+                  /> :
                   <DownloadIcon
                     className={exifIconClass}
                     size={20}
