@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import { toast } from 'sonner'
 import useSWR from 'swr'
 import { fetcher } from '~/lib/utils/fetcher'
@@ -27,7 +27,7 @@ import {
 import { UploadIcon } from '~/components/icons/upload'
 import { Button } from '~/components/ui/button'
 import { X } from 'lucide-react'
-import { Input } from '~/components/ui/input'
+import { heicTo, isHeic } from 'heic-to'
 
 export default function MultipleFileUpload() {
   const [alistStorage, setAlistStorage] = useState([])
@@ -142,30 +142,18 @@ export default function MultipleFileUpload() {
     }
   }
 
-  async function uploadPreviewImage(file: File, type: string, url: string, flag: boolean, outputBuffer: any) {
-    new Compressor(flag ? outputBuffer : file, {
+  async function uploadPreviewImage(file: File, type: string, url: string) {
+    new Compressor(file, {
       quality: previewCompressQuality,
       checkOrientation: false,
       mimeType: 'image/webp',
       maxWidth: previewImageMaxWidthLimitSwitchOn && previewImageMaxWidthLimit > 0 ? previewImageMaxWidthLimit : undefined,
       async success(compressedFile) {
-        if (compressedFile instanceof File) {
-          const res = await uploadFile(compressedFile, type, storage, alistMountPath)
-          if (res?.code === 200) {
-            await autoSubmit(flag ? outputBuffer : file, url, res?.data)
-          } else {
-            throw new Error('Upload failed')
-          }
+        const res = await uploadFile(compressedFile, type, storage, alistMountPath)
+        if (res?.code === 200) {
+          await autoSubmit(file, url, res?.data)
         } else {
-          const compressedFileFromBlob = new File([compressedFile], flag ? outputBuffer.name : file.name, {
-            type: compressedFile.type,
-          })
-          const res = await uploadFile(compressedFileFromBlob, type, storage, alistMountPath)
-          if (res?.code === 200) {
-            await autoSubmit(flag ? outputBuffer : file, url, res?.data)
-          } else {
-            throw new Error('Upload failed')
-          }
+          throw new Error('Upload failed')
         }
       },
       error() {
@@ -174,12 +162,12 @@ export default function MultipleFileUpload() {
     })
   }
 
-  async function resHandle(res: any, file: File, flag: boolean, outputBuffer: any) {
+  async function resHandle(res: any, file: File) {
     try {
       if (album === '/') {
-        await uploadPreviewImage(file, '/preview', res?.data, flag, outputBuffer)
+        await uploadPreviewImage(file, '/preview', res?.data)
       } else {
-        await uploadPreviewImage(file, album + '/preview', res?.data, flag, outputBuffer)
+        await uploadPreviewImage(file, album + '/preview', res?.data)
       }
     } catch (e) {
       throw new Error('Upload failed')
@@ -187,51 +175,35 @@ export default function MultipleFileUpload() {
   }
 
   async function onRequestUpload(file: File) {
-    let outputBuffer: Blob | Blob[]
-    const ext = file.name.split('.').pop()?.toLowerCase()
     // 获取文件名但是去掉扩展名部分
     const fileName = file.name.split('.').slice(0, -1).join('.')
-    const flag = ext === 'heic' || ext === 'heif'
-    if (flag) {
+    if (await isHeic(file)) {
       // 把 HEIC 转成 JPEG
-      const heic2any = await import('heic2any')
-      outputBuffer = await heic2any.default({ blob: file, toType: 'image/jpeg' })
-      // 添加文件名
+      const outputBuffer: Blob | Blob[] = await heicTo({
+        blob: file,
+        type: 'image/jpeg',
+      })
+      const outputFile = new File([outputBuffer], fileName + '.jpg', { type: 'image/jpeg' })// 添加文件名
       // @ts-ignore
-      outputBuffer.name = fileName + '.jpg'
-      // @ts-ignore
-      new Compressor(outputBuffer, {
+      new Compressor(outputFile, {
         quality: previewCompressQuality,
         checkOrientation: false,
         mimeType: 'image/jpeg',
         maxWidth: previewImageMaxWidthLimitSwitchOn && previewImageMaxWidthLimit > 0 ? previewImageMaxWidthLimit : undefined,
         async success(compressedFile) {
-          if (compressedFile instanceof File) {
-            await uploadFile(compressedFile, album, storage, alistMountPath).then(async (res) => {
-              if (res.code === 200) {
-                await resHandle(res, file, flag, outputBuffer)
-              } else {
-                throw new Error('Upload failed')
-              }
-            })
-          } else {
-            const compressedFileFromBlob = new File([compressedFile], fileName + '.jpg', {
-              type: compressedFile.type,
-            })
-            await uploadFile(compressedFileFromBlob, album, storage, alistMountPath).then(async (res) => {
-              if (res.code === 200) {
-                await resHandle(res, file, flag, outputBuffer)
-              } else {
-                throw new Error('Upload failed')
-              }
-            })
-          }
+          await uploadFile(compressedFile, album, storage, alistMountPath).then(async (res) => {
+            if (res.code === 200) {
+              await resHandle(res, outputFile)
+            } else {
+              throw new Error('Upload failed')
+            }
+          })
         }
       })
     } else {
       await uploadFile(file, album, storage, alistMountPath).then(async (res) => {
         if (res.code === 200) {
-          await resHandle(res, file, flag, outputBuffer)
+          await resHandle(res, file)
         } else {
           throw new Error('Upload failed')
         }

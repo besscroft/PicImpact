@@ -21,7 +21,7 @@ export default async function Label({params}: { params: any }) {
   const imageData = await getData(id)
 
   const props: PreviewImageHandleProps = {
-    data: imageData[0],
+    data: imageData,
     args: 'getImages-client-preview',
     id: id,
     configHandle: getConfig,

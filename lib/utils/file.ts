@@ -2,7 +2,7 @@ import ExifReader from 'exifreader'
 import type { ExifType } from '~/types'
 
 /**
- * 解析图片种的 exif
+ * 解析图片中的 exif 信息
  * @param file 文件
  *
  * 注：用什么库解析无所谓，但为了向后兼容，exif 参数名字还是根据 ExifType 进行匹配即可。
@@ -56,8 +56,8 @@ export async function exifReader(file: ArrayBuffer | SharedArrayBuffer | Buffer)
  * @param storage storage 存储类型
  * @param mountPath 文件挂载路径（目前只有 alist 用得到
  */
-export async function uploadFile(file: File, type: string, storage: string, mountPath: string) {
-  // 如果是 AList，使用旧的直传方式
+export async function uploadFile(file: any, type: string, storage: string, mountPath: string) {
+  // 如果是 AList，使用旧的上传方式
   if (storage === 'alist') {
     const formData = new FormData()
     formData.append('file', file)
@@ -82,60 +82,8 @@ export async function uploadFile(file: File, type: string, storage: string, moun
     throw new Error('Upload failed')
   }
 
-  // 获取存储配置
-  let directUpload = false
-  if (storage === 's3') {
-    const s3ConfigsResponse = await fetch('/api/v1/settings/s3-info', {
-      method: 'GET',
-      headers: {
-        'Accept': 'application/json',
-      }
-    }).then(res => res.json())
-
-    if (!Array.isArray(s3ConfigsResponse)) {
-      throw new Error('Failed to get S3 configs')
-    }
-
-    directUpload = s3ConfigsResponse.find((item: any) => item.config_key === 's3_direct_upload')?.config_value === 'true'
-  } else if (storage === 'r2') {
-    const r2ConfigsResponse = await fetch('/api/v1/settings/r2-info', {
-      method: 'GET',
-      headers: {
-        'Accept': 'application/json',
-      }
-    }).then(res => res.json())
-
-    if (!Array.isArray(r2ConfigsResponse)) {
-      throw new Error('Failed to get R2 configs')
-    }
-
-    directUpload = r2ConfigsResponse.find((item: any) => item.config_key === 'r2_direct_upload')?.config_value === 'true'
-  }
-
-  if (!directUpload) {
-    // 如果未开启直传，使用旧的直传方式
-    const formData = new FormData()
-    formData.append('file', file)
-    formData.append('storage', storage)
-    formData.append('type', type)
-
-    const res = await fetch('/api/v1/file/upload', {
-      method: 'POST',
-      body: formData,
-      credentials: 'include',
-      headers: {
-        'Accept': 'application/json',
-      }
-    }).then(res => res.json())
-
-    if (res?.code === 200) {
-      return res
-    }
-    throw new Error('Upload failed')
-  }
-
-  // 开启直传，使用预签名 URL
-  const presignedResponse = await fetch('/api/v1/images/presigned-url', {
+  // 预签名 URL 上传方式
+  const presignedResponse = await fetch('/api/v1/file/presigned-url', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -169,9 +117,24 @@ export async function uploadFile(file: File, type: string, storage: string, moun
       throw new Error(`Upload failed with status: ${response.status}`)
     }
 
+    const getObjectResponse = await fetch('/api/v1/file/getObjectUrl', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        key: key,
+        storage: storage
+      })
+    }).then(res => res.json())
+
+    if (getObjectResponse?.code !== 200) {
+      throw new Error('Failed to get object URL')
+    }
+
     return {
       code: 200,
-      data: key
+      data: getObjectResponse?.data
     }
   } catch (error) {
     console.error('Direct upload failed:', error)
