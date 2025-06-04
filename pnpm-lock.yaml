@@ -186,6 +186,9 @@ importers:
       next-themes:
         specifier: ^0.4.4
         version: 0.4.4(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      opendal:
+        specifier: ^0.48.3
+        version: 0.48.3
       otpauth:
         specifier: ^9.3.6
         version: 9.3.6
@@ -286,6 +289,9 @@ importers:
       eslint-config-prettier:
         specifier: ^10.1.2
         version: 10.1.2(eslint@9.25.1(jiti@2.4.2))
+      node-loader:
+        specifier: ^2.1.0
+        version: 2.1.0(webpack@5.99.8(esbuild@0.17.19))
       prettier:
         specifier: ^3.5.3
         version: 3.5.3
@@ -1761,6 +1767,51 @@ packages:
   '@nolyfill/is-core-module@1.0.39':
     resolution: {integrity: sha512-nn5ozdjYQpUCZlWGuxcJY/KpxkWQs4DcbMCmKojjyrYDEAGy4Ce19NN4v5MduafTwJlbKc99UA8YhSVqq9yPZA==}
     engines: {node: '>=12.4.0'}
+
+  '@opendal/lib-darwin-arm64@0.48.3':
+    resolution: {integrity: sha512-xQQbKs/BXz+7NbIMVVsFtqyWbwsEezjL/m83D7egWcVhBCEKqMSfqZ5tXagxq/8Q57sgsTK1ppfyO53SKjpbVA==}
+    engines: {node: '>= 10'}
+    cpu: [arm64]
+    os: [darwin]
+
+  '@opendal/lib-darwin-x64@0.48.3':
+    resolution: {integrity: sha512-uismCUDnNR+doy9Jr0Jy8SHkmpt92UnBZMEEK5V5ddJmsnxGkqY350NPXrSOVJEMlQPg6pHqNcpAmfJBSJ7iTQ==}
+    engines: {node: '>= 10'}
+    cpu: [x64]
+    os: [darwin]
+
+  '@opendal/lib-linux-arm64-gnu@0.48.3':
+    resolution: {integrity: sha512-pRFfx/jXQUnYLHCFzmF9HDHmZZJzYx+Zj7S+u4lwGTbQWHbmKMcGY0YHj9m4YrjPNH+EMJcU4rhp6Zij22TpaQ==}
+    engines: {node: '>= 10'}
+    cpu: [arm64]
+    os: [linux]
+    libc: [glibc]
+
+  '@opendal/lib-linux-arm64-musl@0.48.3':
+    resolution: {integrity: sha512-Dg3bhLaZp4eeBcQwW3lJ7Ugb32T5IqzRmB86b1WV7zWDwipqyFjpIkX2aoFc3YNRLNZRrMQ6+9xVVvExEWCFcg==}
+    engines: {node: '>= 10'}
+    cpu: [arm64]
+    os: [linux]
+    libc: [glibc]
+
+  '@opendal/lib-linux-x64-gnu@0.48.3':
+    resolution: {integrity: sha512-MhHVn8i8fxvs62IFWH/IWLTloDV2xSk7k3hmJGMAXIR7OQ4VOzMHn/rLhJxcTshhLCiem2VpgIOKjTKfMjCuJw==}
+    engines: {node: '>= 10'}
+    cpu: [x64]
+    os: [linux]
+    libc: [glibc]
+
+  '@opendal/lib-win32-arm64-msvc@0.48.3':
+    resolution: {integrity: sha512-bhrx4zUdA1IJFrnJQVZwlpN3CefuR8w6ayXtbmNdpcRipdqvxlo3lE6DsLb6ql/BwSpuKI8d1/nkshgMC+BPkQ==}
+    engines: {node: '>= 10'}
+    cpu: [arm64]
+    os: [win32]
+
+  '@opendal/lib-win32-x64-msvc@0.48.3':
+    resolution: {integrity: sha512-JggFdIA6D6vo4OeBM+Ed+ZnV25uSVt6ntppOCGcYV+583bErh0jSICFxybuNT7823TDwaXuxXk/nmVfYuAtdEQ==}
+    engines: {node: '>= 10'}
+    cpu: [x64]
+    os: [win32]
 
   '@panva/hkdf@1.2.1':
     resolution: {integrity: sha512-6oclG6Y3PiDFcoyk8srjLfVKyMfVCKJ27JwNPViuXziFpmdz+MZnZN/aKY0JGXgYuO/VghU0jcOAZgWXZ1Dmrw==}
@@ -4922,6 +4973,12 @@ packages:
       sass:
         optional: true
 
+  node-loader@2.1.0:
+    resolution: {integrity: sha512-OwjPkyh8+7jW8DMd/iq71uU1Sspufr/C2+c3t0p08J3CrM9ApZ4U53xuisNrDXOHyGi5OYHgtfmmh+aK9zJA6g==}
+    engines: {node: '>= 10.13.0'}
+    peerDependencies:
+      webpack: ^5.0.0
+
   node-releases@2.0.19:
     resolution: {integrity: sha512-xxOWJsBKtzAq7DY0J+DTzuz58K8e7sJbdgwkbMWQe8UYB6ekmsQ45q0M/tJDsGaZmbC+l7n57UV8Hl5tHxO9uw==}
 
@@ -4977,6 +5034,10 @@ packages:
   onetime@5.1.2:
     resolution: {integrity: sha512-kbpaSSGJTWdAY5KPVeMOKXSrPtr8C8C7wodJbcsd51jRnmD+GZu8Y0VoU6Dm5Z4vWr0Ig/1NKuWRKf7j5aaYSg==}
     engines: {node: '>=6'}
+
+  opendal@0.48.3:
+    resolution: {integrity: sha512-nBBv1p7Hujc6Tq6XZ6Yq7+sSxp8Bddl8Rr3SynvO7CO3VbcbToamQIGf58bblI1l8NeQQydnNHFJz56+MJqprA==}
+    engines: {node: '>= 10'}
 
   opener@1.5.2:
     resolution: {integrity: sha512-ur5UIdyw5Y7yEj9wLzhqXiy6GZ3Mwx0yGI+5sMn2r0N0v3cKJvUmFH5yPP+WXh9e0xfyzyJX95D8l088DNFj7A==}
@@ -7840,6 +7901,27 @@ snapshots:
       fastq: 1.17.1
 
   '@nolyfill/is-core-module@1.0.39': {}
+
+  '@opendal/lib-darwin-arm64@0.48.3':
+    optional: true
+
+  '@opendal/lib-darwin-x64@0.48.3':
+    optional: true
+
+  '@opendal/lib-linux-arm64-gnu@0.48.3':
+    optional: true
+
+  '@opendal/lib-linux-arm64-musl@0.48.3':
+    optional: true
+
+  '@opendal/lib-linux-x64-gnu@0.48.3':
+    optional: true
+
+  '@opendal/lib-win32-arm64-msvc@0.48.3':
+    optional: true
+
+  '@opendal/lib-win32-x64-msvc@0.48.3':
+    optional: true
 
   '@panva/hkdf@1.2.1': {}
 
@@ -11384,6 +11466,11 @@ snapshots:
       - '@babel/core'
       - babel-plugin-macros
 
+  node-loader@2.1.0(webpack@5.99.8(esbuild@0.17.19)):
+    dependencies:
+      loader-utils: 2.0.4
+      webpack: 5.99.8(esbuild@0.17.19)
+
   node-releases@2.0.19: {}
 
   normalize-path@3.0.0: {}
@@ -11445,6 +11532,16 @@ snapshots:
   onetime@5.1.2:
     dependencies:
       mimic-fn: 2.1.0
+
+  opendal@0.48.3:
+    optionalDependencies:
+      '@opendal/lib-darwin-arm64': 0.48.3
+      '@opendal/lib-darwin-x64': 0.48.3
+      '@opendal/lib-linux-arm64-gnu': 0.48.3
+      '@opendal/lib-linux-arm64-musl': 0.48.3
+      '@opendal/lib-linux-x64-gnu': 0.48.3
+      '@opendal/lib-win32-arm64-msvc': 0.48.3
+      '@opendal/lib-win32-x64-msvc': 0.48.3
 
   opener@1.5.2: {}
 

@@ -5,10 +5,9 @@ import { HTTPException } from 'hono/http-exception'
 import { alistUpload } from '~/server/lib/file-upload'
 import { fetchConfigsByKeys } from '~/server/db/query/configs'
 import type { Config } from '~/types'
-import { getClient } from '~/server/lib/s3'
-import { getR2Client } from '~/server/lib/r2'
-import { PutObjectCommand } from '@aws-sdk/client-s3'
-import { getSignedUrl } from '@aws-sdk/s3-request-presigner'
+import { getS3Operator } from '~/server/lib/s3'
+import { getR2Operator } from '~/server/lib/r2'
+import { generatePresignedUrl } from '~/server/lib/operator.ts'
 
 const app = new Hono()
 
@@ -37,8 +36,6 @@ app.post('/presigned-url', async (c) => {
           's3_cdn',
           's3_cdn_url',
         ])
-
-        const bucket = configs.find((item: Config) => item.config_key === 'bucket')?.config_value || ''
         const storageFolder = configs.find((item: Config) => item.config_key === 'storage_folder')?.config_value || ''
 
         // 构建文件路径
@@ -46,14 +43,12 @@ app.post('/presigned-url', async (c) => {
           ? type && type !== '/' ? `${storageFolder}${type}/${filename}` : `${storageFolder}/${filename}`
           : type && type !== '/' ? `${type.slice(1)}/${filename}` : `${filename}`
 
-        const client = getClient(configs)
-        const command = new PutObjectCommand({
-          Bucket: bucket,
-          Key: filePath,
-          ContentType: contentType || undefined
-        })
+        const s3Operator = await getS3Operator(configs)
 
-        const presignedUrl = await getSignedUrl(client as any, command as any, { expiresIn: 3600 })
+        const presignedUrl = await generatePresignedUrl(s3Operator, {
+          key: filePath,
+          expiresIn: 3600
+        })
 
         return c.json({
           code: 200,
@@ -75,7 +70,6 @@ app.post('/presigned-url', async (c) => {
           'r2_public_domain',
         ])
 
-        const bucket = configs.find((item: Config) => item.config_key === 'r2_bucket')?.config_value || ''
         const storageFolder = configs.find((item: Config) => item.config_key === 'r2_storage_folder')?.config_value || ''
 
         // 构建文件路径
@@ -83,15 +77,12 @@ app.post('/presigned-url', async (c) => {
           ? type && type !== '/' ? `${storageFolder}${type}/${filename}` : `${storageFolder}/${filename}`
           : type && type !== '/' ? `${type.slice(1)}/${filename}` : `${filename}`
 
-        const client = getR2Client(configs)
-        const command = new PutObjectCommand({
-          Bucket: bucket,
-          Key: filePath,
-          ContentType: contentType || undefined
+        const r2Operator = await getR2Operator(configs)
+
+        const presignedUrl = await generatePresignedUrl(r2Operator, {
+          key: filePath,
+          expiresIn: 3600
         })
-
-        const presignedUrl = await getSignedUrl(client as any, command as any, { expiresIn: 3600 })
-
         return c.json({
           code: 200,
           data: {

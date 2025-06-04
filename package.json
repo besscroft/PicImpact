@@ -8,6 +8,7 @@
     "dev:turbopack": "next dev --turbopack",
     "dev:prisma": "pnpm run prisma:dev && pnpm run prisma:generate",
     "build": "next build",
+    "build:turbopack": "next build --turbopack",
     "build:analyzer": "ANALYZE=true next build",
     "build:vercel": "pnpm run prisma:deploy && npx prisma generate && next build",
     "build:netlify": "pnpm run prisma:deploy && npx prisma generate && next build",
@@ -19,7 +20,7 @@
     "prisma:generate": "npx prisma generate",
     "prisma:dev": "npx prisma migrate dev",
     "prisma:deploy": "npx prisma migrate deploy",
-    "prebuild": "npx prisma generate"
+    "prebuild": "prisma generate"
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.7.4",
@@ -80,6 +81,7 @@
     "next-pwa": "^5.6.0",
     "next-qrcode": "^2.5.1",
     "next-themes": "^0.4.4",
+    "opendal": "^0.48.3",
     "otpauth": "^9.3.6",
     "react": "19.1.0",
     "react-day-picker": "8.10.1",
@@ -115,6 +117,7 @@
     "eslint": "^9.25.1",
     "eslint-config-next": "15.3.2",
     "eslint-config-prettier": "^10.1.2",
+    "node-loader": "^2.1.0",
     "prettier": "^3.5.3",
     "prisma": "6.4.1",
     "tailwindcss": "^4.0.17",

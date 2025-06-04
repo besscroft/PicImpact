@@ -13,7 +13,10 @@ let nextConfig = {
       exclude: ['error'],
     },
   },
-  serverExternalPackages: ['pg'],
+  serverExternalPackages: [
+    'pg',
+    'opendal',
+  ],
   eslint: {
     ignoreDuringBuilds: true,
   },
@@ -31,7 +34,7 @@ let nextConfig = {
         hostname: '**',
       },
     ],
-  },
+  }
 }
 
 if (process.env.ANALYZE === 'true') {
