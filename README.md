@@ -46,7 +46,7 @@ PicImpact 是一个支持自部署的摄影作品展示网站，基于 Next.js +
 >
 > 如果您自行使用 node 部署，请使用 `pnpm run build:node` 命令来构建。
 
-更多详细配置请查阅[文档](https://ziyume.com/docs/pic)
+更多详细配置请查阅[文档](https://pic-docs.ziyume.com)
 
 ### 本地开发
 
