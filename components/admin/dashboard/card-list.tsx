@@ -72,7 +72,7 @@ export default function CardList(props: Readonly<AnalysisDataProps>) {
   return (
     <div className="flex flex-col space-y-2">
       <div className="w-full grid grid-cols-1 gap-4 lg:grid-cols-3 lg:gap-6">
-        <Card className="h-80 w-full border">
+        <Card className="min-h-80 w-full border">
           <CardHeader>
             <CardTitle>{t('Dashboard.picData')}</CardTitle>
           </CardHeader>
