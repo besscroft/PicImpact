@@ -1,13 +1,10 @@
 import 'server-only'
-import { fetchUserById } from '~/server/db/query'
-import { fetchConfigsByKeys, fetchSecretKey } from '~/server/db/query/configs'
+
+import { fetchConfigsByKeys } from '~/server/db/query/configs'
 import type { Config } from '~/types'
-import { auth } from '~/server/auth'
-import CryptoJS from 'crypto-js'
 import { Hono } from 'hono'
 import { HTTPException } from 'hono/http-exception'
 import { updateAListConfig, updateCustomInfo, updateR2Config, updateS3Config } from '~/server/db/operate/configs'
-import { updatePassword, updateUserInfo } from '~/server/db/operate'
 
 const app = new Hono()
 
@@ -48,17 +45,6 @@ app.get('/r2-info', async (c) => {
   return c.json(data)
 })
 
-app.get('/get-user-info', async (c) => {
-  const { user } = await auth()
-  const data = await fetchUserById(user?.id)
-  
-  return c.json({
-    id: data?.id,
-    name: data?.name,
-    email: data?.email,
-    image: data?.image
-  })
-})
 app.get('/s3-info', async (c) => {
   const data = await fetchConfigsByKeys([
     'accesskey_id',
@@ -137,61 +123,6 @@ app.put('/update-custom-info', async (c) => {
   }
   try {
     await updateCustomInfo(query)
-    return c.json({
-      code: 200,
-      message: 'Success'
-    })
-  } catch (e) {
-    throw new HTTPException(500, { message: 'Failed', cause: e })
-  }
-})
-
-app.put('/update-password', async (c) => {
-  const { user } = await auth()
-  const pwd = await c.req.json()
-  const daUser = await fetchUserById(user?.id)
-  const secretKey = await fetchSecretKey()
-  if (!secretKey || !secretKey.config_value) {
-    throw new HTTPException(500, { message: 'Failed' })
-  }
-  const hashedOldPassword = CryptoJS.HmacSHA512(pwd.oldPassword, secretKey?.config_value).toString()
-
-  try {
-    if (daUser && hashedOldPassword === daUser.password) {
-      const hashedNewPassword = CryptoJS.HmacSHA512(pwd.newPassword, secretKey?.config_value).toString()
-      await updatePassword(user?.id, hashedNewPassword)
-      return c.json({
-        code: 200,
-        message: 'Success'
-      })
-    } else {
-      return c.json({
-        code: 500,
-        message: 'Old password does not match'
-      })
-    }
-  } catch (e) {
-    throw new HTTPException(500, { message: 'Failed', cause: e })
-  }
-})
-
-app.put('/update-user-info', async (c) => {
-  const { user } = await auth()
-  const { name, email, avatar } = await c.req.json() 
-  try {
-    const updates: {
-      name?: string,
-      email?: string,
-      image?: string
-    } = {}
-    
-    if (name) updates.name = name
-    if (email) updates.email = email
-    if (avatar) updates.image = avatar
-    if (Object.keys(updates).length > 0) {
-      await updateUserInfo(user?.id, updates)
-    }
-    
     return c.json({
       code: 200,
       message: 'Success'

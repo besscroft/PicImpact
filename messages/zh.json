@@ -16,11 +16,12 @@
     "title": "欢迎登录",
     "email": "邮箱",
     "password": "密码",
-    "login": "登录",
     "forget": "忘记密码了？",
     "otp": "双因素口令",
     "goHome": "返回首页",
-    "logout": "退出登录"
+    "logout": "退出登录",
+    "signUp": "注册",
+    "signIn": "登录"
   },
   "Link": {
     "home": "首页",

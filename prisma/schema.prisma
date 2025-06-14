@@ -7,69 +7,6 @@ generator client {
   provider = "prisma-client-js"
 }
 
-// auth.js
-model User {
-  id            String    @id @default(cuid()) @db.VarChar(50)
-  name          String?   @db.VarChar(50)
-  username      String?   @unique @db.VarChar(50)
-  email         String    @unique @db.VarChar(50)
-  password      String?   @db.VarChar(200)
-  emailVerified DateTime? @map("email_verified") @db.Timestamp()
-  image         String?   @db.Text
-  accounts      Account[]
-  sessions      Session[]
-
-  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamp()
-  updatedAt DateTime? @updatedAt @map("updated_at") @db.Timestamp()
-
-  @@map("users")
-}
-
-model Account {
-  id                String  @id @default(cuid()) @db.VarChar(50)
-  userId            String  @map("user_id") @db.VarChar(50)
-  type              String
-  provider          String
-  providerAccountId String  @map("provider_account_id")
-  refresh_token     String? @db.Text
-  access_token      String? @db.Text
-  expires_at        Int?
-  token_type        String?
-  scope             String?
-  id_token          String? @db.Text
-  session_state     String? @db.Text
-
-  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamp()
-  updatedAt DateTime? @updatedAt @map("updated_at") @db.Timestamp()
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@unique([provider, providerAccountId])
-  @@map("accounts")
-}
-
-model Session {
-  id           String   @id @default(cuid()) @db.VarChar(50)
-  sessionToken String   @unique @map("session_token") @db.Text
-  userId       String   @map("user_id") @db.VarChar(50)
-  expires      DateTime @db.Timestamp()
-  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamp()
-  updatedAt DateTime? @updatedAt @map("updated_at") @db.Timestamp()
-
-  @@map("sessions")
-}
-
-model VerificationToken {
-  identifier String
-  token      String   @db.Text
-  expires    DateTime @db.Timestamp()
-
-  @@id([identifier, token])
-  @@map("verification_tokens")
-}
-
 // 业务表部分
 // 图片表
 // type 1->普通图片；2->livephoto
@@ -90,8 +27,8 @@ model Images {
   show                 Int                    @default(1) @db.SmallInt
   show_on_mainpage     Int                    @default(1) @db.SmallInt
   sort                 Int                    @default(0) @db.SmallInt
-  createdAt            DateTime               @default(now()) @map("created_at") @db.Timestamp()
-  updatedAt            DateTime?              @updatedAt @map("updated_at") @db.Timestamp()
+  createdAt            DateTime               @default(now()) @map("created_at") @db.Timestamp
+  updatedAt            DateTime?              @updatedAt @map("updated_at") @db.Timestamp
   del                  Int                    @default(0) @db.SmallInt
   imagesAlbumsRelation ImagesAlbumsRelation[]
 
@@ -104,8 +41,8 @@ model Configs {
   config_key   String    @unique @db.VarChar(200)
   config_value String?   @db.Text
   detail       String?   @db.Text
-  createdAt    DateTime  @default(now()) @map("created_at") @db.Timestamp()
-  updatedAt    DateTime? @updatedAt @map("updated_at") @db.Timestamp()
+  createdAt    DateTime  @default(now()) @map("created_at") @db.Timestamp
+  updatedAt    DateTime? @updatedAt @map("updated_at") @db.Timestamp
 
   @@map("configs")
 }
@@ -120,8 +57,8 @@ model Albums {
   sort                 Int                    @default(0) @db.SmallInt
   random_show          Int                    @default(1) @db.SmallInt
   license              String?                @db.Text
-  createdAt            DateTime               @default(now()) @map("created_at") @db.Timestamp()
-  updatedAt            DateTime?              @updatedAt @map("updated_at") @db.Timestamp()
+  createdAt            DateTime               @default(now()) @map("created_at") @db.Timestamp
+  updatedAt            DateTime?              @updatedAt @map("updated_at") @db.Timestamp
   del                  Int                    @default(0) @db.SmallInt
   imagesAlbumsRelation ImagesAlbumsRelation[]
   image_sorting        Int                    @default(1) @db.SmallInt
@@ -138,4 +75,77 @@ model ImagesAlbumsRelation {
 
   @@id([imageId, album_value])
   @@map("images_albums_relation")
+}
+
+// better-auth
+model User {
+  id               String      @id
+  name             String      @unique @db.VarChar(50)
+  email            String      @db.VarChar(200)
+  emailVerified    Boolean
+  image            String?
+  twoFactorEnabled Boolean?
+  createdAt        DateTime    @db.Timestamp()
+  updatedAt        DateTime    @db.Timestamp()
+  sessions         Session[]
+  accounts         Account[]
+  TwoFactor        TwoFactor[]
+
+  @@unique([email])
+  @@map("user")
+}
+
+model TwoFactor {
+  id          String @id @default(cuid())
+  secret      String
+  backupCodes String
+  userId      String
+  user        User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("two_factor")
+}
+
+model Session {
+  id        String   @id
+  expiresAt DateTime @db.Timestamp()
+  token     String
+  createdAt DateTime @db.Timestamp()
+  updatedAt DateTime @db.Timestamp()
+  ipAddress String?
+  userAgent String?
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([token])
+  @@map("session")
+}
+
+model Account {
+  id                    String    @id
+  accountId             String
+  providerId            String
+  userId                String
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime? @db.Timestamp()
+  refreshTokenExpiresAt DateTime? @db.Timestamp()
+  scope                 String?
+  password              String?   @db.VarChar(200)
+  createdAt             DateTime  @db.Timestamp()
+  updatedAt             DateTime  @db.Timestamp()
+
+  @@map("account")
+}
+
+model Verification {
+  id         String    @id
+  identifier String
+  value      String
+  expiresAt  DateTime  @db.Timestamp()
+  createdAt  DateTime? @db.Timestamp()
+  updatedAt  DateTime? @db.Timestamp()
+
+  @@map("verification")
 }

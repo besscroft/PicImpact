@@ -16,11 +16,12 @@
     "title": "Welcome to Login",
     "email": "Email",
     "password": "Password",
-    "login": "Login",
     "forget": "Forgot Password?",
     "otp": "Two-Factor Code",
     "goHome": "Back to Home",
-    "logout": "Logout"
+    "logout": "Logout",
+    "signUp": "SignUp",
+    "signIn": "SignIn"
   },
   "Link": {
     "home": "Home",

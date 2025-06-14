@@ -23,8 +23,7 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from '~/components/ui/sidebar'
-import { useSession } from 'next-auth/react'
-import { loginOut } from '~/server/actions'
+import { authClient } from '~/server/auth/auth-client'
 import { useTheme } from 'next-themes'
 import * as React from 'react'
 import { setUserLocale } from '~/lib/utils/locale'
@@ -38,7 +37,7 @@ import { ChevronsDownUpIcon } from '~/components/icons/chevrons-up-down'
 export function NavUser() {
   const { isMobile } = useSidebar()
   const { resolvedTheme, setTheme } = useTheme()
-  const { data: session} = useSession()
+  const { data: session } = authClient.useSession()
   const t = useTranslations()
 
   return (
@@ -97,10 +96,13 @@ export function NavUser() {
             </DropdownMenuSub>
             <DropdownMenuItem className="cursor-pointer" onClick={async () => {
               try {
-                await loginOut()
-                setTimeout(() => {
-                  location.replace('/login')
-                }, 1000)
+                await authClient.signOut({
+                  fetchOptions: {
+                    onSuccess: () => {
+                      location.replace('/login')
+                    },
+                  },
+                })
               } catch (e) {
                 console.error(e)
               }

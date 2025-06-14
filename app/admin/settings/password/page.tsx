@@ -17,6 +17,7 @@ import { Button } from '~/components/ui/button'
 import { useTranslations } from 'next-intl'
 import { Label } from '~/components/ui/label'
 import { Input } from '~/components/ui/input'
+import { authClient } from '~/server/auth/auth-client'
 
 export default function PassWord() {
   const [loading, setLoading] = useState(false)
@@ -29,15 +30,15 @@ export default function PassWord() {
         message: '旧密码必填',
       }),
     twoPassword: z.string()
-      .min(6, {
-        message: '密码不能少于6位数',
+      .min(8, {
+        message: '密码不能少于8位数',
       })
       .max(20, {
         message: '密码不能超过20位数',
       }),
     threePassword: z.string()
-      .min(6, {
-        message: '密码不能少于6位数',
+      .min(8, {
+        message: '密码不能少于8位数',
       })
       .max(20, {
         message: '密码不能超过20位数',
@@ -75,17 +76,16 @@ export default function PassWord() {
     }
     try {
       setLoading(true)
-      await fetch('/api/v1/settings/update-password', {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          oldPassword: data.onePassword,
-          newPassword: data.twoPassword
-        }),
-      }).then(res => res.json())
-      toast.success('修改成功！')
+      const { error } = await authClient.changePassword({
+        newPassword: data.twoPassword,
+        currentPassword: data.onePassword,
+        revokeOtherSessions: true, // revoke all other sessions the user is signed into
+      })
+      if (error) {
+        toast.error('修改失败！')
+      } else {
+        toast.success('修改成功！')
+      }
     } catch (e) {
       toast.error('修改失败！')
     } finally {

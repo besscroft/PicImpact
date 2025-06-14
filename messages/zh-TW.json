@@ -15,12 +15,13 @@
   "Login": {
     "title": "歡迎登入",
     "email": "電子郵件",
-    "password": "密碼", 
-    "login": "登入",
+    "password": "密碼",
     "forget": "忘記密碼了？",
     "otp": "雙因素口令",
     "goHome": "返回首頁",
-    "logout": "登出"
+    "logout": "登出",
+    "signUp": "註冊",
+    "signIn": "登入"
   },
   "Link": {
     "home": "首頁",

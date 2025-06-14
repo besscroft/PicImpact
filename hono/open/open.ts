@@ -1,26 +1,9 @@
 import 'server-only'
 import { Hono } from 'hono'
 import { HTTPException } from 'hono/http-exception'
-import { queryAuthStatus } from '~/server/db/query/configs'
 import { fetchImageByIdAndAuth } from '~/server/db/query/images'
 
 const app = new Hono()
-
-app.get('/get-auth-status', async (c) => {
-  try {
-    const data = await queryAuthStatus()
-
-    return c.json({
-      code: 200,
-      message: 'Successfully retrieved two-factor status',
-      data: {
-        auth_enable: data?.config_value
-      }
-    })
-  } catch (e) {
-    throw new HTTPException(500, { message: 'Failed to retrieve two-factor status', cause: e })
-  }
-})
 
 app.get('/get-image-blob', async (c) => {
   const { searchParams } = new URL(c.req.url)
