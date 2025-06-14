@@ -1,7 +1,6 @@
 import 'server-only'
 import { Hono } from 'hono'
 import settings from '~/hono/settings'
-import auth from '~/hono/auth'
 import file from '~/hono/file'
 import images from '~/hono/images'
 import albums from '~/hono/albums'
@@ -20,7 +19,6 @@ route.onError((err, c) => {
 })
 
 route.route('/settings', settings)
-route.route('/auth', auth)
 route.route('/file', file)
 route.route('/images', images)
 route.route('/albums', albums)

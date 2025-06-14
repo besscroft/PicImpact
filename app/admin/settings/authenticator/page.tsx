@@ -1,7 +1,7 @@
 'use client'
 
 import { toast } from 'sonner'
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import { useQRCode } from 'next-qrcode'
 import {
   InputOTP,
@@ -26,14 +26,15 @@ import {
   DialogTitle,
   DialogTrigger
 } from '~/components/ui/dialog'
-import Link from 'next/link'
 import { useTranslations } from 'next-intl'
+import { authClient } from '~/server/auth/auth-client'
+import { Input } from '~/components/ui/input.tsx'
 
 export default function Authenticator() {
   const t = useTranslations()
   const [password, setPassword] = useState('')
+  const [otpCode, setOtpCode] = useState('')
   const [uri, setUri] = useState('')
-  const [secret, setSecret] = useState('')
   const [deleteLoading, setDeleteLoading] = useState(false)
   const { data, isValidating, mutate } = useSWR('/api/open/get-auth-status', fetcher,
     {
@@ -43,43 +44,40 @@ export default function Authenticator() {
     }
   )
 
-  async function getQRCode() {
-    try {
-      const res = await fetch('/api/v1/auth/get-seed-secret', {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      }).then(res => res.json())
-      if (res.code === 200) {
-        setUri(res.data.uri)
-        setSecret(res.data.secret)
-      }
-    } catch {
-      toast.error(t('Tips.tokenIssuanceFailed'))
+  async function enable2FA() {
+    if (!password) {
+      toast.error('必须填密码！')
+      return
     }
+    const { data, error } = await authClient.twoFactor.enable({
+      password: password,
+      issuer: 'PicImpact',
+    })
+
+    if (error) {
+      toast.error('验证失败，无法启用！')
+    }
+
+    if (data) {
+      setUri(data.totpURI)
+    }
+    console.log(data)
   }
 
   const { SVG } = useQRCode()
 
-  async function saveAuthTemplateToken() {
+  async function verifyTotpHandle() {
     try {
-      const res = await fetch('/api/v1/auth/validate', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ token: password })
-      }).then(res => res.json())
-      if (res.code === 200) {
-        toast.success(t('Tips.setupSuccess'))
-      } else {
+      const { error } = await authClient.twoFactor.verifyTotp({
+        code: otpCode
+      })
+      if (error) {
         toast.error(t('Tips.setupFailed'))
+      } else {
+        toast.success(t('Tips.setupSuccess'))
       }
     } catch {
       toast.error(t('Tips.setupFailed'))
-    } finally {
-      await mutate()
     }
   }
 
@@ -102,16 +100,10 @@ export default function Authenticator() {
     } finally {
       setPassword('')
       setUri('')
-      setSecret('')
       setDeleteLoading(false)
       await mutate()
-      await getQRCode()
     }
   }
-
-  useEffect(() => {
-    getQRCode()
-  }, [])
 
   return (
     <div className="flex flex-col space-y-2 h-full flex-1">
@@ -152,26 +144,24 @@ export default function Authenticator() {
             </div>
             : <div className="space-y-2">
               <h4 className="text-medium font-medium">{t('Tips.stepOne')}</h4>
-              <p className="text-small text-default-400">{t('Tips.downloadAnyApp')}</p>
-              <Link
-                className="mx-2"
-                target='_blank'
-                href="https://play.google.com/store/apps/details?id=com.google.android.apps.authenticator2"
-              >Google Authenticator</Link>
-              <Link
-                className="mx-2"
-                target='_blank'
-                href="https://www.microsoft.com/en-us/security/mobile-authenticator-app"
+              <Input
+                id="password"
+                className="w-full sm:w-64"
+                type="password"
+                required
+                value={password}
+                placeholder="请输入密码"
+                onChange={(e) => setPassword(e.target.value)}
+              />
+              <Button
+                variant="outline"
+                className="cursor-pointer w-full sm:w-64"
+                onClick={async () => {
+                  await enable2FA()
+                }}
               >
-                Microsoft Authenticator
-              </Link>
-              <Link
-                className="mx-2"
-                target='_blank'
-                href="https://support.1password.com/one-time-passwords/"
-              >
-                1Password
-              </Link>
+                生成二维码
+              </Button>
               <h4 className="text-medium font-medium">{t('Tips.stepTwo')}</h4>
               <p className="text-small text-default-400">{t('Tips.scanQRCode')}</p>
               {
@@ -188,15 +178,13 @@ export default function Authenticator() {
                   }}
                 />
               }
-              <p className="text-small text-default-400">{t('Tips.orEnterSecret')}</p>
-              <div className="w-full sm:w-64">{secret || 'N&A'}</div>
               <h4 className="text-medium font-medium">{t('Tips.stepThree')}</h4>
               <p className="text-small text-default-400">{t('Tips.enterSixDigits')}</p>
               <InputOTP
                 maxLength={6}
-                value={password}
-                onChange={(value: string) => setPassword(value)}
-                onComplete={(value: string) => setPassword(value)}
+                value={otpCode}
+                onChange={(value: string) => setOtpCode(value)}
+                onComplete={(value: string) => setOtpCode(value)}
               >
                 <InputOTPGroup>
                   <InputOTPSlot index={0} />
@@ -213,21 +201,9 @@ export default function Authenticator() {
               <div className="gap space-y-2 w-full sm:w-64">
                 <Button
                   variant="outline"
+                  onClick={() => verifyTotpHandle()}
                   className="cursor-pointer w-full sm:w-64"
-                  onClick={async () => {
-                    setPassword('')
-                    setUri('')
-                    setSecret('')
-                    await getQRCode()
-                  }}
-                >
-                  {t('Tips.regenerate')}
-                </Button>
-                <Button
-                  variant="outline"
-                  onClick={() => saveAuthTemplateToken()}
-                  className="cursor-pointer w-full sm:w-64"
-                  disabled={password.length !== 6}
+                  disabled={otpCode.length !== 6}
                 >
                   {t('Tips.completeSetup')}
                 </Button>
