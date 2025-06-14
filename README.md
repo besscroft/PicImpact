@@ -33,12 +33,12 @@ PicImpact 是一个支持自部署的摄影作品展示网站，基于 Next.js +
 
 <a href="https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fbesscroft%2FPicImpact&env=DATABASE_URL,AUTH_SECRET"><img src="https://vercel.com/button" alt="Deploy with Vercel"/></a>
 
-| Key          | 备注                                                                                           |
-|--------------|----------------------------------------------------------------------------------------------|
+| Key          | 备注                                                                                                                                              |
+|--------------|-------------------------------------------------------------------------------------------------------------------------------------------------|
 | DATABASE_URL | Postgre 数据库 url，`postgresql://[用户名]:[密码]@[地址和端口]/[数据库]`，如：`postgresql://postgres:666666@aws-0-ap-northeast-1.pooler.supabase.com:6543/postgres` |
-| AUTH_SECRET  | 权限机密，你可以执行 npx index secret 生成一个，反正是随机的字符串就行                                                  |
+| BETTER_AUTH_SECRET  | 权限机密，你可以执行 npx auth secret 生成一个，反正是随机的字符串就行                                                                                                        |
 
-默认账号：`admin@qq.com`，默认密码：`666666`，**登录后请先去设置里面修改密码！**
+> 升级至 v2.6.0，以及新部署的用户，在部署完毕后，自行注册用户即可！
 
 > 请根据您的数据库供应商来填写正确的数据库 `connect url`。
 >
