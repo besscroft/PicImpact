@@ -36,7 +36,7 @@ PicImpact 是一个支持自部署的摄影作品展示网站，基于 Next.js +
 | Key          | 备注                                                                                           |
 |--------------|----------------------------------------------------------------------------------------------|
 | DATABASE_URL | Postgre 数据库 url，`postgresql://[用户名]:[密码]@[地址和端口]/[数据库]`，如：`postgresql://postgres:666666@aws-0-ap-northeast-1.pooler.supabase.com:6543/postgres` |
-| AUTH_SECRET  | 权限机密，你可以执行 npx auth secret 生成一个，反正是随机的字符串就行                                                  |
+| AUTH_SECRET  | 权限机密，你可以执行 npx index secret 生成一个，反正是随机的字符串就行                                                  |
 
 默认账号：`admin@qq.com`，默认密码：`666666`，**登录后请先去设置里面修改密码！**
 

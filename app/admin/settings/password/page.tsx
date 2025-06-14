@@ -29,15 +29,15 @@ export default function PassWord() {
         message: '旧密码必填',
       }),
     twoPassword: z.string()
-      .min(6, {
-        message: '密码不能少于6位数',
+      .min(8, {
+        message: '密码不能少于8位数',
       })
       .max(20, {
         message: '密码不能超过20位数',
       }),
     threePassword: z.string()
-      .min(6, {
-        message: '密码不能少于6位数',
+      .min(8, {
+        message: '密码不能少于8位数',
       })
       .max(20, {
         message: '密码不能超过20位数',
