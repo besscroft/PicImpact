@@ -9,8 +9,6 @@ import {
   InputOTPSeparator,
   InputOTPSlot,
 } from '~/components/ui/input-otp'
-import useSWR from 'swr'
-import { fetcher } from '~/lib/utils/fetcher'
 import { RocketIcon, ReloadIcon } from '@radix-ui/react-icons'
 import { Button } from '~/components/ui/button'
 import {
@@ -36,13 +34,8 @@ export default function Authenticator() {
   const [otpCode, setOtpCode] = useState('')
   const [uri, setUri] = useState('')
   const [deleteLoading, setDeleteLoading] = useState(false)
-  const { data, isValidating, mutate } = useSWR('/api/open/get-auth-status', fetcher,
-    {
-      revalidateOnFocus: false,
-      revalidateIfStale: false,
-      revalidateOnReconnect: false,
-    }
-  )
+
+  const { data: session, isPending } = authClient.useSession()
 
   async function enable2FA() {
     if (!password) {
@@ -81,35 +74,31 @@ export default function Authenticator() {
     }
   }
 
-  async function removeAuth() {
+  async function disable2FA() {
     try {
       setDeleteLoading(true)
-      const res = await fetch('/api/v1/auth/remove', {
-        method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      }).then(res => res.json())
-      if (res.code === 200) {
-        toast.success(t('Tips.removeSuccess'))
-      } else {
+      const { error } = await authClient.twoFactor.disable({
+        password: password
+      })
+      if (error) {
         toast.error(t('Tips.removeFailed'))
+      } else {
+        toast.success(t('Tips.removeSuccess'))
       }
-    } catch {
+    } catch (e) {
       toast.error(t('Tips.removeFailed'))
     } finally {
       setPassword('')
       setUri('')
       setDeleteLoading(false)
-      await mutate()
     }
   }
 
   return (
     <div className="flex flex-col space-y-2 h-full flex-1">
       {
-        isValidating ? <p className="m-2">{t('Tips.syncingStatus')}</p>
-          : data?.data?.auth_enable === 'true' ?
+        isPending ? <p className="m-2">{t('Tips.syncingStatus')}</p>
+          : session?.user?.twoFactorEnabled ?
             <div className="flex flex-col space-y-2">
               <Alert className="!md:w-64">
                 <RocketIcon className="h-4 w-4" />
@@ -128,16 +117,27 @@ export default function Authenticator() {
                   <DialogHeader>
                     <DialogTitle>{t('Tips.confirmRemoveTwoFactor')}</DialogTitle>
                   </DialogHeader>
-                  <DialogFooter>
-                    <Button
-                      className="cursor-pointer"
-                      onClick={() => removeAuth()}
-                      disabled={deleteLoading}
-                      variant="destructive"
-                    >
-                      {deleteLoading && <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />}
-                      {t('Tips.yes')}
-                    </Button>
+                  <DialogFooter className={'flex items-center sm:justify-center'}>
+                    <div className="flex flex-col full space-y-2">
+                      <Input
+                        id="password"
+                        className="w-full sm:w-64"
+                        type="password"
+                        required
+                        value={password}
+                        placeholder="请输入密码"
+                        onChange={(e) => setPassword(e.target.value)}
+                      />
+                      <Button
+                        className="cursor-pointer"
+                        onClick={() => disable2FA()}
+                        disabled={deleteLoading}
+                        variant="destructive"
+                      >
+                        {deleteLoading && <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />}
+                        {t('Tips.yes')}
+                      </Button>
+                    </div>
                   </DialogFooter>
                 </DialogContent>
               </Dialog>

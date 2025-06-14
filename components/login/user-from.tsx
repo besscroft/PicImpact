@@ -60,7 +60,7 @@ export const UserFrom = ({
       return
     }
 
-    toast.error('登录成功！')
+    toast.success('登录成功！')
     setTimeout(() => {
       location.replace('/admin')
     }, 1000)
