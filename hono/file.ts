@@ -181,14 +181,13 @@ app.post('/getObjectUrl', async (c) => {
 
       const r2PublicDomain = configs.find((item: Config) => item.config_key === 'r2_public_domain')?.config_value || ''
       const r2Endpoint = configs.find((item: Config) => item.config_key === 'r2_endpoint')?.config_value || ''
-      const r2Bucket = configs.find((item: Config) => item.config_key === 'r2_bucket')?.config_value || ''
 
       return Response.json({
         code: 200, data: `${
           r2PublicDomain ?
             r2PublicDomain.includes('https://') ? r2PublicDomain : `https://${r2PublicDomain}`
             : r2Endpoint.includes('https://') ? r2Endpoint : `https://${r2Endpoint}`
-        }/${r2Bucket}/${key}`
+        }/${key}`
       })
     }
   }
