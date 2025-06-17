@@ -2,7 +2,6 @@ import type { Metadata } from 'next/types'
 
 import { ThemeProvider } from '~/app/providers/next-ui-providers'
 import { ToasterProviders } from '~/app/providers/toaster-providers'
-import { SessionProviders } from '~/app/providers/session-providers'
 import { ProgressBarProviders } from '~/app/providers/progress-bar-providers'
 import { ButtonStoreProvider } from '~/app/providers/button-store-providers'
 
@@ -75,20 +74,18 @@ export default async function RootLayout({
       <meta name="apple-mobile-web-app-title" content="PicImpact" />
     </head>
     <body>
-    <SessionProviders>
-      <NextIntlClientProvider messages={messages}>
-        <ConfigStoreProvider>
-          <ButtonStoreProvider>
-            <ThemeProvider>
-              <ToasterProviders/>
-              <ProgressBarProviders>
-                {children}
-              </ProgressBarProviders>
-            </ThemeProvider>
-          </ButtonStoreProvider>
-        </ConfigStoreProvider>
-      </NextIntlClientProvider>
-    </SessionProviders>
+    <NextIntlClientProvider messages={messages}>
+      <ConfigStoreProvider>
+        <ButtonStoreProvider>
+          <ThemeProvider>
+            <ToasterProviders/>
+            <ProgressBarProviders>
+              {children}
+            </ProgressBarProviders>
+          </ThemeProvider>
+        </ButtonStoreProvider>
+      </ConfigStoreProvider>
+    </NextIntlClientProvider>
     <Script
       id="umami-analytics"
       strategy="afterInteractive"

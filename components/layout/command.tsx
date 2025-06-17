@@ -11,7 +11,6 @@ import {
 } from '~/components/ui/command'
 import { useButtonStore } from '~/app/providers/button-store-providers'
 import { useRouter } from 'next-nprogress-bar'
-import { useSession } from 'next-auth/react'
 import { useTheme } from 'next-themes'
 import { useTranslations } from 'next-intl'
 import type { AlbumDataProps } from '~/types/props'
@@ -23,12 +22,13 @@ import { SunMoonIcon } from '~/components/icons/sun-moon'
 import { SunMediumIcon } from '~/components/icons/sun-medium'
 import { UserIcon } from '~/components/icons/user'
 import { useEffect, useState } from 'react'
+import { authClient } from '~/server/auth/auth-client'
 
 export default function Command(props: Readonly<AlbumDataProps>) {
   const { command, setCommand } = useButtonStore(
     (state) => state,
   )
-  const { data: session } = useSession()
+  const { data: session } = authClient.useSession()
   const router = useRouter()
   const { resolvedTheme, setTheme } = useTheme()
   const t = useTranslations()
@@ -93,7 +93,7 @@ export default function Command(props: Readonly<AlbumDataProps>) {
                 setCommand(false)
               }}>
                 <UserIcon size={18} />
-                <span>{t('Login.login')}</span>
+                <span>{t('Login.signIn')}</span>
               </CommandItem>
             </CommandGroup>
           }

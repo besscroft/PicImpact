@@ -10,8 +10,6 @@ import {
   InputOTPSeparator,
   InputOTPSlot,
 } from '~/components/ui/input-otp'
-import useSWR from 'swr'
-import { fetcher } from '~/lib/utils/fetcher'
 import { Button } from '~/components/ui/button'
 import { ReloadIcon } from '@radix-ui/react-icons'
 import { cn } from '~/lib/utils'
@@ -26,8 +24,7 @@ import { Label } from '~/components/ui/label'
 import { useButtonStore } from '~/app/providers/button-store-providers'
 import LoginHelpSheet from '~/components/login/login-help-sheet'
 import { useTranslations } from 'next-intl'
-import { signIn } from 'next-auth/react'
-import { validate2FA } from '~/server/actions'
+import { authClient } from '~/server/auth/auth-client'
 
 export const UserFrom = ({
   className,
@@ -40,26 +37,33 @@ export const UserFrom = ({
 
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
-  const [token, setToken] = useState('')
+  const [token, setToken] = useState<string>('')
+  const [otp, setOtp] = useState(false)
 
   const { setLoginHelp } = useButtonStore(
     (state) => state,
   )
-
-  const { data } = useSWR('/api/open/get-auth-status', fetcher,
-    {
-      revalidateOnFocus: false,
-      revalidateIfStale: false,
-      revalidateOnReconnect: false,
-    }
-  )
   
   function zHandle(): SafeParseReturnType<string | any, string | any> {
     const parsedCredentials = z
-      .object({ email: z.string().email(), password: z.string().min(6) })
+      .object({ email: z.string().email(), password: z.string().min(8) })
       .safeParse({ email, password })
 
     return parsedCredentials
+  }
+
+  const verifyTotp = async () => {
+    const { error } = await authClient.twoFactor.verifyTotp({ code: token })
+
+    if (error) {
+      toast.error('双因素口令验证失败！')
+      return
+    }
+
+    toast.success('登录成功！')
+    setTimeout(() => {
+      location.replace('/admin')
+    }, 1000)
   }
 
   const handleLogin = async () => {
@@ -74,31 +78,22 @@ export const UserFrom = ({
 
       const { email, password } = parsedCredentials.data
 
-      // 首先验证2FA (如果启用的话)
-      if (data?.data?.auth_enable === 'true') {
-        const is2FAValid = await validate2FA(token)
-        if (!is2FAValid) {
-          toast.error('双因素口令验证失败！')
-          return
-        }
-      }
-
-      // 进行实际的登录
-      const result = await signIn('Credentials', {
+      const { error } = await authClient.signIn.email({
         email,
         password,
-        redirect: false,
+        callbackURL: '/',
+      }, {
+        onSuccess(ctx) {
+          if (ctx.data.twoFactorRedirect) {
+            setOtp(true)
+          }
+        }
       })
 
-      if (result?.error) {
+      if (error) {
         toast.error('账号或密码错误！')
         return
       }
-
-      toast.success('登录成功！')
-      setTimeout(() => {
-        location.replace('/admin')
-      }, 1000)
     } catch (e) {
       console.error(e)
       toast.error('登录过程中出现错误，请稍后重试')
@@ -117,12 +112,19 @@ export const UserFrom = ({
           <div className="grid gap-6">
             <div className="grid gap-6">
               <div className="grid gap-2">
-                <Label htmlFor="email" className="select-none">{t('Login.email')}</Label>
+                <div className="flex items-center">
+                  <Label htmlFor="email" className="select-none">{t('Login.email')}</Label>
+                  <div
+                    onClick={() => router.push('/sign-up')}
+                    className="ml-auto text-sm underline-offset-4 hover:underline select-none cursor-pointer"
+                  >
+                    {t('Login.signUp')}
+                  </div>
+                </div>
                 <Input
                   id="email"
                   type="email"
                   value={email}
-                  placeholder="admin@qq.com"
                   onChange={(e) => setEmail(e.target.value)}
                   required
                 />
@@ -146,7 +148,7 @@ export const UserFrom = ({
                 />
               </div>
               {
-                data?.data?.auth_enable === 'true' &&
+                otp &&
                   <div className="grid gap-2">
                     <div className="flex items-center select-none">
                       <div>{t('Login.otp')}</div>
@@ -177,11 +179,17 @@ export const UserFrom = ({
               <Button
                 type="submit"
                 className="w-full select-none cursor-pointer"
-                disabled={(data?.data?.auth_enable === 'true' && token.length !== 6) || email.length === 0 || password.length < 6}
-                onClick={handleLogin}
-                aria-label={t('Login.login')}
+                disabled={email.length === 0 || password.length < 8}
+                onClick={async () => {
+                  if (otp) {
+                    await verifyTotp()
+                  } else {
+                    await handleLogin()
+                  }
+                }}
+                aria-label={t('Login.signIn')}
               >
-                {isLoading && <ReloadIcon className="mr-2 h-4 w-4 animate-spin"/>}{t('Login.login')}
+                {isLoading && <ReloadIcon className="mr-2 h-4 w-4 animate-spin"/>}{t('Login.signIn')}
               </Button>
               <Button
                 className="w-full select-none cursor-pointer"
