@@ -7,8 +7,7 @@ import { fetchConfigsByKeys } from '~/server/db/query/configs'
 import type { Config } from '~/types'
 import { getClient } from '~/server/lib/s3'
 import { getR2Client } from '~/server/lib/r2'
-import { PutObjectCommand } from '@aws-sdk/client-s3'
-import { getSignedUrl } from '@aws-sdk/s3-request-presigner'
+import { generatePresignedUrl } from '~/server/lib/s3api'
 
 const app = new Hono()
 
@@ -47,13 +46,7 @@ app.post('/presigned-url', async (c) => {
           : type && type !== '/' ? `${type.slice(1)}/${filename}` : `${filename}`
 
         const client = getClient(configs)
-        const command = new PutObjectCommand({
-          Bucket: bucket,
-          Key: filePath,
-          ContentType: contentType || undefined
-        })
-
-        const presignedUrl = await getSignedUrl(client as any, command as any, { expiresIn: 3600 })
+        const presignedUrl = await generatePresignedUrl(client, bucket, filePath, contentType)
 
         return c.json({
           code: 200,
@@ -84,13 +77,7 @@ app.post('/presigned-url', async (c) => {
           : type && type !== '/' ? `${type.slice(1)}/${filename}` : `${filename}`
 
         const client = getR2Client(configs)
-        const command = new PutObjectCommand({
-          Bucket: bucket,
-          Key: filePath,
-          ContentType: contentType || undefined
-        })
-
-        const presignedUrl = await getSignedUrl(client as any, command as any, { expiresIn: 3600 })
+        const presignedUrl = await generatePresignedUrl(client, bucket, filePath, contentType)
 
         return c.json({
           code: 200,
