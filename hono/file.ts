@@ -46,7 +46,7 @@ app.post('/presigned-url', async (c) => {
           : type && type !== '/' ? `${type.slice(1)}/${filename}` : `${filename}`
 
         const client = getClient(configs)
-        const presignedUrl = await generatePresignedUrl(client, bucket, filePath, contentType)
+        const presignedUrl = await generatePresignedUrl(client, bucket, filePath, contentType, 'put')
 
         return c.json({
           code: 200,
@@ -77,7 +77,7 @@ app.post('/presigned-url', async (c) => {
           : type && type !== '/' ? `${type.slice(1)}/${filename}` : `${filename}`
 
         const client = getR2Client(configs)
-        const presignedUrl = await generatePresignedUrl(client, bucket, filePath, contentType)
+        const presignedUrl = await generatePresignedUrl(client, bucket, filePath, contentType, 'put')
 
         return c.json({
           code: 200,
