@@ -26,7 +26,7 @@ export async function register() {
             { config_key: 'secret_key', config_value: 'pic-impact', detail: 'SECRET_KEY' },
             { config_key: 'r2_accesskey_id', config_value: '', detail: 'Cloudflare AccessKey_ID' },
             { config_key: 'r2_accesskey_secret', config_value: '', detail: 'Cloudflare AccessKey_Secret' },
-            { config_key: 'r2_endpoint', config_value: '', detail: 'Cloudflare Endpoint 地域节点，如：https://<ACCOUNT_ID>.r2.cloudflarestorage.com' },
+            { config_key: 'r2_account_id', config_value: '', detail: 'Cloudflare ACCOUNT_ID' },
             { config_key: 'r2_bucket', config_value: '', detail: 'Cloudflare Bucket 存储桶名称，如：picimpact' },
             { config_key: 'r2_storage_folder', config_value: '', detail: '存储文件夹(Cloudflare R2)，严格格式，如：picimpact 或 picimpact/images ，填 / 或者不填表示根路径' },
             { config_key: 'r2_public_domain', config_value: '', detail: 'Cloudflare R2 自定义域（公开访问）' },

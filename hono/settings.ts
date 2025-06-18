@@ -36,7 +36,7 @@ app.get('/r2-info', async (c) => {
   const data = await fetchConfigsByKeys([
     'r2_accesskey_id',
     'r2_accesskey_secret',
-    'r2_endpoint',
+    'r2_account_id',
     'r2_bucket',
     'r2_storage_folder',
     'r2_public_domain',
@@ -76,13 +76,13 @@ app.put('/update-r2-info', async (c) => {
 
   const r2AccesskeyId = query?.find((item: Config) => item.config_key === 'r2_accesskey_id').config_value
   const r2AccesskeySecret = query?.find((item: Config) => item.config_key === 'r2_accesskey_secret').config_value
-  const r2Endpoint = query?.find((item: Config) => item.config_key === 'r2_endpoint').config_value
+  const r2AccountId = query?.find((item: Config) => item.config_key === 'r2_account_id').config_value
   const r2Bucket = query?.find((item: Config) => item.config_key === 'r2_bucket').config_value
   const r2StorageFolder = query?.find((item: Config) => item.config_key === 'r2_storage_folder').config_value
   const r2PublicDomain = query?.find((item: Config) => item.config_key === 'r2_public_domain').config_value
   const r2DirectDownload = query?.find((item: Config) => item.config_key === 'r2_direct_download').config_value
 
-  const data = await updateR2Config({ r2AccesskeyId, r2AccesskeySecret, r2Endpoint, r2Bucket, r2StorageFolder, r2PublicDomain, r2DirectDownload })
+  const data = await updateR2Config({ r2AccesskeyId, r2AccesskeySecret, r2AccountId, r2Bucket, r2StorageFolder, r2PublicDomain, r2DirectDownload })
   return c.json(data)
 })
 

@@ -251,7 +251,7 @@
     "s3_direct_download": "是否啟用 S3 直傳模式，預設 false。",
     "alist_token": "alist 令牌",
     "alist_url": "AList 地址，如：https://alist.besscroft.com",
-    "r2_endpoint": "Cloudflare Endpoint 地域節點，如：https://<ACCOUNT_ID>.r2.cloudflarestorage.com",
+    "r2_account_id": "Cloudflare ACCOUNT_ID",
     "r2_accesskey_id": "Cloudflare AccessKey_ID",
     "r2_accesskey_secret": "Cloudflare AccessKey_Secret",
     "r2_bucket": "Cloudflare Bucket 存儲桶名稱，如：picimpact",

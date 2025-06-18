@@ -39,7 +39,7 @@ export async function updateR2Config(configs: any) {
     SET config_value = CASE
        WHEN config_key = 'r2_accesskey_id' THEN ${configs.r2AccesskeyId}
        WHEN config_key = 'r2_accesskey_secret' THEN ${configs.r2AccesskeySecret}
-       WHEN config_key = 'r2_endpoint' THEN ${configs.r2Endpoint}
+       WHEN config_key = 'r2_account_id' THEN ${configs.r2AccountId}
        WHEN config_key = 'r2_bucket' THEN ${configs.r2Bucket}
        WHEN config_key = 'r2_storage_folder' THEN ${configs.r2StorageFolder}
        WHEN config_key = 'r2_public_domain' THEN ${configs.r2PublicDomain}
@@ -47,7 +47,7 @@ export async function updateR2Config(configs: any) {
        ELSE 'N&A'
     END,
         updated_at = NOW()
-    WHERE config_key IN ('r2_accesskey_id', 'r2_accesskey_secret', 'r2_endpoint', 'r2_bucket', 'r2_storage_folder', 'r2_public_domain', 'r2_direct_download');
+    WHERE config_key IN ('r2_accesskey_id', 'r2_accesskey_secret', 'r2_account_id', 'r2_bucket', 'r2_storage_folder', 'r2_public_domain', 'r2_direct_download');
   `
 }
 

@@ -3,10 +3,11 @@ import 'server-only'
 import { Hono } from 'hono'
 import { HTTPException } from 'hono/http-exception'
 import { fetchConfigsByKeys } from '~/server/db/query/configs'
-import { getClient, generatePresignedUrl as generateS3PresignedUrl } from '~/server/lib/s3'
-import { getR2Client, generatePresignedUrl as generateR2PresignedUrl } from '~/server/lib/r2'
+import { getClient } from '~/server/lib/s3'
+import { getR2Client } from '~/server/lib/r2'
 import { fetchImageByIdAndAuth } from '~/server/db/query/images'
 import type { Config } from '~/types'
+import { generatePresignedUrl } from '~/server/lib/s3api'
 
 const app = new Hono()
 
@@ -94,7 +95,7 @@ app.get('/:id', async (c) => {
         // 如果 key 已经包含了 storage_folder，就不再添加
         const filePath = key.startsWith(storageFolder) ? key : `${storageFolder}${key}`
         const client = getClient(configs)
-        const presignedUrl = await generateS3PresignedUrl(client, bucket, filePath)
+        const presignedUrl = await generatePresignedUrl(client, bucket, filePath, '')
         
         // 直接返回预签名 URL
         return c.json({
@@ -106,7 +107,7 @@ app.get('/:id', async (c) => {
         const configs = await fetchConfigsByKeys([
           'r2_accesskey_id',
           'r2_accesskey_secret',
-          'r2_endpoint',
+          'r2_account_id',
           'r2_bucket',
           'r2_storage_folder',
           'r2_public_domain',
@@ -118,7 +119,7 @@ app.get('/:id', async (c) => {
         // 如果 key 已经包含了 storage_folder，就不再添加
         const filePath = key.startsWith(storageFolder) ? key : `${storageFolder}${key}`
         const client = getR2Client(configs)
-        const presignedUrl = await generateR2PresignedUrl(client, bucket, filePath)
+        const presignedUrl = await generatePresignedUrl(client, bucket, filePath, '')
         
         // 直接返回预签名 URL
         return c.json({

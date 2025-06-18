@@ -251,7 +251,7 @@
     "s3_direct_download": "Whether to enable S3 direct upload mode, default is false.",
     "alist_token": "AList token",
     "alist_url": "AList URL, e.g., https://alist.besscroft.com",
-    "r2_endpoint": "Cloudflare Endpoint, e.g., https://<ACCOUNT_ID>.r2.cloudflarestorage.com",
+    "r2_account_id": "Cloudflare ACCOUNT_ID",
     "r2_accesskey_id": "Cloudflare AccessKey_ID",
     "r2_accesskey_secret": "Cloudflare AccessKey_Secret",
     "r2_bucket": "Cloudflare Bucket name (e.g., picimpact)",
