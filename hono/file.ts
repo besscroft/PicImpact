@@ -62,7 +62,7 @@ app.post('/presigned-url', async (c) => {
         const configs = await fetchConfigsByKeys([
           'r2_accesskey_id',
           'r2_accesskey_secret',
-          'r2_endpoint',
+          'r2_account_id',
           'r2_bucket',
           'r2_storage_folder',
           'r2_public_domain',
@@ -173,21 +173,16 @@ app.post('/getObjectUrl', async (c) => {
       const configs = await fetchConfigsByKeys([
         'r2_accesskey_id',
         'r2_accesskey_secret',
-        'r2_endpoint',
+        'r2_account_id',
         'r2_bucket',
         'r2_storage_folder',
         'r2_public_domain',
       ])
 
       const r2PublicDomain = configs.find((item: Config) => item.config_key === 'r2_public_domain')?.config_value || ''
-      const r2Endpoint = configs.find((item: Config) => item.config_key === 'r2_endpoint')?.config_value || ''
 
       return Response.json({
-        code: 200, data: `${
-          r2PublicDomain ?
-            r2PublicDomain.includes('https://') ? r2PublicDomain : `https://${r2PublicDomain}`
-            : r2Endpoint.includes('https://') ? r2Endpoint : `https://${r2Endpoint}`
-        }/${key}`
+        code: 200, data: `${r2PublicDomain}/${key}`
       })
     }
   }

@@ -11,11 +11,11 @@ export function getR2Client(findConfig: Config[]) {
 
   const r2AccesskeyId = findConfig.find((item: Config) => item.config_key === 'r2_accesskey_id')?.config_value || ''
   const r2AccesskeySecret = findConfig.find((item: Config) => item.config_key === 'r2_accesskey_secret')?.config_value || ''
-  const r2Endpoint = findConfig.find((item: Config) => item.config_key === 'r2_endpoint')?.config_value || ''
+  const r2AccountId = findConfig.find((item: Config) => item.config_key === 'r2_account_id')?.config_value || ''
 
   s3R2Client = new S3Client({
     region: 'auto',
-    endpoint: r2Endpoint.includes('https://') ? r2Endpoint : `https://${r2Endpoint}`,
+    endpoint: `https://${r2AccountId}.r2.cloudflarestorage.com`,
     credentials: {
       accessKeyId: r2AccesskeyId,
       secretAccessKey: r2AccesskeySecret,

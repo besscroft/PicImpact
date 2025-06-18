@@ -107,7 +107,7 @@ app.get('/:id', async (c) => {
         const configs = await fetchConfigsByKeys([
           'r2_accesskey_id',
           'r2_accesskey_secret',
-          'r2_endpoint',
+          'r2_account_id',
           'r2_bucket',
           'r2_storage_folder',
           'r2_public_domain',

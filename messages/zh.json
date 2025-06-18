@@ -251,7 +251,7 @@
     "s3_direct_download": "是否启用 S3 直接下载模式，默认 false。",
     "alist_token": "alist 令牌",
     "alist_url": "AList 地址，如：https://alist.besscroft.com",
-    "r2_endpoint": "Cloudflare Endpoint 地域节点，如：https://<ACCOUNT_ID>.r2.cloudflarestorage.com",
+    "r2_account_id": "Cloudflare ACCOUNT_ID",
     "r2_accesskey_id": "Cloudflare AccessKey_ID",
     "r2_accesskey_secret": "Cloudflare AccessKey_Secret",
     "r2_bucket": "Cloudflare Bucket 存储桶名称，如：picimpact",

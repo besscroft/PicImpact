@@ -251,7 +251,7 @@
     "s3_direct_download": "S3 ダイレクトアップロードモードを有効にするかどうか、デフォルトは false。",
     "alist_token": "AList トークン",
     "alist_url": "AList アドレス、例：https://alist.besscroft.com",
-    "r2_endpoint": "Cloudflare Endpoint、例：https://<ACCOUNT_ID>.r2.cloudflarestorage.com",
+    "r2_account_id": "Cloudflare ACCOUNT_ID",
     "r2_accesskey_id": "Cloudflare AccessKey_ID",
     "r2_accesskey_secret": "Cloudflare AccessKey_Secret",
     "r2_bucket": "Cloudflare Bucket バケット名（例：picimpact）",
