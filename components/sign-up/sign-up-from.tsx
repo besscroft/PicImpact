@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useRouter } from 'next-nprogress-bar'
 import { toast } from 'sonner'
 import { SafeParseReturnType, z } from 'zod'
@@ -29,6 +29,28 @@ export const SignUpForm = ({
 
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+
+  const emailRef = React.useRef<HTMLInputElement>(null)
+    const passwordRef = React.useRef<HTMLInputElement>(null)
+  
+    useEffect(() => {
+      emailRef.current?.focus()
+    }, [])
+  
+    const emailKeyPressHandler = (e: React.KeyboardEvent<HTMLInputElement>) => {
+      if (e.key === 'Enter') {
+        e.preventDefault()
+        passwordRef.current?.focus()
+      }
+    }
+  
+    const passwordKeyPressHandler = async (e: React.KeyboardEvent<HTMLInputElement>) => {
+      if (e.key === 'Enter') {
+        e.preventDefault()
+        passwordRef.current?.blur()
+        handleSignUp()
+      }
+    }
 
   function zHandle(): SafeParseReturnType<string | any, string | any> {
     const parsedCredentials = z
@@ -95,6 +117,8 @@ export const SignUpForm = ({
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
+                  ref={emailRef}
+                  onKeyDown={emailKeyPressHandler}
                   required
                 />
               </div>
@@ -105,6 +129,8 @@ export const SignUpForm = ({
                   type="password"
                   required
                   value={password}
+                  ref={passwordRef}
+                  onKeyDown={passwordKeyPressHandler}
                   onChange={(e) => setPassword(e.target.value)}
                 />
               </div>
