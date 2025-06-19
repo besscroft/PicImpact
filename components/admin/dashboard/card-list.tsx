@@ -109,7 +109,7 @@ export default function CardList(props: Readonly<AnalysisDataProps>) {
             <Progress value={(props.data?.showTotal ?? 0) / (props.data?.total ?? 1) * 100} className="w-full h-2"/>
           </CardContent>
         </Card>
-        <Card className="h-80 w-full border">
+        <Card className="min-h-80 w-full border">
           <CardHeader>
             <CardTitle>{t('Dashboard.albumData')}</CardTitle>
           </CardHeader>
@@ -134,7 +134,7 @@ export default function CardList(props: Readonly<AnalysisDataProps>) {
             </Table>
           </CardContent>
         </Card>
-        <Card className="h-80 w-full border">
+        <Card className="min-h-80 w-full border">
           <CardHeader>
             <CardTitle>{t('Dashboard.how')}</CardTitle>
           </CardHeader>
