@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useRouter } from 'next-nprogress-bar'
 import { toast } from 'sonner'
 import { SafeParseReturnType, z } from 'zod'
@@ -39,6 +39,32 @@ export const UserFrom = ({
   const [password, setPassword] = useState('')
   const [token, setToken] = useState<string>('')
   const [otp, setOtp] = useState(false)
+
+  const emailRef = React.useRef<HTMLInputElement>(null)
+  const passwordRef = React.useRef<HTMLInputElement>(null)
+
+  useEffect(() => {
+    emailRef.current?.focus()
+  }, [])
+
+  const emailKeyPressHandler = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      e.preventDefault()
+      passwordRef.current?.focus()
+    }
+  }
+
+  const passwordKeyPressHandler = async (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      e.preventDefault()
+      passwordRef.current?.blur()
+      if (otp) {
+        await verifyTotp()
+      } else {
+        await handleLogin()
+      }
+    }
+  }
 
   const { setLoginHelp } = useButtonStore(
     (state) => state,
@@ -124,8 +150,10 @@ export const UserFrom = ({
                 <Input
                   id="email"
                   type="email"
+                  ref={emailRef}
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
+                  onKeyDown={emailKeyPressHandler}
                   required
                 />
               </div>
@@ -142,8 +170,10 @@ export const UserFrom = ({
                 <Input
                   id="password"
                   type="password"
+                  ref={passwordRef}
                   required
                   value={password}
+                  onKeyDown={passwordKeyPressHandler}
                   onChange={(e) => setPassword(e.target.value)}
                 />
               </div>
