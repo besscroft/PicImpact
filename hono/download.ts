@@ -43,11 +43,26 @@ app.get('/:id', async (c) => {
       // 对于非直接下载，返回带有 Content-Disposition 的响应
       const response = await fetch(imageUrl)
       const blob = await response.blob()
-      const filename = imageUrl.split('/').pop() || 'download'
+
+      // 提取并解码文件名
+      let filename = 'download'
+      if (imageUrl.startsWith('http://') || imageUrl.startsWith('https://')) {
+        const urlMatch = imageUrl.match(/^https?:\/\/[^\/]+(\/.*)$/)
+        if (urlMatch) {
+          const pathname = urlMatch[1]
+          const extractedFilename = pathname.split('/').pop()
+          if (extractedFilename) {
+            filename = decodeURIComponent(extractedFilename)
+          }
+        }
+      } else {
+        filename = decodeURIComponent(imageUrl.split('/').pop() || 'download')
+      }
+
       return new Response(blob, {
         headers: {
           'Content-Type': response.headers.get('Content-Type') || 'application/octet-stream',
-          'Content-Disposition': `attachment; filename="${filename}"`
+          'Content-Disposition': `attachment; filename="${encodeURIComponent(filename)}"; filename*=UTF-8''${encodeURIComponent(filename)}`
         }
       })
     }
@@ -55,10 +70,13 @@ app.get('/:id', async (c) => {
     // 处理 URL 格式，提取 key
     let key: string
     if (imageUrl.startsWith('http://') || imageUrl.startsWith('https://')) {
-      // 从完整 URL 中提取路径部分
-      const url = new URL(imageUrl)
-      // 移除域名部分，只保留路径
-      key = url.pathname.startsWith('/') ? url.pathname.slice(1) : url.pathname
+      // 从完整 URL 中提取路径部分，避免自动解码
+      const urlMatch = imageUrl.match(/^https?:\/\/[^\/]+(\/.*)$/)
+      if (urlMatch) {
+        key = urlMatch[1].slice(1) // 移除开头的斜杠
+      } else {
+        key = imageUrl
+      }
       // 如果路径以 storage_folder 开头，移除它
       if (storage === 's3') {
         const s3StorageFolder = configs.find((item: Config) => item.config_key === 'storage_folder')?.config_value || ''
@@ -96,11 +114,25 @@ app.get('/:id', async (c) => {
         const filePath = key.startsWith(storageFolder) ? key : `${storageFolder}${key}`
         const client = getClient(configs)
         const presignedUrl = await generatePresignedUrl(client, bucket, filePath, '')
-        
+
         // 直接返回预签名 URL
+        let filename = 'download'
+        if (imageUrl.startsWith('http://') || imageUrl.startsWith('https://')) {
+          const urlMatch = imageUrl.match(/^https?:\/\/[^\/]+(\/.*)$/)
+          if (urlMatch) {
+            const pathname = urlMatch[1]
+            const extractedFilename = pathname.split('/').pop()
+            if (extractedFilename) {
+              filename = decodeURIComponent(extractedFilename)
+            }
+          }
+        } else {
+          filename = decodeURIComponent(imageUrl.split('/').pop() || 'download')
+        }
+
         return c.json({
           url: presignedUrl,
-          filename: key.split('/').pop() || 'download'
+          filename: encodeURIComponent(filename)
         })
       }
       case 'r2': {
@@ -120,11 +152,25 @@ app.get('/:id', async (c) => {
         const filePath = key.startsWith(storageFolder) ? key : `${storageFolder}${key}`
         const client = getR2Client(configs)
         const presignedUrl = await generatePresignedUrl(client, bucket, filePath, '')
-        
+
         // 直接返回预签名 URL
+        let filename = 'download'
+        if (imageUrl.startsWith('http://') || imageUrl.startsWith('https://')) {
+          const urlMatch = imageUrl.match(/^https?:\/\/[^\/]+(\/.*)$/)
+          if (urlMatch) {
+            const pathname = urlMatch[1]
+            const extractedFilename = pathname.split('/').pop()
+            if (extractedFilename) {
+              filename = decodeURIComponent(extractedFilename)
+            }
+          }
+        } else {
+          filename = decodeURIComponent(imageUrl.split('/').pop() || 'download')
+        }
+
         return c.json({
           url: presignedUrl,
-          filename: key.split('/').pop() || 'download'
+          filename: encodeURIComponent(filename)
         })
       }
       default:
@@ -135,4 +181,4 @@ app.get('/:id', async (c) => {
   }
 })
 
-export default app 
+export default app

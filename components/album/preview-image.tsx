@@ -85,19 +85,37 @@ export default function PreviewImage(props: Readonly<PreviewImageHandleProps>) {
       if (contentType?.includes('application/json')) {
         // 如果是 JSON 响应，说明是直接下载模式
         const data = await response.json()
+        // 使用后端返回的文件名，并进行 URL 解码
+        const filename = decodeURIComponent(data.filename || 'download')
         // 直接使用 window.location.href 触发下载
         response = await fetch(data.url)
+        const blob = await response.blob()
+        const url = window.URL.createObjectURL(new Blob([blob]))
+        const link = document.createElement('a')
+        link.href = url
+        link.download = filename
+        document.body.appendChild(link)
+        link.click()
+        document.body.removeChild(link)
+      } else {
+        // 对于非直接下载模式，从 Content-Disposition 头中获取文件名
+        const contentDisposition = response.headers.get('content-disposition')
+        let filename = 'download'
+        if (contentDisposition) {
+          const filenameMatch = contentDisposition.match(/filename="([^"]+)"/)
+          if (filenameMatch) {
+            filename = decodeURIComponent(filenameMatch[1])
+          }
+        }
+        const blob = await response.blob()
+        const url = window.URL.createObjectURL(new Blob([blob]))
+        const link = document.createElement('a')
+        link.href = url
+        link.download = filename
+        document.body.appendChild(link)
+        link.click()
+        document.body.removeChild(link)
       }
-      const blob = await response.blob()
-      const url = window.URL.createObjectURL(new Blob([blob]))
-      const link = document.createElement('a')
-      link.href = url
-      const parsedUrl = new URL(props.data?.url ?? '')
-      const filename = parsedUrl.pathname.split('/').pop()
-      link.download = filename || 'downloaded-file'
-      document.body.appendChild(link)
-      link.click()
-      document.body.removeChild(link)
     } catch {
       toast.error(t('Tips.downloadFailed'), { duration: 500 })
     } finally {
