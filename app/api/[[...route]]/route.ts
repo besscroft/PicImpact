@@ -2,12 +2,15 @@ import 'server-only'
 import { handle } from 'hono/vercel'
 import { Hono } from 'hono'
 import route from '~/hono'
-import open from '~/hono/open/open'
+import download from '~/hono/open/download'
+import images from '~/hono/open/images'
 
 const app = new Hono().basePath('/api')
 
 app.route('/v1', route)
-app.route('/open', open)
+// 注意只有 /v1 开头是需要鉴权的
+app.route('/public/download', download)
+app.route('/public/images', images)
 app.notFound((c) => {
   return c.text('not found', 404)
 })

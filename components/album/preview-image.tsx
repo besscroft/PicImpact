@@ -79,7 +79,7 @@ export default function PreviewImage(props: Readonly<PreviewImageHandleProps>) {
       const storageType = props.data?.url?.includes('s3') ? 's3' : 'r2'
 
       // 使用新的下载 API
-      let response = await fetch(`/api/v1/download/${props.id}?storage=${storageType}`)
+      let response = await fetch(`/api/public/download/${props.id}?storage=${storageType}`)
       const contentType = response.headers.get('content-type')
 
       if (contentType?.includes('application/json')) {
