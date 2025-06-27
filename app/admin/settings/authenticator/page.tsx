@@ -3,6 +3,7 @@
 import { toast } from 'sonner'
 import React, { useState } from 'react'
 import { useQRCode } from 'next-qrcode'
+import { motion } from 'motion/react'
 import {
   InputOTP,
   InputOTPGroup,
@@ -166,17 +167,23 @@ export default function Authenticator() {
               <p className="text-small text-default-400">{t('Tips.scanQRCode')}</p>
               {
                 uri &&
-                <SVG
-                  text={uri}
-                  options={{
-                    margin: 2,
-                    width: 180,
-                    color: {
-                      dark: '#010599FF',
-                      light: '#FFBF60FF',
-                    },
-                  }}
-                />
+                <motion.div
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: 'auto' }}
+                  transition={{ duration: 1 }}
+                >
+                  <SVG
+                    text={uri}
+                    options={{
+                      margin: 2,
+                      width: 180,
+                      color: {
+                        dark: '#010599FF',
+                        light: '#FFBF60FF',
+                      },
+                    }}
+                  />
+                </motion.div>
               }
               <h4 className="text-medium font-medium">{t('Tips.stepThree')}</h4>
               <p className="text-small text-default-400">{t('Tips.enterSixDigits')}</p>
