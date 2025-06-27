@@ -86,6 +86,7 @@ export async function updateCustomInfo(payload: {
   umamiHost: string
   umamiAnalytics: string
   maxUploadFiles: number
+  customIndexOriginEnable: boolean
 }) {
   try {
     const {
@@ -101,7 +102,8 @@ export async function updateCustomInfo(payload: {
       previewQuality,
       umamiHost,
       umamiAnalytics,
-      maxUploadFiles
+      maxUploadFiles,
+      customIndexOriginEnable,
     } = payload
 
     await db.$transaction(async (tx) => {
@@ -223,6 +225,15 @@ export async function updateCustomInfo(payload: {
         },
         data: {
           config_value: maxUploadFiles.toString(),
+          updatedAt: new Date(),
+        }
+      })
+      await tx.configs.update({
+        where: {
+          config_key: 'custom_index_origin_enable'
+        },
+        data: {
+          config_value: customIndexOriginEnable ? 'true' : 'false',
           updatedAt: new Date(),
         }
       })

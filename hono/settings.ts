@@ -23,7 +23,8 @@ app.get('/get-custom-info', async (c) => {
       'preview_quality',
       'umami_host',
       'umami_analytics',
-      'max_upload_files'
+      'max_upload_files',
+      'custom_index_origin_enable'
     ])
     return c.json(data)
   } catch (error) {
@@ -120,6 +121,7 @@ app.put('/update-custom-info', async (c) => {
     umamiHost: string
     umamiAnalytics: string
     maxUploadFiles: number
+    customIndexOriginEnable: boolean
   }
   try {
     await updateCustomInfo(query)

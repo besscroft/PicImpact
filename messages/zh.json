@@ -220,7 +220,8 @@
     "umamiHost": "Umami Website Host",
     "umamiAnalytics": "Umami Website ID",
     "maxUploadFiles": "最大上传文件数量",
-    "inputMaxUploadFiles": "请输入最大上传文件数量"
+    "inputMaxUploadFiles": "请输入最大上传文件数量",
+    "customIndexOriginEnable": "首页是否显示原图(精选图片模式)"
   },
   "Password": {
     "onePassword": "旧密码",
