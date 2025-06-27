@@ -22,7 +22,6 @@ import {
 import { Input } from '~/components/ui/input'
 import { Label } from '~/components/ui/label'
 import { useButtonStore } from '~/app/providers/button-store-providers'
-import LoginHelpSheet from '~/components/login/login-help-sheet'
 import { useTranslations } from 'next-intl'
 import { authClient } from '~/server/auth/auth-client'
 
@@ -160,12 +159,6 @@ export const UserFrom = ({
               <div className="grid gap-2">
                 <div className="flex items-center">
                   <Label htmlFor="password" className="select-none">{t('Login.password')}</Label>
-                  <div
-                    onClick={() => setLoginHelp(true)}
-                    className="ml-auto text-sm underline-offset-4 hover:underline select-none cursor-pointer"
-                  >
-                    {t('Login.forget')}
-                  </div>
                 </div>
                 <Input
                   id="password"
@@ -232,7 +225,6 @@ export const UserFrom = ({
           </div>
         </CardContent>
       </Card>
-      <LoginHelpSheet />
     </div>
   )
 }
