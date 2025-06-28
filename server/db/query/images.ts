@@ -169,7 +169,7 @@ export async function fetchClientImagesListByAlbum(pageNum: number, album: strin
         image.show = 0
     AND
         image.show_on_mainpage = 0
-    ORDER BY image.created_at DESC, image.updated_at DESC
+    ORDER BY image.sort DESC, image.created_at DESC, image.updated_at DESC
     LIMIT 16 OFFSET ${(pageNum - 1) * 16}
   `
   }
