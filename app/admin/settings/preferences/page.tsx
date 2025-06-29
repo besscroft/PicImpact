@@ -29,6 +29,7 @@ export default function Preferences() {
   const [umamiHost, setUmamiHost] = useState('')
   const [maxUploadFiles, setMaxUploadFiles] = useState('5')
   const [customIndexOriginEnable, setCustomIndexOriginEnable] = useState(false)
+  const [adminImagesPerPage, setAdminImagesPerPage] = useState('8')
   const t = useTranslations()
 
   const { data, isValidating, isLoading } = useSWR<{ config_key: string, config_value: string }[]>('/api/v1/settings/get-custom-info', fetcher)
@@ -47,6 +48,11 @@ export default function Preferences() {
     const maxFiles = parseInt(maxUploadFiles)
     if (isNaN(maxFiles) || maxFiles < 1) {
       toast.error('最大上传文件数量不能小于 1')
+      return
+    }
+    const imagesPerPage = parseInt(adminImagesPerPage)
+    if (isNaN(imagesPerPage) || imagesPerPage < 1) {
+      toast.error(t('Preferences.inputAdminImagesPerPage'))
       return
     }
     try {
@@ -70,7 +76,8 @@ export default function Preferences() {
           umamiHost,
           umamiAnalytics,
           maxUploadFiles: maxFiles,
-          customIndexOriginEnable
+          customIndexOriginEnable,
+          adminImagesPerPage: imagesPerPage
         }),
       }).then(res => res.json())
       toast.success('修改成功！')
@@ -96,6 +103,7 @@ export default function Preferences() {
     setUmamiAnalytics(data?.find((item) => item.config_key === 'umami_analytics')?.config_value || '')
     setMaxUploadFiles(data?.find((item) => item.config_key === 'max_upload_files')?.config_value || '5')
     setCustomIndexOriginEnable(data?.find((item) => item.config_key === 'custom_index_origin_enable')?.config_value.toString() === 'true' || false)
+    setAdminImagesPerPage(data?.find((item) => item.config_key === 'admin_images_per_page')?.config_value || '8')
   }, [data])
 
   return (
@@ -263,6 +271,18 @@ export default function Preferences() {
               value={maxUploadFiles}
               placeholder={t('Preferences.inputMaxUploadFiles')}
               onChange={(e) => setMaxUploadFiles(e.target.value)}
+            />
+          </div>
+          <div className="grid w-full max-w-sm items-center gap-1.5">
+            <Label htmlFor="adminImagesPerPage">{t('Preferences.adminImagesPerPage')}</Label>
+            <Input
+              type="number"
+              id="adminImagesPerPage"
+              min={1}
+              disabled={isValidating || isLoading}
+              value={adminImagesPerPage}
+              placeholder={t('Preferences.inputAdminImagesPerPage')}
+              onChange={(e) => setAdminImagesPerPage(e.target.value)}
             />
           </div>
         </div>

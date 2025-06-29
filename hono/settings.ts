@@ -24,7 +24,8 @@ app.get('/get-custom-info', async (c) => {
       'umami_host',
       'umami_analytics',
       'max_upload_files',
-      'custom_index_origin_enable'
+      'custom_index_origin_enable',
+      'admin_images_per_page'
     ])
     return c.json(data)
   } catch (error) {
@@ -60,6 +61,18 @@ app.get('/s3-info', async (c) => {
     's3_direct_download'
   ])
   return c.json(data)
+})
+
+app.get('/get-admin-config', async (c) => {
+  try {
+    const data = await fetchConfigsByKeys([
+      'admin_images_per_page'
+    ])
+    return c.json(data)
+  } catch (error) {
+    console.error('Error fetching admin config:', error)
+    throw new HTTPException(500, { message: 'Failed to fetch admin config', cause: error })
+  }
 })
 
 app.put('/update-alist-info', async (c) => {
