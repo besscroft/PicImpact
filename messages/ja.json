@@ -221,7 +221,9 @@
     "umamiAnalytics": "Umami Website ID",
     "maxUploadFiles": "最大アップロードファイル数",
     "inputMaxUploadFiles": "最大アップロードファイル数を入力してください",
-    "customIndexOriginEnable": "ホームページで原画を表示するかどうか（おすすめ画像モード）"
+    "adminImagesPerPage": "管理画面の1ページあたりの画像表示数",
+    "inputAdminImagesPerPage": "管理画面の1ページあたりの画像表示数を入力してください",
+    "customIndexOriginEnable": "ホームページでオリジナル画像を表示するかどうか（おすすめ画像モード）"
   },
   "Password": {
     "onePassword": "旧パスワード",

@@ -45,6 +45,7 @@ export async function register() {
             { config_key: 'max_upload_files', config_value: '5', detail: '最大上传文件数量' },
             { config_key: 'umami_analytics', config_value: '', detail: 'Umami Website ID.' },
             { config_key: 'umami_host', config_value: '', detail: 'Umami Cloud Analytics' },
+            { config_key: 'admin_images_per_page', config_value: '8', detail: '管理界面每页显示的图片数量' },
           ],
           skipDuplicates: true,
         })

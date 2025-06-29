@@ -5,6 +5,7 @@
 import { Prisma } from '@prisma/client'
 import { db } from '~/server/lib/db'
 import type { ImageType } from '~/types'
+import { fetchConfigValue } from './configs'
 
 const ALBUM_IMAGE_SORTING_ORDER = [
   null,
@@ -21,6 +22,7 @@ const ALBUM_IMAGE_SORTING_ORDER = [
  * @param showStatus 公开状态 (0: 公开, 1: 未公开, -1: 全部)
  * @param camera 相机型号
  * @param lens 镜头型号
+ * @param pageSize 每页显示数量
  * @returns {Promise<ImageType[]>} 图片列表
  */
 export async function fetchServerImagesListByAlbum(
@@ -28,7 +30,8 @@ export async function fetchServerImagesListByAlbum(
   album: string,
   showStatus: number = -1,
   camera?: string,
-  lens?: string
+  lens?: string,
+  pageSize?: number
 ): Promise<ImageType[]> {
   if (album === 'all') {
     album = ''
@@ -36,6 +39,13 @@ export async function fetchServerImagesListByAlbum(
   if (pageNum < 1) {
     pageNum = 1
   }
+  
+  // 如果没有提供 pageSize，从配置中获取
+  if (!pageSize) {
+    const configPageSize = await fetchConfigValue('admin_images_per_page', '8')
+    pageSize = parseInt(configPageSize, 10) || 8
+  }
+  
   if (album && album !== '') {
     return await db.$queryRaw`
       SELECT 
@@ -58,7 +68,7 @@ export async function fetchServerImagesListByAlbum(
           ${camera ? Prisma.sql`AND COALESCE(image.exif->>'model', 'Unknown') = ${camera}` : Prisma.empty}
           ${lens ? Prisma.sql`AND COALESCE(image.exif->>'lens_model', 'Unknown') = ${lens}` : Prisma.empty}
       ORDER BY image.sort DESC, image.created_at DESC, image.updated_at DESC
-      LIMIT 8 OFFSET ${(pageNum - 1) * 8}
+      LIMIT ${pageSize} OFFSET ${(pageNum - 1) * pageSize}
     `
   }
   return await db.$queryRaw`
@@ -78,7 +88,7 @@ export async function fetchServerImagesListByAlbum(
         ${camera ? Prisma.sql`AND COALESCE(image.exif->>'model', 'Unknown') = ${camera}` : Prisma.empty}
         ${lens ? Prisma.sql`AND COALESCE(image.exif->>'lens_model', 'Unknown') = ${lens}` : Prisma.empty}
     ORDER BY image.sort DESC, image.created_at DESC, image.updated_at DESC 
-    LIMIT 8 OFFSET ${(pageNum - 1) * 8}
+    LIMIT ${pageSize} OFFSET ${(pageNum - 1) * pageSize}
   `
 }
 

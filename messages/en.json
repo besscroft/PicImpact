@@ -221,6 +221,8 @@
     "umamiAnalytics": "Umami Website ID",
     "maxUploadFiles": "Maximum Upload Files",
     "inputMaxUploadFiles": "Please enter the maximum number of files that can be uploaded",
+    "adminImagesPerPage": "Admin Images Per Page",
+    "inputAdminImagesPerPage": "Enter images per page for admin interface",
     "customIndexOriginEnable": "Show Original Image on Home Page (Recommended Image Mode)"
   },
   "Password": {

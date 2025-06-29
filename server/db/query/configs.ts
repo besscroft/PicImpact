@@ -25,3 +25,21 @@ export async function fetchConfigsByKeys(keys: string[]): Promise<Config[]> {
     }
   })
 }
+
+/**
+ * 根据 key 获取单个配置值
+ * @param key 配置键
+ * @param defaultValue 默认值
+ * @return {Promise<string>} 配置值
+ */
+export async function fetchConfigValue(key: string, defaultValue: string = ''): Promise<string> {
+  const config = await db.configs.findFirst({
+    where: {
+      config_key: key
+    },
+    select: {
+      config_value: true
+    }
+  })
+  return config?.config_value || defaultValue
+}
