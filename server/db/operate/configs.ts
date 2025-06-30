@@ -87,6 +87,7 @@ export async function updateCustomInfo(payload: {
   umamiAnalytics: string
   maxUploadFiles: number
   customIndexOriginEnable: boolean
+  adminImagesPerPage: number
 }) {
   try {
     const {
@@ -104,6 +105,7 @@ export async function updateCustomInfo(payload: {
       umamiAnalytics,
       maxUploadFiles,
       customIndexOriginEnable,
+      adminImagesPerPage,
     } = payload
 
     await db.$transaction(async (tx) => {
@@ -234,6 +236,15 @@ export async function updateCustomInfo(payload: {
         },
         data: {
           config_value: customIndexOriginEnable ? 'true' : 'false',
+          updatedAt: new Date(),
+        }
+      })
+      await tx.configs.update({
+        where: {
+          config_key: 'admin_images_per_page'
+        },
+        data: {
+          config_value: adminImagesPerPage.toString(),
           updatedAt: new Date(),
         }
       })

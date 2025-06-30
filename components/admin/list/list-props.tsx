@@ -60,6 +60,7 @@ export default function ListProps(props : Readonly<ImageServerHandleProps>) {
   const [selectedLens, setSelectedLens] = useState('')
   const [cameras, setCameras] = useState<string[]>([])
   const [lenses, setLenses] = useState<string[]>([])
+  const [pageSize, setPageSize] = useState(8)
   const { data, isLoading, mutate } = useSwrInfiniteServerHook(props, pageNum, album, showStatus === 'all' || showStatus === '' ? -1 : Number(showStatus), selectedCamera === 'all' ? '' : selectedCamera, selectedLens === 'all' ? '' : selectedLens)
   const { data: total, mutate: totalMutate } = useSwrPageTotalServerHook(props, album, showStatus === 'all' || showStatus === '' ? -1 : Number(showStatus), selectedCamera === 'all' ? '' : selectedCamera, selectedLens === 'all' ? '' : selectedLens)
   const [image, setImage] = useState({} as ImageType)
@@ -70,6 +71,7 @@ export default function ListProps(props : Readonly<ImageServerHandleProps>) {
     (state) => state,
   )
   const { data: albums, isLoading: albumsLoading } = useSWR('/api/v1/albums/get', fetcher)
+  const { data: adminConfig } = useSWR('/api/v1/settings/get-admin-config', fetcher)
   const t = useTranslations()
 
   const dataProps: ImageListDataProps = {
@@ -92,6 +94,16 @@ export default function ListProps(props : Readonly<ImageServerHandleProps>) {
 
     fetchCameraAndLensList()
   }, [])
+
+  useEffect(() => {
+    if (adminConfig && adminConfig.length > 0) {
+      const pageSizeConfig = adminConfig.find((config: any) => config.config_key === 'admin_images_per_page')
+      if (pageSizeConfig) {
+        const newPageSize = parseInt(pageSizeConfig.config_value, 10) || 8
+        setPageSize(newPageSize)
+      }
+    }
+  }, [adminConfig])
 
   async function updateImageShow(id: string, show: number) {
     try {
@@ -481,7 +493,7 @@ export default function ListProps(props : Readonly<ImageServerHandleProps>) {
               <SelectValue placeholder={pageNum} />
             </SelectTrigger>
             <SelectContent side="top">
-              {Array.from({ length: Math.ceil(total / 8) }, (_, i) => i + 1).map((num) => (
+              {Array.from({ length: Math.ceil(total / pageSize) }, (_, i) => i + 1).map((num) => (
                 <SelectItem key={num} value={num.toString()}>
                   {num}
                 </SelectItem>
@@ -499,7 +511,7 @@ export default function ListProps(props : Readonly<ImageServerHandleProps>) {
           />
           <ChevronRightIcon
             onClick={async () => {
-              if (pageNum < Math.ceil(total / 8)) {
+              if (pageNum < Math.ceil(total / pageSize)) {
                 setPageNum(pageNum + 1)
                 await mutate()
               }

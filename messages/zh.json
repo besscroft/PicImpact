@@ -221,6 +221,8 @@
     "umamiAnalytics": "Umami Website ID",
     "maxUploadFiles": "最大上传文件数量",
     "inputMaxUploadFiles": "请输入最大上传文件数量",
+    "adminImagesPerPage": "管理界面每页显示图片数量",
+    "inputAdminImagesPerPage": "请输入每页显示的图片数量",
     "customIndexOriginEnable": "首页是否显示原图(精选图片模式)"
   },
   "Password": {
