@@ -33,11 +33,12 @@ PicImpact 是一个支持自部署的摄影作品展示网站，基于 Next.js +
 
 <a href="https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fbesscroft%2FPicImpact&env=DATABASE_URL,AUTH_SECRET"><img src="https://vercel.com/button" alt="Deploy with Vercel"/></a>
 
-| Key          | 备注                                                                                                                                              |
-|--------------|-------------------------------------------------------------------------------------------------------------------------------------------------|
+| Key          | 备注                                                                                                                                             |
+|--------------|------------------------------------------------------------------------------------------------------------------------------------------------|
 | DATABASE_URL | Postgre 数据库 url，`postgresql://[用户名]:[密码]@[地址和端口]/[数据库]`，如：`postgresql://postgres:666666@aws-0-ap-northeast-1.pooler.supabase.com:6543/postgres` |
-| BETTER_AUTH_SECRET  | 权限机密，你可以执行 npx auth secret 生成一个，反正是随机的字符串就行                                                                                                        |
-| BETTER_AUTH_URL  | 如果您使用 nginx 进行反向代理，需要填写访问地址，如：`https://example.com `                                                                                                       |
+| DIRECT_URL | 使用 Supabase 的 PgBouncer 功能时需要。                                                                                                                 |
+| BETTER_AUTH_SECRET  | 权限机密，你可以执行 npx auth secret 生成一个，反正是随机的字符串就行                                                                                                    |
+| BETTER_AUTH_URL  | 如果您使用 nginx 进行反向代理，需要填写访问地址，如：`https://example.com `                                                                                           |
 
 > 升级至 v2.6.0，以及新部署的用户，在部署完毕后，自行注册用户即可！
 
