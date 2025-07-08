@@ -1,11 +1,10 @@
-import { PrismaClient } from '@prisma/client'
-
 export async function register() {
   try {
     if (process.env.NEXT_RUNTIME === 'edge') {
       console.warn('Prisma support for edge is not yet fully developed.')
       return
     }
+    const { PrismaClient } = await import('@prisma/client')
     const prisma = new PrismaClient()
     if (prisma) {
       await prisma.$transaction(async (tx) => {
