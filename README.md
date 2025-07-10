@@ -36,11 +36,9 @@ PicImpact 是一个支持自部署的摄影作品展示网站，基于 Next.js +
 | Key          | 备注                                                                                                                                                                 |
 |--------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | DATABASE_URL | `postgres://postgres.[your-supabase-project]:[password]@aws-0-[aws-region].pooler.supabase.com:6543/postgres?pgbouncer=true`，`?pgbouncer=true` 用于使用 supabase 的连接池。 |
-| DIRECT_URL | `postgres://postgres.[your-supabase-project]:[password]@aws-0-[aws-region].pooler.supabase.com:5432/postgres`，绕过 Supavisor 执行迁移操作时填写。                              |
+| DIRECT_URL | `postgres://postgres.[your-supabase-project]:[password]@aws-0-[aws-region].pooler.supabase.com:5432/postgres`，用于 `prisma migrate`，如果使用非 serverless 数据库，与 `DATABASE_URL` 保持一致即可。                            |
 | BETTER_AUTH_SECRET  | 权限机密，你可以执行 npx auth secret 生成一个，反正是随机的字符串就行                                                                                                                        |
 | BETTER_AUTH_URL  | 如果您使用 nginx 进行反向代理，需要填写访问地址，如：`https://example.com `                                                                                                               |
-
-> 升级至 v2.6.0，以及新部署的用户，在部署完毕后，自行注册用户即可！
 
 > 请根据您的数据库供应商来填写正确的数据库 `connect url`，表格中的示例为 `supabase` 供应商。
 >
