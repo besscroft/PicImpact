@@ -240,6 +240,7 @@ export default function MultipleFileUpload() {
               file,
               error instanceof Error ? error : new Error('Upload failed'),
             )
+            throw new Error('Upload failed')
           }
         })
 

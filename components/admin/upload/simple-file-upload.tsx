@@ -295,6 +295,7 @@ export default function SimpleFileUpload() {
               file,
               error instanceof Error ? error : new Error('Upload failed'),
             )
+            throw new Error('Upload failed')
           }
         })
 
