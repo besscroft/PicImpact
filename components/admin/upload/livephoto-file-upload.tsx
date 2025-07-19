@@ -305,6 +305,7 @@ export default function LivephotoFileUpload() {
               file,
               error instanceof Error ? error : new Error('Upload failed'),
             )
+            throw new Error('Upload failed')
           }
         })
 
@@ -348,6 +349,7 @@ export default function LivephotoFileUpload() {
               file,
               error instanceof Error ? error : new Error('Upload failed'),
             )
+            throw new Error('Upload failed')
           }
         })
 

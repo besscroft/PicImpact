@@ -543,7 +543,6 @@ const FileUploadRoot = React.forwardRef<HTMLDivElement, FileUploadRootProps>(
                 store.dispatch({
                   variant: "SET_ERROR",
                   file,
-                  error: error.message ?? "Upload failed",
                 });
               },
             });
