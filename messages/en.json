@@ -80,7 +80,8 @@
     "updateSuccess": "Update successful!",
     "updateFailed": "Update failed!",
     "addSuccess": "Add successful!",
-    "addFailed": "Add failed!"
+    "addFailed": "Add failed!",
+    "imageLoadFailed": "Load image failed"
   },
   "Button": {
     "login": "Login",

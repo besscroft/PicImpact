@@ -1,7 +1,6 @@
 'use client'
 
 import type { HandleProps, ImageDataProps, PreviewImageHandleProps } from '~/types/props'
-import { LazyLoadImage } from 'react-lazy-load-image-component'
 import LivePhoto from '~/components/album/live-photo'
 import { toast } from 'sonner'
 import { LinkIcon } from '~/components/icons/link'
@@ -24,19 +23,17 @@ import { RefreshCWIcon } from '~/components/icons/refresh-cw'
 import { cn } from '~/lib/utils'
 import PreviewImageExif from '~/components/album/preview-image-exif'
 import { useSwrHydrated } from '~/hooks/use-swr-hydrated'
-import Lightbox from 'yet-another-react-lightbox'
 import 'yet-another-react-lightbox/styles.css'
-import { useRef, useState } from 'react'
-import { Zoom } from 'yet-another-react-lightbox/plugins'
+import { useState } from 'react'
 import { ExpandIcon } from '~/components/icons/expand'
 import { useTranslations } from 'next-intl'
+import ProgressiveImage from '~/components/album/progressive-image.tsx'
 
 export default function PreviewImage(props: Readonly<PreviewImageHandleProps>) {
   const router = useRouter()
   const t = useTranslations()
   const { data: download = false, mutate: setDownload } = useSWR(['masonry/download', props.data?.url ?? ''], null)
-  const [lightboxPhoto, setLightboxPhoto] = useState<any>(undefined)
-  const zoomRef = useRef(null)
+  const [lightboxPhoto, setLightboxPhoto] = useState<boolean>(false)
 
   const exifIconClass = 'dark:text-gray-50 text-gray-500'
   const exifTextClass = 'text-tiny text-sm select-none items-center dark:text-gray-50 text-gray-500'
@@ -137,15 +134,11 @@ export default function PreviewImage(props: Readonly<PreviewImageHandleProps>) {
         <div className="show-up-motion sm:col-span-2 sm:flex sm:justify-center sm:max-h-[90vh] select-none">
           {
             props.data.type === 1 ?
-              <LazyLoadImage
-                width={props.data.width}
-                src={props.data.preview_url || props.data.url}
-                alt={props.data.detail}
-                className="object-contain md:max-h-[90vh]"
-                effect="blur"
-                wrapperProps={{
-                  style: { transitionDelay: '0.5s' },
-                }}
+              <ProgressiveImage 
+                imageUrl={props.data.url } 
+                previewUrl={props.data.preview_url}
+                showLightbox={lightboxPhoto}
+                onShowLightboxChange={(value)=>setLightboxPhoto(value)}
               />
               : <LivePhoto
                 url={props.data.preview_url || props.data.url}
@@ -269,10 +262,7 @@ export default function PreviewImage(props: Readonly<PreviewImageHandleProps>) {
               className={exifIconClass}
               size={20}
               onClick={() => {
-                setLightboxPhoto({
-                  src: props.data.preview_url || props.data.url,
-                  alt: props.data.detail,
-                })
+                setLightboxPhoto(true)
               }}
             />
           </div>
@@ -301,17 +291,6 @@ export default function PreviewImage(props: Readonly<PreviewImageHandleProps>) {
           }
         </div>
       </div>
-      <Lightbox
-        open={Boolean(lightboxPhoto)}
-        close={() => setLightboxPhoto(undefined)}
-        slides={lightboxPhoto ? [lightboxPhoto] : undefined}
-        plugins={[Zoom]}
-        zoom={{ ref: zoomRef }}
-        carousel={{ finite: true }}
-        render={{ buttonPrev: () => null, buttonNext: () => null }}
-        styles={{ root: { '--yarl__color_backdrop': 'rgba(0, 0, 0, .8)' } }}
-        controller={{ closeOnBackdropClick: true, closeOnPullUp: true, closeOnPullDown: true }}
-      />
     </div>
   )
 }
