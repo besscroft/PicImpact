@@ -32,6 +32,15 @@ export type PreviewImageHandleProps = {
   configHandle: () => any
 }
 
+export type ProgressiveImageProps = {
+  imageUrl: string, // 原始图片
+  previewUrl: string, // 预览图
+  width?: number,
+  alt?: string,
+  showLightbox?:boolean
+  onShowLightboxChange?: (value: boolean) => void
+}
+
 export type LinkProps = {
   handle: () => any
   args: string

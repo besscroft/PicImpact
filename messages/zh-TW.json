@@ -80,7 +80,8 @@
     "updateSuccess": "更新成功！",
     "updateFailed": "更新失敗！",
     "addSuccess": "添加成功！",
-    "addFailed": "添加失敗！"
+    "addFailed": "添加失敗！",
+    "imageLoadFailed": "原圖加載失敗"
   },
   "Button": {
     "login": "登入",

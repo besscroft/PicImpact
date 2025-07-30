@@ -80,7 +80,8 @@
     "updateSuccess": "更新に成功しました！",
     "updateFailed": "更新に失敗しました！",
     "addSuccess": "追加に成功しました！",
-    "addFailed": "追加に失敗しました！"
+    "addFailed": "追加に失敗しました！",
+    "imageLoadFailed": "画像の読み込みに失敗しました"
   },
   "Button": {
     "login": "ログイン",
