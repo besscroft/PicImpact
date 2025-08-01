@@ -9,6 +9,7 @@ import {
 } from '~/server/db/operate/images'
 import { Hono } from 'hono'
 import { HTTPException } from 'hono/http-exception'
+import dayjs from 'dayjs';
 
 const app = new Hono()
 
@@ -30,6 +31,10 @@ app.post('/add', async (c) => {
   }
 
   try {
+    // 验证可能存在的时间信息
+    if (body?.exif?.data_time && !dayjs(body?.exif?.data_time).isValid()) {
+      body.exif.data_time = ''
+    }
     // 保存图片信息
     const res = await insertImage(body)
     return Response.json({
