@@ -13,6 +13,7 @@ generator client {
 // type 1->普通图片；2->livephoto
 model Images {
   id                   String                 @id @default(cuid()) @db.VarChar(50)
+  image_name           String?                @db.Text
   url                  String?                @db.Text
   preview_url          String?                @db.Text
   video_url            String?                @db.Text

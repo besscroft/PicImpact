@@ -1,5 +1,6 @@
 import ExifReader from 'exifreader'
 import type { ExifType } from '~/types'
+import { createId } from '@paralleldrive/cuid2'
 
 /**
  * 解析图片中的 exif 信息
@@ -57,10 +58,18 @@ export async function exifReader(file: ArrayBuffer | SharedArrayBuffer | Buffer)
  * @param mountPath 文件挂载路径（目前只有 alist 用得到
  */
 export async function uploadFile(file: any, type: string, storage: string, mountPath: string) {
+  const imageId = createId()
+  // 获取文件后缀
+  const ext = file.name.split('.').pop()
+  const fileName= file.name
+  // 生成新的文件名
+  const newFileName = `${imageId}.${ext}`
+  // 创建新的 File 对象
+  const newFile = new File([file], newFileName, { type: file.type })
   // 如果是 AList，使用旧的上传方式
   if (storage === 'alist') {
     const formData = new FormData()
-    formData.append('file', file)
+    formData.append('file', newFile)
     formData.append('storage', storage)
     formData.append('type', type)
     if (mountPath) {
@@ -77,7 +86,14 @@ export async function uploadFile(file: any, type: string, storage: string, mount
     }).then(res => res.json())
 
     if (res?.code === 200) {
-      return res
+      return {
+        code: 200,
+        data: {
+          url: res?.data,
+          imageId: imageId,
+          fileName: fileName
+        }
+      }
     }
     throw new Error('Upload failed')
   }
@@ -89,8 +105,8 @@ export async function uploadFile(file: any, type: string, storage: string, mount
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
-      filename: file.name,
-      contentType: file.type,
+      filename: newFile.name,
+      contentType: newFile.type,
       type: type,
       storage: storage
     })
@@ -106,9 +122,9 @@ export async function uploadFile(file: any, type: string, storage: string, mount
   try {
     const response = await fetch(presignedUrl, {
       method: 'PUT',
-      body: file,
+      body: newFile,
       headers: {
-        'Content-Type': file.type,
+        'Content-Type': newFile.type,
       },
       credentials: 'omit'
     })
@@ -134,7 +150,11 @@ export async function uploadFile(file: any, type: string, storage: string, mount
 
     return {
       code: 200,
-      data: getObjectResponse?.data
+      data: {
+        url: getObjectResponse?.data,
+        imageId: imageId,
+        fileName: fileName
+      }
     }
   } catch (error) {
     console.error('Direct upload failed:', error)

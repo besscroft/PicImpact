@@ -42,6 +42,8 @@ export default function SimpleFileUpload() {
   const [alistMountPath, setAlistMountPath] = useState('')
   const [exif, setExif] = useState({} as ExifType)
   const [title, setTitle] = useState('')
+  const [imageId, setImageId] = useState('')
+  const [imageName, setImageName] = useState('')
   const [url, setUrl] = useState('')
   const [previewUrl, setPreviewUrl] = useState('')
   const [videoUrl, setVideoUrl] = useState('')
@@ -114,8 +116,10 @@ export default function SimpleFileUpload() {
       return
     }
     const data = {
+      id: imageId,
       album: album,
       url: url,
+      image_name: imageName,
       title: title,
       preview_url: previewUrl,
       video_url: videoUrl,
@@ -194,7 +198,7 @@ export default function SimpleFileUpload() {
       async success(compressedFile) {
         const res = await uploadFile(compressedFile, type, storage, alistMountPath)
         if (res?.code === 200) {
-          setPreviewUrl(res?.data)
+          setPreviewUrl(res?.data?.url)
         } else {
           throw new Error('Upload failed')
         }
@@ -216,7 +220,9 @@ export default function SimpleFileUpload() {
       console.error('Failed to upload preview image:', e)
     }
     await loadExif(file)
-    setUrl(res?.data)
+    setUrl(res?.data?.url)
+    setImageId(res?.data?.imageId)
+    setImageName(res?.data?.fileName)
   }
 
   async function onRequestUpload(file: File) {
@@ -253,6 +259,8 @@ export default function SimpleFileUpload() {
     setExif({} as ExifType)
     setUrl('')
     setTitle('')
+    setImageId('')
+    setImageName('')
     setDetail('')
     setWidth(0)
     setHeight(0)
@@ -265,6 +273,8 @@ export default function SimpleFileUpload() {
 
   async function onBeforeUpload() {
     setTitle('')
+    setImageId('')
+    setImageName('')
     setPreviewUrl('')
     setVideoUrl('')
     setImageLabels([])

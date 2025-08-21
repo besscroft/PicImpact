@@ -64,7 +64,7 @@ export default function GalleryImage({ photo, configData }: { photo: ImageType, 
       link.href = url
       const parsedUrl = new URL(photo?.url ?? '')
       const filename = parsedUrl.pathname.split('/').pop()
-      link.download = filename || 'downloaded-file'
+      link.download = filename || 'downloaded-file.jpg'
       document.body.appendChild(link)
       link.click()
       document.body.removeChild(link)

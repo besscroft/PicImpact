@@ -27,6 +27,7 @@ app.get('/:id', async (c) => {
     }
 
     const imageUrl = imageData.url
+    const imageName = imageData.image_name
     if (!imageUrl) {
       throw new HTTPException(404, { message: 'Image URL not found' })
     }
@@ -45,18 +46,12 @@ app.get('/:id', async (c) => {
       const blob = await response.blob()
 
       // 提取并解码文件名
-      let filename = 'download'
-      if (imageUrl.startsWith('http://') || imageUrl.startsWith('https://')) {
-        const urlMatch = imageUrl.match(/^https?:\/\/[^\/]+(\/.*)$/)
-        if (urlMatch) {
-          const pathname = urlMatch[1]
-          const extractedFilename = pathname.split('/').pop()
-          if (extractedFilename) {
-            filename = decodeURIComponent(extractedFilename)
-          }
-        }
+      let filename: string
+      // 如果有图片名
+      if (imageName) {
+        filename = imageName
       } else {
-        filename = decodeURIComponent(imageUrl.split('/').pop() || 'download')
+        filename = decodeURIComponent(imageUrl.split('/').pop() || 'download.jpg')
       }
 
       return new Response(blob, {
@@ -116,18 +111,11 @@ app.get('/:id', async (c) => {
         const presignedUrl = await generatePresignedUrl(client, bucket, filePath, '')
 
         // 直接返回预签名 URL
-        let filename = 'download'
-        if (imageUrl.startsWith('http://') || imageUrl.startsWith('https://')) {
-          const urlMatch = imageUrl.match(/^https?:\/\/[^\/]+(\/.*)$/)
-          if (urlMatch) {
-            const pathname = urlMatch[1]
-            const extractedFilename = pathname.split('/').pop()
-            if (extractedFilename) {
-              filename = decodeURIComponent(extractedFilename)
-            }
-          }
+        let filename: string
+        if (imageName) {
+          filename = imageName
         } else {
-          filename = decodeURIComponent(imageUrl.split('/').pop() || 'download')
+          filename = decodeURIComponent(imageUrl.split('/').pop() || 'download.jpg')
         }
 
         return c.json({
@@ -154,18 +142,11 @@ app.get('/:id', async (c) => {
         const presignedUrl = await generatePresignedUrl(client, bucket, filePath, '')
 
         // 直接返回预签名 URL
-        let filename = 'download'
-        if (imageUrl.startsWith('http://') || imageUrl.startsWith('https://')) {
-          const urlMatch = imageUrl.match(/^https?:\/\/[^\/]+(\/.*)$/)
-          if (urlMatch) {
-            const pathname = urlMatch[1]
-            const extractedFilename = pathname.split('/').pop()
-            if (extractedFilename) {
-              filename = decodeURIComponent(extractedFilename)
-            }
-          }
+        let filename: string
+        if (imageName) {
+          filename = imageName
         } else {
-          filename = decodeURIComponent(imageUrl.split('/').pop() || 'download')
+          filename = decodeURIComponent(imageUrl.split('/').pop() || 'download.jpg')
         }
 
         return c.json({

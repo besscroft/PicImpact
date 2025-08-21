@@ -35,6 +35,7 @@ export type ExifType = {
 
 export type ImageType = {
   id: string;
+  image_name: string;
   title: string;
   url: string;
   preview_url: string;

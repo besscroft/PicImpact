@@ -16,6 +16,8 @@ export async function insertImage(image: ImageType) {
   await db.$transaction(async (tx) => {
     const resultRow = await tx.images.create({
       data: {
+        id: image.id,
+        image_name: image.image_name,
         url: image.url,
         title: image.title,
         preview_url: image.preview_url,
