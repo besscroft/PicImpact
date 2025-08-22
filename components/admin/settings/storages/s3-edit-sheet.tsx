@@ -9,6 +9,7 @@ import { useSWRConfig } from 'swr'
 import { ReloadIcon } from '@radix-ui/react-icons'
 import { Button } from '~/components/ui/button'
 import { useTranslations } from 'next-intl'
+import { Switch } from '~/components/ui/switch'
 
 export default function S3EditSheet() {
   const [loading, setLoading] = useState(false)
@@ -58,6 +59,30 @@ export default function S3EditSheet() {
         <div className="flex flex-col space-y-2">
           {
             s3Data?.map((config: Config) => (
+              config.config_key === 'force_path_style' || config.config_key === 's3_cdn' || config.config_key === 's3_direct_download' ?
+                <div
+                  key={config.id}
+                  className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm"
+                >
+                  <div className="flex flex-col gap-1">
+                    <div className="text-tiny text-default-400">
+                      {t('Config.' + config.config_key)}
+                    </div>
+                  </div>
+                  <Switch
+                    className="cursor-pointer"
+                    checked={config.config_value === 'true'}
+                    onCheckedChange={(value) => setS3EditData(
+                      s3Data?.map((c: Config) => {
+                        if (c.config_key === config.config_key) {
+                          c.config_value = value ? 'true' : 'false'
+                        }
+                        return c
+                      })
+                    )}
+                  />
+                </div>
+              :
               <label
                 htmlFor="text"
                 key={config.id}
