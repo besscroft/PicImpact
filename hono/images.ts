@@ -9,7 +9,7 @@ import {
 } from '~/server/db/operate/images'
 import { Hono } from 'hono'
 import { HTTPException } from 'hono/http-exception'
-import dayjs from 'dayjs';
+import dayjs from 'dayjs'
 
 const app = new Hono()
 

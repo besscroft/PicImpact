@@ -83,7 +83,7 @@ export default function PreviewImage(props: Readonly<PreviewImageHandleProps>) {
         // 如果是 JSON 响应，说明是直接下载模式
         const data = await response.json()
         // 使用后端返回的文件名，并进行 URL 解码
-        const filename = decodeURIComponent(data.filename || 'download')
+        const filename = decodeURIComponent(data.filename || 'download.jpg')
         // 直接使用 window.location.href 触发下载
         response = await fetch(data.url)
         const blob = await response.blob()

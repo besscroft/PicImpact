@@ -29,7 +29,7 @@ export async function register() {
             { config_key: 'r2_bucket', config_value: '', detail: 'Cloudflare Bucket 存储桶名称，如：picimpact' },
             { config_key: 'r2_storage_folder', config_value: '', detail: '存储文件夹(Cloudflare R2)，严格格式，如：picimpact 或 picimpact/images ，填 / 或者不填表示根路径' },
             { config_key: 'r2_public_domain', config_value: '', detail: 'Cloudflare R2 自定义域（公开访问）' },
-            { config_key: 'r2_direct_download', config_value: 'false', detail: '是否启用 R2 直接下载模式，默认 false。' },
+            { config_key: 'r2_direct_download', config_value: 'false', detail: '是否启用 R2 直链下载模式，默认 false。' },
             { config_key: 'custom_title', config_value: 'PicImpact', detail: '网站标题' },
             { config_key: 'custom_favicon_url', config_value: '', detail: '用户自定义的 favicon 地址' },
             { config_key: 'custom_author', config_value: '', detail: '网站归属者名称' },
