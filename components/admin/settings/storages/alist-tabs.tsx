@@ -4,7 +4,6 @@ import { Card } from '~/components/ui/card'
 import {
   Table,
   TableBody,
-  TableCell,
   TableHead,
   TableHeader,
   TableRow,
@@ -18,6 +17,7 @@ import { ReloadIcon } from '@radix-ui/react-icons'
 import React from 'react'
 import AlistEditSheet from '~/components/admin/settings/storages/alist-edit-sheet'
 import { useTranslations } from 'next-intl'
+import TabsTableCell from '~/components/admin/settings/storages/tabs-table-cell'
 
 export default function AlistTabs() {
   const { data, error, isValidating, mutate } = useSWR('/api/v1/storage/alist/info', fetcher
@@ -75,12 +75,7 @@ export default function AlistTabs() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {data.map((item: any) => (
-                <TableRow key={item.id}>
-                  <TableCell className="font-medium">{item.config_key}</TableCell>
-                  <TableCell className="truncate max-w-48">{item.config_value || 'N&A'}</TableCell>
-                </TableRow>
-              ))}
+              <TabsTableCell data={data} />
             </TableBody>
           </Table>
         </Card>

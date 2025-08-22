@@ -4,7 +4,6 @@ import { Card } from '~/components/ui/card'
 import {
   Table,
   TableBody,
-  TableCell,
   TableHead,
   TableHeader,
   TableRow,
@@ -18,6 +17,7 @@ import { toast } from 'sonner'
 import { useButtonStore } from '~/app/providers/button-store-providers'
 import R2EditSheet from '~/components/admin/settings/storages/r2-edit-sheet'
 import { useTranslations } from 'next-intl'
+import TabsTableCell from '~/components/admin/settings/storages/tabs-table-cell'
 
 export default function R2Tabs() {
   const { data, error, isValidating, mutate } = useSWR('/api/v1/settings/r2-info', fetcher
@@ -76,12 +76,7 @@ export default function R2Tabs() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {data.map((item: any) => (
-                <TableRow key={item.id}>
-                  <TableCell className="font-medium">{item.config_key}</TableCell>
-                  <TableCell className="truncate max-w-48">{item.config_value || 'N&A'}</TableCell>
-                </TableRow>
-              ))}
+              <TabsTableCell data={data} />
             </TableBody>
           </Table>
         </Card>
