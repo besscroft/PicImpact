@@ -47,8 +47,10 @@ export const viewport = {
 
 export default async function RootLayout({
   children,
+  modal,
 }: Readonly<{
   children: React.ReactNode;
+  modal: React.ReactNode;
 }>) {
 
   const locale = await getLocale()
@@ -81,11 +83,13 @@ export default async function RootLayout({
             <ToasterProviders/>
             <ProgressBarProviders>
               {children}
+              {modal}
             </ProgressBarProviders>
           </ThemeProvider>
         </ButtonStoreProvider>
       </ConfigStoreProvider>
     </NextIntlClientProvider>
+    <div id="modal-root" />
     <Script
       id="umami-analytics"
       strategy="afterInteractive"
