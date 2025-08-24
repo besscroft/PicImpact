@@ -12,7 +12,7 @@ export function Modal({ children }: { children: React.ReactNode }) {
       <DialogContent
         showCloseButton={false}
         onInteractOutside={(event: any) => event.preventDefault()}
-        className="h-full w-full rounded-none max-w-full sm:max-w-[calc(100%-8rem)] sm:max-h-[calc(100%-8rem)] sm:rounded-md sm:shadow-xl"
+        className="h-full w-full rounded-none max-w-full sm:rounded-md sm:shadow-xl"
       >
         {children}
       </DialogContent>
