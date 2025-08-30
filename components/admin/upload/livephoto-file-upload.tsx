@@ -193,7 +193,7 @@ export default function LivephotoFileUpload() {
       async success(compressedFile) {
         const res = await uploadFile(compressedFile, type, storage, alistMountPath)
         if (res?.code === 200) {
-          setPreviewUrl(res?.data)
+          setPreviewUrl(res?.data?.url)
         } else {
           throw new Error('Upload failed')
         }
@@ -207,7 +207,7 @@ export default function LivephotoFileUpload() {
   async function resHandle(res: any, file: File, type: number) {
     if (type === 2) {
       if (res?.code === 200) {
-        setVideoUrl(res?.data)
+        setVideoUrl(res?.data?.url)
       } else {
         throw new Error('Upload failed')
       }
@@ -223,7 +223,7 @@ export default function LivephotoFileUpload() {
           throw new Error('Upload failed')
         }
         await loadExif(file)
-        setUrl(res?.data)
+        setUrl(res?.data?.url)
       } else {
         throw new Error('Upload failed')
       }
@@ -322,7 +322,7 @@ export default function LivephotoFileUpload() {
         toast.error('Upload failed')
       }
     },
-    [],
+    [onRequestUpload],
   )
 
   const onVideoUpload = React.useCallback(

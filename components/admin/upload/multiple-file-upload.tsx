@@ -151,7 +151,7 @@ export default function MultipleFileUpload() {
       async success(compressedFile) {
         const res = await uploadFile(compressedFile, type, storage, alistMountPath)
         if (res?.code === 200) {
-          await autoSubmit(file, url, res?.data)
+          await autoSubmit(file, url, res?.data?.url)
         } else {
           throw new Error('Upload failed')
         }
@@ -165,9 +165,9 @@ export default function MultipleFileUpload() {
   async function resHandle(res: any, file: File) {
     try {
       if (album === '/') {
-        await uploadPreviewImage(file, '/preview', res?.data)
+        await uploadPreviewImage(file, '/preview', res?.data?.url)
       } else {
-        await uploadPreviewImage(file, album + '/preview', res?.data)
+        await uploadPreviewImage(file, album + '/preview', res?.data?.url)
       }
     } catch (e) {
       throw new Error('Upload failed')
