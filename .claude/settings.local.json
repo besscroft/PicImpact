@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git restore:*)",
+      "Bash(rm:*)",
+      "WebFetch(domain:www.better-auth.com)",
+      "Bash(npx prisma migrate dev:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

@@ -81,17 +81,18 @@ model ImagesAlbumsRelation {
 
 // better-auth
 model User {
-  id               String      @id
-  name             String      @unique @db.VarChar(50)
-  email            String      @db.VarChar(200)
+  id               String                @id
+  name             String                @unique @db.VarChar(50)
+  email            String                @db.VarChar(200)
   emailVerified    Boolean
   image            String?
   twoFactorEnabled Boolean?
-  createdAt        DateTime    @db.Timestamp()
-  updatedAt        DateTime    @db.Timestamp()
+  createdAt        DateTime              @db.Timestamp()
+  updatedAt        DateTime              @db.Timestamp()
   sessions         Session[]
   accounts         Account[]
   TwoFactor        TwoFactor[]
+  passkeys         Passkey[]
 
   @@unique([email])
   @@map("user")
@@ -150,4 +151,22 @@ model Verification {
   updatedAt  DateTime? @db.Timestamp()
 
   @@map("verification")
+}
+
+// Passkey 表 (符合 better-auth passkey 插件要求)
+model Passkey {
+  id           String   @id @default(cuid())
+  name         String?
+  publicKey    String
+  userId       String
+  credentialID String   @unique
+  counter      Int      @default(0)
+  deviceType   String
+  backedUp     Boolean
+  transports   String?
+  createdAt    DateTime @db.Timestamp()
+  aaguid       String?
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("passkey")
 }

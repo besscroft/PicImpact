@@ -3,6 +3,7 @@ import { prismaAdapter } from 'better-auth/adapters/prisma'
 import { db } from '~/server/lib/db'
 import { nextCookies } from 'better-auth/next-js'
 import { customSession, twoFactor  } from 'better-auth/plugins'
+import { passkey } from 'better-auth/plugins/passkey'
 
 export const auth = betterAuth({
   database: prismaAdapter(db, {
@@ -22,6 +23,10 @@ export const auth = betterAuth({
   plugins: [
     nextCookies(),
     twoFactor(),
+    passkey({
+      rpID: process.env.BETTER_AUTH_PASSKEY_RP_ID || 'localhost',
+      rpName: process.env.BETTER_AUTH_PASSKEY_RP_NAME || 'PicImpact'
+    }),
     customSession(async ({ user, session }) => {
       // 可拓展 session
       return {
