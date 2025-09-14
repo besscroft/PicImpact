@@ -130,11 +130,11 @@ app.put('/update-custom-info', async (c) => {
     enablePreviewImageMaxWidthLimit: boolean
     previewImageMaxWidth: number
     previewQuality: number
-    customIndexRandomShow: boolean
     umamiHost: string
     umamiAnalytics: string
     maxUploadFiles: number
     customIndexOriginEnable: boolean
+    adminImagesPerPage: number
   }
   try {
     await updateCustomInfo(query)
