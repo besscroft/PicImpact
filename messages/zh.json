@@ -46,13 +46,13 @@
     "description": "Passkey 提供了一种安全、便捷的无密码登录方式，使用您设备上的生物识别或 PIN 验证。",
     "register": "注册 Passkey",
     "nameLabel": "Passkey 名称 (可选)",
-    "namePlaceholder": "默认使用邮箱: {{email}}",
+    "namePlaceholder": "输入 Passkey 标识名称，默认: {email}",
     "nameHint": "为您的 Passkey 起一个容易识别的名称，比如\"我的手机\"或\"办公电脑\"",
-    "registeredList": "已注册的 Passkey ({{count}})",
+    "registeredList": "已注册的 Passkey ({count})",
     "noPasskeys": "暂无 Passkey",
     "noPasskeysDescription": "您还没有注册任何 Passkey。点击上方按钮来注册您的第一个 Passkey。",
     "unnamed": "未命名的 Passkey",
-    "createdAt": "创建于: {{date}}",
+    "createdAt": "创建于: {date}",
     "backedUp": "已备份",
     "platformDevice": "平台设备",
     "crossPlatformDevice": "跨平台设备",
@@ -90,7 +90,8 @@
     "deletePasskey": "删除 Passkey",
     "deleteConfirmation": "确定要删除这个 Passkey 吗？此操作无法撤销。",
     "tipTitle": "提示",
-    "tipDescription": "确保至少保留一个 Passkey 或其他登录方式，以防止无法访问您的账户。"
+    "tipDescription": "确保至少保留一个 Passkey 或其他登录方式，以防止无法访问您的账户。",
+    "notLoggedIn": "未登录"
   },
   "Tips": {
     "noImg": "暂无图片",

@@ -65,7 +65,7 @@ export const PasskeyRegister: React.FC<PasskeyRegisterProps> = ({
           <Input
             id="passkey-name"
             type="text"
-            placeholder={t('namePlaceholder', { email: email || '未登录' })}
+            placeholder={t('namePlaceholder', { email: email || t('notLoggedIn') })}
             value={passkeyName}
             onChange={(e) => setPasskeyName(e.target.value)}
             disabled={isLoading || !email}
