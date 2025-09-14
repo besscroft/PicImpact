@@ -108,7 +108,7 @@ app.post('/upload', async (c) => {
     switch (storage.toString()) {
       case 'alist':
         return await alistUpload(file, type, mountPath)
-          .then((result: string) => {
+          .then((result: string | undefined) => {
             return Response.json({
               code: 200, data: result
             })

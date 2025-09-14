@@ -14,7 +14,6 @@ route.onError((err, c) => {
     console.error(err)
     return err.getResponse()
   }
-  // ...
 })
 
 route.route('/settings', settings)

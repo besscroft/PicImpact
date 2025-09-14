@@ -85,8 +85,9 @@ export default function LivephotoFileUpload() {
           setWidth(Number(img.width))
           setHeight(Number(img.height))
         }
-        // @ts-ignore
-        img.src = e.target.result
+        if (e.target && typeof e.target.result === 'string') {
+          img.src = e.target.result
+        }
       }
       reader.readAsDataURL(file)
     } catch (e) {
@@ -133,7 +134,6 @@ export default function LivephotoFileUpload() {
           'Content-Type': 'application/json',
         },
         method: 'post',
-        // @ts-ignore
         body: JSON.stringify(data),
       }).then(res => res.json())
       if (res?.code === 200) {

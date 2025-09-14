@@ -21,7 +21,6 @@ import {
 } from '~/components/ui/card'
 import { Input } from '~/components/ui/input'
 import { Label } from '~/components/ui/label'
-import { useButtonStore } from '~/app/providers/button-store-providers'
 import { useTranslations } from 'next-intl'
 import { authClient } from '~/server/auth/auth-client'
 import { PasskeyLogin } from '~/components/auth/passkey-login'
@@ -65,10 +64,6 @@ export const UserFrom = ({
       }
     }
   }
-
-  const { setLoginHelp } = useButtonStore(
-    (state) => state,
-  )
   
   function zHandle(): SafeParseReturnType<string | any, string | any> {
     const parsedCredentials = z

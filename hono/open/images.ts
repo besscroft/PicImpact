@@ -8,9 +8,11 @@ const app = new Hono()
 app.get('/get-image-blob', async (c) => {
   const { searchParams } = new URL(c.req.url)
   const imageUrl = searchParams.get('imageUrl')
-  // @ts-ignore
-  const blob = await fetch(imageUrl).then(res => res.blob())
-  return new Response(blob)
+  if (imageUrl) {
+    const blob = await fetch(imageUrl).then(res => res.blob())
+    return new Response(blob)
+  }
+  throw new HTTPException(500, { message: 'Get image error' })
 })
 
 app.get('/get-image-by-id', async (c) => {

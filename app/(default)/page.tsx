@@ -33,7 +33,7 @@ export default async function Home() {
   }
 
   const style: Config[] = await getStyleConfig()
-  const currentStyle = style?.find(a => a.config_key === 'custom_index_style').config_value
+  const currentStyle = style.find(a => a.config_key === 'custom_index_style')?.config_value
 
   const props: ImageHandleProps = {
     handle: getData,
