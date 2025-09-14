@@ -29,6 +29,7 @@ import { KeyCircleIcon } from '~/components/icons/key-circle'
 import { CogIcon } from '~/components/icons/cog'
 import { FingerprintIcon } from '~/components/icons/fingerprint'
 import { LoaderPinwheelIcon } from '~/components/icons/loader-pinwheel'
+import { KeySquareIcon } from '~/components/icons/key-square'
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const router = useRouter()
@@ -89,6 +90,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           name: t('Link.authenticator'),
           url: '/admin/settings/authenticator',
           icon: FingerprintIcon,
+        },
+        {
+          name: t('Link.passkey'),
+          url: '/admin/settings/passkey',
+          icon: KeySquareIcon,
         },
       ],
     },

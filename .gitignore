@@ -5,6 +5,7 @@ dist
 .idea/
 .vercel/
 
+.claude/
 # next.js
 /.next/
 /out/
