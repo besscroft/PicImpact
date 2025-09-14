@@ -21,6 +21,7 @@ PicImpact 是一个支持自部署的摄影作品展示网站，基于 Next.js +
 - 支持批量自动化上传，上传图片时会生成 0.3 倍率的压缩图片，以提供加载优化。
 - 后台有图片数据统计、图片上传、图片维护、相册管理、系统设置和存储配置功能。
 - 双因素认证功能，基于 TOTP 算法 [RFC 6238](https://www.rfc-editor.org/rfc/rfc6238)，支持 Google Authenticator、Microsoft Authenticator 和 1Password 等。
+- Passkey 无密码登录功能，基于 WebAuthn 标准，支持生物识别（指纹、面容等）和硬件安全密钥登录。
 - 基于 SSR 的混合渲染，采用状态机制，提供良好的使用体验。
 - 基于 prisma 的自动初始化数据库和数据迁移，简化部署流程。
 - 支持 Vercel 部署、Node.js 部署、Docker 等容器化部署，当然 k8s 也支持。
@@ -31,7 +32,7 @@ PicImpact 是一个支持自部署的摄影作品展示网站，基于 Next.js +
 
 > 我们推荐当新版本发布时您再进行版本更新！
 
-<a href="https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fbesscroft%2FPicImpact&env=DATABASE_URL,AUTH_SECRET"><img src="https://vercel.com/button" alt="Deploy with Vercel"/></a>
+<a href="https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fbesscroft%2FPicImpact&env=DATABASE_URL,BETTER_AUTH_SECRET,BETTER_AUTH_PASSKEY_RP_ID,BETTER_AUTH_PASSKEY_RP_NAME"><img src="https://vercel.com/button" alt="Deploy with Vercel"/></a>
 
 | Key          | 备注                                                                                                                                                                 |
 |--------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -39,8 +40,16 @@ PicImpact 是一个支持自部署的摄影作品展示网站，基于 Next.js +
 | DIRECT_URL | `postgres://postgres.[your-supabase-project]:[password]@aws-0-[aws-region].pooler.supabase.com:5432/postgres`，用于 `prisma migrate`，如果使用非 serverless 数据库，与 `DATABASE_URL` 保持一致即可。                            |
 | BETTER_AUTH_SECRET  | 权限机密，你可以执行 npx auth secret 生成一个，反正是随机的字符串就行                                                                                                                        |
 | BETTER_AUTH_URL  | 如果您使用 nginx 进行反向代理，需要填写访问地址，如：`https://example.com `                                                                                                               |
+| BETTER_AUTH_PASSKEY_RP_ID  | Passkey 依赖方标识符，通常填写您的域名，如：`example.com`。本地开发可填写 `localhost`                                                                                                     |
+| BETTER_AUTH_PASSKEY_RP_NAME  | Passkey 依赖方名称，显示给用户的应用名称，如：`PicImpact` 或您的应用名称                                                                                                                  |
 
 > 请根据您的数据库供应商来填写正确的数据库 `connect url`，表格中的示例为 `supabase` 供应商。
+>
+> **关于 Passkey 配置：**
+> - `BETTER_AUTH_PASSKEY_RP_ID` 是 WebAuthn 依赖方标识符，必须与您的域名匹配
+> - `BETTER_AUTH_PASSKEY_RP_NAME` 是显示给用户的应用名称，会在 Passkey 注册时展示
+> - Passkey 功能依赖 HTTPS 环境，本地开发除外（可使用 localhost）
+> - 如果不配置这两个环境变量，Passkey 功能将使用默认值但可能影响用户体验
 >
 > 如果是 Vercel 部署，直接将 `Build Command` 设置为 `pnpm run build:vercel` 即可。
 >
