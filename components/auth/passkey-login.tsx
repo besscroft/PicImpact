@@ -26,15 +26,10 @@ export const PasskeyLogin: React.FC<PasskeyLoginProps> = ({
   const [isLoading, setIsLoading] = useState(false)
 
   const handlePasskeyLogin = async () => {
-    if (!email) {
-      toast.error(t('enterEmailFirst'))
-      return
-    }
-
     setIsLoading(true)
     try {
       const { data, error } = await authClient.signIn.passkey({
-        email: email
+        email: 'user@example.com', // 可选参数，不强制
       })
 
       if (error) {
@@ -77,7 +72,7 @@ export const PasskeyLogin: React.FC<PasskeyLoginProps> = ({
   return (
     <Button
       onClick={handlePasskeyLogin}
-      disabled={isLoading || !email}
+      disabled={isLoading}
       className={className}
       variant="outline"
       title={!email ? t('enterEmailFirst') : ''}
@@ -87,7 +82,7 @@ export const PasskeyLogin: React.FC<PasskeyLoginProps> = ({
       ) : (
         <Fingerprint className="mr-2 h-4 w-4" />
       )}
-{tLogin('passkeyLogin')}
+      {tLogin('passkeyLogin')}
     </Button>
   )
 }
