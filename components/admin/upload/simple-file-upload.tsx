@@ -254,8 +254,6 @@ export default function SimpleFileUpload() {
   }
 
   function onRemoveFile() {
-    setStorageSelect(false)
-    setAlistMountPath('')
     setExif({} as ExifType)
     setUrl('')
     setTitle('')
