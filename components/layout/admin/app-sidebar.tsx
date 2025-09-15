@@ -25,7 +25,6 @@ import { GalleryThumbnailsIcon } from '~/components/icons/gallery-thumbnails'
 import { GithubIcon } from '~/components/icons/github'
 import { FrameIcon } from '~/components/icons/frame'
 import { ShieldCheckIcon } from '~/components/icons/shield-check'
-import { KeyCircleIcon } from '~/components/icons/key-circle'
 import { CogIcon } from '~/components/icons/cog'
 import { FingerprintIcon } from '~/components/icons/fingerprint'
 import { LoaderPinwheelIcon } from '~/components/icons/loader-pinwheel'
@@ -75,11 +74,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           name: t('Link.account'),
           url: '/admin/settings/account',
           icon: ShieldCheckIcon,
-        },
-        {
-          name: t('Link.password'),
-          url: '/admin/settings/password',
-          icon: KeyCircleIcon,
         },
         {
           name: t('Link.storages'),
