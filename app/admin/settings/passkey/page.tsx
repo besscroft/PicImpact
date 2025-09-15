@@ -99,7 +99,7 @@ export default function PasskeySettings() {
   }
 
   return (
-    <div className="flex flex-col space-y-4 h-full flex-1">
+    <div className="flex flex-col space-y-4 h-full flex-1 max-w-sm">
       <div className="flex items-center space-x-2">
         <Fingerprint className="h-5 w-5" />
         <h2 className="text-lg font-semibold">{t('title')}</h2>
@@ -112,7 +112,7 @@ export default function PasskeySettings() {
           {/* 注册新的 Passkey */}
           <div className="space-y-2">
             <h3 className="text-md font-medium">{t('addNew')}</h3>
-            <p className="text-sm text-muted-foreground">
+            <p className="text-sm text-muted-foreground text-wrap">
               {t('description')}
             </p>
             <PasskeyRegister
@@ -132,7 +132,7 @@ export default function PasskeySettings() {
                 <span>{t('loading')}</span>
               </div>
             ) : passkeys.length === 0 ? (
-              <Alert>
+              <Alert className="max-w-sm">
                 <Fingerprint className="h-4 w-4" />
                 <AlertTitle>{t('noPasskeys')}</AlertTitle>
                 <AlertDescription>

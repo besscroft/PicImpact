@@ -9,6 +9,7 @@ import { ReloadIcon } from '@radix-ui/react-icons'
 import { authClient } from '~/server/auth/auth-client'
 import { Fingerprint } from 'lucide-react'
 import { useTranslations } from 'next-intl'
+import { cn } from '~/lib/utils'
 
 interface PasskeyRegisterProps {
   email?: string
@@ -56,39 +57,40 @@ export const PasskeyRegister: React.FC<PasskeyRegisterProps> = ({
   }
 
   return (
-    <div className={className}>
-      <div className="space-y-3">
-        <div>
-          <Label htmlFor="passkey-name" className="text-sm font-medium">
-            {t('nameLabel')}
-          </Label>
-          <Input
-            id="passkey-name"
-            type="text"
-            placeholder={t('namePlaceholder', { email: email || t('notLoggedIn') })}
-            value={passkeyName}
-            onChange={(e) => setPasskeyName(e.target.value)}
-            disabled={isLoading || !email}
-            className="mt-1"
-          />
-          <p className="text-xs text-muted-foreground mt-1">
-            {t('nameHint')}
-          </p>
-        </div>
-        <Button
-          onClick={handleRegisterPasskey}
-          disabled={isLoading || !email}
-          className="w-full"
-          variant="outline"
-        >
-          {isLoading ? (
-            <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
-          ) : (
-            <Fingerprint className="mr-2 h-4 w-4" />
-          )}
-          {t('register')}
-        </Button>
-      </div>
+    <div className={cn(
+      'space-y-3 max-w-sm items-center',
+      className
+    )}>
+    <div>
+      <Label htmlFor="passkey-name" className="text-sm font-medium">
+        {t('nameLabel')}
+      </Label>
+      <Input
+        id="passkey-name"
+        type="text"
+        placeholder={t('namePlaceholder', { email: email || t('notLoggedIn') })}
+        value={passkeyName}
+        onChange={(e) => setPasskeyName(e.target.value)}
+        disabled={isLoading || !email}
+        className="mt-1"
+      />
+      <p className="text-xs text-muted-foreground mt-1">
+        {t('nameHint')}
+      </p>
     </div>
+    <Button
+      onClick={handleRegisterPasskey}
+      disabled={isLoading || !email}
+      className="w-full"
+      variant="outline"
+    >
+      {isLoading ? (
+        <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
+      ) : (
+        <Fingerprint className="mr-2 h-4 w-4" />
+      )}
+      {t('register')}
+    </Button>
+  </div>
   )
 }
