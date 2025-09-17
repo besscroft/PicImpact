@@ -1,7 +1,7 @@
 import { fetchClientImagesListByAlbum, fetchClientImagesPageTotalByAlbum } from '~/server/db/query/images'
 import type { ImageHandleProps } from '~/types/props'
 import { fetchConfigsByKeys } from '~/server/db/query/configs'
-import AlbumGallery from '~/components/album/album-gallery'
+import DefaultGallery from '~/components/layout/theme/default/main/default-gallery.tsx'
 
 import 'react-photo-album/masonry.css'
 
@@ -34,6 +34,6 @@ export default async function Page({params}: { params: any }) {
   }
 
   return (
-    <AlbumGallery {...props} />
+    <DefaultGallery {...props} />
   )
 }

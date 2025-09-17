@@ -1,17 +1,17 @@
 'use client'
 
-import type { HandleProps, ImageHandleProps } from '~/types/props'
-import { useSwrPageTotalHook } from '~/hooks/use-swr-page-total-hook'
+import type { HandleProps, ImageHandleProps } from '~/types/props.ts'
+import { useSwrPageTotalHook } from '~/hooks/use-swr-page-total-hook.ts'
 import useSWRInfinite from 'swr/infinite'
-import { useSwrHydrated } from '~/hooks/use-swr-hydrated'
+import { useSwrHydrated } from '~/hooks/use-swr-hydrated.ts'
 import { useTranslations } from 'next-intl'
 import type { ImageType } from '~/types'
 import { ReloadIcon } from '@radix-ui/react-icons'
-import { Button } from '~/components/ui/button'
+import { Button } from '~/components/ui/button.tsx'
 import React from 'react'
-import GalleryImage from '~/components/album/gallery-image'
+import GalleryImage from '~/components/gallery/simple/gallery-image.tsx'
 
-export default function Gallery(props : Readonly<ImageHandleProps>) {
+export default function SimpleGallery(props : Readonly<ImageHandleProps>) {
   const { data: pageTotal } = useSwrPageTotalHook(props)
   const { data, isLoading, isValidating, size, setSize } = useSWRInfinite((index) => {
       return [`client-${props.args}-${index}-${props.album}`, index]

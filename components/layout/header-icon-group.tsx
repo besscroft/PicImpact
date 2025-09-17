@@ -1,14 +1,14 @@
 'use client'
 
-import { LoaderPinwheelIcon } from '~/components/icons/loader-pinwheel'
-import { GalleryThumbnailsIcon } from '~/components/icons/gallery-thumbnails'
-import { CompassIcon } from '~/components/icons/compass'
+import { LoaderPinwheelIcon } from '~/components/icons/loader-pinwheel.tsx'
+import { GalleryThumbnailsIcon } from '~/components/icons/gallery-thumbnails.tsx'
+import { CompassIcon } from '~/components/icons/compass.tsx'
 import { useRouter } from 'next-nprogress-bar'
-import { useButtonStore } from '~/app/providers/button-store-providers'
-import Command from '~/components/layout/command'
-import type { AlbumDataProps } from '~/types/props'
+import { useButtonStore } from '~/app/providers/button-store-providers.tsx'
+import Command from '~/components/layout/command.tsx'
+import type { AlbumDataProps } from '~/types/props.ts'
 import { useEffect } from 'react'
-import { Tooltip, TooltipContent, TooltipTrigger } from '~/components/ui/tooltip'
+import { Tooltip, TooltipContent, TooltipTrigger } from '~/components/ui/tooltip.tsx'
 import { useTranslations } from 'next-intl'
 
 export default function HeaderIconGroup(props: Readonly<AlbumDataProps>) {

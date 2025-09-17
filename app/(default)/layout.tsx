@@ -1,4 +1,4 @@
-import Header from '~/components/layout/header'
+import DefaultHeader from '~/components/layout/theme/default/header/default-header.tsx'
 import { fetchAlbumsShow } from '~/server/db/query/albums'
 import type { AlbumType } from '~/types'
 import type { AlbumDataProps } from '~/types/props'
@@ -21,7 +21,7 @@ export default async function DefaultLayout({
 
   return (
     <>
-      <Header {...props} />
+      <DefaultHeader {...props} />
       {children}
     </>
   )
