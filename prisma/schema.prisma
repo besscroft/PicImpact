@@ -17,6 +17,7 @@ model Images {
   url                  String?                @db.Text
   preview_url          String?                @db.Text
   video_url            String?                @db.Text
+  blurhash             String?                @db.Text
   exif                 Json?                  @db.Json
   labels               Json?                  @db.Json
   width                Int                    @default(0)
@@ -81,14 +82,14 @@ model ImagesAlbumsRelation {
 
 // better-auth
 model User {
-  id               String                @id
-  name             String                @unique @db.VarChar(50)
-  email            String                @db.VarChar(200)
+  id               String      @id
+  name             String      @unique @db.VarChar(50)
+  email            String      @db.VarChar(200)
   emailVerified    Boolean
   image            String?
   twoFactorEnabled Boolean?
-  createdAt        DateTime              @db.Timestamp()
-  updatedAt        DateTime              @db.Timestamp()
+  createdAt        DateTime    @db.Timestamp()
+  updatedAt        DateTime    @db.Timestamp()
   sessions         Session[]
   accounts         Account[]
   TwoFactor        TwoFactor[]
