@@ -228,14 +228,14 @@ export default function Preferences() {
         </div>
         <div className="rounded space-y-4">
           <div className="w-full max-w-sm space-y-1">
-            <Label htmlFor="indexStyleSelect"> {t('Preferences.indexStyleSelect')} </Label>
+            <Label htmlFor="indexStyleSelect"> {t('Preferences.indexThemeSelect')} </Label>
             <Select value={customIndexStyle} onValueChange={(value) => setCustomIndexStyle(value)}>
               <SelectTrigger className="w-full cursor-pointer">
-                <SelectValue placeholder={t('Preferences.indexStyleSelect')} />
+                <SelectValue placeholder={t('Preferences.indexThemeSelect')} />
               </SelectTrigger>
               <SelectContent className="cursor-pointer">
-                <SelectItem className="cursor-pointer" value="0">{t('Preferences.indexStyleDefault')}</SelectItem>
-                <SelectItem className="cursor-pointer" value="1">{t('Preferences.indexStyleStar')}</SelectItem>
+                <SelectItem className="cursor-pointer" value="0">{t('Theme.indexDefaultStyle')}</SelectItem>
+                <SelectItem className="cursor-pointer" value="1">{t('Theme.indexSimpleStyle')}</SelectItem>
               </SelectContent>
             </Select>
           </div>

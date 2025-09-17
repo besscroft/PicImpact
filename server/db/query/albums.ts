@@ -48,3 +48,17 @@ export async function fetchAlbumsShow(): Promise<AlbumType[]> {
     ]
   })
 }
+
+/**
+ * 获取对应路由的相册信息
+ * @param router 相册路由
+ */
+export async function fetchAlbumByRouter(router: string): Promise<AlbumType> {
+  return await db.albums.findFirst({
+    where: {
+      del: 0,
+      show: 0,
+      album_value: router
+    },
+  })
+}

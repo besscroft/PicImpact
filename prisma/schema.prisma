@@ -56,6 +56,7 @@ model Albums {
   name                 String                 @db.VarChar(200)
   album_value          String                 @unique @db.Text
   detail               String?                @db.Text
+  theme                String                 @default("0") @db.Text
   show                 Int                    @default(1) @db.SmallInt
   sort                 Int                    @default(0) @db.SmallInt
   random_show          Int                    @default(1) @db.SmallInt

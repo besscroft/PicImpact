@@ -45,8 +45,9 @@ export default async function Home() {
 
   return (
     <>
-      {currentStyle && currentStyle === '1' ?
-        <SimpleGallery {...props} /> : <DefaultGallery {...props} />
+      {currentStyle
+        && currentStyle === '1' ? <SimpleGallery {...props} />
+        : <DefaultGallery {...props} />
       }
     </>
   )
