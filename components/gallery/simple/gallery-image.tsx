@@ -1,27 +1,27 @@
 'use client'
 
-import { LazyLoadImage } from 'react-lazy-load-image-component'
-import 'react-lazy-load-image-component/src/effects/blur.css'
 import type { ImageType } from '~/types'
 import * as React from 'react'
-import { CameraIcon } from '~/components/icons/camera'
-import { ApertureIcon } from '~/components/icons/aperture'
-import { TimerIcon } from '~/components/icons/timer'
-import { CrosshairIcon } from '~/components/icons/crosshair'
-import { GaugeIcon } from '~/components/icons/gauge'
-import { CopyIcon } from '~/components/icons/copy'
+import { CameraIcon } from '~/components/icons/camera.tsx'
+import { ApertureIcon } from '~/components/icons/aperture.tsx'
+import { TimerIcon } from '~/components/icons/timer.tsx'
+import { CrosshairIcon } from '~/components/icons/crosshair.tsx'
+import { GaugeIcon } from '~/components/icons/gauge.tsx'
+import { CopyIcon } from '~/components/icons/copy.tsx'
 import { toast } from 'sonner'
-import { LinkIcon } from '~/components/icons/link'
-import { RefreshCWIcon } from '~/components/icons/refresh-cw'
+import { LinkIcon } from '~/components/icons/link.tsx'
+import { RefreshCWIcon } from '~/components/icons/refresh-cw.tsx'
 import { cn } from '~/lib/utils'
-import { DownloadIcon } from '~/components/icons/download'
-import PreviewImageExif from '~/components/album/preview-image-exif'
+import { DownloadIcon } from '~/components/icons/download.tsx'
+import PreviewImageExif from '~/components/album/preview-image-exif.tsx'
 import useSWR from 'swr'
-import type { ImageDataProps } from '~/types/props'
-import { ClockIcon } from '~/components/icons/clock'
+import type { ImageDataProps } from '~/types/props.ts'
+import { ClockIcon } from '~/components/icons/clock.tsx'
 import dayjs from 'dayjs'
-import { Badge } from '~/components/ui/badge'
+import { Badge } from '~/components/ui/badge.tsx'
 import { useRouter } from 'next-nprogress-bar'
+import { useBlurImageDataUrl } from '~/hooks/use-blurhash.ts'
+import Image from 'next/image'
 
 export default function GalleryImage({ photo, configData }: { photo: ImageType, configData: any }) {
   const router = useRouter()
@@ -31,6 +31,8 @@ export default function GalleryImage({ photo, configData }: { photo: ImageType, 
 
   const { data: download = false, mutate: setDownload } = useSWR(['masonry/download', photo?.url ?? ''], null)
 
+  const dataURL = useBlurImageDataUrl(photo.blurhash)
+  
   const exifProps: ImageDataProps = {
     data: photo,
   }
@@ -97,16 +99,17 @@ export default function GalleryImage({ photo, configData }: { photo: ImageType, 
         </article>
       </div>
       <div
-        className="show-up-motion relative inline-block select-none sm:w-[66.667%] mx-auto shadow-gray-200 dark:shadow-gray-800">
-        <LazyLoadImage
+        className="relative inline-block select-none sm:w-[66.667%] mx-auto shadow-gray-200 dark:shadow-gray-800">
+        <Image
+          src={customIndexOriginEnable ? photo.url || photo.preview_url : photo.preview_url || photo.url}
+          overrideSrc={customIndexOriginEnable ? photo.url || photo.preview_url : photo.preview_url || photo.url}
+          alt={photo.title}
           width={photo.width}
           height={photo.height}
-          src={customIndexOriginEnable ? photo.url || photo.preview_url : photo.preview_url || photo.url}
-          alt={photo.title}
-          effect="blur"
-          wrapperProps={{
-            style: {transitionDelay: '0.5s'},
-          }}
+          loading="lazy"
+          placeholder="blur"
+          blurDataURL={dataURL}
+          onClick={() => router.push(`/preview/${photo?.id}`)}
         />
         {
           photo.type === 2 &&

@@ -12,6 +12,7 @@ import { Button } from '~/components/ui/button'
 import { Switch } from '~/components/ui/switch'
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from '~/components/ui/select'
 import { useTranslations } from 'next-intl'
+import { Label } from '~/components/ui/label.tsx'
 
 export default function AlbumAddSheet(props : Readonly<HandleProps>) {
   const { mutate } = useSwrHydrated(props)
@@ -141,6 +142,18 @@ export default function AlbumAddSheet(props : Readonly<HandleProps>) {
               className="mt-1 w-full border-none p-0 focus:border-transparent focus:outline-none focus:ring-0 sm:text-sm"
             />
             </label>
+            <div className="w-full max-w-sm space-y-1">
+              <Label htmlFor="indexStyleSelect"> {t('Preferences.indexThemeSelect')} </Label>
+              <Select value={data?.theme || '0'} onValueChange={(value) => setData({...data, theme: value})}>
+                <SelectTrigger className="w-full cursor-pointer">
+                  <SelectValue placeholder={t('Preferences.indexThemeSelect')} />
+                </SelectTrigger>
+                <SelectContent className="cursor-pointer">
+                  <SelectItem className="cursor-pointer" value="0">{t('Theme.indexDefaultStyle')}</SelectItem>
+                  <SelectItem className="cursor-pointer" value="1">{t('Theme.indexSimpleStyle')}</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
             <div className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
               <div className="flex flex-col gap-1">
                 <div className="text-medium">{t('Album.showStatus')}</div>

@@ -36,6 +36,8 @@ export type ProgressiveImageProps = {
   imageUrl: string, // 原始图片
   previewUrl: string, // 预览图
   width?: number,
+  height?: number,
+  blurhash: string,
   alt?: string,
   showLightbox?:boolean
   onShowLightboxChange?: (value: boolean) => void

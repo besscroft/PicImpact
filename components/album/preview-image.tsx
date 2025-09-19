@@ -15,7 +15,6 @@ import { TimerIcon } from '~/components/icons/timer'
 import { CrosshairIcon } from '~/components/icons/crosshair'
 import { GaugeIcon } from '~/components/icons/gauge'
 import { XIcon } from '~/components/icons/x'
-import 'react-lazy-load-image-component/src/effects/blur.css'
 import { Badge } from '~/components/ui/badge'
 import { LanguagesIcon } from '~/components/icons/languages'
 import { CopyIcon } from '~/components/icons/copy'
@@ -135,8 +134,12 @@ export default function PreviewImage(props: Readonly<PreviewImageHandleProps>) {
           {
             props.data.type === 1 ?
               <ProgressiveImage 
-                imageUrl={props.data.url } 
+                imageUrl={props.data.url}
                 previewUrl={props.data.preview_url}
+                alt={props.data.title}
+                height={props.data.height}
+                width={props.data.width}
+                blurhash={props.data.blurhash}
                 showLightbox={lightboxPhoto}
                 onShowLightboxChange={(value)=>setLightboxPhoto(value)}
               />

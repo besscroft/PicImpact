@@ -33,6 +33,7 @@ import { Button } from '~/components/ui/button'
 import { X } from 'lucide-react'
 import { UploadIcon } from '~/components/icons/upload'
 import { heicTo, isHeic } from 'heic-to'
+import { encodeBrowserThumbHash } from '~/lib/utils/blurhash-client.ts'
 
 export default function SimpleFileUpload() {
   const [alistStorage, setAlistStorage] = useState([])
@@ -53,6 +54,7 @@ export default function SimpleFileUpload() {
   const [lat, setLat] = useState('')
   const [lon, setLon] = useState('')
   const [detail, setDetail] = useState('')
+  const [hash, setHash] = useState('')
   const [imageLabels, setImageLabels] = useState([] as string[])
   const [activeTagIndex, setActiveTagIndex] = useState<number | null>(null)
   const t = useTranslations()
@@ -123,6 +125,7 @@ export default function SimpleFileUpload() {
       title: title,
       preview_url: previewUrl,
       video_url: videoUrl,
+      blurhash: hash,
       exif: exif,
       labels: imageLabels,
       detail: detail,
@@ -220,6 +223,7 @@ export default function SimpleFileUpload() {
       console.error('Failed to upload preview image:', e)
     }
     await loadExif(file)
+    setHash(await encodeBrowserThumbHash(file))
     setUrl(res?.data?.url)
     setImageId(res?.data?.imageId)
     setImageName(res?.data?.fileName)
@@ -258,6 +262,7 @@ export default function SimpleFileUpload() {
     setAlistMountPath('')
     setExif({} as ExifType)
     setUrl('')
+    setHash('')
     setTitle('')
     setImageId('')
     setImageName('')

@@ -7,10 +7,10 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '~/components/ui/table'
-import { Card } from '~/components/ui/card'
+} from '~/components/ui/table.tsx'
+import { Card } from '~/components/ui/card.tsx'
 import React from 'react'
-import type { ImageDataProps } from '~/types/props'
+import type { ImageDataProps } from '~/types/props.ts'
 import dayjs from 'dayjs'
 import customParseFormat from 'dayjs/plugin/customParseFormat'
 

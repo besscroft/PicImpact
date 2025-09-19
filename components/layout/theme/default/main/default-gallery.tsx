@@ -1,15 +1,15 @@
 'use client'
 
-import type { ImageHandleProps } from '~/types/props'
-import { useSwrPageTotalHook } from '~/hooks/use-swr-page-total-hook'
+import type { ImageHandleProps } from '~/types/props.ts'
+import { useSwrPageTotalHook } from '~/hooks/use-swr-page-total-hook.ts'
 import useSWRInfinite from 'swr/infinite'
 import { useTranslations } from 'next-intl'
 import type { ImageType } from '~/types'
 import { ReloadIcon } from '@radix-ui/react-icons'
-import { Button } from '~/components/ui/button'
+import { Button } from '~/components/ui/button.tsx'
 import React from 'react'
 import { MasonryPhotoAlbum, RenderImageContext, RenderImageProps } from 'react-photo-album'
-import BlurImage from '~/components/album/blur-image'
+import BlurImage from '~/components/album/blur-image.tsx'
 
 function renderNextImage(
   _: RenderImageProps,
@@ -21,7 +21,7 @@ function renderNextImage(
   )
 }
 
-export default function AlbumGallery(props : Readonly<ImageHandleProps>) {
+export default function DefaultGallery(props : Readonly<ImageHandleProps>) {
   const { data: pageTotal } = useSwrPageTotalHook(props)
   const { data, isLoading, isValidating, size, setSize } = useSWRInfinite((index) => {
       return [`client-${props.args}-${index}-${props.album}`, index]

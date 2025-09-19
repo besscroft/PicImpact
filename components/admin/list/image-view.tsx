@@ -5,13 +5,13 @@ import { useButtonStore } from '~/app/providers/button-store-providers'
 import type { ImageType } from '~/types'
 import type { ImageDataProps } from '~/types/props'
 import React from 'react'
-import ExifView from '~/components/album/exif-view'
+import ExifView from '~/components/admin/album/exif-view.tsx'
 import { Switch } from '~/components/ui/switch'
 import LivePhoto from '~/components/album/live-photo'
-import { LazyLoadImage } from 'react-lazy-load-image-component'
-import 'react-lazy-load-image-component/src/effects/blur.css'
+import Image from 'next/image'
 import { Badge } from '~/components/ui/badge'
 import { useTranslations } from 'next-intl'
+import { useBlurImageDataUrl } from '~/hooks/use-blurhash'
 
 export default function ImageView() {
   const t = useTranslations()
@@ -22,6 +22,8 @@ export default function ImageView() {
   const props: ImageDataProps = {
     data: imageViewData,
   }
+
+  const dataURL = useBlurImageDataUrl(imageViewData.blurhash)
 
   return (
     <Sheet
@@ -40,13 +42,16 @@ export default function ImageView() {
         </SheetHeader>
         <div className="mt-4 space-y-2">
           {imageViewData?.type === 1 ?
-            <LazyLoadImage
+            <Image
+              className="cursor-pointer"
               src={imageViewData.preview_url || imageViewData.url}
+              overrideSrc={imageViewData.preview_url || imageViewData.url}
               alt={imageViewData.detail}
-              effect="blur"
-              wrapperProps={{
-                style: {transitionDelay: '0.5s'},
-              }}
+              width={imageViewData.width}
+              height={imageViewData.height}
+              loading="lazy"
+              placeholder="blur"
+              blurDataURL={dataURL}
             />
             :
             <LivePhoto url={imageViewData.preview_url || imageViewData.url} videoUrl={imageViewData.video_url} />

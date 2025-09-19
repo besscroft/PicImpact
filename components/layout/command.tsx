@@ -8,21 +8,21 @@ import {
   CommandItem,
   CommandList,
   CommandSeparator
-} from '~/components/ui/command'
-import { useButtonStore } from '~/app/providers/button-store-providers'
+} from '~/components/ui/command.tsx'
+import { useButtonStore } from '~/app/providers/button-store-providers.tsx'
 import { useRouter } from 'next-nprogress-bar'
 import { useTheme } from 'next-themes'
 import { useTranslations } from 'next-intl'
-import type { AlbumDataProps } from '~/types/props'
+import type { AlbumDataProps } from '~/types/props.ts'
 import type { AlbumType } from '~/types'
-import { LoaderPinwheelIcon } from '~/components/icons/loader-pinwheel'
-import { GalleryThumbnailsIcon } from '~/components/icons/gallery-thumbnails'
-import { SquareTerminalIcon } from '~/components/icons/square-terminal'
-import { SunMoonIcon } from '~/components/icons/sun-moon'
-import { SunMediumIcon } from '~/components/icons/sun-medium'
-import { UserIcon } from '~/components/icons/user'
+import { LoaderPinwheelIcon } from '~/components/icons/loader-pinwheel.tsx'
+import { GalleryThumbnailsIcon } from '~/components/icons/gallery-thumbnails.tsx'
+import { SquareTerminalIcon } from '~/components/icons/square-terminal.tsx'
+import { SunMoonIcon } from '~/components/icons/sun-moon.tsx'
+import { SunMediumIcon } from '~/components/icons/sun-medium.tsx'
+import { UserIcon } from '~/components/icons/user.tsx'
 import { useEffect, useState } from 'react'
-import { authClient } from '~/server/auth/auth-client'
+import { authClient } from '~/server/auth/auth-client.ts'
 
 export default function Command(props: Readonly<AlbumDataProps>) {
   const { command, setCommand } = useButtonStore(

@@ -265,9 +265,7 @@
     "enableMaxWidthLimit": "預覽圖最大尺寸限制開關",
     "maxWidth": "預覽圖最大寬度(正整數)",
     "inputMaxWidth": "請輸入預覽圖最大寬度限制，正整數",
-    "indexStyleSelect": "選擇首頁模式",
-    "indexStyleDefault": "瀑布流模式",
-    "indexStyleStar": "精選圖片模式",
+    "indexThemeSelect": "選擇首頁主題",
     "customIndexDownloadEnable": "下載按鈕顯示",
     "umamiHost": "Umami Website Host",
     "umamiAnalytics": "Umami Website ID",
@@ -333,5 +331,9 @@
     "menu": "選單",
     "settings": "設定",
     "github": "GitHub"
+  },
+  "Theme": {
+    "indexDefaultStyle": "預設主題",
+    "indexSimpleStyle": "單欄主題"
   }
 }

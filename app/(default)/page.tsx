@@ -1,8 +1,8 @@
 import type { ImageHandleProps } from '~/types/props'
 import { fetchClientImagesListByAlbum, fetchClientImagesPageTotalByAlbum } from '~/server/db/query/images'
-import Gallery from '~/components/album/gallery'
+import SimpleGallery from '~/components/layout/theme/simple/main/simple-gallery.tsx'
 import { fetchConfigsByKeys } from '~/server/db/query/configs'
-import AlbumGallery from '~/components/album/album-gallery'
+import DefaultGallery from '~/components/layout/theme/default/main/default-gallery.tsx'
 import 'react-photo-album/masonry.css'
 import type { Config } from '~/types'
 
@@ -45,8 +45,9 @@ export default async function Home() {
 
   return (
     <>
-      {currentStyle && currentStyle === '1' ?
-        <Gallery {...props} /> : <AlbumGallery {...props} />
+      {currentStyle
+        && currentStyle === '1' ? <SimpleGallery {...props} />
+        : <DefaultGallery {...props} />
       }
     </>
   )
