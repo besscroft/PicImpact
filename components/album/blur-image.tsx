@@ -1,24 +1,26 @@
 'use client'
 
-import { LazyLoadImage } from 'react-lazy-load-image-component'
-import 'react-lazy-load-image-component/src/effects/blur.css'
 import { useRouter } from 'next-nprogress-bar'
+import Image from 'next/image'
+import { useBlurImageDataUrl } from '~/hooks/use-blurhash'
 
 export default function BlurImage({ photo, dataList }: { photo: any, dataList: any }) {
   const router = useRouter()
 
+  const dataURL = useBlurImageDataUrl(photo.blurhash)
+
   return (
-    <div className="show-up-motion relative inline-block select-none shadow-sm shadow-gray-200 dark:shadow-gray-800">
-      <LazyLoadImage
+    <div className="relative inline-block select-none shadow-sm shadow-gray-200 dark:shadow-gray-800">
+      <Image
         className="cursor-pointer"
+        src={photo.src}
+        overrideSrc={photo.src}
+        alt={photo.alt}
         width={photo.width}
         height={photo.height}
-        src={photo.src}
-        alt={photo.alt}
-        effect="blur"
-        wrapperProps={{
-          style: {transitionDelay: '0.5s'},
-        }}
+        loading="lazy"
+        placeholder="blur"
+        blurDataURL={dataURL}
         onClick={() => router.push(`/preview/${photo?.id}`)}
       />
       {

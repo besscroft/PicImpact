@@ -192,9 +192,6 @@ importers:
       react-hook-form:
         specifier: 7.62.0
         version: 7.62.0(react@19.1.1)
-      react-lazy-load-image-component:
-        specifier: 1.6.3
-        version: 1.6.3(react@19.1.1)
       react-photo-album:
         specifier: 3.1.0
         version: 3.1.0(@types/react@19.1.12)(react@19.1.1)
@@ -262,9 +259,6 @@ importers:
       '@types/react-dom':
         specifier: 19.1.9
         version: 19.1.9(@types/react@19.1.12)
-      '@types/react-lazy-load-image-component':
-        specifier: 1.6.4
-        version: 1.6.4
       '@types/rss':
         specifier: 0.0.32
         version: 0.0.32
@@ -2855,9 +2849,6 @@ packages:
     peerDependencies:
       '@types/react': 19.1.12
 
-  '@types/react-lazy-load-image-component@1.6.4':
-    resolution: {integrity: sha512-8pFPeDPF4yVG4lU1/ixZidJEEDZmEOYOTYDvmIu2IAabyuv97Q7n/93nMCocHvQ7vD1czKGiW+op55D9m3MkdA==}
-
   '@types/react@19.1.12':
     resolution: {integrity: sha512-cMoR+FoAf/Jyq6+Df2/Z41jISvGZZ2eTlnsaJRptmZ76Caldwy1odD4xTr/gNV9VLj0AWgg/nmkevIyUfIIq5w==}
 
@@ -4392,9 +4383,6 @@ packages:
   lodash.sortby@4.7.0:
     resolution: {integrity: sha512-HDWXG8isMntAyRF5vZ7xKuEvOhT4AhlRt/3czTSjvGUxjYCBVRQY48ViDHyfYz9VIoBkW4TMGQNapx+l3RUwdA==}
 
-  lodash.throttle@4.1.1:
-    resolution: {integrity: sha512-wIkUCfVKpVsWo3JSZlc+8MB5it+2AN5W8J7YVMST30UrvcQNZ1Okbj+rbVniijTWE6FGYy4XJq/rHkas8qJMLQ==}
-
   lodash@4.17.21:
     resolution: {integrity: sha512-v2kDEe57lecTulaDIuNTPy3Ry4gLGJ6Z1O3vE1krgXZNrsQ+LFTGHVxVjcXPs17LhbZVGedAJv8XZ1tvj5FvSg==}
 
@@ -4807,11 +4795,6 @@ packages:
 
   react-is@18.3.1:
     resolution: {integrity: sha512-/LLMVyas0ljjAtoYiPqYiL8VWXzUUdThrmU5+n20DZv+a+ClRoevUzw5JxU+Ieh5/c87ytoTBV9G1FiKfNJdmg==}
-
-  react-lazy-load-image-component@1.6.3:
-    resolution: {integrity: sha512-kdQYUDbuISF3T9El0sBLNoWrmPohqlytcG4ognLtHYjY8bZAsJ0/Ez+VaV+0QlVyUY3K6dDXkuQAz3GpvdjBkw==}
-    peerDependencies:
-      react: ^15.x.x || ^16.x.x || ^17.x.x || ^18.x.x || ^19.x.x
 
   react-photo-album@3.1.0:
     resolution: {integrity: sha512-9PiWzwvckfefJRHY5E6kcNKoWNjyyFKhQ6Pl5nS1Z29QeP9h8zDOAoVQKWcv/AhZjRoduw1dybu9RNMj0+uPzQ==}
@@ -8784,11 +8767,6 @@ snapshots:
     dependencies:
       '@types/react': 19.1.12
 
-  '@types/react-lazy-load-image-component@1.6.4':
-    dependencies:
-      '@types/react': 19.1.12
-      csstype: 3.1.3
-
   '@types/react@19.1.12':
     dependencies:
       csstype: 3.1.3
@@ -10482,8 +10460,6 @@ snapshots:
 
   lodash.sortby@4.7.0: {}
 
-  lodash.throttle@4.1.1: {}
-
   lodash@4.17.21: {}
 
   loose-envify@1.4.0:
@@ -10858,12 +10834,6 @@ snapshots:
   react-is@16.13.1: {}
 
   react-is@18.3.1: {}
-
-  react-lazy-load-image-component@1.6.3(react@19.1.1):
-    dependencies:
-      lodash.debounce: 4.0.8
-      lodash.throttle: 4.1.1
-      react: 19.1.1
 
   react-photo-album@3.1.0(@types/react@19.1.12)(react@19.1.1):
     dependencies:

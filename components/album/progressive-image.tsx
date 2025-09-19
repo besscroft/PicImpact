@@ -1,11 +1,12 @@
 'use client'
 
 import { ProgressiveImageProps } from '~/types/props.ts'
-import { LazyLoadImage } from 'react-lazy-load-image-component'
 import { useEffect, useRef, useState } from 'react'
 import Lightbox from 'yet-another-react-lightbox'
 import { Zoom } from 'yet-another-react-lightbox/plugins'
 import { useTranslations } from 'next-intl'
+import Image from 'next/image'
+import { useBlurImageDataUrl } from '~/hooks/use-blurhash'
 
 /**
  * 渐进式图片展示组件，首先显示预览图，后台加载原始图片，当原始图片加载成功后替换预览图
@@ -71,26 +72,28 @@ export default function ProgressiveImage(
     xhr.send()
   }
 
+  const dataURL = useBlurImageDataUrl(props.blurhash)
+
   return (
     <div className="relative">
       {!highDipImageUrl ? (
-        <LazyLoadImage
-          width={props.width}
-          src={props.previewUrl}
-          alt={props.alt}
+        <Image
           className="object-contain md:max-h-[90vh]"
-          effect="blur"
-          wrapperProps={{
-            style: { transitionDelay: '0.5s' },
-          }}
+          src={props.previewUrl}
+          overrideSrc={props.previewUrl}
+          placeholder="blur"
+          blurDataURL={dataURL}
+          width={props.width}
+          height={props.height}
+          alt={props.alt || 'image'}
         />
       ) : (
-        // eslint-disable-next-line @next/next/no-img-element
         <img
-          src={highDipImageUrl!}
-          width={props.width}
           className="object-contain md:max-h-[90vh]"
-          alt={props.alt || 'img'}
+          src={highDipImageUrl}
+          width={props.width}
+          height={props.height}
+          alt={props.alt || 'image'}
         />
       )}
 

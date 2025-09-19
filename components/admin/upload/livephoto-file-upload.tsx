@@ -271,6 +271,7 @@ export default function LivephotoFileUpload() {
     setStorageSelect(false)
     setAlistMountPath('')
     setExif({} as ExifType)
+    setHash('')
     setUrl('')
     setTitle('')
     setDetail('')

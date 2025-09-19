@@ -262,6 +262,7 @@ export default function SimpleFileUpload() {
     setAlistMountPath('')
     setExif({} as ExifType)
     setUrl('')
+    setHash('')
     setTitle('')
     setImageId('')
     setImageName('')
