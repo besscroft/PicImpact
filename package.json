@@ -72,7 +72,7 @@
     "livephotoskit": "1.5.6",
     "lucide-react": "0.541.0",
     "motion": "12.23.12",
-    "next": "15.5.2",
+    "next": "15.5.3",
     "next-intl": "4.3.5",
     "next-nprogress-bar": "2.4.7",
     "next-pwa": "5.6.0",
@@ -100,15 +100,15 @@
   },
   "devDependencies": {
     "@eslint/eslintrc": "3.3.1",
-    "@next/bundle-analyzer": "15.5.2",
-    "@next/eslint-plugin-next": "15.5.2",
+    "@next/bundle-analyzer": "15.5.3",
+    "@next/eslint-plugin-next": "15.5.3",
     "@tailwindcss/postcss": "4.1.12",
     "@types/node": "20.17.19",
-    "@types/react": "19.1.12",
+    "@types/react": "19.1.13",
     "@types/react-dom": "19.1.9",
     "@types/rss": "0.0.32",
     "eslint": "9.33.0",
-    "eslint-config-next": "15.5.2",
+    "eslint-config-next": "15.5.3",
     "eslint-config-prettier": "10.1.8",
     "prettier": "3.6.2",
     "prisma": "6.4.1",
@@ -117,7 +117,7 @@
   },
   "pnpm": {
     "overrides": {
-      "@types/react": "19.1.12",
+      "@types/react": "19.1.13",
       "@types/react-dom": "19.1.9"
     }
   }
