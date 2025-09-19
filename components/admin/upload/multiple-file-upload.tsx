@@ -28,6 +28,7 @@ import { UploadIcon } from '~/components/icons/upload'
 import { Button } from '~/components/ui/button'
 import { X } from 'lucide-react'
 import { heicTo, isHeic } from 'heic-to'
+import { encodeBrowserThumbHash } from '~/lib/utils/blurhash-client'
 
 export default function MultipleFileUpload() {
   const [alistStorage, setAlistStorage] = useState([])
@@ -105,11 +106,13 @@ export default function MultipleFileUpload() {
       reader.onload = (e) => {
         const img = new Image()
         img.onload = async () => {
+          const hash = await encodeBrowserThumbHash(file)
           const data = {
             album: album,
             url: url,
             title: '',
             preview_url: previewUrl,
+            blurhash: hash,
             exif: exifObj,
             labels: [],
             detail: '',
