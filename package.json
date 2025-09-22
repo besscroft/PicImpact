@@ -4,14 +4,14 @@
   "author": "Bess Croft <besscroft@foxmail.com>",
   "packageManager": "pnpm@9.7.1",
   "scripts": {
-    "dev:server": "next dev",
-    "dev:turbopack": "next dev --turbopack",
+    "dev:server": "pnpm run dev:prisma && pnpm run prisma:seed && next dev",
+    "dev:turbopack": "pnpm run dev:prisma && pnpm run prisma:seed && next dev --turbopack",
     "dev:prisma": "pnpm run prisma:dev && pnpm run prisma:generate",
     "build": "next build",
     "build:analyzer": "ANALYZE=true next build",
-    "build:vercel": "pnpm run prisma:deploy && npx prisma generate && next build",
-    "build:netlify": "pnpm run prisma:deploy && npx prisma generate && next build",
-    "build:node": "pnpm run prisma:deploy && npx prisma generate && next build",
+    "build:vercel": "pnpm run prisma:deploy && pnpm run prisma:generate && pnpm run prisma:seed && next build",
+    "build:netlify": "pnpm run prisma:deploy && pnpm run prisma:generate && pnpm run prisma:seed && next build",
+    "build:node": "pnpm run prisma:deploy && pnpm run prisma:generate && next build",
     "start": "next start",
     "lint": "next lint",
     "lint:fix": "eslint --fix \"app/**/*.{ts,tsx}\" --ignore-pattern \"components/ui/*.{tsx}\"",
@@ -19,7 +19,11 @@
     "prisma:generate": "npx prisma generate",
     "prisma:dev": "npx prisma migrate dev",
     "prisma:deploy": "npx prisma migrate deploy",
+    "prisma:seed": "npx prisma db seed",
     "prebuild": "npx prisma generate"
+  },
+  "prisma": {
+    "seed": "tsx prisma/seed.ts"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "3.873.0",
@@ -113,6 +117,7 @@
     "prettier": "3.6.2",
     "prisma": "6.4.1",
     "tailwindcss": "4.1.12",
+    "tsx": "^4.20.5",
     "typescript": "5.9.2"
   },
   "pnpm": {
