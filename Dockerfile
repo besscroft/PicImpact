@@ -17,7 +17,7 @@ RUN apk add --no-cache libc6-compat
 
 WORKDIR /app
 
-RUN npm install -g corepack@latest && corepack enable pnpm && pnpm add prisma@6.4.1 @prisma/client@6.4.1
+RUN npm install -g corepack@latest && corepack enable pnpm && pnpm add prisma@6.4.1 @prisma/client@6.4.1 && pnpm add -D tsx
 
 FROM base AS builder
 

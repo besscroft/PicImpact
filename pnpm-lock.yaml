@@ -281,7 +281,7 @@ importers:
         specifier: 4.1.12
         version: 4.1.12
       tsx:
-        specifier: ^4.20.5
+        specifier: 4.20.5
         version: 4.20.5
       typescript:
         specifier: 5.9.2
