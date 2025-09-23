@@ -107,6 +107,7 @@ export default function GalleryImage({ photo, configData }: { photo: ImageType, 
           width={photo.width}
           height={photo.height}
           loading="lazy"
+          unoptimized
           placeholder="blur"
           blurDataURL={dataURL}
           onClick={() => router.push(`/preview/${photo?.id}`)}

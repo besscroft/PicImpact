@@ -49,6 +49,7 @@ export default function ImageView() {
               alt={imageViewData.detail}
               width={imageViewData.width}
               height={imageViewData.height}
+              unoptimized
               loading="lazy"
               placeholder="blur"
               blurDataURL={dataURL}
