@@ -17,6 +17,7 @@ export default function ListImage({ image }: { image: any }) {
       width={image.width}
       height={image.height}
       loading="lazy"
+      unoptimized
       placeholder="blur"
       blurDataURL={dataURL}
     />

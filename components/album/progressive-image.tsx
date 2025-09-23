@@ -82,6 +82,7 @@ export default function ProgressiveImage(
           src={props.previewUrl}
           overrideSrc={props.previewUrl}
           placeholder="blur"
+          unoptimized
           blurDataURL={dataURL}
           width={props.width}
           height={props.height}
