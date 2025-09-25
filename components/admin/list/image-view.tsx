@@ -8,7 +8,7 @@ import React from 'react'
 import ExifView from '~/components/admin/album/exif-view.tsx'
 import { Switch } from '~/components/ui/switch'
 import LivePhoto from '~/components/album/live-photo'
-import Image from 'next/image'
+import { MotionImage } from '~/components/album/motion-image'
 import { Badge } from '~/components/ui/badge'
 import { useTranslations } from 'next-intl'
 import { useBlurImageDataUrl } from '~/hooks/use-blurhash'
@@ -42,7 +42,10 @@ export default function ImageView() {
         </SheetHeader>
         <div className="mt-4 space-y-2">
           {imageViewData?.type === 1 ?
-            <Image
+            <MotionImage
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 1 }}
               className="cursor-pointer"
               src={imageViewData.preview_url || imageViewData.url}
               overrideSrc={imageViewData.preview_url || imageViewData.url}

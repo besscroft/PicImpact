@@ -2,14 +2,17 @@
 
 import React from 'react'
 import { useBlurImageDataUrl } from '~/hooks/use-blurhash.ts'
-import Image from 'next/image'
+import { MotionImage } from '~/components/album/motion-image'
 
 export default function ListImage({ image }: { image: any }) {
 
   const dataURL = useBlurImageDataUrl(image.blurhash)
   
   return (
-    <Image
+    <MotionImage
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 1 }}
       className="duration-700 ease-in-out group-hover:opacity-75 w-full h-full object-contain"
       src={image.preview_url || image.url}
       overrideSrc={image.preview_url || image.url}

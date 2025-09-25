@@ -5,7 +5,7 @@ import { useEffect, useRef, useState } from 'react'
 import Lightbox from 'yet-another-react-lightbox'
 import { Zoom } from 'yet-another-react-lightbox/plugins'
 import { useTranslations } from 'next-intl'
-import Image from 'next/image'
+import { MotionImage } from '~/components/album/motion-image'
 import { useBlurImageDataUrl } from '~/hooks/use-blurhash'
 
 /**
@@ -77,7 +77,10 @@ export default function ProgressiveImage(
   return (
     <div className="relative">
       {!highDipImageUrl ? (
-        <Image
+        <MotionImage
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 1 }}
           className="object-contain md:max-h-[90vh]"
           src={props.previewUrl}
           overrideSrc={props.previewUrl}
