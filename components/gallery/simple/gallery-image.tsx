@@ -21,7 +21,7 @@ import dayjs from 'dayjs'
 import { Badge } from '~/components/ui/badge.tsx'
 import { useRouter } from 'next-nprogress-bar'
 import { useBlurImageDataUrl } from '~/hooks/use-blurhash.ts'
-import Image from 'next/image'
+import { MotionImage } from '~/components/album/motion-image'
 
 export default function GalleryImage({ photo, configData }: { photo: ImageType, configData: any }) {
   const router = useRouter()
@@ -100,7 +100,10 @@ export default function GalleryImage({ photo, configData }: { photo: ImageType, 
       </div>
       <div
         className="relative inline-block select-none sm:w-[66.667%] mx-auto shadow-gray-200 dark:shadow-gray-800">
-        <Image
+        <MotionImage
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 1 }}
           src={customIndexOriginEnable ? photo.url || photo.preview_url : photo.preview_url || photo.url}
           overrideSrc={customIndexOriginEnable ? photo.url || photo.preview_url : photo.preview_url || photo.url}
           alt={photo.title}

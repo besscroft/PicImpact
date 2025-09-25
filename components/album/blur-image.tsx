@@ -1,8 +1,8 @@
 'use client'
 
 import { useRouter } from 'next-nprogress-bar'
-import Image from 'next/image'
 import { useBlurImageDataUrl } from '~/hooks/use-blurhash'
+import { MotionImage } from '~/components/album/motion-image'
 
 export default function BlurImage({ photo, dataList }: { photo: any, dataList: any }) {
   const router = useRouter()
@@ -11,8 +11,11 @@ export default function BlurImage({ photo, dataList }: { photo: any, dataList: a
 
   return (
     <div className="relative inline-block select-none shadow-sm shadow-gray-200 dark:shadow-gray-800">
-      <Image
+      <MotionImage
         className="cursor-pointer"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 1 }}
         src={photo.src}
         overrideSrc={photo.src}
         alt={photo.alt}
