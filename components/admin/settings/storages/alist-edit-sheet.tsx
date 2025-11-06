@@ -3,7 +3,7 @@
 import type { Config } from '~/types'
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '~/components/ui/sheet'
 import { useButtonStore } from '~/app/providers/button-store-providers'
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { toast } from 'sonner'
 import { useSWRConfig } from 'swr'
 import { ReloadIcon } from '@radix-ui/react-icons'

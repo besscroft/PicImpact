@@ -3,6 +3,7 @@ import { fetchAlbumByRouter, fetchAlbumsShow } from '~/server/db/query/albums'
 import type { AlbumType } from '~/types'
 import type { AlbumDataProps } from '~/types/props'
 import SimpleHeader from '~/components/layout/theme/simple/header/simple-header.tsx'
+import React from 'react'
 
 export default async function ThemeAlbumLayout({
   children,

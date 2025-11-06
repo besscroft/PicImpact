@@ -1,7 +1,6 @@
 import { TableCell, TableRow } from '~/components/ui/table.tsx'
 import { Badge } from '~/components/ui/badge.tsx'
 import { BadgeCheckIcon, BadgeXIcon } from 'lucide-react'
-import React from 'react'
 
 export default function TabsTableCell(props : Readonly<any>) {
   const { data } = props

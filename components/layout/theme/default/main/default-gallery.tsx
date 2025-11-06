@@ -7,7 +7,6 @@ import { useTranslations } from 'next-intl'
 import type { ImageType } from '~/types'
 import { ReloadIcon } from '@radix-ui/react-icons'
 import { Button } from '~/components/ui/button.tsx'
-import React from 'react'
 import { MasonryPhotoAlbum, RenderImageContext, RenderImageProps } from 'react-photo-album'
 import BlurImage from '~/components/album/blur-image.tsx'
 

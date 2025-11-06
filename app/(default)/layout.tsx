@@ -4,6 +4,7 @@ import type {AlbumType, Config} from '~/types'
 import type { AlbumDataProps } from '~/types/props'
 import { fetchConfigsByKeys } from '~/server/db/query/configs.ts'
 import SimpleHeader from '~/components/layout/theme/simple/header/simple-header.tsx'
+import React from 'react'
 
 export default async function DefaultLayout({
   children,

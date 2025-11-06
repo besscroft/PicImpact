@@ -25,7 +25,6 @@ import {
 } from '~/components/ui/sidebar'
 import { authClient } from '~/server/auth/auth-client'
 import { useTheme } from 'next-themes'
-import * as React from 'react'
 import { setUserLocale } from '~/lib/utils/locale'
 import { useTranslations } from 'next-intl'
 import { SunMoonIcon } from '~/components/icons/sun-moon'

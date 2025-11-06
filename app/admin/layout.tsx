@@ -1,5 +1,6 @@
 import { AppSidebar } from '~/components/layout/admin/app-sidebar'
 import { SidebarProvider, SidebarTrigger } from '~/components/ui/sidebar'
+import React from 'react'
 
 export default function AdminLayout({
   children,

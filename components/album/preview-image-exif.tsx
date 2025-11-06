@@ -1,7 +1,6 @@
 'use client'
 
 import { FrameIcon } from '~/components/icons/frame'
-import * as React from 'react'
 import type { ImageDataProps } from '~/types/props'
 import {
   Dialog,

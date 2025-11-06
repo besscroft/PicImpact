@@ -54,7 +54,7 @@ export async function GET(request: Request) {
         `,
         url: url.origin + (item.album_value === '/' ? '/preview/' : item.album_value + '/preview/') + item.id,
         guid: item.id,
-        date: item.created_at,
+        date: item.createdAt,
         enclosure: {
           url: item.preview_url || item.url,
           type: 'image/jpeg',

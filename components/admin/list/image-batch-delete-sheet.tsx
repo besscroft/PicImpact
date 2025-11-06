@@ -3,7 +3,7 @@
 import type { ImageType } from '~/types'
 import type { ImageListDataProps, ImageServerHandleProps } from '~/types/props'
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '~/components/ui/sheet'
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { useButtonStore } from '~/app/providers/button-store-providers'
 import { toast } from 'sonner'
 import { useSwrInfiniteServerHook } from '~/hooks/use-swr-infinite-server-hook'

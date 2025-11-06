@@ -57,6 +57,8 @@ export type ImageType = {
   album_name: string;
   album_value: string;
   album_license: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export type Config = {

@@ -1,7 +1,7 @@
 'use client'
 
 import { toast } from 'sonner'
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { useQRCode } from 'next-qrcode'
 import { motion } from 'motion/react'
 import {

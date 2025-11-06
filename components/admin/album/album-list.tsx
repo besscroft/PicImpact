@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { useSwrHydrated } from '~/hooks/use-swr-hydrated'
 import { ArrowDown10 } from 'lucide-react'
 import { toast } from 'sonner'

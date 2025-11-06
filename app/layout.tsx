@@ -12,6 +12,7 @@ import { NextIntlClientProvider } from 'next-intl'
 import { getLocale, getMessages } from 'next-intl/server'
 import { ConfigStoreProvider } from '~/app/providers/config-store-providers'
 import Script from 'next/script'
+import React from 'react'
 
 type ConfigItem = {
   id: string;

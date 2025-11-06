@@ -5,7 +5,6 @@
   "packageManager": "pnpm@9.7.1",
   "scripts": {
     "dev:server": "pnpm run dev:prisma && pnpm run prisma:seed && next dev",
-    "dev:turbopack": "pnpm run dev:prisma && pnpm run prisma:seed && next dev --turbopack",
     "dev:prisma": "pnpm run prisma:dev && pnpm run prisma:generate",
     "build": "next build",
     "build:analyzer": "ANALYZE=true next build",
@@ -76,15 +75,15 @@
     "livephotoskit": "1.5.6",
     "lucide-react": "0.541.0",
     "motion": "12.23.12",
-    "next": "15.5.3",
+    "next": "16.0.1",
     "next-intl": "4.3.5",
     "next-nprogress-bar": "2.4.7",
     "next-pwa": "5.6.0",
     "next-qrcode": "2.5.1",
     "next-themes": "0.4.6",
-    "react": "19.1.1",
+    "react": "19.2.0",
     "react-day-picker": "9.9.0",
-    "react-dom": "19.1.1",
+    "react-dom": "19.2.0",
     "react-hook-form": "7.62.0",
     "react-photo-album": "3.1.0",
     "react-resizable-panels": "3.0.4",
@@ -104,15 +103,15 @@
   },
   "devDependencies": {
     "@eslint/eslintrc": "3.3.1",
-    "@next/bundle-analyzer": "15.5.3",
-    "@next/eslint-plugin-next": "15.5.3",
+    "@next/bundle-analyzer": "16.0.1",
+    "@next/eslint-plugin-next": "16.0.1",
     "@tailwindcss/postcss": "4.1.12",
     "@types/node": "20.17.19",
-    "@types/react": "19.1.13",
-    "@types/react-dom": "19.1.9",
+    "@types/react": "19.2.2",
+    "@types/react-dom": "19.2.2",
     "@types/rss": "0.0.32",
     "eslint": "9.33.0",
-    "eslint-config-next": "15.5.3",
+    "eslint-config-next": "16.0.1",
     "eslint-config-prettier": "10.1.8",
     "prettier": "3.6.2",
     "prisma": "6.4.1",
@@ -122,8 +121,8 @@
   },
   "pnpm": {
     "overrides": {
-      "@types/react": "19.1.13",
-      "@types/react-dom": "19.1.9"
+      "@types/react": "19.2.2",
+      "@types/react-dom": "19.2.2"
     }
   }
 }

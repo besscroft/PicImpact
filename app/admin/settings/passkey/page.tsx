@@ -1,7 +1,7 @@
 'use client'
 
 import { toast } from 'sonner'
-import React, { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { motion } from 'motion/react'
 import { RocketIcon, ReloadIcon, TrashIcon } from '@radix-ui/react-icons'
 import { Button } from '~/components/ui/button'

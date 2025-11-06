@@ -8,7 +8,6 @@ import { useTranslations } from 'next-intl'
 import type { ImageType } from '~/types'
 import { ReloadIcon } from '@radix-ui/react-icons'
 import { Button } from '~/components/ui/button.tsx'
-import React from 'react'
 import GalleryImage from '~/components/gallery/simple/gallery-image.tsx'
 
 export default function SimpleGallery(props : Readonly<ImageHandleProps>) {

@@ -10,7 +10,6 @@ import {
 } from '~/components/ui/table'
 import { Button } from '~/components/ui/button'
 import { ReloadIcon } from '@radix-ui/react-icons'
-import React from 'react'
 import useSWR from 'swr'
 import { fetcher } from '~/lib/utils/fetcher'
 import { toast } from 'sonner'
