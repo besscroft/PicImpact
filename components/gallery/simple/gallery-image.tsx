@@ -109,6 +109,7 @@ export default function GalleryImage({ photo, configData }: { photo: ImageType, 
           )
         }
         <MotionImage
+          className={cn(isLoading && "animate-pulse")}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 1 }}

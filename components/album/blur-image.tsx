@@ -5,6 +5,7 @@ import { useBlurImageDataUrl, DEFAULT_HASH } from '~/hooks/use-blurhash'
 import { MotionImage } from '~/components/album/motion-image'
 import { Skeleton } from '~/components/ui/skeleton'
 import { useState } from 'react'
+import { cn } from '~/lib/utils'
 
 export default function BlurImage({ photo, dataList }: { photo: any, dataList: any }) {
   const router = useRouter()
@@ -15,12 +16,12 @@ export default function BlurImage({ photo, dataList }: { photo: any, dataList: a
   return (
     <div className="relative inline-block select-none shadow-sm shadow-gray-200 dark:shadow-gray-800">
       {
-        (photo.blurhash === DEFAULT_HASH || !photo.blurhash) && isLoading && (
+        isLoading && (
           <Skeleton className="absolute inset-0 z-10 rounded-none" />
         )
       }
       <MotionImage
-        className="cursor-pointer"
+        className={cn("cursor-pointer", isLoading && "animate-pulse")}
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 1 }}
