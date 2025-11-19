@@ -1,7 +1,7 @@
 import { useMemo } from 'react'
 import { decodeThumbHash } from '~/lib/utils/blurhash-client'
 
-const DEFAULT_HASH = 'MggCBoBxh4d/eHeIiIiHd3eIAAAAAAA='
+export const DEFAULT_HASH = 'MggCBoBxh4d/eHeIiIiHd3eIAAAAAAA='
 
 export const useBlurImageDataUrl = (hash: string): string => {
   return useMemo(() => {

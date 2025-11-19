@@ -20,8 +20,10 @@ import { ClockIcon } from '~/components/icons/clock.tsx'
 import dayjs from 'dayjs'
 import { Badge } from '~/components/ui/badge.tsx'
 import { useRouter } from 'next-nprogress-bar'
-import { useBlurImageDataUrl } from '~/hooks/use-blurhash.ts'
+import { useBlurImageDataUrl, DEFAULT_HASH } from '~/hooks/use-blurhash.ts'
 import { MotionImage } from '~/components/album/motion-image'
+import { Skeleton } from '~/components/ui/skeleton'
+import { useState } from 'react'
 
 export default function GalleryImage({ photo, configData }: { photo: ImageType, configData: any }) {
   const router = useRouter()
@@ -30,9 +32,10 @@ export default function GalleryImage({ photo, configData }: { photo: ImageType, 
   const exifTextClass = 'text-tiny text-sm select-none items-center dark:text-gray-50 text-gray-500'
 
   const { data: download = false, mutate: setDownload } = useSWR(['masonry/download', photo?.url ?? ''], null)
+  const [isLoading, setIsLoading] = useState(true)
 
   const dataURL = useBlurImageDataUrl(photo.blurhash)
-  
+
   const exifProps: ImageDataProps = {
     data: photo,
   }
@@ -48,14 +51,14 @@ export default function GalleryImage({ photo, configData }: { photo: ImageType, 
       }
 
       toast.warning(msg, { duration: 1500 })
-      
+
       // 获取存储类型
       const storageType = photo?.url?.includes('s3') ? 's3' : 'r2'
-      
+
       // 使用新的下载 API
       let response = await fetch(`/api/public/download/${photo.id}?storage=${storageType}`)
       const contentType = response.headers.get('content-type')
-      
+
       if (contentType?.includes('application/json')) {
         const data = await response.json()
         response = await fetch(data.url)
@@ -85,7 +88,7 @@ export default function GalleryImage({ photo, configData }: { photo: ImageType, 
         </div>
         {photo?.exif?.data_time &&
           <div className="hidden sm:flex items-center space-x-1 sm:justify-end">
-            <ClockIcon className={exifIconClass} size={18}/>
+            <ClockIcon className={exifIconClass} size={18} />
             <p className={exifTextClass}>
               {dayjs(photo?.exif?.data_time, 'YYYY:MM:DD HH:mm:ss').isValid() ?
                 dayjs(photo?.exif?.data_time, 'YYYY:MM:DD HH:mm:ss').format('YYYY-MM-DD HH:mm:ss')
@@ -100,7 +103,13 @@ export default function GalleryImage({ photo, configData }: { photo: ImageType, 
       </div>
       <div
         className="relative inline-block select-none sm:w-[66.667%] mx-auto shadow-gray-200 dark:shadow-gray-800">
+        {
+          (photo.blurhash === DEFAULT_HASH || !photo.blurhash) && isLoading && (
+            <Skeleton className="absolute inset-0 z-10 rounded-none" />
+          )
+        }
         <MotionImage
+          className={cn(isLoading && "animate-pulse")}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 1 }}
@@ -111,16 +120,17 @@ export default function GalleryImage({ photo, configData }: { photo: ImageType, 
           height={photo.height}
           loading="lazy"
           unoptimized
-          placeholder="blur"
+          placeholder={(photo.blurhash === DEFAULT_HASH || !photo.blurhash) ? 'empty' : 'blur'}
           blurDataURL={dataURL}
           onClick={() => router.push(`/preview/${photo?.id}`)}
+          onLoad={() => setIsLoading(false)}
         />
         {
           photo.type === 2 &&
           <div className="absolute top-2 left-2 p-5 rounded-full">
             <svg xmlns="http://www.w3.org/2000/svg" className="absolute bottom-3 right-3 text-white opacity-75 z-10"
-                 width="24" height="24" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" fill="none"
-                 strokeLinecap="round" strokeLinejoin="round">
+              width="24" height="24" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" fill="none"
+              strokeLinecap="round" strokeLinejoin="round">
               <path stroke="none" fill="none"></path>
               <circle cx="12" cy="12" r="1"></circle>
               <circle cx="12" cy="12" r="5"></circle>
@@ -212,9 +222,9 @@ export default function GalleryImage({ photo, configData }: { photo: ImageType, 
                 if (photo?.album_license != null) {
                   msg = '图片版权归作者所有, 分享转载需遵循 ' + photo?.album_license + ' 许可协议！'
                 }
-                toast.success(msg, {duration: 1500})
+                toast.success(msg, { duration: 1500 })
               } catch (error) {
-                toast.error('复制图片链接失败！', {duration: 500})
+                toast.error('复制图片链接失败！', { duration: 500 })
               }
             }}
           />
@@ -226,9 +236,9 @@ export default function GalleryImage({ photo, configData }: { photo: ImageType, 
                 const url = window.location.origin + '/preview/' + photo.id
                 // @ts-ignore
                 await navigator.clipboard.writeText(url)
-                toast.success('复制分享直链成功！', {duration: 500})
+                toast.success('复制分享直链成功！', { duration: 500 })
               } catch (error) {
-                toast.error('复制分享直链失败！', {duration: 500})
+                toast.error('复制分享直链失败！', { duration: 500 })
               }
             }}
           />
@@ -238,7 +248,7 @@ export default function GalleryImage({ photo, configData }: { photo: ImageType, 
                 <RefreshCWIcon
                   className={cn(exifIconClass, 'animate-spin cursor-not-allowed')}
                   size={20}
-                />:
+                /> :
                 <DownloadIcon
                   className={exifIconClass}
                   size={20}
