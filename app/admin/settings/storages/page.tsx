@@ -1,6 +1,6 @@
 'use client'
 
-import AlistTabs from '~/components/admin/settings/storages/alist-tabs'
+import OpenListTabs from '~/components/admin/settings/storages/open-list-tabs.tsx'
 import S3Tabs from '~/components/admin/settings/storages/s3-tabs'
 import R2Tabs from '~/components/admin/settings/storages/r2-tabs'
 import {
@@ -18,7 +18,7 @@ export default function Storages() {
         <TabsList className="grid w-full grid-cols-3">
           <TabsTrigger value="s3">S3 API</TabsTrigger>
           <TabsTrigger value="r2">Cloudflare R2</TabsTrigger>
-          <TabsTrigger value="alist">AList API</TabsTrigger>
+          <TabsTrigger value="openList">OpenList API</TabsTrigger>
         </TabsList>
         <TabsContent value="s3">
           <S3Tabs />
@@ -26,8 +26,8 @@ export default function Storages() {
         <TabsContent value="r2">
           <R2Tabs />
         </TabsContent>
-        <TabsContent value="alist">
-          <AlistTabs />
+        <TabsContent value="openList">
+          <OpenListTabs />
         </TabsContent>
       </Tabs>
     </div>

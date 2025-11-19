@@ -4,7 +4,7 @@ import { fetchConfigsByKeys } from '~/server/db/query/configs'
 import type { Config } from '~/types'
 import { Hono } from 'hono'
 import { HTTPException } from 'hono/http-exception'
-import { updateAListConfig, updateCustomInfo, updateR2Config, updateS3Config } from '~/server/db/operate/configs'
+import { updateOpenListConfig, updateCustomInfo, updateR2Config, updateS3Config } from '~/server/db/operate/configs'
 
 const app = new Hono()
 
@@ -75,13 +75,13 @@ app.get('/get-admin-config', async (c) => {
   }
 })
 
-app.put('/update-alist-info', async (c) => {
+app.put('/update-open-list-info', async (c) => {
   const query = await c.req.json()
 
-  const alistUrl = query?.find((item: Config) => item.config_key === 'alist_url').config_value
-  const alistToken = query?.find((item: Config) => item.config_key === 'alist_token').config_value
+  const openListUrl = query?.find((item: Config) => item.config_key === 'open_list_url').config_value
+  const openListToken = query?.find((item: Config) => item.config_key === 'open_list_token').config_value
 
-  const data = await updateAListConfig({ alistUrl, alistToken })
+  const data = await updateOpenListConfig({ openListUrl, openListToken })
   return c.json(data)
 })
 

@@ -15,14 +15,14 @@ import { useButtonStore } from '~/app/providers/button-store-providers'
 import { Button } from '~/components/ui/button'
 import { ReloadIcon } from '@radix-ui/react-icons'
 import React from 'react'
-import AlistEditSheet from '~/components/admin/settings/storages/alist-edit-sheet'
+import OpenListEditSheet from '~/components/admin/settings/storages/open-list-edit-sheet.tsx'
 import { useTranslations } from 'next-intl'
 import TabsTableCell from '~/components/admin/settings/storages/tabs-table-cell'
 
-export default function AlistTabs() {
-  const { data, error, isValidating, mutate } = useSWR('/api/v1/storage/alist/info', fetcher
+export default function OpenListTabs() {
+  const { data, error, isValidating, mutate } = useSWR('/api/v1/storage/open-list/info', fetcher
     , { revalidateOnFocus: false })
-  const { setAListEdit, setAListEditData } = useButtonStore(
+  const { setOpenListEdit, setOpenListEditData } = useButtonStore(
     (state) => state,
   )
   const t = useTranslations()
@@ -37,7 +37,7 @@ export default function AlistTabs() {
         <div className="flex justify-between p-2">
           <div className="flex gap-5">
             <div className="flex flex-col gap-1 items-start justify-center">
-              <h4 className="text-small font-semibold leading-none text-default-600">{t('Config.alistTitle')}</h4>
+              <h4 className="text-small font-semibold leading-none text-default-600">{t('Config.openListTitle')}</h4>
             </div>
           </div>
           <div className="flex items-center space-x-2">
@@ -54,8 +54,8 @@ export default function AlistTabs() {
               variant="outline"
               className="cursor-pointer"
               onClick={() => {
-                setAListEdit(true)
-                setAListEditData(JSON.parse(JSON.stringify(data)))
+                setOpenListEdit(true)
+                setOpenListEditData(JSON.parse(JSON.stringify(data)))
               }}
               aria-label={t('Config.edit')}
             >
@@ -67,7 +67,7 @@ export default function AlistTabs() {
       {
         data &&
         <Card className="p-2">
-          <Table aria-label={t('Config.alistTitle')}>
+          <Table aria-label={t('Config.openListTitle')}>
             <TableHeader>
               <TableRow>
                 <TableHead>Key</TableHead>
@@ -80,7 +80,7 @@ export default function AlistTabs() {
           </Table>
         </Card>
       }
-      {Array.isArray(data) && data.length > 0 && <AlistEditSheet />}
+      {Array.isArray(data) && data.length > 0 && <OpenListEditSheet />}
     </div>
   )
 }

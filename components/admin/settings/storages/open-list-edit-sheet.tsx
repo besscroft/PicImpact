@@ -10,10 +10,10 @@ import { ReloadIcon } from '@radix-ui/react-icons'
 import { Button } from '~/components/ui/button'
 import { useTranslations } from 'next-intl'
 
-export default function AlistEditSheet() {
+export default function OpenListEditSheet() {
   const [loading, setLoading] = useState(false)
   const { mutate } = useSWRConfig()
-  const { aListEdit, setAListEdit, setAListEditData, aListData } = useButtonStore(
+  const { openListEdit, setOpenListEdit, setOpenListEditData, openListData } = useButtonStore(
     (state) => state,
   )
   const t = useTranslations()
@@ -21,17 +21,17 @@ export default function AlistEditSheet() {
   async function submit() {
     setLoading(true)
     try {
-      await fetch('/api/v1/settings/update-alist-info', {
+      await fetch('/api/v1/settings/update-open-list-info', {
         headers: {
           'Content-Type': 'application/json',
         },
         method: 'PUT',
-        body: JSON.stringify(aListData),
+        body: JSON.stringify(openListData),
       }).then(res => res.json())
       toast.success(t('Config.updateSuccess'))
-      mutate('/api/v1/storage/alist/info')
-      setAListEdit(false)
-      setAListEditData([] as Config[])
+      mutate('/api/v1/storage/open-list/info')
+      setOpenListEdit(false)
+      setOpenListEditData([] as Config[])
     } catch (e) {
       toast.error(t('Config.updateFailed'))
     } finally {
@@ -42,22 +42,22 @@ export default function AlistEditSheet() {
   return (
     <Sheet
       defaultOpen={false}
-      open={aListEdit}
+      open={openListEdit}
       onOpenChange={(open: boolean) => {
         if (!open) {
-          setAListEdit(false)
-          setAListEditData([] as Config[])
+          setOpenListEdit(false)
+          setOpenListEditData([] as Config[])
         }
       }}
       modal={false}
     >
       <SheetContent side="left" className="w-full overflow-y-auto scrollbar-hide p-2" onInteractOutside={(event: any) => event.preventDefault()}>
         <SheetHeader>
-          <SheetTitle>{t('Config.editAlist')}</SheetTitle>
+          <SheetTitle>{t('Config.editOpenList')}</SheetTitle>
         </SheetHeader>
         <div className="flex flex-col space-y-2">
           {
-            aListData?.map((config: Config) => (
+            openListData?.map((config: Config) => (
               <label
                 htmlFor="text"
                 key={config.id}
@@ -70,8 +70,8 @@ export default function AlistEditSheet() {
                   id="name"
                   value={config.config_value || ''}
                   placeholder={t('Config.' + config.config_key)}
-                  onChange={(e) => setAListEditData(
-                    aListData?.map((c: Config) => {
+                  onChange={(e) => setOpenListEditData(
+                    openListData?.map((c: Config) => {
                       if (c.config_key === config.config_key) {
                         c.config_value = e.target.value
                       }

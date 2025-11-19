@@ -15,7 +15,7 @@ PicImpact 是一个支持自部署的摄影作品展示网站，基于 Next.js +
 - 瀑布流相册展示图片，支持[实况照片(Live Photos)](https://support.apple.com/zh-cn/104966)，基于 [LivePhotosKit JS](https://developer.apple.com/documentation/livephotoskitjs) 开发。
 - 点击图片查看原图，浏览图片信息和 EXIF 信息，支持直链访问。
 - 响应式设计，在 PC 和移动端都有不错的体验，支持暗黑模式。
-- 图片存储兼容 S3 API、Cloudflare R2、AList API。
+- 图片存储兼容 S3 API、Cloudflare R2、Open List API。
 - 图片支持绑定标签，并且可通过标签进行交互，筛选标签下所有图片。
 - 支持输出 RSS，可以使用 [Follow](https://github.com/RSSNext/Follow) 订阅，并支持订阅源所有权验证。
 - 支持批量自动化上传，上传图片时会生成 0.3 倍率的压缩图片，以提供加载优化。
