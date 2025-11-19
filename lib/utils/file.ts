@@ -55,7 +55,7 @@ export async function exifReader(file: ArrayBuffer | SharedArrayBuffer | Buffer)
  * @param file 文件 object 流
  * @param type 上传类型 '' | '/preview'
  * @param storage storage 存储类型
- * @param mountPath 文件挂载路径（目前只有 alist 用得到
+ * @param mountPath 文件挂载路径（目前只有 Open List 用得到
  */
 export async function uploadFile(file: any, type: string, storage: string, mountPath: string) {
   const imageId = createId()
@@ -66,8 +66,8 @@ export async function uploadFile(file: any, type: string, storage: string, mount
   const newFileName = `${imageId}.${ext}`
   // 创建新的 File 对象
   const newFile = new File([file], newFileName, { type: file.type })
-  // 如果是 AList，使用旧的上传方式
-  if (storage === 'alist') {
+  // 如果是 Open List，使用旧的上传方式
+  if (storage === 'openList') {
     const formData = new FormData()
     formData.append('file', newFile)
     formData.append('storage', storage)

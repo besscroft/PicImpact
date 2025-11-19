@@ -52,19 +52,19 @@ export async function updateR2Config(configs: any) {
 }
 
 /**
- * 更新 AList 配置
+ * 更新 Open List 配置
  * @param configs 配置信息
  */
-export async function updateAListConfig(configs: any) {
+export async function updateOpenListConfig(configs: any) {
   return await db.$executeRaw`
     UPDATE "public"."configs"
     SET config_value = CASE
-       WHEN config_key = 'alist_url' THEN ${configs.alistUrl}
-       WHEN config_key = 'alist_token' THEN ${configs.alistToken}
+       WHEN config_key = 'open_list_url' THEN ${configs.openListUrl}
+       WHEN config_key = 'open_list_token' THEN ${configs.openListToken}
        ELSE 'N&A'
     END,
         updated_at = NOW()
-    WHERE config_key IN ('alist_url', 'alist_token');
+    WHERE config_key IN ('open_list_url', 'open_list_token');
   `
 }
 

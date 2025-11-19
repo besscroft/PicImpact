@@ -2,7 +2,7 @@ import 'server-only'
 
 import { Hono } from 'hono'
 import { HTTPException } from 'hono/http-exception'
-import { alistUpload } from '~/server/lib/file-upload'
+import { openListUpload } from '~/server/lib/file-upload'
 import { fetchConfigsByKeys } from '~/server/db/query/configs'
 import type { Config } from '~/types'
 import { getClient } from '~/server/lib/s3'
@@ -106,8 +106,8 @@ app.post('/upload', async (c) => {
 
   if (storage) {
     switch (storage.toString()) {
-      case 'alist':
-        return await alistUpload(file, type, mountPath)
+      case 'openList':
+        return await openListUpload(file, type, mountPath)
           .then((result: string | undefined) => {
             return Response.json({
               code: 200, data: result

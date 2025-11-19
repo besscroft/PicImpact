@@ -31,11 +31,11 @@ import { heicTo, isHeic } from 'heic-to'
 import { encodeBrowserThumbHash } from '~/lib/utils/blurhash-client'
 
 export default function MultipleFileUpload() {
-  const [alistStorage, setAlistStorage] = useState([])
+  const [openListStorage, setOpenListStorage] = useState([])
   const [storageSelect, setStorageSelect] = useState(false)
   const [storage, setStorage] = useState('r2')
   const [album, setAlbum] = useState('')
-  const [alistMountPath, setAlistMountPath] = useState('')
+  const [openListMountPath, setOpenListMountPath] = useState('')
   const [lat, setLat] = useState('')
   const [lon, setLon] = useState('')
   const [files, setFiles] = useState<File[]>([])
@@ -49,18 +49,18 @@ export default function MultipleFileUpload() {
   const previewCompressQuality = parseFloat(configs?.find(config => config.config_key === 'preview_quality')?.config_value || '0.2')
   const maxUploadFiles = parseInt(configs?.find(config => config.config_key === 'max_upload_files')?.config_value || '5')
 
-  async function getAlistStorage() {
-    if (alistStorage.length > 0) {
+  async function getOpenListStorage() {
+    if (openListStorage.length > 0) {
       setStorageSelect(true)
       return
     }
     try {
-      toast.info('正在获取 AList 挂载目录')
-      const res = await fetch('/api/v1/storage/alist/storages', {
+      toast.info('正在获取 Open List 挂载目录')
+      const res = await fetch('/api/v1/storage/open-list/storages', {
         method: 'GET',
       }).then(res => res.json())
       if (res?.code === 200) {
-        setAlistStorage(res.data?.content)
+        setOpenListStorage(res.data?.content)
         setStorageSelect(true)
       } else {
         toast.error('获取失败')
@@ -80,8 +80,8 @@ export default function MultipleFileUpload() {
       value: 'r2',
     },
     {
-      label: 'AList API',
-      value: 'alist',
+      label: 'Open List API',
+      value: 'openList',
     }
   ]
 
@@ -152,7 +152,7 @@ export default function MultipleFileUpload() {
       mimeType: 'image/webp',
       maxWidth: previewImageMaxWidthLimitSwitchOn && previewImageMaxWidthLimit > 0 ? previewImageMaxWidthLimit : undefined,
       async success(compressedFile) {
-        const res = await uploadFile(compressedFile, type, storage, alistMountPath)
+        const res = await uploadFile(compressedFile, type, storage, openListMountPath)
         if (res?.code === 200) {
           await autoSubmit(file, url, res?.data?.url)
         } else {
@@ -194,7 +194,7 @@ export default function MultipleFileUpload() {
         mimeType: 'image/jpeg',
         maxWidth: previewImageMaxWidthLimitSwitchOn && previewImageMaxWidthLimit > 0 ? previewImageMaxWidthLimit : undefined,
         async success(compressedFile) {
-          await uploadFile(compressedFile, album, storage, alistMountPath).then(async (res) => {
+          await uploadFile(compressedFile, album, storage, openListMountPath).then(async (res) => {
             if (res.code === 200) {
               await resHandle(res, outputFile)
             } else {
@@ -204,7 +204,7 @@ export default function MultipleFileUpload() {
         }
       })
     } else {
-      await uploadFile(file, album, storage, alistMountPath).then(async (res) => {
+      await uploadFile(file, album, storage, openListMountPath).then(async (res) => {
         if (res.code === 200) {
           await resHandle(res, file)
         } else {
@@ -216,7 +216,7 @@ export default function MultipleFileUpload() {
 
   function onRemoveFile() {
     setStorageSelect(false)
-    setAlistMountPath('')
+    setOpenListMountPath('')
     setLat('')
     setLon('')
   }
@@ -271,8 +271,8 @@ export default function MultipleFileUpload() {
           value={storage}
           onValueChange={async (value: string) => {
             setStorage(value)
-            if (value === 'alist') {
-              await getAlistStorage()
+            if (value === 'openList') {
+              await getOpenListStorage()
             } else {
               setStorageSelect(false)
             }
@@ -312,19 +312,19 @@ export default function MultipleFileUpload() {
           </SelectContent>
         </Select>
         {
-          storage === 'alist' && storageSelect && alistStorage?.length > 0 && (
+          storage === 'openList' && storageSelect && openListStorage?.length > 0 && (
             <Select
               disabled={isLoading}
-              defaultValue={alistMountPath}
-              onValueChange={(value: string) => setAlistMountPath(value)}
+              defaultValue={openListMountPath}
+              onValueChange={(value: string) => setOpenListMountPath(value)}
           >
             <SelectTrigger>
-              <SelectValue placeholder={t('Upload.selectAlistDirectory')} />
+              <SelectValue placeholder={t('Upload.selectOpenListDirectory')} />
             </SelectTrigger>
             <SelectContent>
               <SelectGroup>
-                <SelectLabel>{t('Upload.alistDirectory')}</SelectLabel>
-                {alistStorage?.map((storage: any) => (
+                <SelectLabel>{t('Upload.openListDirectory')}</SelectLabel>
+                {openListStorage?.map((storage: any) => (
                   <SelectItem key={storage?.mount_path} value={storage?.mount_path}>
                     {storage?.mount_path}
                   </SelectItem>
@@ -340,7 +340,7 @@ export default function MultipleFileUpload() {
         onUpload={onUpload}
         maxFiles={maxUploadFiles}
         multiple={true}
-        disabled={storage === '' || album === '' || (storage === 'alist' && alistMountPath === '')}
+        disabled={storage === '' || album === '' || (storage === 'openList' && openListMountPath === '')}
       >
         <FileUploadDropzone className="h-full">
           <div className="flex flex-col items-center gap-1">

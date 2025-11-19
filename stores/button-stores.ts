@@ -14,8 +14,8 @@ export type ButtonState = {
   s3Data: Config[]
   r2Edit: boolean
   r2Data: Config[]
-  aListEdit: boolean
-  aListData: Config[]
+  openListEdit: boolean
+  openListData: Config[]
   MasonryView: boolean
   MasonryViewData: ImageType
   MasonryViewDataList: ImageType[]
@@ -37,8 +37,8 @@ export type ButtonActions = {
   setS3EditData: (s3Data: Config[]) => void
   setR2Edit: (r2Edit: boolean) => void
   setR2EditData: (r2Data: Config[]) => void
-  setAListEdit: (aListEdit: boolean) => void
-  setAListEditData: (aListData: Config[]) => void
+  setOpenListEdit: (openListEdit: boolean) => void
+  setOpenListEditData: (openListData: Config[]) => void
   setMasonryView: (masonryView: boolean) => void
   setMasonryViewData: (masonryViewData: ImageType) => void
   setMasonryViewDataList: (masonryViewDataList: ImageType[]) => void
@@ -63,8 +63,8 @@ export const initButtonStore = (): ButtonState => {
     s3Data: [] as Config[],
     r2Edit: false,
     r2Data: [] as Config[],
-    aListEdit: false,
-    aListData: [] as Config[],
+    openListEdit: false,
+    openListData: [] as Config[],
     MasonryView: false,
     MasonryViewData: {} as ImageType,
     MasonryViewDataList: [] as ImageType[],
@@ -87,8 +87,8 @@ export const defaultInitState: ButtonState = {
   s3Data: [] as Config[],
   r2Edit: false,
   r2Data: [] as Config[],
-  aListEdit: false,
-  aListData: [] as Config[],
+  openListEdit: false,
+  openListData: [] as Config[],
   MasonryView: false,
   MasonryViewData: {} as ImageType,
   MasonryViewDataList: [] as ImageType[],
@@ -138,11 +138,11 @@ export const createButtonStore = (
         setR2EditData: (r2DataValue) => set(() => ({
           r2Data: r2DataValue,
         })),
-        setAListEdit: (aListEditValue) => set(() => ({
-          aListEdit: aListEditValue,
+        setOpenListEdit: (openListEditValue) => set(() => ({
+          openListEdit: openListEditValue,
         })),
-        setAListEditData: (aListDataValue) => set(() => ({
-          aListData: aListDataValue,
+        setOpenListEditData: (openListDataValue) => set(() => ({
+          openListData: openListDataValue,
         })),
         setMasonryView: (masonryViewValue) => set(() => ({
           MasonryView: masonryViewValue,

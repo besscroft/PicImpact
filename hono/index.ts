@@ -4,7 +4,7 @@ import settings from '~/hono/settings'
 import file from '~/hono/file'
 import images from '~/hono/images'
 import albums from '~/hono/albums'
-import alist from '~/hono/storage/alist'
+import openList from '~/hono/storage/open-list.ts'
 import { HTTPException } from 'hono/http-exception'
 
 const route = new Hono()
@@ -20,6 +20,6 @@ route.route('/settings', settings)
 route.route('/file', file)
 route.route('/images', images)
 route.route('/albums', albums)
-route.route('/storage/alist', alist)
+route.route('/storage/open-list', openList)
 
 export default route

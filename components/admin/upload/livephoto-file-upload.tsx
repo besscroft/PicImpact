@@ -34,11 +34,11 @@ import { heicTo, isHeic } from 'heic-to'
 import { encodeBrowserThumbHash } from '~/lib/utils/blurhash-client'
 
 export default function LivephotoFileUpload() {
-  const [alistStorage, setAlistStorage] = useState([])
+  const [openListStorage, setOpenListStorage] = useState([])
   const [storageSelect, setStorageSelect] = useState(false)
   const [storage, setStorage] = useState('r2')
   const [album, setAlbum] = useState('')
-  const [alistMountPath, setAlistMountPath] = useState('')
+  const [openListMountPath, setOpenListMountPath] = useState('')
   const [exif, setExif] = useState({} as ExifType)
   const [title, setTitle] = useState('')
   const [url, setUrl] = useState('')
@@ -151,18 +151,18 @@ export default function LivephotoFileUpload() {
     }
   }
 
-  async function getAlistStorage() {
-    if (alistStorage.length > 0) {
+  async function getOpenListStorage() {
+    if (openListStorage.length > 0) {
       setStorageSelect(true)
       return
     }
     try {
-      toast.info('正在获取 AList 挂载目录')
-      const res = await fetch('/api/v1/storage/alist/storages', {
+      toast.info('正在获取 Open List 挂载目录')
+      const res = await fetch('/api/v1/storage/open-list/storages', {
         method: 'GET',
       }).then(res => res.json())
       if (res?.code === 200) {
-        setAlistStorage(res.data?.content)
+        setOpenListStorage(res.data?.content)
         setStorageSelect(true)
       } else {
         toast.error('获取失败')
@@ -182,8 +182,8 @@ export default function LivephotoFileUpload() {
       value: 'r2',
     },
     {
-      label: 'AList API',
-      value: 'alist',
+      label: 'Open List API',
+      value: 'openList',
     }
   ]
 
@@ -194,7 +194,7 @@ export default function LivephotoFileUpload() {
       mimeType: 'image/webp',
       maxWidth: previewImageMaxWidthLimitSwitchOn && previewImageMaxWidthLimit > 0 ? previewImageMaxWidthLimit : undefined,
       async success(compressedFile) {
-        const res = await uploadFile(compressedFile, type, storage, alistMountPath)
+        const res = await uploadFile(compressedFile, type, storage, openListMountPath)
         if (res?.code === 200) {
           setPreviewUrl(res?.data?.url)
         } else {
@@ -244,7 +244,7 @@ export default function LivephotoFileUpload() {
         type: 'image/jpeg',
       })
       const outputFile = new File([outputBuffer], fileName + '.jpg', { type: 'image/jpeg' })
-      await uploadFile(outputFile, album, storage, alistMountPath).then(async (res) => {
+      await uploadFile(outputFile, album, storage, openListMountPath).then(async (res) => {
         if (res.code === 200) {
           await resHandle(res, outputFile, type)
         } else {
@@ -252,7 +252,7 @@ export default function LivephotoFileUpload() {
         }
       })
     } else {
-      await uploadFile(file, album, storage, alistMountPath).then(async (res) => {
+      await uploadFile(file, album, storage, openListMountPath).then(async (res) => {
         await resHandle(res, file, type)
       })
     }
@@ -269,7 +269,7 @@ export default function LivephotoFileUpload() {
 
   function onRemoveFile() {
     setStorageSelect(false)
-    setAlistMountPath('')
+    setOpenListMountPath('')
     setExif({} as ExifType)
     setHash('')
     setUrl('')
@@ -382,8 +382,8 @@ export default function LivephotoFileUpload() {
             defaultValue={storage}
             onValueChange={async (value: string) => {
               setStorage(value)
-              if (value === 'alist') {
-                await getAlistStorage()
+              if (value === 'openList') {
+                await getOpenListStorage()
               } else {
                 setStorageSelect(false)
               }
@@ -436,19 +436,19 @@ export default function LivephotoFileUpload() {
         }
       </div>
       {
-        storageSelect && alistStorage?.length > 0 &&
+        storageSelect && openListStorage?.length > 0 &&
         <Select
           disabled={isLoading}
-          defaultValue={alistMountPath}
-          onValueChange={(value: string) => setAlistMountPath(value)}
+          defaultValue={openListMountPath}
+          onValueChange={(value: string) => setOpenListMountPath(value)}
         >
           <SelectTrigger>
-            <SelectValue placeholder={t('Upload.selectAlistDirectory')} />
+            <SelectValue placeholder={t('Upload.selectOpenListDirectory')} />
           </SelectTrigger>
           <SelectContent>
             <SelectGroup>
-              <SelectLabel>{t('Upload.alistDirectory')}</SelectLabel>
-              {alistStorage?.map((storage: any) => (
+              <SelectLabel>{t('Upload.openListDirectory')}</SelectLabel>
+              {openListStorage?.map((storage: any) => (
                 <SelectItem key={storage?.mount_path} value={storage?.mount_path}>
                   {storage?.mount_path}
                 </SelectItem>
@@ -466,7 +466,7 @@ export default function LivephotoFileUpload() {
             onValueChange={setImages}
             onUpload={onImageUpload}
             multiple={false}
-            disabled={storage === '' || album === '' || (storage === 'alist' && alistMountPath === '')}
+            disabled={storage === '' || album === '' || (storage === 'openList' && openListMountPath === '')}
           >
             <FileUploadDropzone className="h-full">
               <div className="flex flex-col items-center gap-1">
@@ -498,7 +498,7 @@ export default function LivephotoFileUpload() {
             onValueChange={setVideos}
             onUpload={onVideoUpload}
             multiple={false}
-            disabled={storage === '' || album === '' || (storage === 'alist' && alistMountPath === '')}
+            disabled={storage === '' || album === '' || (storage === 'openList' && openListMountPath === '')}
           >
             <FileUploadDropzone className="h-full">
               <div className="flex flex-col items-center gap-1">

@@ -8,24 +8,24 @@ const app = new Hono()
 
 app.get('/info', async (c) => {
   const data = await fetchConfigsByKeys([
-    'alist_url',
-    'alist_token'
+    'open_list_url',
+    'open_list_token'
   ])
   return c.json(data)
 })
 
 app.get('/storages', async (c) => {
   const findConfig = await fetchConfigsByKeys([
-    'alist_url',
-    'alist_token'
+    'open_list_url',
+    'open_list_token'
   ])
-  const alistToken = findConfig.find((item: Config) => item.config_key === 'alist_token')?.config_value || ''
-  const alistUrl = findConfig.find((item: Config) => item.config_key === 'alist_url')?.config_value || ''
+  const openListToken = findConfig.find((item: Config) => item.config_key === 'open_list_token')?.config_value || ''
+  const openListUrl = findConfig.find((item: Config) => item.config_key === 'open_list_url')?.config_value || ''
 
-  const data = await fetch(`${alistUrl}/api/admin/storage/list`, {
+  const data = await fetch(`${openListUrl}/api/admin/storage/list`, {
     method: 'get',
     headers: {
-      'Authorization': alistToken.toString(),
+      'Authorization': openListToken.toString(),
     },
   }).then(res => res.json())
   return c.json(data)
