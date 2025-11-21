@@ -1,7 +1,6 @@
 'use client'
 
 import { Button } from '~/components/ui/button'
-import React from 'react'
 import { useButtonStore } from '~/app/providers/button-store-providers'
 
 export default function AlbumAddButton() {
