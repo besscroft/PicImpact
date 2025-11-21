@@ -333,7 +333,8 @@
     "github": "GitHub"
   },
   "Theme": {
-    "indexDefaultStyle": "默认主题",
-    "indexSimpleStyle": "单列主题"
+    "indexDefaultStyle": "默认",
+    "indexSimpleStyle": "单列",
+    "indexPolaroidStyle": "宝丽来"
   }
 }

@@ -333,7 +333,8 @@
     "github": "GitHub"
   },
   "Theme": {
-    "indexDefaultStyle": "Default Theme",
-    "indexSimpleStyle": "Single Column Theme"
+    "indexDefaultStyle": "Default",
+    "indexSimpleStyle": "Single Column",
+    "indexPolaroidStyle": "Polaroid"
   }
 }

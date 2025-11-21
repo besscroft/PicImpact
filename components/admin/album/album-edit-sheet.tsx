@@ -156,6 +156,7 @@ export default function AlbumEditSheet(props : Readonly<HandleProps>) {
                 <SelectContent className="cursor-pointer">
                   <SelectItem className="cursor-pointer" value="0">{t('Theme.indexDefaultStyle')}</SelectItem>
                   <SelectItem className="cursor-pointer" value="1">{t('Theme.indexSimpleStyle')}</SelectItem>
+                  <SelectItem className="cursor-pointer" value="2">{t('Theme.indexPolaroidStyle')}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
