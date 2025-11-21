@@ -6,22 +6,21 @@ import useSWRInfinite from 'swr/infinite'
 import { useSwrHydrated } from '~/hooks/use-swr-hydrated.ts'
 import { useTranslations } from 'next-intl'
 import type { ImageType } from '~/types'
-import { ReloadIcon } from '@radix-ui/react-icons'
-import { Button } from '~/components/ui/button.tsx'
 import GalleryImage from '~/components/gallery/simple/gallery-image.tsx'
+import InfiniteScroll from '~/components/ui/origin/infinite-scroll.tsx'
 
-export default function SimpleGallery(props : Readonly<ImageHandleProps>) {
+export default function SimpleGallery(props: Readonly<ImageHandleProps>) {
   const { data: pageTotal } = useSwrPageTotalHook(props)
-  const { data, isLoading, isValidating, size, setSize } = useSWRInfinite((index) => {
-      return [`client-${props.args}-${index}-${props.album}`, index]
-    },
+  const { data, isValidating, size, setSize } = useSWRInfinite((index) => {
+    return [`client-${props.args}-${index}-${props.album}`, index]
+  },
     ([_, index]) => {
       return props.handle(index + 1, props.album)
     }, {
-      revalidateOnFocus: false,
-      revalidateIfStale: false,
-      revalidateOnReconnect: false,
-    })
+    revalidateOnFocus: false,
+    revalidateIfStale: false,
+    revalidateOnReconnect: false,
+  })
   const configProps: HandleProps = {
     handle: props.configHandle,
     args: 'system-config',
@@ -31,29 +30,20 @@ export default function SimpleGallery(props : Readonly<ImageHandleProps>) {
   const t = useTranslations()
 
   return (
-    <div className="w-full p-2 space-y-4">
+    <InfiniteScroll
+      className="w-full p-2 space-y-4"
+      hasMore={size < pageTotal}
+      isLoading={isValidating}
+      next={() => setSize(size + 1)}
+    >
       {dataList?.map((item: ImageType) => (
         <GalleryImage key={item.id} photo={item} configData={configData} />
       ))}
-      <div className="flex items-center justify-center my-4">
-        {
-          isValidating ?
-            <ReloadIcon className="mr-2 h-4 w-4 animate-spin"/>
-            : dataList.length > 0 ?
-              size < pageTotal &&
-              <Button
-                disabled={isLoading}
-                onClick={() => {
-                  setSize(size + 1)
-                }}
-                className="select-none cursor-pointer"
-                aria-label={t('Button.loadMore')}
-              >
-                {t('Button.loadMore')}
-              </Button>
-              : t('Tips.noImg')
-        }
-      </div>
-    </div>
+      {dataList.length === 0 && !isValidating && (
+        <div className="flex items-center justify-center my-4">
+          {t('Tips.noImg')}
+        </div>
+      )}
+    </InfiniteScroll>
   )
 }
