@@ -335,5 +335,12 @@
   "Theme": {
     "indexDefaultStyle": "預設主題",
     "indexSimpleStyle": "單欄主題"
+  },
+  "Filter": {
+    "title": "篩選",
+    "camera": "相機",
+    "lens": "鏡頭",
+    "reset": "重置篩選",
+    "all": "全部"
   }
 }
