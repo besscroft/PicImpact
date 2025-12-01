@@ -335,5 +335,12 @@
   "Theme": {
     "indexDefaultStyle": "Default Theme",
     "indexSimpleStyle": "Single Column Theme"
+  },
+  "Filter": {
+    "title": "Filter",
+    "camera": "Camera",
+    "lens": "Lens",
+    "reset": "Reset Filter",
+    "all": "All"
   }
 }

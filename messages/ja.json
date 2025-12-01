@@ -335,5 +335,12 @@
   "Theme": {
     "indexDefaultStyle": "デフォルトテーマ",
     "indexSimpleStyle": "シングルカラムテーマ"
+  },
+  "Filter": {
+    "title": "フィルター",
+    "camera": "カメラ",
+    "lens": "レンズ",
+    "reset": "フィルターをリセット",
+    "all": "すべて"
   }
 }

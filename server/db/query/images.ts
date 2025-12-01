@@ -161,9 +161,16 @@ export async function fetchServerImagesPageTotalByAlbum(
  * 根据相册获取图片分页列表（客户端）
  * @param pageNum 页码
  * @param album 相册
+ * @param camera 相机型号（可选）
+ * @param lens 镜头型号（可选）
  * @returns {Promise<ImageType[]>} 图片列表
  */
-export async function fetchClientImagesListByAlbum(pageNum: number, album: string): Promise<ImageType[]> {
+export async function fetchClientImagesListByAlbum(
+  pageNum: number,
+  album: string,
+  camera?: string,
+  lens?: string
+): Promise<ImageType[]> {
   if (pageNum < 1) {
     pageNum = 1
   }
@@ -179,6 +186,8 @@ export async function fetchClientImagesListByAlbum(pageNum: number, album: strin
         image.show = 0
     AND
         image.show_on_mainpage = 0
+    ${camera ? Prisma.sql`AND COALESCE(image.exif->>'model', 'Unknown') = ${camera}` : Prisma.empty}
+    ${lens ? Prisma.sql`AND COALESCE(image.exif->>'lens_model', 'Unknown') = ${lens}` : Prisma.empty}
     ORDER BY image.sort DESC, image.created_at DESC, image.updated_at DESC
     LIMIT 16 OFFSET ${(pageNum - 1) * 16}
   `
@@ -215,6 +224,8 @@ export async function fetchClientImagesListByAlbum(pageNum: number, album: strin
         albums.show = 0
     AND
         albums.album_value = ${album}
+    ${camera ? Prisma.sql`AND COALESCE(image.exif->>'model', 'Unknown') = ${camera}` : Prisma.empty}
+    ${lens ? Prisma.sql`AND COALESCE(image.exif->>'lens_model', 'Unknown') = ${lens}` : Prisma.empty}
     ORDER BY ${orderBy}
     LIMIT 16 OFFSET ${(pageNum - 1) * 16}
   `
@@ -227,9 +238,15 @@ export async function fetchClientImagesListByAlbum(pageNum: number, album: strin
 /**
  * 根据相册获取图片分页总数（客户端）
  * @param album 相册
+ * @param camera 相机型号（可选）
+ * @param lens 镜头型号（可选）
  * @returns {Promise<number>} 图片总数
  */
-export async function fetchClientImagesPageTotalByAlbum(album: string): Promise<number> {
+export async function fetchClientImagesPageTotalByAlbum(
+  album: string,
+  camera?: string,
+  lens?: string
+): Promise<number> {
   if (album === '/') {
     const pageTotal = await db.$queryRaw`
     SELECT COALESCE(COUNT(1),0) AS total
@@ -244,6 +261,8 @@ export async function fetchClientImagesPageTotalByAlbum(album: string): Promise<
             image.show = 0
         AND
             image.show_on_mainpage = 0
+        ${camera ? Prisma.sql`AND COALESCE(image.exif->>'model', 'Unknown') = ${camera}` : Prisma.empty}
+        ${lens ? Prisma.sql`AND COALESCE(image.exif->>'lens_model', 'Unknown') = ${lens}` : Prisma.empty}
     ) AS unique_images;
   `
     // @ts-ignore
@@ -270,6 +289,8 @@ export async function fetchClientImagesPageTotalByAlbum(album: string): Promise<
             albums.show = 0
         AND
             albums.album_value = ${album}
+        ${camera ? Prisma.sql`AND COALESCE(image.exif->>'model', 'Unknown') = ${camera}` : Prisma.empty}
+        ${lens ? Prisma.sql`AND COALESCE(image.exif->>'lens_model', 'Unknown') = ${lens}` : Prisma.empty}
     ) AS unique_images;
   `
   // @ts-ignore
@@ -483,6 +504,55 @@ export async function fetchCameraAndLensList(): Promise<{ cameras: string[], len
     WHERE del = 0
     ORDER BY camera, lens
   `
+
+  const cameras = [...new Set(stats.map(item => item.camera))]
+  const lenses = [...new Set(stats.map(item => item.lens))]
+
+  return {
+    cameras,
+    lenses
+  }
+}
+
+/**
+ * 获取公开图片的相机和镜头型号列表（客户端用）
+ * @param album 相册（可选，为空或 '/' 时查询所有公开图片）
+ * @returns {Promise<{ cameras: string[], lenses: string[] }>} 相机和镜头列表
+ */
+export async function fetchClientCameraAndLensList(album?: string): Promise<{ cameras: string[], lenses: string[] }> {
+  let stats: Array<{ camera: string; lens: string }>
+
+  if (!album || album === '/') {
+    // 查询首页展示的公开图片
+    stats = await db.$queryRaw<Array<{ camera: string; lens: string }>>`
+      SELECT DISTINCT
+        COALESCE(exif->>'model', 'Unknown') as camera,
+        COALESCE(exif->>'lens_model', 'Unknown') as lens
+      FROM "public"."images"
+      WHERE del = 0
+        AND show = 0
+        AND show_on_mainpage = 0
+      ORDER BY camera, lens
+    `
+  } else {
+    // 查询指定相册下的公开图片
+    stats = await db.$queryRaw<Array<{ camera: string; lens: string }>>`
+      SELECT DISTINCT
+        COALESCE(image.exif->>'model', 'Unknown') as camera,
+        COALESCE(image.exif->>'lens_model', 'Unknown') as lens
+      FROM "public"."images" AS image
+      INNER JOIN "public"."images_albums_relation" AS relation
+        ON image.id = relation."imageId"
+      INNER JOIN "public"."albums" AS albums
+        ON relation.album_value = albums.album_value
+      WHERE image.del = 0
+        AND albums.del = 0
+        AND image.show = 0
+        AND albums.show = 0
+        AND albums.album_value = ${album}
+      ORDER BY camera, lens
+    `
+  }
 
   const cameras = [...new Set(stats.map(item => item.camera))]
   const lenses = [...new Set(stats.map(item => item.lens))]

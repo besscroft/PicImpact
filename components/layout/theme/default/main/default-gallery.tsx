@@ -1,15 +1,16 @@
 'use client'
 
 import type { ImageHandleProps } from '~/types/props.ts'
-import { useSwrPageTotalHook } from '~/hooks/use-swr-page-total-hook.ts'
 import useSWRInfinite from 'swr/infinite'
+import useSWR from 'swr'
 import { useTranslations } from 'next-intl'
 import type { ImageType } from '~/types'
 import { ReloadIcon } from '@radix-ui/react-icons'
 import { Button } from '~/components/ui/button.tsx'
-import React from 'react'
+import React, { useState, useCallback, useEffect } from 'react'
 import { MasonryPhotoAlbum, RenderImageContext, RenderImageProps } from 'react-photo-album'
 import BlurImage from '~/components/album/blur-image.tsx'
+import FloatingFilterBall from '~/components/album/floating-filter-ball.tsx'
 
 function renderNextImage(
   _: RenderImageProps,
@@ -22,19 +23,57 @@ function renderNextImage(
 }
 
 export default function DefaultGallery(props : Readonly<ImageHandleProps>) {
-  const { data: pageTotal } = useSwrPageTotalHook(props)
-  const { data, isLoading, isValidating, size, setSize } = useSWRInfinite((index) => {
-      return [`client-${props.args}-${index}-${props.album}`, index]
-    },
-    ([_, index]) => {
-      return props.handle(index + 1, props.album)
-    }, {
+  const [selectedCamera, setSelectedCamera] = useState('')
+  const [selectedLens, setSelectedLens] = useState('')
+  const t = useTranslations()
+
+  // Use SWR for page total with filter support
+  const { data: pageTotal, mutate: mutateTotal } = useSWR(
+    [`pageTotal-${props.args}-${props.album}`, selectedCamera, selectedLens],
+    () => props.totalHandle(props.album, selectedCamera || undefined, selectedLens || undefined),
+    {
       revalidateOnFocus: false,
       revalidateIfStale: false,
       revalidateOnReconnect: false,
-    })
+    }
+  )
+
+  // Use SWR Infinite for paginated data with filter support
+  const { data, isLoading, isValidating, size, setSize, mutate } = useSWRInfinite(
+    (index) => {
+      return [`client-${props.args}-${index}-${props.album}-${selectedCamera}-${selectedLens}`, index]
+    },
+    ([_, index]) => {
+      return props.handle(index + 1, props.album, selectedCamera || undefined, selectedLens || undefined)
+    }, 
+    {
+      revalidateOnFocus: false,
+      revalidateIfStale: false,
+      revalidateOnReconnect: false,
+    }
+  )
+
   const dataList = data ? [].concat(...data) : []
-  const t = useTranslations()
+
+  // Reset pagination and refetch when filters change
+  useEffect(() => {
+    setSize(1)
+    mutate()
+    mutateTotal()
+  }, [selectedCamera, selectedLens, setSize, mutate, mutateTotal])
+
+  const handleCameraChange = useCallback((camera: string) => {
+    setSelectedCamera(camera)
+  }, [])
+
+  const handleLensChange = useCallback((lens: string) => {
+    setSelectedLens(lens)
+  }, [])
+
+  const handleReset = useCallback(() => {
+    setSelectedCamera('')
+    setSelectedLens('')
+  }, [])
 
   return (
     <div className="w-full p-2 space-y-4">
@@ -66,7 +105,7 @@ export default function DefaultGallery(props : Readonly<ImageHandleProps>) {
           isValidating ?
             <ReloadIcon className="mr-2 h-4 w-4 animate-spin"/>
             : dataList.length > 0 ?
-              size < pageTotal &&
+              size < (pageTotal || 0) &&
               <Button
                 disabled={isLoading}
                 onClick={() => {
@@ -80,6 +119,16 @@ export default function DefaultGallery(props : Readonly<ImageHandleProps>) {
               : t('Tips.noImg')
         }
       </div>
+      
+      {/* Floating Filter Ball */}
+      <FloatingFilterBall
+        album={props.album}
+        selectedCamera={selectedCamera}
+        selectedLens={selectedLens}
+        onCameraChange={handleCameraChange}
+        onLensChange={handleLensChange}
+        onReset={handleReset}
+      />
     </div>
   )
 }

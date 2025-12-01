@@ -31,7 +31,8 @@ export default function TagGallery(props : Readonly<ImageHandleProps>) {
       return [`client-${props.args}-${index}-${props.album}`, index]
     },
     ([_, index]) => {
-      return props.handle(index + 1, props.album)
+      // Tag gallery doesn't use camera/lens filters
+      return props.handle(index + 1, props.album, undefined, undefined)
     }, {
       revalidateOnFocus: false,
       revalidateIfStale: false,

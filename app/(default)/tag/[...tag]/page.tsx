@@ -6,13 +6,15 @@ import 'react-photo-album/masonry.css'
 
 export default async function Label({params}: { params: any }) {
   const { tag } = await params
-  const getData = async (pageNum: number, tag: string) => {
+  const getData = async (pageNum: number, tag: string, _camera?: string, _lens?: string) => {
     'use server'
+    // Tag gallery doesn't use camera/lens filters
     return await fetchClientImagesListByTag(pageNum, tag)
   }
 
-  const getPageTotal = async (tag: string) => {
+  const getPageTotal = async (tag: string, _camera?: string, _lens?: string) => {
     'use server'
+    // Tag gallery doesn't use camera/lens filters
     return await fetchClientImagesPageTotalByTag(tag)
   }
 
