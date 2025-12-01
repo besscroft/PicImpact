@@ -1,8 +1,7 @@
 'use client'
 
-import * as React from 'react'
 import { useState, useEffect, useCallback, useRef } from 'react'
-import { motion, PanInfo } from 'motion/react'
+import { motion, PanInfo, useMotionValue, useTransform, animate, useSpring } from 'motion/react'
 import { useIsMobile } from '~/hooks/use-mobile'
 import { useTranslations } from 'next-intl'
 import { Popover, PopoverContent, PopoverTrigger } from '~/components/ui/popover'
@@ -67,22 +66,23 @@ function savePosition(position: Position) {
   }
 }
 
-function snapToEdge(x: number, y: number): Position {
+// Clamp position to stay within screen bounds
+function clampToBounds(posX: number, posY: number): Position {
   if (typeof window === 'undefined') {
-    return { x, y }
+    return { x: posX, y: posY }
   }
   const { innerWidth, innerHeight } = window
-  const centerX = innerWidth / 2
 
-  // Snap to left or right edge
-  const newX = x < centerX 
-    ? EDGE_MARGIN 
-    : innerWidth - BALL_SIZE - EDGE_MARGIN
+  // Keep within horizontal bounds
+  const newX = Math.max(
+    EDGE_MARGIN,
+    Math.min(posX, innerWidth - BALL_SIZE - EDGE_MARGIN)
+  )
 
   // Keep within vertical bounds
   const newY = Math.max(
     EDGE_MARGIN,
-    Math.min(y, innerHeight - BALL_SIZE - EDGE_MARGIN)
+    Math.min(posY, innerHeight - BALL_SIZE - EDGE_MARGIN)
   )
 
   return { x: newX, y: newY }
@@ -99,53 +99,119 @@ export default function FloatingFilterBall({
   const isMobile = useIsMobile()
   const t = useTranslations()
   const [isOpen, setIsOpen] = useState(false)
-  const [position, setPosition] = useState<Position>({ x: 0, y: 0 })
   const [isDragging, setIsDragging] = useState(false)
   const [isHydrated, setIsHydrated] = useState(false)
+  
+  // Use motion values for smooth GPU-accelerated animations
+  const x = useMotionValue(0)
+  const y = useMotionValue(0)
+  
+  // Track velocity for rotation effect
+  const dragVelocity = useRef({ x: 0, y: 0 })
+  const rotateValue = useMotionValue(0)
+  const smoothRotate = useSpring(rotateValue, { stiffness: 300, damping: 30 })
+  
+  // Scale spring for smooth scaling
+  const scaleValue = useMotionValue(1)
+  const smoothScale = useSpring(scaleValue, { stiffness: 400, damping: 25 })
+  
+  // Glow intensity based on dragging
+  const glowOpacity = useMotionValue(0)
+  const smoothGlow = useSpring(glowOpacity, { stiffness: 200, damping: 20 })
+  
+  // Pre-compute transforms (must be called before any conditional returns)
+  const boxShadowTransform = useTransform(
+    smoothGlow,
+    [0, 1],
+    [
+      '0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)',
+      '0 0 20px 4px hsl(var(--primary) / 0.5), 0 0 40px 8px hsl(var(--primary) / 0.3), 0 8px 16px -4px rgb(0 0 0 / 0.2)'
+    ]
+  )
+  const glowRingScale = useTransform(smoothGlow, [0, 1], [1, 1.5])
+  const glowRingOpacity = useTransform(smoothGlow, [0, 1], [0, 0.6])
+  const iconRotate = useTransform(smoothGlow, [0, 1], [0, 180])
+  
+  // Store position in ref to avoid re-renders during drag
+  const positionRef = useRef<Position>({ x: 0, y: 0 })
   const dragStartPos = useRef<Position>({ x: 0, y: 0 })
 
   const hasActiveFilter = selectedCamera !== '' || selectedLens !== ''
 
   // Load saved position on mount
   useEffect(() => {
-    setIsHydrated(true)
     const saved = loadPosition()
-    if (saved) {
-      // Validate saved position is still within bounds
-      const snapped = snapToEdge(saved.x, saved.y)
-      setPosition(snapped)
-    } else {
-      setPosition(getDefaultPosition())
-    }
-  }, [])
+    const initialPos = saved ? clampToBounds(saved.x, saved.y) : getDefaultPosition()
+    positionRef.current = initialPos
+    x.set(initialPos.x)
+    y.set(initialPos.y)
+    setIsHydrated(true)
+  }, [x, y])
 
-  // Handle window resize
+  // Handle window resize - debounced for better performance
   useEffect(() => {
     if (!isHydrated) return
+    
+    let resizeTimeout: ReturnType<typeof setTimeout>
     const handleResize = () => {
-      setPosition(prev => snapToEdge(prev.x, prev.y))
+      clearTimeout(resizeTimeout)
+      resizeTimeout = setTimeout(() => {
+        const clamped = clampToBounds(positionRef.current.x, positionRef.current.y)
+        positionRef.current = clamped
+        animate(x, clamped.x, { duration: 0.2 })
+        animate(y, clamped.y, { duration: 0.2 })
+      }, 100)
     }
+    
     window.addEventListener('resize', handleResize)
-    return () => window.removeEventListener('resize', handleResize)
-  }, [isHydrated])
+    return () => {
+      window.removeEventListener('resize', handleResize)
+      clearTimeout(resizeTimeout)
+    }
+  }, [isHydrated, x, y])
 
   const handleDragStart = useCallback(() => {
     setIsDragging(true)
-    dragStartPos.current = { ...position }
-  }, [position])
+    dragStartPos.current = { x: x.get(), y: y.get() }
+    // Activate glow effect
+    glowOpacity.set(1)
+    scaleValue.set(1.15)
+  }, [x, y, glowOpacity, scaleValue])
+
+  const handleDrag = useCallback((_: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
+    // Update velocity for rotation effect
+    dragVelocity.current = { x: info.velocity.x, y: info.velocity.y }
+    
+    // Calculate rotation based on horizontal velocity (tilt effect)
+    const tiltAmount = Math.max(-15, Math.min(15, info.velocity.x * 0.02))
+    rotateValue.set(tiltAmount)
+  }, [rotateValue])
 
   const handleDragEnd = useCallback((_: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
     const newX = dragStartPos.current.x + info.offset.x
     const newY = dragStartPos.current.y + info.offset.y
-    const snapped = snapToEdge(newX, newY)
-    setPosition(snapped)
-    savePosition(snapped)
+    const clamped = clampToBounds(newX, newY)
+    
+    // Update ref and set final position
+    positionRef.current = clamped
+    x.set(clamped.x)
+    y.set(clamped.y)
+    
+    // Reset rotation with spring animation
+    rotateValue.set(0)
+    // Deactivate glow effect
+    glowOpacity.set(0)
+    // Reset scale with a little bounce
+    scaleValue.set(1)
+    
+    // Save position in next tick to avoid blocking
+    requestAnimationFrame(() => savePosition(clamped))
     
     // Small delay to allow click events to be handled properly
     setTimeout(() => {
       setIsDragging(false)
     }, 100)
-  }, [])
+  }, [x, y, rotateValue, glowOpacity, scaleValue])
 
   const handleClick = useCallback(() => {
     if (!isDragging) {
@@ -172,28 +238,67 @@ export default function FloatingFilterBall({
     <motion.div
       className={cn(
         'fixed z-50 flex items-center justify-center rounded-full',
-        'bg-primary/90 text-primary-foreground shadow-lg backdrop-blur-sm',
+        'bg-primary/90 text-primary-foreground backdrop-blur-sm',
         'cursor-grab active:cursor-grabbing',
-        'hover:bg-primary hover:scale-105 transition-colors',
+        'hover:bg-primary',
         hasActiveFilter && 'ring-2 ring-offset-2 ring-primary'
       )}
       style={{
         width: BALL_SIZE,
         height: BALL_SIZE,
-        left: position.x,
-        top: position.y,
+        left: 0,
+        top: 0,
+        x,
+        y,
+        rotate: smoothRotate,
+        scale: smoothScale,
+        willChange: 'transform',
+        boxShadow: boxShadowTransform,
       }}
       drag
       dragMomentum={false}
-      dragElastic={0}
+      dragElastic={0.1}
       onDragStart={handleDragStart}
+      onDrag={handleDrag}
       onDragEnd={handleDragEnd}
-      whileDrag={{ scale: 1.1 }}
+      whileHover={{ scale: 1.08 }}
       whileTap={{ scale: 0.95 }}
+      transition={{
+        scale: { type: 'spring', stiffness: 400, damping: 25 },
+      }}
     >
-      <SlidersHorizontal className="h-5 w-5" />
+      {/* Animated glow ring */}
+      <motion.div
+        className="absolute inset-0 rounded-full bg-primary/20"
+        style={{
+          scale: glowRingScale,
+          opacity: glowRingOpacity,
+        }}
+      />
+      
+      {/* Icon with rotation animation */}
+      <motion.div
+        style={{
+          rotate: iconRotate,
+        }}
+      >
+        <SlidersHorizontal className="h-5 w-5 relative z-10" />
+      </motion.div>
+      
+      {/* Active filter indicator with pulse */}
       {hasActiveFilter && (
-        <span className="absolute -top-1 -right-1 h-3 w-3 rounded-full bg-destructive" />
+        <motion.span 
+          className="absolute -top-1 -right-1 h-3 w-3 rounded-full bg-destructive"
+          animate={{
+            scale: [1, 1.2, 1],
+            opacity: [1, 0.8, 1],
+          }}
+          transition={{
+            duration: 2,
+            repeat: Infinity,
+            ease: 'easeInOut',
+          }}
+        />
       )}
     </motion.div>
   )
