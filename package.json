@@ -4,7 +4,7 @@
   "author": "Bess Croft <besscroft@foxmail.com>",
   "packageManager": "pnpm@9.7.1",
   "scripts": {
-    "dev:server": "next dev",
+    "dev:server": "pnpm run dev:prisma && pnpm run prisma:seed && next dev",
     "dev:turbopack": "pnpm run dev:prisma && pnpm run prisma:seed && next dev --turbopack",
     "dev:prisma": "pnpm run prisma:dev && pnpm run prisma:generate",
     "build": "next build",
