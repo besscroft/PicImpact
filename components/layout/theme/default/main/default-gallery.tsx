@@ -7,7 +7,7 @@ import { useTranslations } from 'next-intl'
 import type { ImageType } from '~/types'
 import { ReloadIcon } from '@radix-ui/react-icons'
 import { Button } from '~/components/ui/button.tsx'
-import React, { useState, useCallback, useEffect } from 'react'
+import { useState, useCallback, useEffect, useRef, useMemo, useTransition } from 'react'
 import { MasonryPhotoAlbum, RenderImageContext, RenderImageProps } from 'react-photo-album'
 import BlurImage from '~/components/album/blur-image.tsx'
 import FloatingFilterBall from '~/components/album/floating-filter-ball.tsx'
@@ -25,42 +25,66 @@ function renderNextImage(
 export default function DefaultGallery(props : Readonly<ImageHandleProps>) {
   const [selectedCamera, setSelectedCamera] = useState('')
   const [selectedLens, setSelectedLens] = useState('')
+  // Debounced filter values for API requests
+  const [debouncedCamera, setDebouncedCamera] = useState('')
+  const [debouncedLens, setDebouncedLens] = useState('')
+  const [, startTransition] = useTransition()
   const t = useTranslations()
+  
+  // Debounce filter changes
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      startTransition(() => {
+        setDebouncedCamera(selectedCamera)
+        setDebouncedLens(selectedLens)
+      })
+    }, 150)
+    return () => clearTimeout(timer)
+  }, [selectedCamera, selectedLens])
 
-  // Use SWR for page total with filter support
-  const { data: pageTotal, mutate: mutateTotal } = useSWR(
-    [`pageTotal-${props.args}-${props.album}`, selectedCamera, selectedLens],
-    () => props.totalHandle(props.album, selectedCamera || undefined, selectedLens || undefined),
+  // Use SWR for page total with filter support - use debounced values
+  const { data: pageTotal } = useSWR(
+    [`pageTotal-${props.args}-${props.album}`, debouncedCamera, debouncedLens],
+    () => props.totalHandle(props.album, debouncedCamera || undefined, debouncedLens || undefined),
     {
       revalidateOnFocus: false,
       revalidateIfStale: false,
       revalidateOnReconnect: false,
+      keepPreviousData: true, // Keep previous data while loading new data
     }
   )
 
-  // Use SWR Infinite for paginated data with filter support
-  const { data, isLoading, isValidating, size, setSize, mutate } = useSWRInfinite(
+  // Use SWR Infinite for paginated data with filter support - use debounced values
+  const { data, isLoading, isValidating, size, setSize } = useSWRInfinite(
     (index) => {
-      return [`client-${props.args}-${index}-${props.album}-${selectedCamera}-${selectedLens}`, index]
+      return [`client-${props.args}-${index}-${props.album}-${debouncedCamera}-${debouncedLens}`, index]
     },
-    ([_, index]) => {
-      return props.handle(index + 1, props.album, selectedCamera || undefined, selectedLens || undefined)
+    ([, index]) => {
+      return props.handle(index + 1, props.album, debouncedCamera || undefined, debouncedLens || undefined)
     }, 
     {
       revalidateOnFocus: false,
       revalidateIfStale: false,
       revalidateOnReconnect: false,
+      keepPreviousData: true,
     }
   )
 
-  const dataList = data ? [].concat(...data) : []
+  // Memoize dataList to avoid unnecessary recalculations
+  const dataList = useMemo(() => data ? [].concat(...data) : [], [data])
 
-  // Reset pagination and refetch when filters change
+  // Reset pagination when debounced filters change - SWR key change will auto-refetch
+  const prevFiltersRef = useRef({ camera: '', lens: '' })
   useEffect(() => {
-    setSize(1)
-    mutate()
-    mutateTotal()
-  }, [selectedCamera, selectedLens, setSize, mutate, mutateTotal])
+    const prev = prevFiltersRef.current
+    if (prev.camera !== debouncedCamera || prev.lens !== debouncedLens) {
+      prevFiltersRef.current = { camera: debouncedCamera, lens: debouncedLens }
+      // Only reset size, SWR will auto-refetch due to key change
+      if (size > 1) {
+        setSize(1)
+      }
+    }
+  }, [debouncedCamera, debouncedLens, size, setSize])
 
   const handleCameraChange = useCallback((camera: string) => {
     setSelectedCamera(camera)
