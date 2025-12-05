@@ -5,8 +5,6 @@ import useSWRInfinite from 'swr/infinite'
 import useSWR from 'swr'
 import { useTranslations } from 'next-intl'
 import type { ImageType } from '~/types'
-import { ReloadIcon } from '@radix-ui/react-icons'
-import { Button } from '~/components/ui/button.tsx'
 import { useState, useCallback, useEffect, useRef, useMemo, useTransition } from 'react'
 import { MasonryPhotoAlbum, RenderImageContext, RenderImageProps } from 'react-photo-album'
 import BlurImage from '~/components/album/blur-image.tsx'
@@ -24,9 +22,14 @@ function renderNextImage(
 }
 
 export default function DefaultGallery(props : Readonly<ImageHandleProps>) {
-  // const { data: pageTotal } = useSwrPageTotalHook(props)
+  const [selectedCamera, setSelectedCamera] = useState('')
+  const [selectedLens, setSelectedLens] = useState('')
+  // Debounced filter values for API requests
+  const [debouncedCamera, setDebouncedCamera] = useState('')
+  const [debouncedLens, setDebouncedLens] = useState('')
+  const [, startTransition] = useTransition()
   // Use SWR Infinite for paginated data with filter support - use debounced values
-  const { data, isLoading, isValidating, size, setSize } = useSWRInfinite(
+  const { data, isValidating, size, setSize } = useSWRInfinite(
     (index) => {
       return [`client-${props.args}-${index}-${props.album}-${debouncedCamera}-${debouncedLens}`, index]
     },
@@ -55,16 +58,22 @@ export default function DefaultGallery(props : Readonly<ImageHandleProps>) {
 
   // Memoize dataList to avoid unnecessary recalculations
   const dataList = useMemo(() => data ? [].concat(...data) : [], [data])
-  const [selectedCamera, setSelectedCamera] = useState('')
-  const [selectedLens, setSelectedLens] = useState('')
-  // Debounced filter values for API requests
-  const [debouncedCamera, setDebouncedCamera] = useState('')
-  const [debouncedLens, setDebouncedLens] = useState('')
-  const [, startTransition] = useTransition()
   const t = useTranslations()
 
   // Reset pagination when debounced filters change - SWR key change will auto-refetch
   const prevFiltersRef = useRef({ camera: '', lens: '' })
+
+  // Debounce filter changes
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      startTransition(() => {
+        setDebouncedCamera(selectedCamera)
+        setDebouncedLens(selectedLens)
+      })
+    }, 150)
+    return () => clearTimeout(timer)
+  }, [selectedCamera, selectedLens])
+
   useEffect(() => {
     const prev = prevFiltersRef.current
     if (prev.camera !== debouncedCamera || prev.lens !== debouncedLens) {
@@ -90,41 +99,42 @@ export default function DefaultGallery(props : Readonly<ImageHandleProps>) {
   }, [])
 
   return (
-    <InfiniteScroll
-      className="w-full p-2 space-y-4"
-      hasMore={size < pageTotal}
-      isLoading={isValidating}
-      next={() => setSize(size + 1)}
-    >
-      <div className="flex flex-col sm:flex-row w-full p-2 items-start justify-between sm:relative overflow-x-clip">
-        <div className="flex flex-1 flex-col px-2 sm:sticky top-4 self-start">
+    <>
+      <InfiniteScroll
+        className="w-full p-2 space-y-4"
+        hasMore={size < pageTotal}
+        isLoading={isValidating}
+        next={() => setSize(size + 1)}
+      >
+        <div className="flex flex-col sm:flex-row w-full p-2 items-start justify-between sm:relative overflow-x-clip">
+          <div className="flex flex-1 flex-col px-2 sm:sticky top-4 self-start">
+          </div>
+          <div className="w-full sm:w-[66.667%] mx-auto">
+            <MasonryPhotoAlbum
+              columns={(containerWidth) => {
+                if (containerWidth < 768) return 2
+                if (containerWidth < 1024) return 3
+                return 4
+              }}
+              photos={
+                dataList?.map((item: ImageType) => ({
+                  src: item.preview_url || item.url,
+                  alt: item.detail,
+                  ...item
+                })) || []
+              }
+              render={{ image: (...args) => renderNextImage(...args, dataList) }}
+            />
+          </div>
+          <div className="flex flex-wrap space-x-2 sm:space-x-0 sm:flex-col flex-1 px-2 py-1 sm:py-0 space-y-1 text-gray-500 sm:sticky top-4 self-start">
+          </div>
         </div>
-        <div className="w-full sm:w-[66.667%] mx-auto">
-          <MasonryPhotoAlbum
-            columns={(containerWidth) => {
-              if (containerWidth < 768) return 2
-              if (containerWidth < 1024) return 3
-              return 4
-            }}
-            photos={
-              dataList?.map((item: ImageType) => ({
-                src: item.preview_url || item.url,
-                alt: item.detail,
-                ...item
-              })) || []
-            }
-            render={{ image: (...args) => renderNextImage(...args, dataList) }}
-          />
-        </div>
-        <div className="flex flex-wrap space-x-2 sm:space-x-0 sm:flex-col flex-1 px-2 py-1 sm:py-0 space-y-1 text-gray-500 sm:sticky top-4 self-start">
-        </div>
-      </div>
-      {dataList.length === 0 && !isValidating && (
-        <div className="flex items-center justify-center my-4">
-          {t('Tips.noImg')}
-        </div>
-      )}
-
+        {dataList.length === 0 && !isValidating && (
+          <div className="flex items-center justify-center my-4">
+            {t('Tips.noImg')}
+          </div>
+        )}
+      </InfiniteScroll>
       {/* Floating Filter Ball */}
       <FloatingFilterBall
         album={props.album}
@@ -134,6 +144,6 @@ export default function DefaultGallery(props : Readonly<ImageHandleProps>) {
         onLensChange={handleLensChange}
         onReset={handleReset}
       />
-    </InfiniteScroll>
+    </>
   )
 }
