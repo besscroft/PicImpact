@@ -15,6 +15,8 @@ const ALBUM_IMAGE_SORTING_ORDER = [
   'COALESCE(TO_TIMESTAMP(image.exif->>\'data_time\', \'YYYY:MM:DD HH24:MI:SS\'), \'1970-01-01 00:00:00\') ASC, image.created_at ASC, image.updated_at ASC',
 ]
 
+const DEFAULT_SIZE = 24
+
 /**
  * 根据相册获取图片分页列表（服务端）
  * @param pageNum 页码
@@ -189,7 +191,7 @@ export async function fetchClientImagesListByAlbum(
     ${camera ? Prisma.sql`AND COALESCE(image.exif->>'model', 'Unknown') = ${camera}` : Prisma.empty}
     ${lens ? Prisma.sql`AND COALESCE(image.exif->>'lens_model', 'Unknown') = ${lens}` : Prisma.empty}
     ORDER BY image.sort DESC, image.created_at DESC, image.updated_at DESC
-    LIMIT 16 OFFSET ${(pageNum - 1) * 16}
+    LIMIT ${DEFAULT_SIZE} OFFSET ${(pageNum - 1) * DEFAULT_SIZE}
   `
   }
   const albumData = await db.albums.findFirst({
@@ -227,7 +229,7 @@ export async function fetchClientImagesListByAlbum(
     ${camera ? Prisma.sql`AND COALESCE(image.exif->>'model', 'Unknown') = ${camera}` : Prisma.empty}
     ${lens ? Prisma.sql`AND COALESCE(image.exif->>'lens_model', 'Unknown') = ${lens}` : Prisma.empty}
     ORDER BY ${orderBy}
-    LIMIT 16 OFFSET ${(pageNum - 1) * 16}
+    LIMIT ${DEFAULT_SIZE} OFFSET ${(pageNum - 1) * DEFAULT_SIZE}
   `
   if (dataList && albumData && albumData.random_show === 0) {
     return [...dataList].sort(() => Math.random() - 0.5)
@@ -266,7 +268,7 @@ export async function fetchClientImagesPageTotalByAlbum(
     ) AS unique_images;
   `
     // @ts-ignore
-    return Number(pageTotal[0].total) > 0 ? Math.ceil(Number(pageTotal[0].total) / 16) : 0
+    return Number(pageTotal[0].total) > 0 ? Math.ceil(Number(pageTotal[0].total) / DEFAULT_SIZE) : 0
   }
   const pageTotal = await db.$queryRaw`
     SELECT COALESCE(COUNT(1),0) AS total
@@ -294,7 +296,7 @@ export async function fetchClientImagesPageTotalByAlbum(
     ) AS unique_images;
   `
   // @ts-ignore
-  return Number(pageTotal[0].total) > 0 ? Math.ceil(Number(pageTotal[0].total) / 16) : 0
+  return Number(pageTotal[0].total) > 0 ? Math.ceil(Number(pageTotal[0].total) / DEFAULT_SIZE) : 0
 }
 
 /**
@@ -330,7 +332,7 @@ export async function fetchClientImagesListByTag(pageNum: number, tag: string): 
     AND
         image.labels::jsonb @> ${JSON.stringify([tag])}::jsonb
     ORDER BY image.sort DESC, image.created_at DESC, image.updated_at DESC
-    LIMIT 16 OFFSET ${(pageNum - 1) * 16}
+    LIMIT ${DEFAULT_SIZE} OFFSET ${(pageNum - 1) * DEFAULT_SIZE}
   `
 }
 
@@ -364,7 +366,7 @@ export async function fetchClientImagesPageTotalByTag(tag: string): Promise<numb
     ) AS unique_images;
   `
   // @ts-ignore
-  return Number(pageTotal[0].total) > 0 ? Math.ceil(Number(pageTotal[0].total) / 16) : 0
+  return Number(pageTotal[0].total) > 0 ? Math.ceil(Number(pageTotal[0].total) / DEFAULT_SIZE) : 0
 }
 
 /**

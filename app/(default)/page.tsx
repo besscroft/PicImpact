@@ -22,7 +22,8 @@ export default async function Home() {
     'use server'
     return await fetchConfigsByKeys([
       'custom_index_download_enable',
-      'custom_index_origin_enable'
+      'custom_index_origin_enable',
+      'custom_title'
     ])
   }
 

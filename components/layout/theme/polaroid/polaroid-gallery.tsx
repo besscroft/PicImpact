@@ -2,15 +2,21 @@
 
 import { useMemo } from 'react'
 import type { HandleProps, ImageHandleProps } from '~/types/props.ts'
-import { useSwrPageTotalHook } from '~/hooks/use-swr-page-total-hook.ts'
 import useSWRInfinite from 'swr/infinite'
 import { useSwrHydrated } from '~/hooks/use-swr-hydrated.ts'
 import { DraggableCardBody, DraggableCardContainer } from '~/components/ui/origin/draggable-card.tsx'
 import type { ImageType } from '~/types'
 
 export default function PolaroidGallery(props: Readonly<ImageHandleProps>) {
-  const { data: pageTotal } = useSwrPageTotalHook(props)
-  const { data, isValidating, size, setSize } = useSWRInfinite((index) => {
+  const configProps: HandleProps = {
+    handle: props.configHandle,
+    args: 'system-config',
+  }
+  const { data: configData } = useSwrHydrated(configProps)
+
+  const customTitle = configData?.find((item: any) => item.config_key === 'custom_title')?.config_value.toString()
+
+  const { data } = useSWRInfinite((index) => {
     return [`client-${props.args}-${index}-${props.album}`, index]
   },
     ([_, index]) => {
@@ -20,11 +26,7 @@ export default function PolaroidGallery(props: Readonly<ImageHandleProps>) {
     revalidateIfStale: false,
     revalidateOnReconnect: false,
   })
-  const configProps: HandleProps = {
-    handle: props.configHandle,
-    args: 'system-config',
-  }
-  const { data: configData } = useSwrHydrated(configProps)
+
   const dataList = data ? [].concat(...data) : []
 
   const randomPositions = useMemo(() => {
@@ -38,7 +40,7 @@ export default function PolaroidGallery(props: Readonly<ImageHandleProps>) {
   return (
     <DraggableCardContainer className="relative flex min-h-screen w-full items-center justify-center overflow-clip">
       <p className="absolute top-1/2 mx-auto max-w-sm -translate-y-3/4 text-center text-2xl font-black text-neutral-400 md:text-4xl dark:text-neutral-800">
-        瓦达西可不可爱
+        { customTitle || '瓦达西可不可爱' }
       </p>
       {dataList?.map((item: ImageType, index: number) => (
         <DraggableCardBody
