@@ -15,14 +15,14 @@ export default async function Page({
 }) {
   const { album } = await params
 
-  const getData = async (pageNum: number, album: string) => {
+  const getData = async (pageNum: number, album: string, camera?: string, lens?: string) => {
     'use server'
-    return await fetchClientImagesListByAlbum(pageNum, album)
+    return await fetchClientImagesListByAlbum(pageNum, album, camera, lens)
   }
 
-  const getPageTotal = async (album: string) => {
+  const getPageTotal = async (album: string, camera?: string, lens?: string) => {
     'use server'
-    return await fetchClientImagesPageTotalByAlbum(album)
+    return await fetchClientImagesPageTotalByAlbum(album, camera, lens)
   }
 
   const getConfig = async () => {

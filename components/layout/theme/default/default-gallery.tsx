@@ -1,13 +1,17 @@
 'use client'
 
 import type { ImageHandleProps } from '~/types/props.ts'
-import { useSwrPageTotalHook } from '~/hooks/use-swr-page-total-hook.ts'
 import useSWRInfinite from 'swr/infinite'
+import useSWR from 'swr'
 import { useTranslations } from 'next-intl'
 import type { ImageType } from '~/types'
+import { ReloadIcon } from '@radix-ui/react-icons'
+import { Button } from '~/components/ui/button.tsx'
+import { useState, useCallback, useEffect, useRef, useMemo, useTransition } from 'react'
 import { MasonryPhotoAlbum, RenderImageContext, RenderImageProps } from 'react-photo-album'
 import BlurImage from '~/components/album/blur-image.tsx'
 import InfiniteScroll from '~/components/ui/origin/infinite-scroll.tsx'
+import FloatingFilterBall from '~/components/album/floating-filter-ball.tsx'
 
 function renderNextImage(
   _: RenderImageProps,
@@ -19,20 +23,71 @@ function renderNextImage(
   )
 }
 
-export default function DefaultGallery(props: Readonly<ImageHandleProps>) {
-  const { data: pageTotal } = useSwrPageTotalHook(props)
-  const { data, isValidating, size, setSize } = useSWRInfinite((index) => {
-    return [`client-${props.args}-${index}-${props.album}`, index]
-  },
-    ([_, index]) => {
-      return props.handle(index + 1, props.album)
-    }, {
-    revalidateOnFocus: false,
-    revalidateIfStale: false,
-    revalidateOnReconnect: false,
-  })
-  const dataList = data ? [].concat(...data) : []
+export default function DefaultGallery(props : Readonly<ImageHandleProps>) {
+  // const { data: pageTotal } = useSwrPageTotalHook(props)
+  // Use SWR Infinite for paginated data with filter support - use debounced values
+  const { data, isLoading, isValidating, size, setSize } = useSWRInfinite(
+    (index) => {
+      return [`client-${props.args}-${index}-${props.album}-${debouncedCamera}-${debouncedLens}`, index]
+    },
+    ([, index]) => {
+      return props.handle(index + 1, props.album, debouncedCamera || undefined, debouncedLens || undefined)
+    },
+    {
+      revalidateOnFocus: false,
+      revalidateIfStale: false,
+      revalidateOnReconnect: false,
+      keepPreviousData: true,
+    }
+  )
+
+  // Use SWR for page total with filter support - use debounced values
+  const { data: pageTotal } = useSWR(
+    [`pageTotal-${props.args}-${props.album}`, debouncedCamera, debouncedLens],
+    () => props.totalHandle(props.album, debouncedCamera || undefined, debouncedLens || undefined),
+    {
+      revalidateOnFocus: false,
+      revalidateIfStale: false,
+      revalidateOnReconnect: false,
+      keepPreviousData: true, // Keep previous data while loading new data
+    }
+  )
+
+  // Memoize dataList to avoid unnecessary recalculations
+  const dataList = useMemo(() => data ? [].concat(...data) : [], [data])
+  const [selectedCamera, setSelectedCamera] = useState('')
+  const [selectedLens, setSelectedLens] = useState('')
+  // Debounced filter values for API requests
+  const [debouncedCamera, setDebouncedCamera] = useState('')
+  const [debouncedLens, setDebouncedLens] = useState('')
+  const [, startTransition] = useTransition()
   const t = useTranslations()
+
+  // Reset pagination when debounced filters change - SWR key change will auto-refetch
+  const prevFiltersRef = useRef({ camera: '', lens: '' })
+  useEffect(() => {
+    const prev = prevFiltersRef.current
+    if (prev.camera !== debouncedCamera || prev.lens !== debouncedLens) {
+      prevFiltersRef.current = { camera: debouncedCamera, lens: debouncedLens }
+      // Only reset size, SWR will auto-refetch due to key change
+      if (size > 1) {
+        setSize(1)
+      }
+    }
+  }, [debouncedCamera, debouncedLens, size, setSize])
+
+  const handleCameraChange = useCallback((camera: string) => {
+    setSelectedCamera(camera)
+  }, [])
+
+  const handleLensChange = useCallback((lens: string) => {
+    setSelectedLens(lens)
+  }, [])
+
+  const handleReset = useCallback(() => {
+    setSelectedCamera('')
+    setSelectedLens('')
+  }, [])
 
   return (
     <InfiniteScroll
@@ -69,6 +124,16 @@ export default function DefaultGallery(props: Readonly<ImageHandleProps>) {
           {t('Tips.noImg')}
         </div>
       )}
+
+      {/* Floating Filter Ball */}
+      <FloatingFilterBall
+        album={props.album}
+        selectedCamera={selectedCamera}
+        selectedLens={selectedLens}
+        onCameraChange={handleCameraChange}
+        onLensChange={handleLensChange}
+        onReset={handleReset}
+      />
     </InfiniteScroll>
   )
 }

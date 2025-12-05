@@ -336,5 +336,12 @@
     "indexDefaultStyle": "預設",
     "indexSimpleStyle": "單欄",
     "indexPolaroidStyle": "寶麗來"
+  },
+  "Filter": {
+    "title": "篩選",
+    "camera": "相機",
+    "lens": "鏡頭",
+    "reset": "重置篩選",
+    "all": "全部"
   }
 }

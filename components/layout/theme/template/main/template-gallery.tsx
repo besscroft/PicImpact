@@ -19,7 +19,8 @@ export default function TemplateGallery(props : Readonly<ImageHandleProps>) {
       return [`client-${props.args}-${index}-${props.album}`, index]
     },
     ([_, index]) => {
-      return props.handle(index + 1, props.album)
+      // Template gallery doesn't use camera/lens filters by default
+      return props.handle(index + 1, props.album, undefined, undefined)
     }, {
       revalidateOnFocus: false,
       revalidateIfStale: false,

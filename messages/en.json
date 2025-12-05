@@ -336,5 +336,12 @@
     "indexDefaultStyle": "Default",
     "indexSimpleStyle": "Single Column",
     "indexPolaroidStyle": "Polaroid"
+  },
+  "Filter": {
+    "title": "Filter",
+    "camera": "Camera",
+    "lens": "Lens",
+    "reset": "Reset Filter",
+    "all": "All"
   }
 }
