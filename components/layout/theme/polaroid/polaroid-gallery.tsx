@@ -1,6 +1,6 @@
 'use client'
 
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import type { HandleProps, ImageHandleProps } from '~/types/props.ts'
 import useSWRInfinite from 'swr/infinite'
 import { useSwrHydrated } from '~/hooks/use-swr-hydrated.ts'
@@ -27,7 +27,7 @@ export default function PolaroidGallery(props: Readonly<ImageHandleProps>) {
     revalidateOnReconnect: false,
   })
 
-  const dataList = data ? [].concat(...data) : []
+  const dataList = useMemo(() => data ? [].concat(...data) : [], [data])
 
   const randomPositions = useMemo(() => {
     return dataList.map(() => ({
@@ -37,10 +37,21 @@ export default function PolaroidGallery(props: Readonly<ImageHandleProps>) {
     }));
   }, [dataList]);
 
+  const [currentMaxZIndex, setCurrentMaxZIndex] = useState(10);
+  const [cardZIndices, setCardZIndices] = useState<Record<string, number>>({});
+
+  const handleCardClick = (id: string) => {
+    setCardZIndices((prev) => ({
+      ...prev,
+      [id]: currentMaxZIndex + 1,
+    }));
+    setCurrentMaxZIndex((prev) => prev + 1);
+  };
+
   return (
     <DraggableCardContainer className="relative flex min-h-screen w-full items-center justify-center overflow-clip">
       <p className="absolute top-1/2 mx-auto max-w-sm -translate-y-3/4 text-center text-2xl font-black text-neutral-400 md:text-4xl dark:text-neutral-800">
-        { customTitle || '瓦达西可不可爱' }
+        {customTitle || '瓦达西可不可爱'}
       </p>
       {dataList?.map((item: ImageType, index: number) => (
         <DraggableCardBody
@@ -50,7 +61,9 @@ export default function PolaroidGallery(props: Readonly<ImageHandleProps>) {
             top: randomPositions[index]?.top,
             left: randomPositions[index]?.left,
             rotate: randomPositions[index]?.rotate,
+            zIndex: cardZIndices[item.id] || 1,
           }}
+          onMouseDown={() => handleCardClick(item.id)}
         >
           <img
             src={item.preview_url}

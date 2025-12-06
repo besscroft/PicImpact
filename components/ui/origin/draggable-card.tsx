@@ -16,10 +16,12 @@ export const DraggableCardBody = ({
   className,
   children,
   style,
+  onMouseDown,
 }: {
   className?: string;
   children?: React.ReactNode;
   style?: React.CSSProperties;
+  onMouseDown?: React.MouseEventHandler<HTMLDivElement>;
 }) => {
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
@@ -64,12 +66,20 @@ export const DraggableCardBody = ({
   useEffect(() => {
     // Update constraints when component mounts or window resizes
     const updateConstraints = () => {
-      if (typeof window !== "undefined") {
+      const element = cardRef.current;
+      if (typeof window !== "undefined" && element && element.offsetParent) {
+        const { offsetLeft, offsetTop, offsetWidth, offsetHeight, offsetParent } = element;
+        const parentRect = offsetParent.getBoundingClientRect();
+
+        // Calculate the center point relative to the viewport
+        const initialCenterX = parentRect.left + offsetLeft + offsetWidth / 2;
+        const initialCenterY = parentRect.top + offsetTop + offsetHeight / 2;
+
         setConstraints({
-          top: -window.innerHeight / 2,
-          left: -window.innerWidth / 2,
-          right: window.innerWidth / 2,
-          bottom: window.innerHeight / 2,
+          top: -initialCenterY,
+          bottom: window.innerHeight - initialCenterY,
+          left: -initialCenterX,
+          right: window.innerWidth - initialCenterX,
         });
       }
     };
@@ -112,6 +122,7 @@ export const DraggableCardBody = ({
       ref={cardRef}
       drag
       dragConstraints={constraints}
+      onMouseDown={onMouseDown}
       onDragStart={() => {
         document.body.style.cursor = "grabbing";
       }}
