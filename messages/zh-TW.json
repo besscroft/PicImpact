@@ -333,8 +333,9 @@
     "github": "GitHub"
   },
   "Theme": {
-    "indexDefaultStyle": "預設主題",
-    "indexSimpleStyle": "單欄主題"
+    "indexDefaultStyle": "預設",
+    "indexSimpleStyle": "單欄",
+    "indexPolaroidStyle": "寶麗來"
   },
   "Filter": {
     "title": "篩選",

@@ -1,7 +1,6 @@
 'use client'
 
 import type { ImageType } from '~/types'
-import * as React from 'react'
 import { CameraIcon } from '~/components/icons/camera.tsx'
 import { ApertureIcon } from '~/components/icons/aperture.tsx'
 import { TimerIcon } from '~/components/icons/timer.tsx'

@@ -4,7 +4,7 @@ import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from '
 import { useButtonStore } from '~/app/providers/button-store-providers'
 import type { AlbumType } from '~/types'
 import type { HandleProps } from '~/types/props'
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { toast } from 'sonner'
 import { useSwrHydrated } from '~/hooks/use-swr-hydrated'
 import { ReloadIcon } from '@radix-ui/react-icons'
@@ -151,6 +151,7 @@ export default function AlbumAddSheet(props : Readonly<HandleProps>) {
                 <SelectContent className="cursor-pointer">
                   <SelectItem className="cursor-pointer" value="0">{t('Theme.indexDefaultStyle')}</SelectItem>
                   <SelectItem className="cursor-pointer" value="1">{t('Theme.indexSimpleStyle')}</SelectItem>
+                  <SelectItem className="cursor-pointer" value="2">{t('Theme.indexPolaroidStyle')}</SelectItem>
                 </SelectContent>
               </Select>
             </div>

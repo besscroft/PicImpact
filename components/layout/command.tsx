@@ -14,9 +14,6 @@ import { useRouter } from 'next-nprogress-bar'
 import { useTheme } from 'next-themes'
 import { useTranslations } from 'next-intl'
 import type { AlbumDataProps } from '~/types/props.ts'
-import type { AlbumType } from '~/types'
-import { LoaderPinwheelIcon } from '~/components/icons/loader-pinwheel.tsx'
-import { GalleryThumbnailsIcon } from '~/components/icons/gallery-thumbnails.tsx'
 import { SquareTerminalIcon } from '~/components/icons/square-terminal.tsx'
 import { SunMoonIcon } from '~/components/icons/sun-moon.tsx'
 import { SunMediumIcon } from '~/components/icons/sun-medium.tsx'
@@ -47,36 +44,6 @@ export default function Command(props: Readonly<AlbumDataProps>) {
         <CommandInput placeholder={`${t('Command.placeholder', { defaultValue: 'Type a command or search...' })} (${shortcut})`} />
         <CommandList>
           <CommandEmpty>{t('Command.noResults', { defaultValue: 'No results found.' })}</CommandEmpty>
-          {Array.isArray(props.data) && props.data.length > 0 &&
-            <>
-              <CommandGroup heading={t('Command.album', { defaultValue: 'Album' })}>
-                <CommandItem
-                  className={closeClasses}
-                  onSelect={() => {
-                    setCommand(false)
-                    router.push('/')
-                  }}
-                >
-                  <LoaderPinwheelIcon size={18} />
-                  <span>{t('Link.home')}</span>
-                </CommandItem>
-                {props.data.map((album: AlbumType) => (
-                  <CommandItem
-                    className={closeClasses}
-                    key={album.id}
-                    onSelect={() => {
-                      setCommand(false)
-                      router.push(album.album_value)
-                    }}
-                  >
-                    <GalleryThumbnailsIcon size={18} />
-                    <span>{album.name}</span>
-                  </CommandItem>
-                ))}
-              </CommandGroup>
-              <CommandSeparator />
-            </>
-          }
           {session ?
             <CommandGroup heading={t('Command.menu', { defaultValue: 'Menu' })}>
               <CommandItem className={closeClasses} onSelect={() => {

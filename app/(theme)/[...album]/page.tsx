@@ -1,11 +1,12 @@
 import { fetchClientImagesListByAlbum, fetchClientImagesPageTotalByAlbum } from '~/server/db/query/images.ts'
 import type { ImageHandleProps } from '~/types/props.ts'
 import { fetchConfigsByKeys } from '~/server/db/query/configs.ts'
-import DefaultGallery from '~/components/layout/theme/default/main/default-gallery.tsx'
+import DefaultGallery from '~/components/layout/theme/default/default-gallery.tsx'
 import { fetchAlbumByRouter } from '~/server/db/query/albums.ts'
 import 'react-photo-album/masonry.css'
 import type { AlbumType } from '~/types'
-import SimpleGallery from '~/components/layout/theme/simple/main/simple-gallery.tsx'
+import SimpleGallery from '~/components/layout/theme/simple/simple-gallery.tsx'
+import PolaroidGallery from '~/components/layout/theme/polaroid/polaroid-gallery.tsx'
 
 export default async function Page({
   params
@@ -50,6 +51,7 @@ export default async function Page({
     <>
       {data
       && data.theme === '1' ? <SimpleGallery {...props} />
+        : data.theme === '2' ? <PolaroidGallery {...props} />
         : <DefaultGallery {...props} />
       }
     </>
