@@ -2,7 +2,7 @@
 
 'use server'
 
-import { Prisma } from '@prisma/client'
+import { Prisma } from '~/prisma/generated/client'
 import { db } from '~/server/lib/db'
 import type { ImageType } from '~/types'
 import { fetchConfigValue } from './configs'

@@ -1,6 +1,11 @@
-import { PrismaClient } from '@prisma/client'
+import { PrismaClient } from './generated/client'
+import { PrismaPg } from '@prisma/adapter-pg'
 
-const prisma = new PrismaClient()
+const prisma = new PrismaClient({
+  adapter: new PrismaPg({
+    connectionString: process.env.DATABASE_URL,
+  }),
+})
 
 const INITIAL_CONFIGS = [
   { config_key: 'accesskey_id', config_value: '', detail: '阿里 OSS / AWS S3 AccessKey_ID' },
