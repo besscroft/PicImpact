@@ -1,9 +1,7 @@
-import DefaultHeader from '~/components/layout/theme/default/header/default-header.tsx'
 import { fetchAlbumsShow } from '~/server/db/query/albums'
-import type {AlbumType, Config} from '~/types'
+import type { AlbumType } from '~/types'
 import type { AlbumDataProps } from '~/types/props'
-import { fetchConfigsByKeys } from '~/server/db/query/configs.ts'
-import SimpleHeader from '~/components/layout/theme/simple/header/simple-header.tsx'
+import DockMenu from '~/components/layout/dock-menu'
 
 export default async function DefaultLayout({
   children,
@@ -15,16 +13,6 @@ export default async function DefaultLayout({
     return await fetchAlbumsShow()
   }
 
-  const getStyleConfig = async () => {
-    'use server'
-    return await fetchConfigsByKeys([
-      'custom_index_style',
-    ])
-  }
-
-  const style: Config[] = await getStyleConfig()
-  const currentStyle = style.find(a => a.config_key === 'custom_index_style')?.config_value
-
   const data: AlbumType[] = await getData()
 
   const props: AlbumDataProps = {
@@ -33,10 +21,7 @@ export default async function DefaultLayout({
 
   return (
     <>
-      {currentStyle
-      && currentStyle === '1' ? <SimpleHeader {...props} />
-        : <DefaultHeader {...props} />
-      }
+      <DockMenu {...props} />
       {children}
     </>
   )

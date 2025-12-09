@@ -1,6 +1,5 @@
 'use client'
 
-import React from 'react'
 import { useSwrHydrated } from '~/hooks/use-swr-hydrated.ts'
 import type { HandleProps } from '~/types/props.ts'
 import { ReloadIcon } from '@radix-ui/react-icons'

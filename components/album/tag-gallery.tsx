@@ -9,7 +9,6 @@ import { MasonryPhotoAlbum, RenderImageContext, RenderImageProps } from 'react-p
 import type { ImageType } from '~/types'
 import { ReloadIcon } from '@radix-ui/react-icons'
 import { Button } from '~/components/ui/button'
-import React from 'react'
 import BlurImage from '~/components/album/blur-image'
 import { SparklesIcon } from '~/components/icons/sparkles'
 import { UndoIcon } from '~/components/icons/undo'

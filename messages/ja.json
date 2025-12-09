@@ -333,8 +333,9 @@
     "github": "GitHub"
   },
   "Theme": {
-    "indexDefaultStyle": "デフォルトテーマ",
-    "indexSimpleStyle": "シングルカラムテーマ"
+    "indexDefaultStyle": "既定",
+    "indexSimpleStyle": "単列",
+    "indexPolaroidStyle": "ポラロイド"
   },
   "Filter": {
     "title": "フィルター",

@@ -4,7 +4,6 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle } from '~/components/ui/sh
 import { useButtonStore } from '~/app/providers/button-store-providers'
 import type { ImageType } from '~/types'
 import type { ImageDataProps } from '~/types/props'
-import React from 'react'
 import ExifView from '~/components/admin/album/exif-view.tsx'
 import { Switch } from '~/components/ui/switch'
 import LivePhoto from '~/components/album/live-photo'
