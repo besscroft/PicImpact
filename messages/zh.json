@@ -132,7 +132,9 @@
     "updateFailed": "更新失败！",
     "addSuccess": "添加成功！",
     "addFailed": "添加失败！",
-    "imageLoadFailed": "原图加载失败"
+    "imageLoadFailed": "原图加载失败",
+    "zoomHint": "滚动或捏合缩放，拖动平移，双击切换大小",
+    "webglUnavailable": "WebGL 不可用，使用备用模式"
   },
   "Button": {
     "login": "登录",
@@ -152,7 +154,8 @@
     "yesDelete": "确认删除",
     "goBack": "返回",
     "removeTwoFactor": "移除双因素验证",
-    "loadMore": "加载更多"
+    "loadMore": "加载更多",
+    "close": "关闭"
   },
   "Dashboard": {
     "picData": "照片数据",

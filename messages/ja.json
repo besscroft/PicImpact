@@ -132,7 +132,9 @@
     "updateFailed": "更新に失敗しました！",
     "addSuccess": "追加に成功しました！",
     "addFailed": "追加に失敗しました！",
-    "imageLoadFailed": "画像の読み込みに失敗しました"
+    "imageLoadFailed": "画像の読み込みに失敗しました",
+    "zoomHint": "スクロールまたはピンチでズーム、ドラッグで移動、ダブルクリックでサイズ切替",
+    "webglUnavailable": "WebGLが利用できません。フォールバックモードを使用しています"
   },
   "Button": {
     "login": "ログイン",
@@ -152,7 +154,8 @@
     "yesDelete": "削除を確認",
     "goBack": "戻る",
     "removeTwoFactor": "二要素認証を削除",
-    "loadMore": "もっと読み込む"
+    "loadMore": "もっと読み込む",
+    "close": "閉じる"
   },
   "Dashboard": {
     "picData": "写真データ",

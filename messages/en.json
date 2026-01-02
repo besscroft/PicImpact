@@ -132,7 +132,9 @@
     "updateFailed": "Update failed!",
     "addSuccess": "Add successful!",
     "addFailed": "Add failed!",
-    "imageLoadFailed": "Load image failed"
+    "imageLoadFailed": "Load image failed",
+    "zoomHint": "Scroll or pinch to zoom, drag to pan, double-click to toggle size",
+    "webglUnavailable": "WebGL unavailable, using fallback mode"
   },
   "Button": {
     "login": "Login",
@@ -152,7 +154,8 @@
     "yesDelete": "Confirm Delete",
     "goBack": "Back",
     "removeTwoFactor": "Remove Two-Factor",
-    "loadMore": "Load More"
+    "loadMore": "Load More",
+    "close": "Close"
   },
   "Dashboard": {
     "picData": "Photo Data",
