@@ -106,6 +106,7 @@ function PolaroidCard({
               setImgSrc(item.url)
             }
           }}
+          unoptimized
           priority={false}
         />
       </div>
