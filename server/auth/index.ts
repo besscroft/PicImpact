@@ -3,7 +3,7 @@ import { prismaAdapter } from 'better-auth/adapters/prisma'
 import { db } from '~/server/lib/db'
 import { nextCookies } from 'better-auth/next-js'
 import { customSession, twoFactor  } from 'better-auth/plugins'
-import { passkey } from 'better-auth/plugins/passkey'
+import { passkey } from '@better-auth/passkey'
 
 export const auth = betterAuth({
   database: prismaAdapter(db, {
