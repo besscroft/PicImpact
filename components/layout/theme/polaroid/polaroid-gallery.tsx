@@ -1,6 +1,6 @@
 'use client'
 
-import { useMemo, useState, useRef } from 'react'
+import { useMemo, useState, useRef, useCallback, memo } from 'react'
 import type { HandleProps, ImageHandleProps } from '~/types/props.ts'
 import useSWRInfinite from 'swr/infinite'
 import { useSwrHydrated } from '~/hooks/use-swr-hydrated.ts'
@@ -15,11 +15,7 @@ import { cn } from '~/lib/utils'
  * 拍立得照片卡片组件
  * @param props - 包含图片数据、位置样式和点击处理函数
  */
-/**
- * 拍立得照片卡片组件
- * @param props - 包含图片数据、位置样式和点击处理函数
- */
-function PolaroidCard({
+const PolaroidCard = memo(function PolaroidCard({
   item,
   style,
   onMouseDown,
@@ -27,7 +23,7 @@ function PolaroidCard({
 }: {
   item: ImageType
   style: React.CSSProperties
-  onMouseDown: () => void
+  onMouseDown: (id: string) => void
   zIndex: number
 }) {
   const [isLoading, setIsLoading] = useState(true)
@@ -81,7 +77,7 @@ function PolaroidCard({
         height: `${cardHeight}px`,
         padding: `${paddingTop}px ${paddingSide}px ${paddingBottom}px ${paddingSide}px`
       }}
-      onMouseDown={onMouseDown}
+      onMouseDown={() => onMouseDown(item.id)}
     >
       <div 
         className="relative overflow-hidden bg-neutral-200 dark:bg-neutral-800 shrink-0 w-full h-full shadow-inner"
@@ -106,7 +102,7 @@ function PolaroidCard({
               setImgSrc(item.url)
             }
           }}
-          unoptimized
+          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
           priority={false}
         />
       </div>
@@ -121,7 +117,7 @@ function PolaroidCard({
       </div>
     </DraggableCardBody>
   )
-}
+})
 
 /**
  * 拍立得画廊组件
@@ -165,20 +161,21 @@ export default function PolaroidGallery(props: Readonly<ImageHandleProps>) {
     return positionsRef.current
   }, [dataList])
 
-  const [currentMaxZIndex, setCurrentMaxZIndex] = useState(10)
+  const maxZIndexRef = useRef(10)
   const [cardZIndices, setCardZIndices] = useState<Record<string, number>>({})
 
   /**
    * 处理卡片点击，将其置于最顶层
    * @param id - 图片 ID
    */
-  const handleCardClick = (id: string) => {
+  const handleCardClick = useCallback((id: string) => {
+    maxZIndexRef.current += 1
+    const newZIndex = maxZIndexRef.current
     setCardZIndices((prev) => ({
       ...prev,
-      [id]: currentMaxZIndex + 1,
+      [id]: newZIndex,
     }))
-    setCurrentMaxZIndex((prev) => prev + 1)
-  }
+  }, [])
 
   return (
     <DraggableCardContainer className="relative flex min-h-screen w-full items-center justify-center overflow-clip">
@@ -191,7 +188,7 @@ export default function PolaroidGallery(props: Readonly<ImageHandleProps>) {
           item={item}
           style={currentPositions[item.id]}
           zIndex={cardZIndices[item.id] || 1}
-          onMouseDown={() => handleCardClick(item.id)}
+          onMouseDown={handleCardClick}
         />
       ))}
     </DraggableCardContainer>
