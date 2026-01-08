@@ -37,6 +37,24 @@ export function MapView({ images }: MapViewProps) {
 
   return (
     <div className="w-full h-full relative">
+      <style jsx global>{`
+        .map-popup .maplibregl-popup-content {
+          padding: 0 !important;
+          background: none !important;
+          box-shadow: none !important;
+          border: none !important;
+        }
+        .map-popup .maplibregl-popup-tip {
+          border-bottom-color: var(--card) !important;
+          border-top-color: var(--card) !important;
+          border-left-color: var(--card) !important;
+          border-right-color: var(--card) !important;
+        }
+        /* 针对移动端或某些情况下的关闭按钮残留 */
+        .map-popup .maplibregl-popup-close-button {
+          display: none !important;
+        }
+      `}</style>
       <Map
         initialViewState={{
           longitude: 0,
@@ -98,8 +116,8 @@ export function MapView({ images }: MapViewProps) {
             className="map-popup"
             maxWidth="300px"
           >
-            <Card className="w-64 border-0 shadow-none bg-transparent">
-              <div className="relative aspect-[4/3] w-full overflow-hidden rounded-t-lg">
+            <Card className="w-64 overflow-hidden border border-border bg-card shadow-xl">
+              <div className="relative aspect-[4/3] w-full overflow-hidden">
                  <Image
                   src={popupInfo.preview_url || popupInfo.url || ''}
                   alt={popupInfo.title || 'Photo'}
@@ -109,13 +127,16 @@ export function MapView({ images }: MapViewProps) {
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="absolute right-1 top-1 h-6 w-6 rounded-full bg-black/50 text-white hover:bg-black/70"
-                  onClick={() => setPopupInfo(null)}
+                  className="absolute right-1 top-1 h-6 w-6 rounded-full bg-black/50 text-white hover:bg-black/70 z-10"
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    setPopupInfo(null)
+                  }}
                 >
                   <X className="h-4 w-4" />
                 </Button>
               </div>
-              <CardContent className="p-3 bg-background rounded-b-lg border border-t-0">
+              <CardContent className="p-3">
                 <h3 className="font-semibold truncate text-sm mb-1">{popupInfo.title || 'Untitled'}</h3>
                 {popupInfo.exif && typeof popupInfo.exif === 'object' && (
                    <p className="text-xs text-muted-foreground truncate">
