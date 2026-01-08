@@ -300,6 +300,42 @@ export async function fetchClientImagesPageTotalByAlbum(
 }
 
 /**
+ * 获取带有经纬度信息的图片列表（用于地图展示）
+ * @returns {Promise<ImageType[]>} 图片列表
+ */
+export async function fetchMapImages(): Promise<ImageType[]> {
+  return await db.$queryRaw`
+    SELECT 
+        image.id,
+        image.title,
+        image.url,
+        image.preview_url,
+        image.width,
+        image.height,
+        image.lat,
+        image.lon,
+        image.exif,
+        image.show,
+        image.show_on_mainpage
+    FROM 
+        "public"."images" AS image
+    WHERE
+        image.del = 0
+    AND
+        image.show = 0
+    AND
+        image.lat IS NOT NULL
+    AND
+        image.lon IS NOT NULL
+    AND 
+        image.lat != ''
+    AND 
+        image.lon != ''
+    ORDER BY image.created_at DESC
+  `
+}
+
+/**
  * 根据图片标签获取图片分页列表（客户端）
  * @param pageNum 页码
  * @param tag 标签

@@ -7,6 +7,7 @@ import { useTranslations } from 'next-intl'
 import { useEffect, useState } from 'react'
 import { useButtonStore } from '~/app/providers/button-store-providers'
 import { CompassIcon } from '~/components/icons/compass'
+import { MapIcon } from 'lucide-react'
 import Command from '~/components/layout/command'
 import type { AlbumDataProps } from '~/types/props'
 import { Label, ListBox, Modal } from '@heroui/react'
@@ -49,6 +50,14 @@ export default function DockMenu(props: Readonly<AlbumDataProps>) {
               onClick={() => setIsOpen(true)}
               size={18}
               aria-label={t('Words.album')}
+            />
+          </DockIcon>
+          <DockIcon>
+            <MapIcon
+              onClick={() => router.push('/map')}
+              size={18}
+              className="text-black dark:text-white"
+              aria-label={t('Link.map')}
             />
           </DockIcon>
           <DockIcon>
