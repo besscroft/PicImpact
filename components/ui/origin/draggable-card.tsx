@@ -11,6 +11,7 @@ import {
   useVelocity,
   useAnimationControls,
 } from "motion/react";
+import { useIsMobile } from "~/hooks/use-mobile";
 
 export const DraggableCardBody = ({
   className,
@@ -23,6 +24,7 @@ export const DraggableCardBody = ({
   style?: React.CSSProperties;
   onMouseDown?: React.MouseEventHandler<HTMLDivElement>;
 }) => {
+  const isMobile = useIsMobile();
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
   const cardRef = useRef<HTMLDivElement>(null);
@@ -96,6 +98,7 @@ export const DraggableCardBody = ({
   }, []);
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (isMobile) return;
     const { clientX, clientY } = e;
     const { width, height, left, top } =
       cardRef.current?.getBoundingClientRect() ?? {
@@ -167,28 +170,30 @@ export const DraggableCardBody = ({
         });
       }}
       style={{
-        rotateX,
-        rotateY,
-        opacity,
+        rotateX: isMobile ? 0 : rotateX,
+        rotateY: isMobile ? 0 : rotateY,
+        opacity: isMobile ? 1 : opacity,
         willChange: "transform",
         ...style,
       }}
       animate={controls}
-      whileHover={{ scale: 1.02 }}
-      onMouseMove={handleMouseMove}
-      onMouseLeave={handleMouseLeave}
+      whileHover={isMobile ? undefined : { scale: 1.02 }}
+      onMouseMove={isMobile ? undefined : handleMouseMove}
+      onMouseLeave={isMobile ? undefined : handleMouseLeave}
       className={cn(
         "relative min-h-96 w-80 overflow-hidden rounded-md bg-neutral-100 p-6 shadow-2xl transform-3d dark:bg-neutral-900",
         className,
       )}
     >
       {children}
-      <motion.div
-        style={{
-          opacity: glareOpacity,
-        }}
-        className="pointer-events-none absolute inset-0 bg-white select-none"
-      />
+      {!isMobile && (
+        <motion.div
+          style={{
+            opacity: glareOpacity,
+          }}
+          className="pointer-events-none absolute inset-0 bg-white select-none"
+        />
+      )}
     </motion.div>
   );
 };
