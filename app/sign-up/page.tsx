@@ -2,8 +2,16 @@ import Image from 'next/image'
 import favicon from '~/public/favicon.svg'
 import Link from 'next/link'
 import { SignUpForm } from '~/components/sign-up/sign-up-from'
+import { checkUserExists } from '~/server/db/query/users'
+import { redirect } from 'next/navigation'
 
-export default function SignUp() {
+export default async function SignUp() {
+  const userExists = await checkUserExists()
+
+  if (userExists) {
+    redirect('/login')
+  }
+
   return (
     <div className="flex min-h-svh flex-col items-center justify-center gap-6 bg-muted p-6 md:p-10">
       <div className="flex w-full max-w-sm flex-col gap-6">

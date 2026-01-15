@@ -3,7 +3,8 @@
 import React, { useEffect, useState } from 'react'
 import { useRouter } from 'next-nprogress-bar'
 import { toast } from 'sonner'
-import { SafeParseReturnType, z } from 'zod'
+import { z } from 'zod'
+import type { SafeParseReturnType } from 'zod'
 import {
   InputOTP,
   InputOTPGroup,
@@ -24,6 +25,7 @@ import { Label } from '~/components/ui/label'
 import { useTranslations } from 'next-intl'
 import { authClient } from '~/server/auth/auth-client'
 import { PasskeyLogin } from '~/components/auth/passkey-login'
+import { checkUserExists } from '~/server/db/query/users'
 
 export const UserFrom = ({
   className,
@@ -38,12 +40,14 @@ export const UserFrom = ({
   const [password, setPassword] = useState('')
   const [token, setToken] = useState<string>('')
   const [otp, setOtp] = useState(false)
+  const [userExists, setUserExists] = useState<boolean>(true)
 
   const emailRef = React.useRef<HTMLInputElement>(null)
   const passwordRef = React.useRef<HTMLInputElement>(null)
 
   useEffect(() => {
     emailRef.current?.focus()
+    checkUserExists().then(exists => setUserExists(exists))
   }, [])
 
   const emailKeyPressHandler = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -135,12 +139,15 @@ export const UserFrom = ({
               <div className="grid gap-2">
                 <div className="flex items-center">
                   <Label htmlFor="email" className="select-none">{t('Login.email')}</Label>
-                  <div
-                    onClick={() => router.push('/sign-up')}
-                    className="ml-auto text-sm underline-offset-4 hover:underline select-none cursor-pointer"
-                  >
-                    {t('Login.signUp')}
-                  </div>
+                  {
+                    !userExists &&
+                    <div
+                      onClick={() => router.push('/sign-up')}
+                      className="ml-auto text-sm underline-offset-4 hover:underline select-none cursor-pointer"
+                    >
+                      {t('Login.signUp')}
+                    </div>
+                  }
                 </div>
                 <Input
                   id="email"
