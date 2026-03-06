@@ -85,6 +85,7 @@ export default function DockMenu(props: Readonly<AlbumDataProps>) {
                       {Array.isArray(props.data) && props.data.length > 0 &&
                         props.data.map((album: AlbumType) => (
                           <ListBox.Item
+                            key={album.id}
                             id={album.id}
                             textValue={album.name}
                             onClick={() => {

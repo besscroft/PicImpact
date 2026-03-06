@@ -37,16 +37,14 @@ export function NavProjects({
           <SidebarMenuItem key={item.name}>
             <SidebarMenuButton
               className={buttonClasses}
-              asChild
+              tooltip={item.name}
               isActive={pathname === item.url}
               onClick={() => {
                 setOpenMobile(false)
                 router.push(item.url)
               }}>
-              <a href={item.url}>
-                <item.icon size={18} />
-                <span>{item.name}</span>
-              </a>
+              <item.icon size={18} />
+              <span>{item.name}</span>
             </SidebarMenuButton>
           </SidebarMenuItem>
         ))}
