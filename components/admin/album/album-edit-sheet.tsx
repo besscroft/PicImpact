@@ -1,6 +1,6 @@
 'use client'
 
-import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from '~/components/ui/sheet'
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from '~/components/ui/sheet'
 import { useButtonStore } from '~/app/providers/button-store-providers'
 import type { AlbumType } from '~/types'
 import type { HandleProps } from '~/types/props'
@@ -71,7 +71,7 @@ export default function AlbumEditSheet(props : Readonly<HandleProps>) {
       <SheetContent side="left" className="w-full overflow-y-auto scrollbar-hide" onInteractOutside={(event: any) => event.preventDefault()}>
         <SheetHeader>
           <SheetTitle>{t('Album.editAlbum')}</SheetTitle>
-          <SheetDescription className="space-y-2">
+          <div className="space-y-2">
             <label
               htmlFor="name"
               className="block overflow-hidden rounded-md border border-gray-200 px-3 py-2 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600"
@@ -223,7 +223,7 @@ export default function AlbumEditSheet(props : Readonly<HandleProps>) {
               {loading && <ReloadIcon className="mr-2 h-4 w-4 animate-spin"/>}
               {t('Album.submit')}
             </Button>
-          </SheetDescription>
+          </div>
         </SheetHeader>
       </SheetContent>
     </Sheet>
