@@ -1,18 +1,15 @@
 'use client'
 
+import React from 'react'
+import Image from 'next/image'
 import { useBlurImageDataUrl } from '~/hooks/use-blurhash.ts'
-import { MotionImage } from '~/components/album/motion-image'
 
-export default function ListImage({ image }: { image: any }) {
-
+export default React.memo(function ListImage({ image }: { image: any }) {
   const dataURL = useBlurImageDataUrl(image.blurhash)
-  
+
   return (
-    <MotionImage
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 1 }}
-      className="duration-700 ease-in-out group-hover:opacity-75 w-full h-full object-contain"
+    <Image
+      className="group-hover:opacity-75 transition-opacity duration-500 ease-in-out w-full h-full object-contain"
       src={image.preview_url || image.url}
       overrideSrc={image.preview_url || image.url}
       alt={image.title}
@@ -24,4 +21,8 @@ export default function ListImage({ image }: { image: any }) {
       blurDataURL={dataURL}
     />
   )
-}
+}, (prevProps, nextProps) => {
+  return prevProps.image.id === nextProps.image.id
+    && prevProps.image.url === nextProps.image.url
+    && prevProps.image.preview_url === nextProps.image.preview_url
+})

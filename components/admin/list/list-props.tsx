@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import type { ImageType, AlbumType } from '~/types'
 import type { ImageListDataProps, ImageServerHandleProps } from '~/types/props'
 import { useSwrInfiniteServerHook } from '~/hooks/use-swr-infinite-server-hook'
@@ -105,7 +105,7 @@ export default function ListProps(props : Readonly<ImageServerHandleProps>) {
     }
   }, [adminConfig])
 
-  async function updateImageShow(id: string, show: number) {
+  const updateImageShow = useCallback(async (id: string, show: number) => {
     try {
       setUpdateShowLoading(true)
       setUpdateShowId(id)
@@ -131,7 +131,7 @@ export default function ListProps(props : Readonly<ImageServerHandleProps>) {
       setUpdateShowId('')
       setUpdateShowLoading(false)
     }
-  }
+  }, [mutate])
 
   async function updateImageAlbum() {
     if (!imageAlbum) {
