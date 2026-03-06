@@ -81,7 +81,7 @@ export default function ImageEditSheet(props : Readonly<ImageServerHandleProps &
               type="text"
               id="title"
               placeholder="请输入图片标题"
-              value={image?.title}
+              value={image?.title ?? ''}
               onChange={(e) => setImageEditData({...image, title: e.target.value})}
               className="mt-1 w-full border-none p-0 focus:border-transparent focus:outline-none focus:ring-0 sm:text-sm"
             />
@@ -96,7 +96,7 @@ export default function ImageEditSheet(props : Readonly<ImageServerHandleProps &
               type="text"
               id="url"
               placeholder="输入链接"
-              value={image?.url}
+              value={image?.url ?? ''}
               onChange={(e) => setImageEditData({...image, url: e.target.value})}
               className="mt-1 w-full border-none p-0 focus:border-transparent focus:outline-none focus:ring-0 sm:text-sm"
             />
@@ -111,7 +111,7 @@ export default function ImageEditSheet(props : Readonly<ImageServerHandleProps &
               type="text"
               id="preview_url"
               placeholder="输入预览链接"
-              value={image?.preview_url}
+              value={image?.preview_url ?? ''}
               onChange={(e) => setImageEditData({...image, preview_url: e.target.value})}
               className="mt-1 w-full border-none p-0 focus:border-transparent focus:outline-none focus:ring-0 sm:text-sm"
             />
@@ -126,7 +126,7 @@ export default function ImageEditSheet(props : Readonly<ImageServerHandleProps &
               type="text"
               id="video_url"
               placeholder="输入视频链接"
-              value={image?.video_url}
+              value={image?.video_url ?? ''}
               onChange={(e) => setImageEditData({...image, video_url: e.target.value})}
               className="mt-1 w-full border-none p-0 focus:border-transparent focus:outline-none focus:ring-0 sm:text-sm"
             />
@@ -141,7 +141,7 @@ export default function ImageEditSheet(props : Readonly<ImageServerHandleProps &
               type="text"
               id="detail"
               placeholder="输入详情"
-              value={image?.detail}
+              value={image?.detail ?? ''}
               onChange={(e) => setImageEditData({...image, detail: e.target.value})}
               className="mt-1 w-full border-none p-0 focus:border-transparent focus:outline-none focus:ring-0 sm:text-sm"
             />
@@ -155,7 +155,7 @@ export default function ImageEditSheet(props : Readonly<ImageServerHandleProps &
             <input
               type="number"
               id="width"
-              value={image?.width}
+              value={image?.width ?? ''}
               onChange={(e) => setImageEditData({...image, width: Number(e.target.value)})}
               className="mt-1 w-full border-none p-0 focus:border-transparent focus:outline-none focus:ring-0 sm:text-sm"
             />
@@ -169,7 +169,7 @@ export default function ImageEditSheet(props : Readonly<ImageServerHandleProps &
             <input
               type="number"
               id="height"
-              value={image?.height}
+              value={image?.height ?? ''}
               onChange={(e) => setImageEditData({...image, height: Number(e.target.value)})}
               className="mt-1 w-full border-none p-0 focus:border-transparent focus:outline-none focus:ring-0 sm:text-sm"
             />
@@ -184,7 +184,7 @@ export default function ImageEditSheet(props : Readonly<ImageServerHandleProps &
               type="text"
               id="lon"
               placeholder="输入经度"
-              value={image?.lon}
+              value={image?.lon ?? ''}
               onChange={(e) => setImageEditData({...image, lon: e.target.value})}
               className="mt-1 w-full border-none p-0 focus:border-transparent focus:outline-none focus:ring-0 sm:text-sm"
             />
@@ -199,7 +199,7 @@ export default function ImageEditSheet(props : Readonly<ImageServerHandleProps &
               type="text"
               id="lat"
               placeholder="输入纬度"
-              value={image?.lat}
+              value={image?.lat ?? ''}
               onChange={(e) => setImageEditData({...image, lat: e.target.value})}
               className="mt-1 w-full border-none p-0 focus:border-transparent focus:outline-none focus:ring-0 sm:text-sm"
             />
@@ -213,7 +213,7 @@ export default function ImageEditSheet(props : Readonly<ImageServerHandleProps &
             <input
               type="number"
               id="sort"
-              value={image?.sort}
+              value={image?.sort ?? ''}
               onChange={(e) => setImageEditData({...image, sort: Number(e.target.value)})}
               className="mt-1 w-full border-none p-0 focus:border-transparent focus:outline-none focus:ring-0 sm:text-sm"
             />

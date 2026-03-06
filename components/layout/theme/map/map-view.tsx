@@ -9,17 +9,26 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { Card, CardContent } from '~/components/ui/card'
 import { Button } from '~/components/ui/button'
-import { ExternalLink, X } from 'lucide-react'
+import { ExternalLink, X, Camera, ImageIcon } from 'lucide-react'
+import Supercluster from 'supercluster'
+import type { BBox } from 'geojson'
 
 interface MapViewProps {
   images: ImageType[]
 }
 
+interface ImagePointProperties {
+  imageId: string
+  image: ImageType
+}
+
 export function MapView({ images }: MapViewProps) {
   const { resolvedTheme } = useTheme()
   const [popupInfo, setPopupInfo] = React.useState<ImageType | null>(null)
+  const mapRef = React.useRef<any>(null)
+  const [zoom, setZoom] = React.useState(1.5)
+  const [bounds, setBounds] = React.useState<BBox>([-180, -85, 180, 85])
 
-  // 过滤无效坐标并转换类型
   const validImages = React.useMemo(() => {
     return images.filter(img => {
       const lat = parseFloat(img.lat || '')
@@ -28,12 +37,53 @@ export function MapView({ images }: MapViewProps) {
     })
   }, [images])
 
-  // 根据主题切换地图样式
+  const points = React.useMemo(() => {
+    return validImages.map((img): Supercluster.PointFeature<ImagePointProperties> => ({
+      type: 'Feature',
+      properties: {
+        imageId: img.id,
+        image: img,
+      },
+      geometry: {
+        type: 'Point',
+        coordinates: [parseFloat(img.lon!), parseFloat(img.lat!)],
+      },
+    }))
+  }, [validImages])
+
+  const clusterIndex = React.useMemo(() => {
+    const sc = new Supercluster<ImagePointProperties>({
+      radius: 60,
+      maxZoom: 16,
+    })
+    sc.load(points)
+    return sc
+  }, [points])
+
+  const clusters = React.useMemo(() => {
+    return clusterIndex.getClusters(bounds, Math.floor(zoom))
+  }, [clusterIndex, bounds, zoom])
+
   const mapStyle = React.useMemo(() => {
     return resolvedTheme === 'dark'
       ? 'https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json'
       : 'https://basemaps.cartocdn.com/gl/positron-gl-style/style.json'
   }, [resolvedTheme])
+
+  const syncMapState = React.useCallback(() => {
+    const map = mapRef.current
+    if (!map) return
+    const b = map.getBounds()
+    setBounds([b.getWest(), b.getSouth(), b.getEast(), b.getNorth()])
+    setZoom(map.getZoom())
+  }, [])
+
+  const getClusterSize = (count: number): number => {
+    if (count < 10) return 36
+    if (count < 50) return 42
+    if (count < 100) return 48
+    return 54
+  }
 
   return (
     <div className="w-full h-full relative">
@@ -45,17 +95,14 @@ export function MapView({ images }: MapViewProps) {
           border: none !important;
         }
         .map-popup .maplibregl-popup-tip {
-          border-bottom-color: var(--card) !important;
-          border-top-color: var(--card) !important;
-          border-left-color: var(--card) !important;
-          border-right-color: var(--card) !important;
+          display: none !important;
         }
-        /* 针对移动端或某些情况下的关闭按钮残留 */
         .map-popup .maplibregl-popup-close-button {
           display: none !important;
         }
       `}</style>
       <Map
+        ref={mapRef}
         initialViewState={{
           longitude: 121,
           latitude: 31,
@@ -64,29 +111,79 @@ export function MapView({ images }: MapViewProps) {
         style={{ width: '100%', height: '100%' }}
         mapStyle={mapStyle}
         attributionControl={true}
+        onMove={syncMapState}
+        onLoad={syncMapState}
       >
         <GeolocateControl position="top-left" />
         <FullscreenControl position="top-left" />
         <NavigationControl position="top-left" />
         <ScaleControl />
 
-        {validImages.map((image) => {
-          const lat = parseFloat(image.lat!)
-          const lon = parseFloat(image.lon!)
-          
+        {clusters.map((feature) => {
+          const [longitude, latitude] = feature.geometry.coordinates
+          const props = feature.properties
+
+          if ('cluster' in props && props.cluster) {
+            const { cluster_id, point_count } = props
+            const size = getClusterSize(point_count)
+
+            return (
+              <Marker
+                key={`cluster-${cluster_id}`}
+                longitude={longitude}
+                latitude={latitude}
+                anchor="center"
+                onClick={(e) => {
+                  e.originalEvent.stopPropagation()
+                  const expansionZoom = Math.min(
+                    clusterIndex.getClusterExpansionZoom(cluster_id),
+                    20
+                  )
+                  mapRef.current?.flyTo({
+                    center: [longitude, latitude],
+                    zoom: expansionZoom,
+                    duration: 500,
+                  })
+                }}
+              >
+                <div className="relative cursor-pointer group">
+                  <div
+                    className="absolute rounded-full bg-primary/15 dark:bg-primary/25 transition-all duration-300 group-hover:bg-primary/25 dark:group-hover:bg-primary/35"
+                    style={{
+                      width: size + 12,
+                      height: size + 12,
+                      top: -6,
+                      left: -6,
+                    }}
+                  />
+                  <div
+                    className="relative flex items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg transition-transform duration-200 group-hover:scale-105"
+                    style={{ width: size, height: size }}
+                  >
+                    <div className="flex flex-col items-center leading-none gap-0.5">
+                      <span className="text-sm font-bold">{point_count}</span>
+                      <ImageIcon className="h-3 w-3 opacity-70" />
+                    </div>
+                  </div>
+                </div>
+              </Marker>
+            )
+          }
+
+          const { image } = props as ImagePointProperties
+
           return (
             <Marker
-              key={image.id}
-              longitude={lon}
-              latitude={lat}
+              key={`point-${image.id}`}
+              longitude={longitude}
+              latitude={latitude}
               anchor="bottom"
               onClick={(e) => {
-                // 阻止事件冒泡，避免点击 Marker 时地图同时也响应
                 e.originalEvent.stopPropagation()
                 setPopupInfo(image)
               }}
             >
-              <div 
+              <div
                 className="group relative cursor-pointer transform transition-all duration-300 hover:scale-110 hover:z-10"
                 title={image.title || 'View Photo'}
               >
@@ -99,7 +196,6 @@ export function MapView({ images }: MapViewProps) {
                     sizes="40px"
                   />
                 </div>
-                {/* 箭头装饰 */}
                 <div className="absolute -bottom-1 left-1/2 h-3 w-3 -translate-x-1/2 rotate-45 border-r-2 border-b-2 border-white bg-white dark:border-gray-800 dark:bg-gray-800"></div>
               </div>
             </Marker>
@@ -112,44 +208,78 @@ export function MapView({ images }: MapViewProps) {
             longitude={parseFloat(popupInfo.lon!)}
             latitude={parseFloat(popupInfo.lat!)}
             onClose={() => setPopupInfo(null)}
-            closeButton={false} // 使用自定义关闭按钮
+            closeButton={false}
             className="map-popup"
-            maxWidth="300px"
+            maxWidth="320px"
+            offset={8}
           >
-            <Card className="w-64 overflow-hidden border border-border bg-card shadow-xl">
-              <div className="relative aspect-[4/3] w-full overflow-hidden">
-                 <Image
+            <Card className="w-72 overflow-hidden border-0 bg-card shadow-2xl rounded-xl">
+              <div className="relative aspect-[16/10] w-full overflow-hidden">
+                <Image
                   src={popupInfo.preview_url || popupInfo.url || ''}
                   alt={popupInfo.title || 'Photo'}
                   fill
                   className="object-cover"
                 />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/5 to-transparent" />
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="absolute right-1 top-1 h-6 w-6 rounded-full bg-black/50 text-white hover:bg-black/70 z-10"
+                  className="absolute right-2 top-2 h-7 w-7 rounded-full bg-black/40 text-white hover:bg-black/60 backdrop-blur-sm z-10"
                   onClick={(e) => {
                     e.stopPropagation()
                     setPopupInfo(null)
                   }}
                 >
-                  <X className="h-4 w-4" />
+                  <X className="h-3.5 w-3.5" />
                 </Button>
+                <div className="absolute bottom-0 left-0 right-0 p-3">
+                  <h3 className="font-semibold text-white text-sm truncate drop-shadow-md">
+                    {popupInfo.title || 'Untitled'}
+                  </h3>
+                </div>
               </div>
-              <CardContent className="p-3">
-                <h3 className="font-semibold truncate text-sm mb-1">{popupInfo.title || 'Untitled'}</h3>
-                {popupInfo.exif && typeof popupInfo.exif === 'object' && (
-                   <p className="text-xs text-muted-foreground truncate">
-                     {/* @ts-ignore */}
-                     {popupInfo.exif.model || 'Unknown Camera'}
-                   </p>
+              <CardContent className="p-3 space-y-2.5">
+                {popupInfo.exif && typeof popupInfo.exif === 'object' && (popupInfo.exif.make || popupInfo.exif.model) && (
+                  <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                    <Camera className="h-3.5 w-3.5 shrink-0" />
+                    <span className="truncate">
+                      {/* @ts-ignore */}
+                      {[popupInfo.exif.make, popupInfo.exif.model].filter(Boolean).join(' ')}
+                    </span>
+                  </div>
                 )}
-                <div className="mt-3 flex justify-end">
-                   <Link href={`/preview/${popupInfo.id}`} passHref>
-                     <Button size="sm" variant="outline" className="h-7 text-xs">
-                       查看详情 <ExternalLink className="ml-1 h-3 w-3" />
-                     </Button>
-                   </Link>
+                {popupInfo.exif && typeof popupInfo.exif === 'object' &&
+                  (popupInfo.exif.f_number || popupInfo.exif.exposure_time || popupInfo.exif.iso_speed_rating || popupInfo.exif.focal_length) && (
+                  <div className="flex flex-wrap gap-1">
+                    {popupInfo.exif.f_number && (
+                      <span className="inline-flex items-center rounded-full bg-muted px-2 py-0.5 text-[11px] font-medium text-muted-foreground">
+                        {popupInfo.exif.f_number}
+                      </span>
+                    )}
+                    {popupInfo.exif.exposure_time && (
+                      <span className="inline-flex items-center rounded-full bg-muted px-2 py-0.5 text-[11px] font-medium text-muted-foreground">
+                        {popupInfo.exif.exposure_time}
+                      </span>
+                    )}
+                    {popupInfo.exif.iso_speed_rating && (
+                      <span className="inline-flex items-center rounded-full bg-muted px-2 py-0.5 text-[11px] font-medium text-muted-foreground">
+                        ISO {popupInfo.exif.iso_speed_rating}
+                      </span>
+                    )}
+                    {popupInfo.exif.focal_length && (
+                      <span className="inline-flex items-center rounded-full bg-muted px-2 py-0.5 text-[11px] font-medium text-muted-foreground">
+                        {popupInfo.exif.focal_length}
+                      </span>
+                    )}
+                  </div>
+                )}
+                <div className="flex justify-end">
+                  <Link href={`/preview/${popupInfo.id}`} passHref>
+                    <Button size="sm" className="h-8 text-xs gap-1.5 rounded-lg">
+                      查看详情 <ExternalLink className="h-3 w-3" />
+                    </Button>
+                  </Link>
                 </div>
               </CardContent>
             </Card>
