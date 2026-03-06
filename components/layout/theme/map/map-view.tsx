@@ -254,12 +254,12 @@ export function MapView({ images }: MapViewProps) {
                   <div className="flex flex-wrap gap-1">
                     {popupInfo.exif.f_number && (
                       <span className="inline-flex items-center rounded-full bg-muted px-2 py-0.5 text-[11px] font-medium text-muted-foreground">
-                        f/{popupInfo.exif.f_number}
+                        {popupInfo.exif.f_number}
                       </span>
                     )}
                     {popupInfo.exif.exposure_time && (
                       <span className="inline-flex items-center rounded-full bg-muted px-2 py-0.5 text-[11px] font-medium text-muted-foreground">
-                        {popupInfo.exif.exposure_time}s
+                        {popupInfo.exif.exposure_time}
                       </span>
                     )}
                     {popupInfo.exif.iso_speed_rating && (
@@ -269,7 +269,7 @@ export function MapView({ images }: MapViewProps) {
                     )}
                     {popupInfo.exif.focal_length && (
                       <span className="inline-flex items-center rounded-full bg-muted px-2 py-0.5 text-[11px] font-medium text-muted-foreground">
-                        {popupInfo.exif.focal_length}mm
+                        {popupInfo.exif.focal_length}
                       </span>
                     )}
                   </div>
