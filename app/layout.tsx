@@ -38,14 +38,32 @@ type ConfigItem = {
 export async function generateMetadata(): Promise<Metadata> {
   const data = await fetchConfigsByKeys([
     'custom_title',
-    'custom_favicon_url'
+    'custom_favicon_url',
+    'custom_author',
   ])
 
+  const title = data?.find((item: ConfigItem) => item.config_key === 'custom_title')?.config_value || 'PicImpact'
+  const author = data?.find((item: ConfigItem) => item.config_key === 'custom_author')?.config_value || ''
+  const description = author
+    ? `${author}'s photography portfolio — powered by PicImpact`
+    : 'A photography portfolio powered by PicImpact'
+
   return {
-    title: data?.find((item: ConfigItem) => item.config_key === 'custom_title')?.config_value || 'PicImpact',
-    description: 'A photography portfolio powered by PicImpact',
+    title,
+    description,
     icons: { icon: data?.find((item: ConfigItem) => item.config_key === 'custom_favicon_url')?.config_value || './favicon.ico' },
     manifest: '/manifest.json',
+    openGraph: {
+      title,
+      description,
+      siteName: title,
+      type: 'website',
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title,
+      description,
+    },
     appleWebApp: {
       capable: true,
       statusBarStyle: 'default',
