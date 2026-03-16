@@ -43,6 +43,7 @@ export async function generateMetadata(): Promise<Metadata> {
 
   return {
     title: data?.find((item: ConfigItem) => item.config_key === 'custom_title')?.config_value || 'PicImpact',
+    description: 'A photography portfolio powered by PicImpact',
     icons: { icon: data?.find((item: ConfigItem) => item.config_key === 'custom_favicon_url')?.config_value || './favicon.ico' },
     manifest: '/manifest.json',
     appleWebApp: {
@@ -56,7 +57,7 @@ export async function generateMetadata(): Promise<Metadata> {
 export const viewport = {
   width: 'device-width',
   initialScale: 1,
-  maximumScale: 1,
+  maximumScale: 5,
   themeColor: '#2d2518',
 }
 

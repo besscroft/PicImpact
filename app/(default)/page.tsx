@@ -3,7 +3,6 @@ import { fetchClientImagesListByAlbum, fetchClientImagesPageTotalByAlbum } from 
 import SimpleGallery from '~/components/layout/theme/simple/simple-gallery.tsx'
 import { fetchConfigsByKeys } from '~/server/db/query/configs'
 import DefaultGallery from '~/components/layout/theme/default/default-gallery.tsx'
-import 'react-photo-album/masonry.css'
 import type { Config } from '~/types'
 import PolaroidGallery from '~/components/layout/theme/polaroid/polaroid-gallery.tsx'
 

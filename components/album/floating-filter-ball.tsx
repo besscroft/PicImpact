@@ -236,6 +236,9 @@ export default function FloatingFilterBall({
 
   const BallButton = (
     <motion.div
+      role="button"
+      tabIndex={0}
+      aria-label="Filter photos"
       className={cn(
         'fixed z-50 flex items-center justify-center rounded-full',
         'bg-primary/90 text-primary-foreground backdrop-blur-sm',
