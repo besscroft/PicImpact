@@ -1,14 +1,33 @@
 import { fetchImageByIdAndAuth } from '~/server/db/query/images'
-import PhotoViewer from '~/components/viewer/photo-viewer'
+import type { PreviewImageHandleProps } from '~/types/props'
+import PreviewImage from '~/components/album/preview-image'
+import { fetchConfigsByKeys } from '~/server/db/query/configs'
 
 export default async function PreView({params}: { params: any }) {
   const { id } = await params
 
-  const imageData = await fetchImageByIdAndAuth(String(id))
-
-  if (!imageData) {
-    return null
+  const getData = async (id: string) => {
+    'use server'
+    return await fetchImageByIdAndAuth(String(id))
   }
 
-  return <PhotoViewer photo={imageData} />
+  const getConfig = async () => {
+    'use server'
+    return await fetchConfigsByKeys([
+      'custom_index_download_enable'
+    ])
+  }
+
+  const imageData = await getData(id)
+
+  const props: PreviewImageHandleProps = {
+    data: imageData,
+    args: 'getImages-client-preview',
+    id: id,
+    configHandle: getConfig,
+  }
+
+  return (
+    <PreviewImage {...props} />
+  )
 }

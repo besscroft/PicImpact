@@ -1,14 +1,10 @@
-import { fetchImageByIdAndAuth } from '~/server/db/query/images'
-import PhotoViewer from '~/components/viewer/photo-viewer'
+import { Modal } from './modal.tsx'
+import PreView from '~/app/(default)/preview/[...id]/page'
 
 export default async function Page({params}: { params: any }) {
-  const { id } = await params
-
-  const imageData = await fetchImageByIdAndAuth(String(id))
-
-  if (!imageData) {
-    return null
-  }
-
-  return <PhotoViewer photo={imageData} />
+  return (
+    <Modal>
+      <PreView params={params} />
+    </Modal>
+  )
 }
