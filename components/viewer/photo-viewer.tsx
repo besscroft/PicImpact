@@ -176,7 +176,7 @@ export default function PhotoViewer({ photo, photos }: PhotoViewerProps) {
                   {currentPhoto.exif.exposure_time && (
                     <div className="rounded-lg bg-muted/50 p-3 text-center">
                       <p className="text-xs text-muted-foreground">Shutter</p>
-                      <p className="text-sm font-medium">{currentPhoto.exif.exposure_time}s</p>
+                      <p className="text-sm font-medium">{currentPhoto.exif.exposure_time}</p>
                     </div>
                   )}
                   {currentPhoto.exif.iso_speed_rating && (
