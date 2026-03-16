@@ -57,7 +57,7 @@ export const viewport = {
   width: 'device-width',
   initialScale: 1,
   maximumScale: 1,
-  themeColor: '#000000',
+  themeColor: '#2d2518',
 }
 
 export default async function RootLayout({
@@ -84,7 +84,7 @@ export default async function RootLayout({
     <html className={`overflow-y-auto scrollbar-hide ${sourceSerif4.variable} ${sourceSans3.variable}`} lang={locale} suppressHydrationWarning>
     <head>
       <link rel="manifest" href="/manifest.json" />
-      <meta name="theme-color" content="#000000" />
+      <meta name="theme-color" content="#2d2518" />
       <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
       <meta name="apple-mobile-web-app-capable" content="yes" />
       <meta name="apple-mobile-web-app-status-bar-style" content="default" />
