@@ -45,9 +45,9 @@ function Row({ label, value }: { label: string; value: string | number | null | 
 // Badge component for capture parameters
 function ParamBadge({ icon, value }: { icon: React.ReactNode; value: string }) {
   return (
-    <div className="flex h-7 items-center gap-2 rounded-md border border-border/50 bg-muted/50 px-2.5">
+    <div className="flex h-8 items-center gap-2 rounded-lg border border-primary/15 bg-primary/5 px-3">
       {icon}
-      <span className="text-xs text-foreground">{value}</span>
+      <span className="text-xs font-medium text-foreground">{value}</span>
     </div>
   )
 }
@@ -55,7 +55,7 @@ function ParamBadge({ icon, value }: { icon: React.ReactNode; value: string }) {
 // Section title component
 function SectionTitle({ children }: { children: React.ReactNode }) {
   return (
-    <h4 className="mb-2 text-sm font-medium text-foreground">
+    <h4 className="mb-2 text-xs font-semibold uppercase tracking-wider text-primary/70">
       {children}
     </h4>
   )
@@ -67,8 +67,8 @@ export default function PreviewImage(props: Readonly<PreviewImageHandleProps>) {
   const { data: download = false, mutate: setDownload } = useSWR(['masonry/download', props.data?.url ?? ''], null)
   const [lightboxPhoto, setLightboxPhoto] = useState<boolean>(false)
 
-  const exifIconClass = 'text-muted-foreground'
-  const badgeIconClass = 'shrink-0 text-muted-foreground'
+  const exifIconClass = 'text-muted-foreground hover:text-primary transition-colors'
+  const badgeIconClass = 'shrink-0 text-primary/60'
 
   const configProps: HandleProps = {
     handle: props.configHandle,
@@ -435,7 +435,7 @@ export default function PreviewImage(props: Readonly<PreviewImageHandleProps>) {
                   {props.data.labels.map((tag: string) => (
                     <Badge
                       variant="secondary"
-                      className="cursor-pointer"
+                      className="cursor-pointer border-primary/15 bg-primary/10 text-foreground hover:bg-primary/20 transition-colors"
                       key={tag}
                       onClick={() => {
                         router.push(`/tag/${tag}`)
@@ -461,7 +461,7 @@ export default function PreviewImage(props: Readonly<PreviewImageHandleProps>) {
             {/* Copy EXIF button */}
             <div className="flex w-full items-center justify-end pt-2">
               <button
-                className="flex items-center space-x-1 text-sm text-muted-foreground transition-colors hover:text-foreground"
+                className="flex items-center space-x-1 text-sm text-muted-foreground transition-colors hover:text-primary"
                 onClick={async () => {
                   try {
                     const exif = JSON.stringify(props.data?.exif, null, 2)

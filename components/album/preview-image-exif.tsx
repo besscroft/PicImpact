@@ -40,9 +40,9 @@ function Row({ label, value }: { label: string; value: string | number | null | 
 // Badge component for capture parameters
 function ParamBadge({ icon, value }: { icon: React.ReactNode; value: string }) {
   return (
-    <div className="flex h-7 items-center gap-2 rounded-md border border-border/50 bg-muted/50 px-2.5">
+    <div className="flex h-8 items-center gap-2 rounded-lg border border-primary/15 bg-primary/5 px-3">
       {icon}
-      <span className="text-xs text-foreground">{value}</span>
+      <span className="text-xs font-medium text-foreground">{value}</span>
     </div>
   )
 }
@@ -50,7 +50,7 @@ function ParamBadge({ icon, value }: { icon: React.ReactNode; value: string }) {
 // Section title component
 function SectionTitle({ children }: { children: React.ReactNode }) {
   return (
-    <h4 className="mb-2 text-sm font-medium text-foreground">
+    <h4 className="mb-2 text-xs font-semibold uppercase tracking-wider text-primary/70">
       {children}
     </h4>
   )
@@ -58,8 +58,8 @@ function SectionTitle({ children }: { children: React.ReactNode }) {
 
 export default function PreviewImageExif(props: Readonly<ImageDataProps>) {
   const t = useTranslations()
-  const exifIconClass = 'shrink-0 text-muted-foreground'
-  const badgeIconClass = 'shrink-0 text-muted-foreground'
+  const exifIconClass = 'shrink-0 text-primary/60'
+  const badgeIconClass = 'shrink-0 text-primary/60'
 
   // Use preview URL or original URL
   const imageUrl = props.data?.preview_url || props.data?.url || ''
@@ -250,7 +250,7 @@ export default function PreviewImageExif(props: Readonly<ImageDataProps>) {
             {/* Copy EXIF button */}
             <div className="flex w-full items-center justify-end pt-2">
               <button
-                className="flex items-center space-x-1 text-sm text-muted-foreground transition-colors hover:text-foreground"
+                className="flex items-center space-x-1 text-sm text-muted-foreground transition-colors hover:text-primary"
                 onClick={async () => {
                   try {
                     const exif = JSON.stringify(props.data?.exif, null, 2)
