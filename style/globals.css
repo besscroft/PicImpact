@@ -231,6 +231,18 @@
   }
 }
 
+/* Recharts stroke overrides — cannot use Tailwind arbitrary selectors due to CSS parser issues with escaped quotes */
+[data-slot="chart"] .recharts-cartesian-grid line[stroke='#ccc'],
+[data-slot="chart"] .recharts-polar-grid [stroke='#ccc'],
+[data-slot="chart"] .recharts-reference-line [stroke='#ccc'] {
+  stroke: color-mix(in oklab, var(--border) 50%, transparent);
+}
+
+[data-slot="chart"] .recharts-dot[stroke='#fff'],
+[data-slot="chart"] .recharts-sector[stroke='#fff'] {
+  stroke: transparent;
+}
+
 /* property */
 @property --angle {
   syntax: "<angle>";
