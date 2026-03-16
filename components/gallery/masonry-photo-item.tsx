@@ -57,7 +57,7 @@ export default function MasonryPhotoItem({ photo }: { photo: ImageType }) {
             {exif.f_number && (
               <div className="flex items-center gap-1 rounded-md bg-white/15 px-2 py-1 backdrop-blur-md">
                 <Aperture className="h-3 w-3 text-white/70" />
-                <span className="text-white/90">{'\u0192'}/{exif.f_number}</span>
+                <span className="text-white/90">{exif.f_number}</span>
               </div>
             )}
             {exif.exposure_time && (

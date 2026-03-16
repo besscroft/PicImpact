@@ -170,7 +170,7 @@ export default function PhotoViewer({ photo, photos }: PhotoViewerProps) {
                   {currentPhoto.exif.f_number && (
                     <div className="rounded-lg bg-muted/50 p-3 text-center">
                       <p className="text-xs text-muted-foreground">Aperture</p>
-                      <p className="text-sm font-medium">{'\u0192'}/{currentPhoto.exif.f_number}</p>
+                      <p className="text-sm font-medium">{currentPhoto.exif.f_number}</p>
                     </div>
                   )}
                   {currentPhoto.exif.exposure_time && (

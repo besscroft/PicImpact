@@ -17,7 +17,7 @@ export async function generateMetadata({ params }: { params: any }): Promise<Met
     imageData.exif?.make,
     imageData.exif?.model,
     imageData.exif?.focal_length,
-    imageData.exif?.f_number ? `ƒ/${imageData.exif.f_number}` : null,
+    imageData.exif?.f_number ?? null,
     imageData.exif?.iso_speed_rating ? `ISO ${imageData.exif.iso_speed_rating}` : null,
   ].filter(Boolean).join(' · ') || imageData.detail || title
 
