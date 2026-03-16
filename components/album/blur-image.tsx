@@ -30,7 +30,7 @@ export default function BlurImage({ photo, dataList }: { photo: any, dataList: a
         )
       }
       <MotionImage
-        className={cn("cursor-pointer", isLoading && "animate-pulse")}
+        className={cn('cursor-pointer', isLoading && 'animate-pulse')}
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5 }}

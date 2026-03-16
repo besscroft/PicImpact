@@ -91,8 +91,8 @@ const PolaroidCard = memo(function PolaroidCard({
           width={Math.round(imgWidth)}
           height={Math.round(imgHeight)}
           className={cn(
-            "pointer-events-none relative z-10 h-full w-full object-cover transition-opacity duration-500",
-            isLoading ? "opacity-0" : "opacity-100"
+            'pointer-events-none relative z-10 h-full w-full object-cover transition-opacity duration-500',
+            isLoading ? 'opacity-0' : 'opacity-100'
           )}
           placeholder="blur"
           blurDataURL={blurDataUrl}

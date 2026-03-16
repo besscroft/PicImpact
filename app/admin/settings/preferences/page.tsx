@@ -192,7 +192,7 @@ export default function Preferences() {
                 onClick={async () => {
                   try {
                     const url = typeof window !== 'undefined' ? window.location.origin + '/rss.xml' : ''
-                    // @ts-ignore
+                    // @ts-expect-error
                     await navigator.clipboard.writeText(url)
                     toast.success('复制成功！', {duration: 500})
                   } catch (error) {

@@ -9,7 +9,7 @@ import GalleryImage from '~/components/gallery/simple/gallery-image.tsx'
 import InfiniteScroll from '~/components/ui/origin/infinite-scroll.tsx'
 import { useCallback, useEffect, useMemo, useRef, useState, useTransition } from 'react'
 import useSWR from 'swr'
-import FloatingFilterBall from "~/components/album/floating-filter-ball.tsx";
+import FloatingFilterBall from '~/components/album/floating-filter-ball.tsx'
 
 export default function SimpleGallery(props: Readonly<ImageHandleProps>) {
   const [selectedCamera, setSelectedCamera] = useState('')

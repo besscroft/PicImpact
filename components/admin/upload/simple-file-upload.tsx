@@ -91,7 +91,7 @@ export default function SimpleFileUpload() {
           setWidth(Number(img.width))
           setHeight(Number(img.height))
         }
-        // @ts-ignore
+        // @ts-expect-error
         img.src = e.target.result
       }
       reader.readAsDataURL(file)
@@ -141,7 +141,7 @@ export default function SimpleFileUpload() {
           'Content-Type': 'application/json',
         },
         method: 'post',
-        // @ts-ignore
+        // @ts-expect-error
         body: JSON.stringify(data),
       }).then(res => res.json())
       if (res?.code === 200) {
