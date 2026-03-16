@@ -15,8 +15,7 @@ import { LoadingState } from './enum'
 import { ImageViewerEngineBase } from './ImageViewerEngineBase'
 import type { DebugInfo, WebGLImageViewerProps } from './interface'
 import { createShader, FRAGMENT_SHADER_SOURCE, VERTEX_SHADER_SOURCE } from './shaders'
-// @ts-expect-error raw import for inline worker blob
-import TextureWorkerRaw from './texture.worker.ts?raw'
+import { TextureWorkerSource } from './texture-worker-source'
 
 // 瓦片系统配置
 const TILE_SIZE = 512
@@ -327,7 +326,7 @@ export class WebGLImageViewerEngine extends ImageViewerEngineBase {
   }
 
   private initWorker() {
-    this.worker = new Worker(URL.createObjectURL(new Blob([TextureWorkerRaw])), {
+    this.worker = new Worker(URL.createObjectURL(new Blob([TextureWorkerSource])), {
       name: 'texture-worker',
     })
 
