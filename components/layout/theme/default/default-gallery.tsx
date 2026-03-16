@@ -101,7 +101,7 @@ export default function DefaultGallery(props : Readonly<ImageHandleProps>) {
   return (
     <>
       <InfiniteScroll
-        className="w-full p-2 space-y-4"
+        className="w-full p-4 sm:p-6 lg:p-8 space-y-4"
         hasMore={size < pageTotal}
         isLoading={isValidating}
         next={() => setSize(size + 1)}

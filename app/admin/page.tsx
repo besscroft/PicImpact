@@ -17,6 +17,7 @@ export default async function Admin() {
 
   return (
     <div className="flex flex-col mt-4 space-y-2">
+      <h1 className="font-display text-2xl font-semibold">Dashboard</h1>
       <CardList {...props} />
     </div>
   )

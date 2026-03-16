@@ -28,23 +28,23 @@ export default async function About() {
             return (
               <div
                 key={item.login}
-                className="select-none border border-black/[0.2] dark:border-white/[0.2] flex flex-col items-start w-full mx-auto p-4 relative"
+                className="select-none border border-foreground/20 flex flex-col items-start w-full mx-auto p-4 relative"
               >
-                <Icon className="absolute h-6 w-6 -top-3 -left-3 dark:text-white text-black" />
-                <Icon className="absolute h-6 w-6 -bottom-3 -left-3 dark:text-white text-black" />
-                <Icon className="absolute h-6 w-6 -top-3 -right-3 dark:text-white text-black" />
-                <Icon className="absolute h-6 w-6 -bottom-3 -right-3 dark:text-white text-black" />
+                <Icon className="absolute h-6 w-6 -top-3 -left-3 text-foreground" />
+                <Icon className="absolute h-6 w-6 -bottom-3 -left-3 text-foreground" />
+                <Icon className="absolute h-6 w-6 -top-3 -right-3 text-foreground" />
+                <Icon className="absolute h-6 w-6 -bottom-3 -right-3 text-foreground" />
 
                 <EvervaultCard text={item.avatar_url} />
 
-                <h2 className="dark:text-white text-black mt-4 text-lg font-light">
+                <h2 className="text-foreground mt-4 text-lg font-light">
                   {item.login}
                 </h2>
                 <Link
                   href={item.html_url}
                   target="_blank"
                 >
-                  <p className="select-none text-sm border font-light dark:border-white/[0.2] border-black/[0.2] rounded-full mt-4 text-black dark:text-white px-2 py-0.5">
+                  <p className="select-none text-sm border font-light border-foreground/20 rounded-full mt-4 text-foreground px-2 py-0.5">
                     Follow
                   </p>
                 </Link>

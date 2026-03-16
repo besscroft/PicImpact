@@ -69,7 +69,7 @@ const PolaroidCard = memo(function PolaroidCard({
 
   return (
     <DraggableCardBody
-      className="absolute flex flex-col p-0 shadow-xl min-h-0 h-auto bg-white dark:bg-neutral-50 rounded-sm"
+      className="absolute flex flex-col p-0 shadow-xl min-h-0 h-auto bg-card rounded-sm"
       style={{ 
         ...style, 
         zIndex, 
@@ -179,7 +179,7 @@ export default function PolaroidGallery(props: Readonly<ImageHandleProps>) {
 
   return (
     <DraggableCardContainer className="relative flex min-h-screen w-full items-center justify-center overflow-clip">
-      <p className="absolute top-1/2 mx-auto max-w-sm -translate-y-3/4 text-center text-2xl font-black text-neutral-400 md:text-4xl dark:text-neutral-800">
+      <p className="absolute top-1/2 mx-auto max-w-sm -translate-y-3/4 text-center text-2xl font-display font-black text-neutral-400 md:text-4xl dark:text-neutral-800">
         {customTitle || '瓦达西可不可爱'}
       </p>
       {dataList?.map((item: ImageType) => (

@@ -2,6 +2,7 @@ import { fetchAlbumsShow } from '~/server/db/query/albums'
 import type { AlbumType } from '~/types'
 import type { AlbumDataProps } from '~/types/props'
 import DockMenu from '~/components/layout/dock-menu'
+import { PageTransition } from '~/components/layout/page-transition'
 
 export default async function DefaultLayout({
   children,
@@ -22,7 +23,9 @@ export default async function DefaultLayout({
   return (
     <>
       <DockMenu {...props} />
-      {children}
+      <main id="main-content">
+        <PageTransition>{children}</PageTransition>
+      </main>
     </>
   )
 }

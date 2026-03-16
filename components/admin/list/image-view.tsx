@@ -69,7 +69,7 @@ export default function ImageView() {
           <ExifView {...props} />
           <label
             htmlFor="detail"
-            className="block overflow-hidden rounded-md border border-gray-200 px-3 py-2 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600"
+            className="block overflow-hidden rounded-md border border-input px-3 py-2 shadow-sm focus-within:border-primary focus-within:ring-1 focus-within:ring-primary"
           >
             <span className="text-xs font-medium text-gray-700"> 详情 </span>
 
@@ -83,7 +83,7 @@ export default function ImageView() {
           </label>
           <label
             htmlFor="width"
-            className="block overflow-hidden rounded-md border border-gray-200 px-3 py-2 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600"
+            className="block overflow-hidden rounded-md border border-input px-3 py-2 shadow-sm focus-within:border-primary focus-within:ring-1 focus-within:ring-primary"
           >
             <span className="text-xs font-medium text-gray-700"> 宽度 px </span>
 
@@ -97,7 +97,7 @@ export default function ImageView() {
           </label>
           <label
             htmlFor="height"
-            className="block overflow-hidden rounded-md border border-gray-200 px-3 py-2 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600"
+            className="block overflow-hidden rounded-md border border-input px-3 py-2 shadow-sm focus-within:border-primary focus-within:ring-1 focus-within:ring-primary"
           >
             <span className="text-xs font-medium text-gray-700"> 高度 px </span>
 
@@ -111,7 +111,7 @@ export default function ImageView() {
           </label>
           <label
             htmlFor="lon"
-            className="block overflow-hidden rounded-md border border-gray-200 px-3 py-2 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600"
+            className="block overflow-hidden rounded-md border border-input px-3 py-2 shadow-sm focus-within:border-primary focus-within:ring-1 focus-within:ring-primary"
           >
             <span className="text-xs font-medium text-gray-700"> 经度 </span>
 
@@ -125,7 +125,7 @@ export default function ImageView() {
           </label>
           <label
             htmlFor="lat"
-            className="block overflow-hidden rounded-md border border-gray-200 px-3 py-2 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600"
+            className="block overflow-hidden rounded-md border border-input px-3 py-2 shadow-sm focus-within:border-primary focus-within:ring-1 focus-within:ring-primary"
           >
             <span className="text-xs font-medium text-gray-700"> 纬度 </span>
 
@@ -139,7 +139,7 @@ export default function ImageView() {
           </label>
           <label
             htmlFor="sort"
-            className="block overflow-hidden rounded-md border border-gray-200 px-3 py-2 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600"
+            className="block overflow-hidden rounded-md border border-input px-3 py-2 shadow-sm focus-within:border-primary focus-within:ring-1 focus-within:ring-primary"
           >
             <span className="text-xs font-medium text-gray-700"> 排序 </span>
 

@@ -86,7 +86,7 @@ export default function R2EditSheet() {
               <label
                 htmlFor="text"
                 key={config.id}
-                className="block overflow-hidden rounded-md border border-gray-200 px-3 py-2 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600"
+                className="block overflow-hidden rounded-md border border-input px-3 py-2 shadow-sm focus-within:border-primary focus-within:ring-1 focus-within:ring-primary"
               >
                 <span className="text-xs font-medium text-gray-700"> {config.config_key} </span>
 

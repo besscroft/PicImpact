@@ -13,7 +13,7 @@ export default function TabsTableCell(props : Readonly<any>) {
             item.config_value === 'true' ?
               <Badge
                 variant="secondary"
-                className="bg-green-500 text-white dark:bg-green-600"
+                className="bg-success text-success-foreground"
               >
                 <BadgeCheckIcon />
                 true
@@ -21,7 +21,7 @@ export default function TabsTableCell(props : Readonly<any>) {
               : item.config_value === 'false' ?
                 <Badge
                   variant="secondary"
-                  className="bg-yellow-500 text-white dark:bg-yellow-600"
+                  className="bg-warning text-warning-foreground"
                 >
                   <BadgeXIcon />
                   false

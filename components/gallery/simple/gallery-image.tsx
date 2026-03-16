@@ -27,8 +27,8 @@ import { useState } from 'react'
 export default function GalleryImage({ photo, configData }: { photo: ImageType, configData: any }) {
   const router = useRouter()
 
-  const exifIconClass = 'dark:text-gray-50 text-gray-500'
-  const exifTextClass = 'text-tiny text-sm select-none items-center dark:text-gray-50 text-gray-500'
+  const exifIconClass = 'text-muted-foreground'
+  const exifTextClass = 'text-tiny text-sm select-none items-center text-muted-foreground'
 
   const { data: download = false, mutate: setDownload } = useSWR(['masonry/download', photo?.url ?? ''], null)
   const [isLoading, setIsLoading] = useState(true)
@@ -96,12 +96,12 @@ export default function GalleryImage({ photo, configData }: { photo: ImageType, 
             </p>
           </div>
         }
-        <article className="hidden sm:flex text-wrap text-right dark:text-gray-50 text-gray-500">
+        <article className="hidden sm:flex text-wrap text-right text-muted-foreground">
           <p className="w-full">{photo?.detail}</p>
         </article>
       </div>
       <div
-        className="relative inline-block select-none sm:w-[66.667%] mx-auto shadow-gray-200 dark:shadow-gray-800">
+        className="relative inline-block select-none sm:w-[66.667%] mx-auto">
         {
           (photo.blurhash === DEFAULT_HASH || !photo.blurhash) && isLoading && (
             <Skeleton className="absolute inset-0 z-10 rounded-none" />
@@ -152,7 +152,7 @@ export default function GalleryImage({ photo, configData }: { photo: ImageType, 
         }
       </div>
       <div className="flex flex-col flex-1 sm:sticky px-2 py-1 sm:py-0 sm:space-y-1 top-4 self-start">
-        <div className="flex flex-wrap space-x-2 sm:space-x-0 sm:flex-col flex-1 text-gray-500 sm:sticky">
+        <div className="flex flex-wrap space-x-2 sm:space-x-0 sm:flex-col flex-1 text-muted-foreground sm:sticky">
           {photo?.exif?.make && photo?.exif?.model &&
             <div className="flex items-center space-x-1">
               <CameraIcon className={exifIconClass} size={18} />

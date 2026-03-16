@@ -14,7 +14,7 @@ export default function BlurImage({ photo, dataList }: { photo: any, dataList: a
   const dataURL = useBlurImageDataUrl(photo.blurhash)
 
   return (
-    <div className="relative inline-block select-none shadow-sm shadow-gray-200 dark:shadow-gray-800">
+    <div className="relative inline-block select-none shadow-sm transition-transform duration-500 ease-out hover:scale-[1.02]">
       {
         isLoading && (
           <Skeleton className="absolute inset-0 z-10 rounded-none" />
@@ -42,7 +42,8 @@ export default function BlurImage({ photo, dataList }: { photo: any, dataList: a
         <div className="absolute top-2 left-2 p-5 rounded-full">
           <svg xmlns="http://www.w3.org/2000/svg" className="absolute bottom-3 right-3 text-white opacity-75 z-10"
             width="24" height="24" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" fill="none"
-            strokeLinecap="round" strokeLinejoin="round">
+            strokeLinecap="round" strokeLinejoin="round"
+            role="img" aria-label="Live Photo">
             <path stroke="none" fill="none"></path>
             <circle cx="12" cy="12" r="1"></circle>
             <circle cx="12" cy="12" r="5"></circle>

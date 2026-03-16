@@ -36,8 +36,8 @@ function Row({ label, value }: { label: string; value: string | number | null | 
   if (!value) return null
   return (
     <div className="flex justify-between gap-4 text-sm">
-      <span className="shrink-0 text-gray-500 dark:text-gray-400">{label}</span>
-      <span className="min-w-0 text-right text-gray-700 dark:text-gray-50">{value}</span>
+      <span className="shrink-0 text-muted-foreground">{label}</span>
+      <span className="min-w-0 text-right text-foreground">{value}</span>
     </div>
   )
 }
@@ -45,9 +45,9 @@ function Row({ label, value }: { label: string; value: string | number | null | 
 // Badge component for capture parameters
 function ParamBadge({ icon, value }: { icon: React.ReactNode; value: string }) {
   return (
-    <div className="flex h-7 items-center gap-2 rounded-md border border-gray-200/50 bg-gray-100/50 px-2.5 dark:border-gray-600/50 dark:bg-gray-700/50">
+    <div className="flex h-7 items-center gap-2 rounded-md border border-border/50 bg-muted/50 px-2.5">
       {icon}
-      <span className="text-xs text-gray-700 dark:text-gray-200">{value}</span>
+      <span className="text-xs text-foreground">{value}</span>
     </div>
   )
 }
@@ -55,7 +55,7 @@ function ParamBadge({ icon, value }: { icon: React.ReactNode; value: string }) {
 // Section title component
 function SectionTitle({ children }: { children: React.ReactNode }) {
   return (
-    <h4 className="mb-2 text-sm font-medium text-gray-700 dark:text-gray-200">
+    <h4 className="mb-2 text-sm font-medium text-foreground">
       {children}
     </h4>
   )
@@ -67,8 +67,8 @@ export default function PreviewImage(props: Readonly<PreviewImageHandleProps>) {
   const { data: download = false, mutate: setDownload } = useSWR(['masonry/download', props.data?.url ?? ''], null)
   const [lightboxPhoto, setLightboxPhoto] = useState<boolean>(false)
 
-  const exifIconClass = 'dark:text-gray-50 text-gray-500'
-  const badgeIconClass = 'shrink-0 text-gray-500 dark:text-gray-400'
+  const exifIconClass = 'text-muted-foreground'
+  const badgeIconClass = 'shrink-0 text-muted-foreground'
 
   const configProps: HandleProps = {
     handle: props.configHandle,
@@ -176,7 +176,7 @@ export default function PreviewImage(props: Readonly<PreviewImageHandleProps>) {
   if (!props.data) {
     return (
       <div className="flex items-center justify-center h-full">
-        <p className="text-gray-500">{t('Tips.loading')}</p>
+        <p className="text-muted-foreground">{t('Tips.loading')}</p>
       </div>
     )
   }
@@ -207,10 +207,10 @@ export default function PreviewImage(props: Readonly<PreviewImageHandleProps>) {
         
         {/* Right side panel with all EXIF info */}
         <ScrollArea className="sm:max-h-[90vh]">
-          <div className="flex w-full flex-col space-y-4 pr-4">
+          <div className="flex w-full flex-col space-y-6 pr-4">
             {/* Header with title and close button */}
             <div className="flex items-center justify-between">
-              <div className="flex-1 font-semibold text-lg">{props.data?.title}</div>
+              <div className="flex-1 font-display font-semibold text-lg">{props.data?.title}</div>
               <button
                 onClick={handleClose}
                 className="z-50"
@@ -276,7 +276,7 @@ export default function PreviewImage(props: Readonly<PreviewImageHandleProps>) {
               />
             </div>
 
-            <Separator className="dark:bg-gray-700" />
+            <Separator className="bg-border" />
 
             {/* Basic Information */}
             <div>
@@ -349,7 +349,7 @@ export default function PreviewImage(props: Readonly<PreviewImageHandleProps>) {
                   {props.data?.exif?.make && props.data?.exif?.model && (
                     <div className="flex items-center gap-2">
                       <CameraIcon className={badgeIconClass} size={14} />
-                      <span className="text-sm text-gray-700 dark:text-gray-200">
+                      <span className="text-sm text-foreground">
                         {`${props.data.exif.make} ${props.data.exif.model}`}
                       </span>
                     </div>
@@ -357,7 +357,7 @@ export default function PreviewImage(props: Readonly<PreviewImageHandleProps>) {
                   {props.data?.exif?.lens_model && (
                     <div className="flex items-center gap-2">
                       <TelescopeIcon className={badgeIconClass} size={14} />
-                      <span className="text-sm text-gray-700 dark:text-gray-200">
+                      <span className="text-sm text-foreground">
                         {props.data.exif.lens_model}
                       </span>
                     </div>
@@ -383,7 +383,7 @@ export default function PreviewImage(props: Readonly<PreviewImageHandleProps>) {
                   {props.data?.exif?.color_space && (
                     <div className="flex items-center gap-2">
                       <FlaskIcon className={badgeIconClass} size={14} />
-                      <span className="text-sm text-gray-700 dark:text-gray-200">
+                      <span className="text-sm text-foreground">
                         {props.data.exif.color_space}
                       </span>
                     </div>
@@ -431,7 +431,7 @@ export default function PreviewImage(props: Readonly<PreviewImageHandleProps>) {
               <div>
                 <div className="flex items-start gap-2">
                   <LanguagesIcon className={badgeIconClass} size={14} />
-                  <p className="text-sm text-gray-700 dark:text-gray-200 text-wrap">
+                  <p className="text-sm text-foreground text-wrap">
                     {props.data.detail}
                   </p>
                 </div>
@@ -441,7 +441,7 @@ export default function PreviewImage(props: Readonly<PreviewImageHandleProps>) {
             {/* Copy EXIF button */}
             <div className="flex w-full items-center justify-end pt-2">
               <button
-                className="flex items-center space-x-1 text-sm text-gray-500 transition-colors hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+                className="flex items-center space-x-1 text-sm text-muted-foreground transition-colors hover:text-foreground"
                 onClick={async () => {
                   try {
                     const exif = JSON.stringify(props.data?.exif, null, 2)

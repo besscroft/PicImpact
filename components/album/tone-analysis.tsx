@@ -201,7 +201,7 @@ export default function ToneAnalysis({ imageUrl, className = '' }: Readonly<Tone
   if (loading) {
     return (
       <div className={cn('flex items-center justify-center py-2', className)}>
-        <div className="animate-spin text-sm text-gray-400">⟳</div>
+        <div className="animate-spin text-sm text-muted-foreground">⟳</div>
       </div>
     )
   }
@@ -209,7 +209,7 @@ export default function ToneAnalysis({ imageUrl, className = '' }: Readonly<Tone
   if (needsCors) {
     return (
       <div className={cn('text-center py-2', className)}>
-        <div className="text-xs text-gray-400">{t('Exif.toneAnalysisCorsError')}</div>
+        <div className="text-xs text-muted-foreground">{t('Exif.toneAnalysisCorsError')}</div>
       </div>
     )
   }
@@ -221,25 +221,25 @@ export default function ToneAnalysis({ imageUrl, className = '' }: Readonly<Tone
   return (
     <div className={cn('space-y-2', className)}>
       <div className="flex justify-between text-sm">
-        <span className="text-gray-500 dark:text-gray-400">{t('Exif.toneType')}</span>
-        <span className="dark:text-gray-50 text-gray-700 font-medium">{getToneTypeLabel(toneData.toneType)}</span>
+        <span className="text-muted-foreground">{t('Exif.toneType')}</span>
+        <span className="text-foreground font-medium">{getToneTypeLabel(toneData.toneType)}</span>
       </div>
       <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-sm">
         <div className="flex justify-between">
-          <span className="text-gray-500 dark:text-gray-400">{t('Exif.brightness')}</span>
-          <span className="dark:text-gray-50 text-gray-700">{toneData.brightness}%</span>
+          <span className="text-muted-foreground">{t('Exif.brightness')}</span>
+          <span className="text-foreground">{toneData.brightness}%</span>
         </div>
         <div className="flex justify-between">
-          <span className="text-gray-500 dark:text-gray-400">{t('Exif.contrast')}</span>
-          <span className="dark:text-gray-50 text-gray-700">{toneData.contrast}%</span>
+          <span className="text-muted-foreground">{t('Exif.contrast')}</span>
+          <span className="text-foreground">{toneData.contrast}%</span>
         </div>
         <div className="flex justify-between">
-          <span className="text-gray-500 dark:text-gray-400">{t('Exif.shadowRatio')}</span>
-          <span className="dark:text-gray-50 text-gray-700">{Math.round(toneData.shadowRatio * 100)}%</span>
+          <span className="text-muted-foreground">{t('Exif.shadowRatio')}</span>
+          <span className="text-foreground">{Math.round(toneData.shadowRatio * 100)}%</span>
         </div>
         <div className="flex justify-between">
-          <span className="text-gray-500 dark:text-gray-400">{t('Exif.highlightRatio')}</span>
-          <span className="dark:text-gray-50 text-gray-700">{Math.round(toneData.highlightRatio * 100)}%</span>
+          <span className="text-muted-foreground">{t('Exif.highlightRatio')}</span>
+          <span className="text-foreground">{Math.round(toneData.highlightRatio * 100)}%</span>
         </div>
       </div>
     </div>

@@ -94,7 +94,7 @@ export default function DockMenu(props: Readonly<AlbumDataProps>) {
                             }}
                           >
                             <GalleryThumbnailsIcon
-                              className='text-black dark:text-white'
+                              className='text-foreground'
                               size={18}
                               aria-label={album.name}
                             />
