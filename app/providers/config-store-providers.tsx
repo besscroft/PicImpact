@@ -16,13 +16,13 @@ export interface ConfigStoreProviderProps {
 export const ConfigStoreProvider = ({
   children,
 }: ConfigStoreProviderProps) => {
-  const storeRef = useRef<StoreApi<ConfigStore>>()
-  if (!storeRef.current) {
+  const storeRef = useRef<StoreApi<ConfigStore> | null>(null)
+  if (storeRef.current == null) {
     storeRef.current = createConfigStore(initConfigStore())
   }
 
   return (
-    <ConfigStoreContext.Provider value={storeRef.current}>
+    <ConfigStoreContext.Provider value={storeRef.current!}>
       {children}
     </ConfigStoreContext.Provider>
   )
