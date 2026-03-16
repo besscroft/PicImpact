@@ -1,4 +1,5 @@
 import type { Metadata } from 'next/types'
+import { Source_Serif_4, Source_Sans_3 } from 'next/font/google'
 
 import { ThemeProvider } from '~/app/providers/next-ui-providers'
 import { ToasterProviders } from '~/app/providers/toaster-providers'
@@ -12,6 +13,20 @@ import { NextIntlClientProvider } from 'next-intl'
 import { getLocale, getMessages } from 'next-intl/server'
 import { ConfigStoreProvider } from '~/app/providers/config-store-providers'
 import Script from 'next/script'
+
+const sourceSerif4 = Source_Serif_4({
+  subsets: ['latin'],
+  variable: '--font-display',
+  display: 'swap',
+  weight: ['400', '600', '700'],
+})
+
+const sourceSans3 = Source_Sans_3({
+  subsets: ['latin'],
+  variable: '--font-sans',
+  display: 'swap',
+  weight: ['400', '500', '600'],
+})
 
 type ConfigItem = {
   id: string;
@@ -66,7 +81,7 @@ export default async function RootLayout({
   const umamiAnalytics = data?.find((item: ConfigItem) => item.config_key === 'umami_analytics')?.config_value
 
   return (
-    <html className="overflow-y-auto scrollbar-hide" lang={locale} suppressHydrationWarning>
+    <html className={`overflow-y-auto scrollbar-hide ${sourceSerif4.variable} ${sourceSans3.variable}`} lang={locale} suppressHydrationWarning>
     <head>
       <link rel="manifest" href="/manifest.json" />
       <meta name="theme-color" content="#000000" />
