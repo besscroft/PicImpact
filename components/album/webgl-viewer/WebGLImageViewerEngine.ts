@@ -15,6 +15,8 @@ import { LoadingState } from './enum'
 import { ImageViewerEngineBase } from './ImageViewerEngineBase'
 import type { DebugInfo, WebGLImageViewerProps } from './interface'
 import { createShader, FRAGMENT_SHADER_SOURCE, VERTEX_SHADER_SOURCE } from './shaders'
+// @ts-expect-error raw import for inline worker blob
+import TextureWorkerRaw from './texture.worker.ts?raw'
 
 // 瓦片系统配置
 const TILE_SIZE = 512
@@ -325,8 +327,7 @@ export class WebGLImageViewerEngine extends ImageViewerEngineBase {
   }
 
   private initWorker() {
-    this.worker = new Worker(new URL('./texture.worker.ts', import.meta.url), {
-      type: 'module',
+    this.worker = new Worker(URL.createObjectURL(new Blob([TextureWorkerRaw])), {
       name: 'texture-worker',
     })
 
@@ -436,7 +437,8 @@ export class WebGLImageViewerEngine extends ImageViewerEngineBase {
         this.loadingTiles.delete(key)
       }
     } else if (type === 'tile-error') {
-      const { key } = payload
+      const { key, error } = payload
+      console.warn(`Worker failed to create tile: ${key}`, error)
       this.loadingTiles.delete(key)
     }
   }

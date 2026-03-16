@@ -8,6 +8,13 @@ const withNextIntl = createNextIntlPlugin('./i18n.ts')
 let nextConfig = {
   output: 'standalone',
   reactStrictMode: true,
+  webpack: (config) => {
+    config.module.rules.push({
+      resourceQuery: /raw/,
+      type: 'asset/source',
+    })
+    return config
+  },
   compiler: {
     removeConsole: {
       exclude: ['error'],
