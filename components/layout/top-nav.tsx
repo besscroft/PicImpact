@@ -37,7 +37,7 @@ export default function TopNav(props: Readonly<AlbumDataProps>) {
     if (albumValue === '/') {
       return pathname === '/'
     }
-    return pathname === `/${albumValue}`
+    return pathname === albumValue
   }
 
   return (
@@ -69,7 +69,7 @@ export default function TopNav(props: Readonly<AlbumDataProps>) {
               props.data.map((album: AlbumType) => (
                 <Link
                   key={album.id}
-                  href={`/${album.album_value}`}
+                  href={album.album_value}
                   className={`rounded-full px-3 py-1 text-sm whitespace-nowrap transition-colors ${
                     isActiveTab(album.album_value)
                       ? 'bg-primary/10 text-foreground font-medium'
