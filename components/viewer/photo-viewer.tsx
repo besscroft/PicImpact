@@ -118,10 +118,10 @@ export default function PhotoViewer({ photo, photos }: PhotoViewerProps) {
         <AnimatePresence mode="wait">
           <motion.div
             key={currentPhoto.id}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.2 }}
+            initial={{ opacity: 0, scale: 0.97 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.97 }}
+            transition={{ duration: 0.25, ease: [0.25, 1, 0.5, 1] }}
             className={cn(
               'relative max-h-[90vh] max-w-[90vw]',
               showInspector && 'lg:max-w-[calc(100vw-360px)]'

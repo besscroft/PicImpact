@@ -55,7 +55,7 @@ export default function GalleryImage({ photo, configData }: { photo: ImageType, 
           className={cn('w-full h-auto', isLoading && 'animate-pulse')}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ duration: 1 }}
+          transition={{ duration: 0.5 }}
           src={customIndexOriginEnable ? photo.url || photo.preview_url : photo.preview_url || photo.url}
           overrideSrc={customIndexOriginEnable ? photo.url || photo.preview_url : photo.preview_url || photo.url}
           alt={photo.title}

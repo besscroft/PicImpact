@@ -33,7 +33,7 @@ export default function BlurImage({ photo, dataList }: { photo: any, dataList: a
         className={cn("cursor-pointer", isLoading && "animate-pulse")}
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ duration: 1 }}
+        transition={{ duration: 0.5 }}
         src={photo.src}
         overrideSrc={photo.src}
         alt={photo.alt || 'Photo'}
