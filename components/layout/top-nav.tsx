@@ -50,7 +50,7 @@ export default function TopNav(props: Readonly<AlbumDataProps>) {
             href="/"
             className="shrink-0 text-base font-semibold text-foreground hover:opacity-80 transition-opacity"
           >
-            PicImpact
+            {props.title || 'PicImpact'}
           </Link>
 
           {/* Center: Album tabs */}

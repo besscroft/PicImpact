@@ -4,6 +4,7 @@ import { AlbumType, ImageType } from '~/types/index'
 
 export type AlbumDataProps = {
   data: AlbumType[]
+  title?: string
 }
 
 export type HandleProps = {
