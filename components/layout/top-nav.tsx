@@ -1,6 +1,7 @@
 'use client'
 
-import { useRouter, usePathname } from 'next-nprogress-bar'
+import { useRouter } from 'next-nprogress-bar'
+import { usePathname } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { useEffect } from 'react'
 import { useButtonStore } from '~/app/providers/button-store-providers'
