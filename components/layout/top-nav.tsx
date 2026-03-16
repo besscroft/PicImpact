@@ -57,7 +57,7 @@ export default function TopNav(props: Readonly<AlbumDataProps>) {
           <div className="flex items-center gap-1 overflow-x-auto scrollbar-hide mx-4">
             <Link
               href="/"
-              className={`rounded-full px-3 py-1 text-sm whitespace-nowrap transition-colors ${
+              className={`rounded-full px-3 py-1 text-sm whitespace-nowrap transition-colors focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ${
                 isActiveTab('/')
                   ? 'bg-primary/10 text-foreground font-medium'
                   : 'text-muted-foreground hover:text-foreground'
@@ -70,7 +70,7 @@ export default function TopNav(props: Readonly<AlbumDataProps>) {
                 <Link
                   key={album.id}
                   href={album.album_value}
-                  className={`rounded-full px-3 py-1 text-sm whitespace-nowrap transition-colors ${
+                  className={`rounded-full px-3 py-1 text-sm whitespace-nowrap transition-colors focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ${
                     isActiveTab(album.album_value)
                       ? 'bg-primary/10 text-foreground font-medium'
                       : 'text-muted-foreground hover:text-foreground'
@@ -87,7 +87,7 @@ export default function TopNav(props: Readonly<AlbumDataProps>) {
             <button
               type="button"
               onClick={() => router.push('/map')}
-              className="inline-flex items-center justify-center rounded-md p-2 text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
+              className="inline-flex items-center justify-center rounded-md min-w-[44px] min-h-[44px] p-2 text-muted-foreground hover:text-foreground hover:bg-accent transition-colors focus-visible:ring-2 focus-visible:ring-ring"
               aria-label={t('Link.map')}
             >
               <MapPin size={18} />
@@ -95,7 +95,7 @@ export default function TopNav(props: Readonly<AlbumDataProps>) {
             <button
               type="button"
               onClick={() => setCommand(true)}
-              className="inline-flex items-center justify-center rounded-md p-2 text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
+              className="inline-flex items-center justify-center rounded-md min-w-[44px] min-h-[44px] p-2 text-muted-foreground hover:text-foreground hover:bg-accent transition-colors focus-visible:ring-2 focus-visible:ring-ring"
               aria-label={t('Command.placeholder')}
             >
               <Search size={18} />
@@ -103,7 +103,7 @@ export default function TopNav(props: Readonly<AlbumDataProps>) {
             <button
               type="button"
               onClick={() => setTheme(resolvedTheme === 'light' ? 'dark' : 'light')}
-              className="inline-flex items-center justify-center rounded-md p-2 text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
+              className="inline-flex items-center justify-center rounded-md min-w-[44px] min-h-[44px] p-2 text-muted-foreground hover:text-foreground hover:bg-accent transition-colors focus-visible:ring-2 focus-visible:ring-ring"
               aria-label={t(resolvedTheme === 'light' ? 'Button.dark' : 'Button.light')}
             >
               {resolvedTheme === 'light' ? <Sun size={18} /> : <Moon size={18} />}

@@ -36,7 +36,18 @@ export default function GalleryImage({ photo, configData }: { photo: ImageType, 
 
   return (
     <div className="w-full">
-      <div className="relative cursor-pointer" onClick={() => router.push(`/preview/${photo?.id}`)}>
+      <div
+        role="link"
+        tabIndex={0}
+        className="relative cursor-pointer"
+        onClick={() => router.push(`/preview/${photo?.id}`)}
+        onKeyDown={(e: React.KeyboardEvent) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault()
+            router.push(`/preview/${photo?.id}`)
+          }
+        }}
+      >
         {(photo.blurhash === DEFAULT_HASH || !photo.blurhash) && isLoading && (
           <Skeleton className="absolute inset-0 z-10 rounded-none" />
         )}

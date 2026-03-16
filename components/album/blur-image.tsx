@@ -14,7 +14,16 @@ export default function BlurImage({ photo, dataList }: { photo: any, dataList: a
   const dataURL = useBlurImageDataUrl(photo.blurhash)
 
   return (
-    <div className="relative inline-block select-none shadow-sm transition-transform duration-500 ease-out hover:scale-[1.02]">
+    <div
+      role="link"
+      tabIndex={0}
+      onKeyDown={(e: React.KeyboardEvent) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault()
+          router.push(`/preview/${photo?.id}`)
+        }
+      }}
+      className="relative inline-block select-none shadow-sm transition-transform duration-500 ease-out hover:scale-[1.02]">
       {
         isLoading && (
           <Skeleton className="absolute inset-0 z-10 rounded-none" />
@@ -27,7 +36,7 @@ export default function BlurImage({ photo, dataList }: { photo: any, dataList: a
         transition={{ duration: 1 }}
         src={photo.src}
         overrideSrc={photo.src}
-        alt={photo.alt}
+        alt={photo.alt || 'Photo'}
         width={photo.width}
         height={photo.height}
         unoptimized

@@ -222,9 +222,9 @@ export default function PreviewImage(props: Readonly<PreviewImageHandleProps>) {
 
             {/* Action buttons */}
             <div className="flex flex-wrap gap-2">
-              <CopyIcon
-                className={cn(exifIconClass, 'cursor-pointer')}
-                size={20}
+              <button
+                aria-label="Copy link"
+                className="inline-flex items-center justify-center"
                 onClick={async () => {
                   try {
                     const url = props.data?.url
@@ -238,10 +238,15 @@ export default function PreviewImage(props: Readonly<PreviewImageHandleProps>) {
                     toast.error(t('Tips.copyImageFailed'), { duration: 500 })
                   }
                 }}
-              />
-              <LinkIcon
-                className={cn(exifIconClass, 'cursor-pointer')}
-                size={20}
+              >
+                <CopyIcon
+                  className={cn(exifIconClass, 'cursor-pointer')}
+                  size={20}
+                />
+              </button>
+              <button
+                aria-label="Copy share link"
+                className="inline-flex items-center justify-center"
                 onClick={async () => {
                   try {
                     const url = window.location.origin + '/preview/' + props.id
@@ -251,7 +256,12 @@ export default function PreviewImage(props: Readonly<PreviewImageHandleProps>) {
                     toast.error(t('Tips.copyShareFailed'), { duration: 500 })
                   }
                 }}
-              />
+              >
+                <LinkIcon
+                  className={cn(exifIconClass, 'cursor-pointer')}
+                  size={20}
+                />
+              </button>
               {configData?.find((item: any) => item.config_key === 'custom_index_download_enable')?.config_value.toString() === 'true'
                 && <>
                   {download ?
@@ -259,21 +269,31 @@ export default function PreviewImage(props: Readonly<PreviewImageHandleProps>) {
                       className={cn(exifIconClass, 'animate-spin cursor-not-allowed')}
                       size={20}
                     /> :
-                    <DownloadIcon
-                      className={cn(exifIconClass, 'cursor-pointer')}
-                      size={20}
+                    <button
+                      aria-label="Download"
+                      className="inline-flex items-center justify-center"
                       onClick={() => handleDownload()}
-                    />
+                    >
+                      <DownloadIcon
+                        className={cn(exifIconClass, 'cursor-pointer')}
+                        size={20}
+                      />
+                    </button>
                   }
                 </>
               }
-              <ExpandIcon
-                className={cn(exifIconClass, 'cursor-pointer')}
-                size={20}
+              <button
+                aria-label="View fullscreen"
+                className="inline-flex items-center justify-center"
                 onClick={() => {
                   setLightboxPhoto(true)
                 }}
-              />
+              >
+                <ExpandIcon
+                  className={cn(exifIconClass, 'cursor-pointer')}
+                  size={20}
+                />
+              </button>
             </div>
 
             <Separator className="bg-border" />

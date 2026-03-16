@@ -1,7 +1,7 @@
 import { fetchAlbumsShow } from '~/server/db/query/albums'
 import type { AlbumType } from '~/types'
 import type { AlbumDataProps } from '~/types/props'
-import DockMenu from '~/components/layout/dock-menu'
+import TopNav from '~/components/layout/top-nav'
 
 export default async function MapLayout({
   children,
@@ -21,8 +21,8 @@ export default async function MapLayout({
 
   return (
     <>
-      <DockMenu {...props} />
-      {children}
+      <TopNav {...props} />
+      <main className="pt-14">{children}</main>
     </>
   )
 }

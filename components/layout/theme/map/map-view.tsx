@@ -12,6 +12,7 @@ import { Button } from '~/components/ui/button'
 import { ExternalLink, X, Camera, ImageIcon } from 'lucide-react'
 import Supercluster from 'supercluster'
 import type { BBox } from 'geojson'
+import { useTranslations } from 'next-intl'
 
 interface MapViewProps {
   images: ImageType[]
@@ -24,6 +25,7 @@ interface ImagePointProperties {
 
 export function MapView({ images }: MapViewProps) {
   const { resolvedTheme } = useTheme()
+  const t = useTranslations()
   const [popupInfo, setPopupInfo] = React.useState<ImageType | null>(null)
   const mapRef = React.useRef<any>(null)
   const [zoom, setZoom] = React.useState(1.5)
@@ -280,7 +282,7 @@ export function MapView({ images }: MapViewProps) {
                 <div className="flex justify-end">
                   <Link href={`/preview/${popupInfo.id}`} passHref>
                     <Button size="sm" className="h-8 text-xs gap-1.5 rounded-lg">
-                      查看详情 <ExternalLink className="h-3 w-3" />
+                      {t('Button.viewDetails', { defaultValue: 'View details' })} <ExternalLink className="h-3 w-3" />
                     </Button>
                   </Link>
                 </div>

@@ -24,7 +24,7 @@ import { checkUserExists } from '~/server/db/query/users'
 export const UserFrom = ({
   className,
   ...props
-}: React.ComponentPropsWithoutRef<'div'>) => {
+}: React.ComponentPropsWithoutRef<'form'>) => {
   const router = useRouter()
   const t = useTranslations()
 
@@ -75,11 +75,11 @@ export const UserFrom = ({
     const { error } = await authClient.twoFactor.verifyTotp({ code: token })
 
     if (error) {
-      toast.error('双因素口令验证失败！')
+      toast.error(t('Login.twoFactorFailed', { defaultValue: 'Two-factor verification failed' }))
       return
     }
 
-    toast.success('登录成功！')
+    toast.success(t('Login.success', { defaultValue: 'Login successful' }))
     setTimeout(() => {
       location.replace('/admin')
     }, 1000)
@@ -91,7 +91,7 @@ export const UserFrom = ({
     try {
       const parsedCredentials = zHandle()
       if (!parsedCredentials.success) {
-        toast.error('请检查您的账号密码格式！')
+        toast.error(t('Login.invalidCredentials', { defaultValue: 'Please check your email and password format' }))
         return
       }
 
@@ -110,19 +110,28 @@ export const UserFrom = ({
       })
 
       if (error) {
-        toast.error('账号或密码错误！')
+        toast.error(t('Login.wrongCredentials', { defaultValue: 'Incorrect email or password' }))
         return
       }
     } catch (e) {
       console.error(e)
-      toast.error('登录过程中出现错误，请稍后重试')
+      toast.error(t('Login.error', { defaultValue: 'An error occurred, please try again' }))
     } finally {
       setIsLoading(false)
     }
   }
 
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    if (otp) {
+      await verifyTotp()
+    } else {
+      await handleLogin()
+    }
+  }
+
   return (
-    <div className={cn('space-y-4', className)} {...props}>
+    <form onSubmit={handleSubmit} className={cn('space-y-4', className)} {...props}>
       <div className="space-y-2">
         <div className="flex items-center">
           <Label htmlFor="email" className="select-none">{t('Login.email')}</Label>
@@ -195,13 +204,6 @@ export const UserFrom = ({
         type="submit"
         className="w-full h-12 select-none cursor-pointer"
         disabled={email.length === 0 || password.length < 8}
-        onClick={async () => {
-          if (otp) {
-            await verifyTotp()
-          } else {
-            await handleLogin()
-          }
-        }}
         aria-label={t('Login.signIn')}
       >
         {isLoading && <ReloadIcon className="mr-2 h-4 w-4 animate-spin"/>}{t('Login.signIn')}
@@ -225,6 +227,6 @@ export const UserFrom = ({
       >
         {t('Login.goHome')}
       </Button>
-    </div>
+    </form>
   )
 }

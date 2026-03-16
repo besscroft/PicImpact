@@ -15,7 +15,7 @@ import { authClient } from '~/server/auth/auth-client'
 export const SignUpForm = ({
   className,
   ...props
-}: React.ComponentPropsWithoutRef<'div'>) => {
+}: React.ComponentPropsWithoutRef<'form'>) => {
   const router = useRouter()
   const t = useTranslations()
 
@@ -60,7 +60,7 @@ export const SignUpForm = ({
     try {
       const parsedCredentials = zHandle()
       if (!parsedCredentials.success) {
-        toast.error('请检查您的账号密码格式！')
+        toast.error(t('Login.invalidCredentials', { defaultValue: 'Please check your email and password format' }))
         return
       }
 
@@ -77,7 +77,7 @@ export const SignUpForm = ({
           console.log(ctx)
         },
         onSuccess: (ctx) => {
-          toast.success('注册成功！')
+          toast.success(t('Login.signUpSuccess', { defaultValue: 'Sign up successful' }))
           setTimeout(() => {
             location.replace('/admin')
           }, 1000)
@@ -89,14 +89,19 @@ export const SignUpForm = ({
 
     } catch (e) {
       console.error(e)
-      toast.error('登录过程中出现错误，请稍后重试')
+      toast.error(t('Login.error', { defaultValue: 'An error occurred, please try again' }))
     } finally {
       setIsLoading(false)
     }
   }
 
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    await handleSignUp()
+  }
+
   return (
-    <div className={cn('space-y-4', className)} {...props}>
+    <form onSubmit={handleSubmit} className={cn('space-y-4', className)} {...props}>
       <div className="space-y-2">
         <Label htmlFor="email" className="select-none">{t('Login.email')}</Label>
         <Input
@@ -124,8 +129,8 @@ export const SignUpForm = ({
         />
       </div>
       <Button
+        type="submit"
         className="w-full h-12 select-none cursor-pointer"
-        onClick={async () => await handleSignUp()}
         disabled={email.length === 0 || password.length < 8}
         aria-label={t('Login.signUp')}
       >
@@ -139,6 +144,6 @@ export const SignUpForm = ({
       >
         {t('Login.goHome')}
       </Button>
-    </div>
+    </form>
   )
 }

@@ -16,9 +16,17 @@ export default function MasonryPhotoItem({ photo }: { photo: ImageType }) {
 
   return (
     <div
+      role="link"
+      tabIndex={0}
       className="group relative cursor-pointer overflow-hidden rounded-sm"
-      style={{ aspectRatio: photo.width / photo.height }}
+      style={{ aspectRatio: photo.width / photo.height, willChange: 'transform' }}
       onClick={() => router.push(`/preview/${photo.id}`)}
+      onKeyDown={(e: React.KeyboardEvent) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault()
+          router.push(`/preview/${photo.id}`)
+        }
+      }}
     >
       <Image
         className="transition-transform duration-500 group-hover:scale-105 object-cover"
