@@ -156,7 +156,8 @@
     "goBack": "戻る",
     "removeTwoFactor": "二要素認証を削除",
     "loadMore": "もっと読み込む",
-    "close": "閉じる"
+    "close": "閉じる",
+    "viewDetails": "詳細を見る"
   },
   "Dashboard": {
     "picData": "写真データ",

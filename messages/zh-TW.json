@@ -156,7 +156,8 @@
     "goBack": "返回",
     "removeTwoFactor": "移除雙因素驗證",
     "loadMore": "載入更多",
-    "close": "關閉"
+    "close": "關閉",
+    "viewDetails": "查看詳情"
   },
   "Dashboard": {
     "picData": "照片數據",
