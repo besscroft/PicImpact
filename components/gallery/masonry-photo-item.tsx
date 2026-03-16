@@ -51,7 +51,7 @@ export default function MasonryPhotoItem({ photo }: { photo: ImageType }) {
             {exif.focal_length && (
               <div className="flex items-center gap-1 rounded-md bg-white/15 px-2 py-1 backdrop-blur-md">
                 <Focus className="h-3 w-3 text-white/70" />
-                <span className="text-white/90">{exif.focal_length}mm</span>
+                <span className="text-white/90">{exif.focal_length}</span>
               </div>
             )}
             {exif.f_number && (
