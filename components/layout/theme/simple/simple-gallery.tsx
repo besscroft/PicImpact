@@ -92,7 +92,7 @@ export default function SimpleGallery(props: Readonly<ImageHandleProps>) {
   return (
     <>
       <InfiniteScroll
-        className="w-full p-4 sm:p-6 lg:p-8 space-y-4"
+        className="w-full max-w-3xl mx-auto px-4 space-y-8 sm:space-y-12"
         hasMore={size < pageTotal}
         isLoading={isValidating}
         next={() => setSize(size + 1)}

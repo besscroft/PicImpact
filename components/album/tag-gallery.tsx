@@ -1,18 +1,17 @@
 'use client'
 
-import type { HandleProps, ImageHandleProps } from '~/types/props'
+import type { ImageHandleProps } from '~/types/props'
 import { useSwrPageTotalHook } from '~/hooks/use-swr-page-total-hook'
 import useSWRInfinite from 'swr/infinite'
-import { useSwrHydrated } from '~/hooks/use-swr-hydrated'
 import { useTranslations } from 'next-intl'
 import { MasonryPhotoAlbum, RenderImageContext, RenderImageProps } from 'react-photo-album'
 import type { ImageType } from '~/types'
 import { ReloadIcon } from '@radix-ui/react-icons'
 import { Button } from '~/components/ui/button'
 import BlurImage from '~/components/album/blur-image'
-import { SparklesIcon } from '~/components/icons/sparkles'
 import { UndoIcon } from '~/components/icons/undo'
 import { useRouter } from 'next-nprogress-bar'
+import { Tag } from 'lucide-react'
 
 function renderNextImage(
   _: RenderImageProps,
@@ -37,54 +36,41 @@ export default function TagGallery(props : Readonly<ImageHandleProps>) {
       revalidateIfStale: false,
       revalidateOnReconnect: false,
     })
-  const configProps: HandleProps = {
-    handle: props.configHandle,
-    args: 'system-config',
-  }
-  const { data: configData } = useSwrHydrated(configProps)
   const dataList = data ? [].concat(...data) : []
   const t = useTranslations()
   const router = useRouter()
 
-  const exifIconClass = 'dark:text-gray-50'
-  const exifTextClass = 'text-tiny text-sm select-none items-center dark:text-gray-50'
-
   return (
     <div className="w-full p-2 space-y-4">
-      <div className="flex flex-col sm:flex-row w-full p-2 items-start justify-between sm:relative overflow-x-clip">
-        <div className="order-3 sm:order-1 flex flex-1 flex-col px-2 sm:sticky top-4 self-start">
-        </div>
-        <div className="order-2 w-full sm:w-[66.667%] mx-auto">
-          <MasonryPhotoAlbum
-            columns={(containerWidth) => {
-              if (containerWidth < 768) return 2
-              if (containerWidth < 1024) return 3
-              return 4
-            }}
-            photos={
-              dataList?.map((item: ImageType) => ({
-                src: item.preview_url || item.url,
-                alt: item.detail,
-                ...item
-              })) || []
-            }
-            render={{image: (...args) => renderNextImage(...args, dataList)}}
-          />
-        </div>
-        <div className="order-1 sm:order-3 flex flex-wrap justify-center space-x-2 sm:space-x-0 sm:flex-col flex-1 px-2 py-1 sm:py-0 sm:space-y-1 text-gray-500 sm:sticky top-2 self-start">
-          <div className="flex items-center space-x-1">
-            <SparklesIcon className={exifIconClass} size={18} />
-            <p className={exifTextClass}>
-              {props.album}
-            </p>
-          </div>
-          <div className="flex items-center space-x-1" onClick={() => router.back()}>
-            <UndoIcon className={exifIconClass} size={18} />
-            <p className={exifTextClass}>
-              {t('Button.goBack')}
-            </p>
-          </div>
-        </div>
+      <div className="px-1 sm:px-2 pt-2 flex items-center gap-2">
+        <span className="inline-flex items-center gap-1.5 rounded-full bg-primary/10 px-3 py-1 text-sm font-medium text-foreground">
+          <Tag className="h-3.5 w-3.5" />
+          {props.album}
+        </span>
+        <span
+          className="inline-flex items-center gap-1 cursor-pointer text-sm text-muted-foreground hover:text-foreground transition-colors"
+          onClick={() => router.back()}
+        >
+          <UndoIcon className="dark:text-gray-50" size={16} />
+          {t('Button.goBack')}
+        </span>
+      </div>
+      <div className="w-full">
+        <MasonryPhotoAlbum
+          columns={(containerWidth) => {
+            if (containerWidth < 768) return 2
+            if (containerWidth < 1024) return 3
+            return 4
+          }}
+          photos={
+            dataList?.map((item: ImageType) => ({
+              src: item.preview_url || item.url,
+              alt: item.detail,
+              ...item
+            })) || []
+          }
+          render={{image: (...args) => renderNextImage(...args, dataList)}}
+        />
       </div>
       <div className="flex items-center justify-center my-4">
         {
