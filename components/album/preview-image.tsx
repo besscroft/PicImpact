@@ -224,7 +224,7 @@ export default function PreviewImage(props: Readonly<PreviewImageHandleProps>) {
             <div className="flex flex-wrap gap-2">
               <button
                 aria-label="Copy link"
-                className="inline-flex items-center justify-center"
+                className="inline-flex items-center justify-center cursor-pointer"
                 onClick={async () => {
                   try {
                     const url = props.data?.url
@@ -246,7 +246,7 @@ export default function PreviewImage(props: Readonly<PreviewImageHandleProps>) {
               </button>
               <button
                 aria-label="Copy share link"
-                className="inline-flex items-center justify-center"
+                className="inline-flex items-center justify-center cursor-pointer"
                 onClick={async () => {
                   try {
                     const url = window.location.origin + '/preview/' + props.id
@@ -271,7 +271,7 @@ export default function PreviewImage(props: Readonly<PreviewImageHandleProps>) {
                     /> :
                     <button
                       aria-label="Download"
-                      className="inline-flex items-center justify-center"
+                      className="inline-flex items-center justify-center cursor-pointer"
                       onClick={() => handleDownload()}
                     >
                       <DownloadIcon
@@ -284,7 +284,7 @@ export default function PreviewImage(props: Readonly<PreviewImageHandleProps>) {
               }
               <button
                 aria-label="View fullscreen"
-                className="inline-flex items-center justify-center"
+                className="inline-flex items-center justify-center cursor-pointer"
                 onClick={() => {
                   setLightboxPhoto(true)
                 }}
