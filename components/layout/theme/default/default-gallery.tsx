@@ -6,20 +6,9 @@ import useSWR from 'swr'
 import { useTranslations } from 'next-intl'
 import type { ImageType } from '~/types'
 import { useState, useCallback, useEffect, useRef, useMemo, useTransition } from 'react'
-import { MasonryPhotoAlbum, RenderImageContext, RenderImageProps } from 'react-photo-album'
-import BlurImage from '~/components/album/blur-image.tsx'
+import MasonryPhotoItem from '~/components/gallery/masonry-photo-item'
 import InfiniteScroll from '~/components/ui/origin/infinite-scroll.tsx'
 import FloatingFilterBall from '~/components/album/floating-filter-ball.tsx'
-
-function renderNextImage(
-  _: RenderImageProps,
-  { photo }: RenderImageContext,
-  dataList: never[],
-) {
-  return (
-    <BlurImage photo={photo} dataList={dataList} />
-  )
-}
 
 export default function DefaultGallery(props : Readonly<ImageHandleProps>) {
   const [selectedCamera, setSelectedCamera] = useState('')
@@ -101,33 +90,17 @@ export default function DefaultGallery(props : Readonly<ImageHandleProps>) {
   return (
     <>
       <InfiniteScroll
-        className="w-full p-2 space-y-4"
+        className="w-full space-y-2"
         hasMore={size < pageTotal}
         isLoading={isValidating}
         next={() => setSize(size + 1)}
       >
-        <div className="flex flex-col sm:flex-row w-full p-2 items-start justify-between sm:relative overflow-x-clip">
-          <div className="flex flex-1 flex-col px-2 sm:sticky top-4 self-start">
-          </div>
-          <div className="w-full sm:w-[66.667%] mx-auto">
-            <MasonryPhotoAlbum
-              columns={(containerWidth) => {
-                if (containerWidth < 768) return 2
-                if (containerWidth < 1024) return 3
-                return 4
-              }}
-              photos={
-                dataList?.map((item: ImageType) => ({
-                  src: item.preview_url || item.url,
-                  alt: item.detail,
-                  ...item
-                })) || []
-              }
-              render={{ image: (...args) => renderNextImage(...args, dataList) }}
-            />
-          </div>
-          <div className="flex flex-wrap space-x-2 sm:space-x-0 sm:flex-col flex-1 px-2 py-1 sm:py-0 space-y-1 text-gray-500 sm:sticky top-4 self-start">
-          </div>
+        <div className="columns-2 gap-1 sm:columns-3 lg:columns-4 xl:columns-5 px-1 sm:px-2">
+          {dataList?.map((item: ImageType) => (
+            <div key={item.id} className="mb-1 break-inside-avoid">
+              <MasonryPhotoItem photo={item} />
+            </div>
+          ))}
         </div>
         {dataList.length === 0 && !isValidating && (
           <div className="flex items-center justify-center my-4">

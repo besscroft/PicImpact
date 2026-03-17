@@ -14,7 +14,7 @@
     "build:netlify": "pnpm run prisma:deploy && pnpm run prisma:generate && pnpm run prisma:seed && next build",
     "build:node": "pnpm run prisma:deploy && pnpm run prisma:generate && next build",
     "start": "next start",
-    "lint": "next lint",
+    "lint": "eslint --no-error-on-unmatched-pattern app/ components/",
     "lint:fix": "eslint --fix \"app/**/*.{ts,tsx}\" --ignore-pattern \"components/ui/*.{tsx}\"",
     "prisma:format": "npx prisma format",
     "prisma:generate": "npx prisma generate",

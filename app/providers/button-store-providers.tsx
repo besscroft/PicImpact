@@ -16,13 +16,13 @@ export interface ButtonStoreProviderProps {
 export const ButtonStoreProvider = ({
   children,
 }: ButtonStoreProviderProps) => {
-  const storeRef = useRef<StoreApi<ButtonStore>>()
-  if (!storeRef.current) {
+  const storeRef = useRef<StoreApi<ButtonStore> | null>(null)
+  if (storeRef.current == null) {
     storeRef.current = createButtonStore(initButtonStore())
   }
 
   return (
-    <ButtonStoreContext.Provider value={storeRef.current}>
+    <ButtonStoreContext.Provider value={storeRef.current!}>
       {children}
     </ButtonStoreContext.Provider>
   )

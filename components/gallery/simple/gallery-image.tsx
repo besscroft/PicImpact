@@ -1,117 +1,61 @@
 'use client'
 
 import type { ImageType } from '~/types'
-import { CameraIcon } from '~/components/icons/camera.tsx'
-import { ApertureIcon } from '~/components/icons/aperture.tsx'
-import { TimerIcon } from '~/components/icons/timer.tsx'
-import { CrosshairIcon } from '~/components/icons/crosshair.tsx'
-import { GaugeIcon } from '~/components/icons/gauge.tsx'
-import { CopyIcon } from '~/components/icons/copy.tsx'
-import { toast } from 'sonner'
-import { LinkIcon } from '~/components/icons/link.tsx'
-import { RefreshCWIcon } from '~/components/icons/refresh-cw.tsx'
 import { cn } from '~/lib/utils'
-import { DownloadIcon } from '~/components/icons/download.tsx'
-import PreviewImageExif from '~/components/album/preview-image-exif.tsx'
-import useSWR from 'swr'
-import type { ImageDataProps } from '~/types/props.ts'
-import { ClockIcon } from '~/components/icons/clock.tsx'
-import dayjs from 'dayjs'
-import { Badge } from '~/components/ui/badge.tsx'
 import { useRouter } from 'next-nprogress-bar'
 import { useBlurImageDataUrl, DEFAULT_HASH } from '~/hooks/use-blurhash.ts'
 import { MotionImage } from '~/components/album/motion-image'
 import { Skeleton } from '~/components/ui/skeleton'
 import { useState } from 'react'
+import { Badge } from '~/components/ui/badge.tsx'
 
 export default function GalleryImage({ photo, configData }: { photo: ImageType, configData: any }) {
   const router = useRouter()
-
-  const exifIconClass = 'dark:text-gray-50 text-gray-500'
-  const exifTextClass = 'text-tiny text-sm select-none items-center dark:text-gray-50 text-gray-500'
-
-  const { data: download = false, mutate: setDownload } = useSWR(['masonry/download', photo?.url ?? ''], null)
   const [isLoading, setIsLoading] = useState(true)
-
   const dataURL = useBlurImageDataUrl(photo.blurhash)
-
-  const exifProps: ImageDataProps = {
-    data: photo,
-  }
 
   const customIndexOriginEnable = configData?.find((item: any) => item.config_key === 'custom_index_origin_enable')?.config_value.toString() === 'true'
 
-  async function downloadImg() {
-    setDownload(true)
-    try {
-      let msg = '开始下载，原图较大，请耐心等待！'
-      if (photo?.album_license != null) {
-        msg += '图片版权归作者所有, 分享转载需遵循 ' + photo.album_license + ' 许可协议！'
-      }
-
-      toast.warning(msg, { duration: 1500 })
-
-      // 获取存储类型
-      const storageType = photo?.url?.includes('s3') ? 's3' : 'r2'
-
-      // 使用新的下载 API
-      let response = await fetch(`/api/public/download/${photo.id}?storage=${storageType}`)
-      const contentType = response.headers.get('content-type')
-
-      if (contentType?.includes('application/json')) {
-        const data = await response.json()
-        response = await fetch(data.url)
-      }
-      const blob = await response.blob()
-      const url = window.URL.createObjectURL(new Blob([blob]))
-      const link = document.createElement('a')
-      link.href = url
-      const parsedUrl = new URL(photo?.url ?? '')
-      const filename = parsedUrl.pathname.split('/').pop()
-      link.download = filename || 'downloaded-file.jpg'
-      document.body.appendChild(link)
-      link.click()
-      document.body.removeChild(link)
-    } catch (e) {
-      toast.error('下载失败！', { duration: 500 })
-    } finally {
-      setDownload(false)
-    }
+  // Build a single-line EXIF summary: camera · lens · f/X · 1/Xs · ISO XXX
+  const exifParts: string[] = []
+  if (photo?.exif?.make && photo?.exif?.model) {
+    exifParts.push(`${photo.exif.make} ${photo.exif.model}`)
+  }
+  if (photo?.exif?.focal_length) {
+    exifParts.push(photo.exif.focal_length)
+  }
+  if (photo?.exif?.f_number) {
+    exifParts.push(photo.exif.f_number)
+  }
+  if (photo?.exif?.exposure_time) {
+    exifParts.push(photo.exif.exposure_time)
+  }
+  if (photo?.exif?.iso_speed_rating) {
+    exifParts.push(`ISO ${photo.exif.iso_speed_rating}`)
   }
 
   return (
-    <div className="flex flex-col sm:flex-row w-full items-start justify-between sm:relative overflow-x-clip">
-      <div className="flex flex-1 flex-col px-2 sm:sticky top-4 self-start">
-        <div className="flex space-x-2 py-1 sm:justify-end">
-          <div className="font-semibold">{photo.title}</div>
-        </div>
-        {photo?.exif?.data_time &&
-          <div className="hidden sm:flex items-center space-x-1 sm:justify-end">
-            <ClockIcon className={exifIconClass} size={18} />
-            <p className={exifTextClass}>
-              {dayjs(photo?.exif?.data_time, 'YYYY:MM:DD HH:mm:ss').isValid() ?
-                dayjs(photo?.exif?.data_time, 'YYYY:MM:DD HH:mm:ss').format('YYYY-MM-DD HH:mm:ss')
-                : photo?.exif.data_time
-              }
-            </p>
-          </div>
-        }
-        <article className="hidden sm:flex text-wrap text-right dark:text-gray-50 text-gray-500">
-          <p className="w-full">{photo?.detail}</p>
-        </article>
-      </div>
+    <div className="w-full">
       <div
-        className="relative inline-block select-none sm:w-[66.667%] mx-auto shadow-gray-200 dark:shadow-gray-800">
-        {
-          (photo.blurhash === DEFAULT_HASH || !photo.blurhash) && isLoading && (
-            <Skeleton className="absolute inset-0 z-10 rounded-none" />
-          )
-        }
+        role="link"
+        tabIndex={0}
+        className="relative cursor-pointer"
+        onClick={() => router.push(`/preview/${photo?.id}`)}
+        onKeyDown={(e: React.KeyboardEvent) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault()
+            router.push(`/preview/${photo?.id}`)
+          }
+        }}
+      >
+        {(photo.blurhash === DEFAULT_HASH || !photo.blurhash) && isLoading && (
+          <Skeleton className="absolute inset-0 z-10 rounded-none" />
+        )}
         <MotionImage
-          className={cn(isLoading && "animate-pulse")}
+          className={cn('w-full h-auto', isLoading && 'animate-pulse')}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ duration: 1 }}
+          transition={{ duration: 0.5 }}
           src={customIndexOriginEnable ? photo.url || photo.preview_url : photo.preview_url || photo.url}
           overrideSrc={customIndexOriginEnable ? photo.url || photo.preview_url : photo.preview_url || photo.url}
           alt={photo.title}
@@ -121,11 +65,9 @@ export default function GalleryImage({ photo, configData }: { photo: ImageType, 
           unoptimized
           placeholder={(photo.blurhash === DEFAULT_HASH || !photo.blurhash) ? 'empty' : 'blur'}
           blurDataURL={dataURL}
-          onClick={() => router.push(`/preview/${photo?.id}`)}
           onLoad={() => setIsLoading(false)}
         />
-        {
-          photo.type === 2 &&
+        {photo.type === 2 && (
           <div className="absolute top-2 left-2 p-5 rounded-full">
             <svg xmlns="http://www.w3.org/2000/svg" className="absolute bottom-3 right-3 text-white opacity-75 z-10"
               width="24" height="24" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" fill="none"
@@ -149,115 +91,27 @@ export default function GalleryImage({ photo, configData }: { photo: ImageType, 
               <line x1="12" y1="21" x2="12" y2="21.01"></line>
             </svg>
           </div>
-        }
+        )}
       </div>
-      <div className="flex flex-col flex-1 sm:sticky px-2 py-1 sm:py-0 sm:space-y-1 top-4 self-start">
-        <div className="flex flex-wrap space-x-2 sm:space-x-0 sm:flex-col flex-1 text-gray-500 sm:sticky">
-          {photo?.exif?.make && photo?.exif?.model &&
-            <div className="flex items-center space-x-1">
-              <CameraIcon className={exifIconClass} size={18} />
-              <p className={exifTextClass}>
-                {`${photo?.exif?.make} ${photo?.exif?.model}`}
-              </p>
-            </div>
-          }
-          {photo?.exif?.f_number &&
-            <div className="flex items-center space-x-1">
-              <ApertureIcon className={exifIconClass} size={18} />
-              <p className={exifTextClass}>
-                {photo?.exif?.f_number}
-              </p>
-            </div>
-          }
-          {photo?.exif?.exposure_time &&
-            <div className="flex items-center space-x-1">
-              <TimerIcon className={exifIconClass} size={18} />
-              <p className={exifTextClass}>
-                {photo?.exif?.exposure_time}
-              </p>
-            </div>
-          }
-          {photo?.exif?.focal_length &&
-            <div className="flex items-center space-x-1">
-              <CrosshairIcon className={exifIconClass} size={18} />
-              <p className={exifTextClass}>
-                {photo?.exif?.focal_length}
-              </p>
-            </div>
-          }
-          {photo?.exif?.iso_speed_rating &&
-            <div className="flex items-center space-x-1">
-              <GaugeIcon className={exifIconClass} size={18} />
-              <p className={exifTextClass}>
-                {photo?.exif?.iso_speed_rating}
-              </p>
-            </div>
-          }
-        </div>
-        {photo?.labels &&
-          <div className="flex flex-wrap space-x-2 sm:sticky">
-            {photo?.labels.map((tag: string) => (
+      <div className="mt-3 px-1">
+        <h3 className="font-display text-lg">{photo.title}</h3>
+        {exifParts.length > 0 && (
+          <p className="text-sm text-muted-foreground mt-1">
+            {exifParts.join(' \u00B7 ')}
+          </p>
+        )}
+        {photo?.labels && photo.labels.length > 0 && (
+          <div className="flex flex-wrap gap-1.5 mt-2">
+            {photo.labels.map((tag: string) => (
               <Badge
                 variant="secondary"
-                className="cursor-pointer select-none"
+                className="cursor-pointer select-none text-xs"
                 key={tag}
-                onClick={() => {
-                  router.push(`/tag/${tag}`)
-                }}
+                onClick={() => router.push(`/tag/${tag}`)}
               >{tag}</Badge>
             ))}
           </div>
-        }
-        <div className="flex flex-wrap space-x-1 sm:sticky">
-          <CopyIcon
-            className={exifIconClass}
-            size={20}
-            onClick={async () => {
-              try {
-                const url = photo?.url
-                // @ts-ignore
-                await navigator.clipboard.writeText(url)
-                let msg = '复制图片链接成功！'
-                if (photo?.album_license != null) {
-                  msg = '图片版权归作者所有, 分享转载需遵循 ' + photo?.album_license + ' 许可协议！'
-                }
-                toast.success(msg, { duration: 1500 })
-              } catch (error) {
-                toast.error('复制图片链接失败！', { duration: 500 })
-              }
-            }}
-          />
-          <LinkIcon
-            className={exifIconClass}
-            size={20}
-            onClick={async () => {
-              try {
-                const url = window.location.origin + '/preview/' + photo.id
-                // @ts-ignore
-                await navigator.clipboard.writeText(url)
-                toast.success('复制分享直链成功！', { duration: 500 })
-              } catch (error) {
-                toast.error('复制分享直链失败！', { duration: 500 })
-              }
-            }}
-          />
-          {configData?.find((item: any) => item.config_key === 'custom_index_download_enable')?.config_value.toString() === 'true'
-            && <>
-              {download ?
-                <RefreshCWIcon
-                  className={cn(exifIconClass, 'animate-spin cursor-not-allowed')}
-                  size={20}
-                /> :
-                <DownloadIcon
-                  className={exifIconClass}
-                  size={20}
-                  onClick={() => downloadImg()}
-                />
-              }
-            </>
-          }
-          <PreviewImageExif {...exifProps} />
-        </div>
+        )}
       </div>
     </div>
   )

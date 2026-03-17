@@ -13,29 +13,29 @@ export const EvervaultCard = ({
   text?: string;
   className?: string;
 }) => {
-  let mouseX = useMotionValue(0);
-  let mouseY = useMotionValue(0);
+  const mouseX = useMotionValue(0)
+  const mouseY = useMotionValue(0)
 
-  const [randomString, setRandomString] = useState("");
+  const [randomString, setRandomString] = useState('')
 
   useEffect(() => {
-    let str = generateRandomString(1500);
-    setRandomString(str);
-  }, []);
+    const str = generateRandomString(1500)
+    setRandomString(str)
+  }, [])
 
   function onMouseMove({ currentTarget, clientX, clientY }: any) {
-    let { left, top } = currentTarget.getBoundingClientRect();
-    mouseX.set(clientX - left);
-    mouseY.set(clientY - top);
+    const { left, top } = currentTarget.getBoundingClientRect()
+    mouseX.set(clientX - left)
+    mouseY.set(clientY - top)
 
-    const str = generateRandomString(1500);
-    setRandomString(str);
+    const str = generateRandomString(1500)
+    setRandomString(str)
   }
 
   return (
     <div
       className={cn(
-        "p-0.5 bg-transparent aspect-square  flex items-center justify-center w-full h-full relative",
+        'p-0.5 bg-transparent aspect-square  flex items-center justify-center w-full h-full relative',
         className
       )}
     >
@@ -59,12 +59,12 @@ export const EvervaultCard = ({
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
 export function CardPattern({ mouseX, mouseY, randomString }: any) {
-  let maskImage = useMotionTemplate`radial-gradient(250px at ${mouseX}px ${mouseY}px, white, transparent)`;
-  let style = { maskImage, WebkitMaskImage: maskImage };
+  const maskImage = useMotionTemplate`radial-gradient(250px at ${mouseX}px ${mouseY}px, white, transparent)`
+  const style = { maskImage, WebkitMaskImage: maskImage }
 
   return (
     <div className="pointer-events-none">
@@ -82,18 +82,18 @@ export function CardPattern({ mouseX, mouseY, randomString }: any) {
         </p>
       </motion.div>
     </div>
-  );
+  )
 }
 
 const characters =
-  "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
 export const generateRandomString = (length: number) => {
-  let result = "";
+  let result = ''
   for (let i = 0; i < length; i++) {
-    result += characters.charAt(Math.floor(Math.random() * characters.length));
+    result += characters.charAt(Math.floor(Math.random() * characters.length))
   }
-  return result;
-};
+  return result
+}
 
 export const Icon = ({ className, ...rest }: any) => {
   return (
@@ -108,5 +108,5 @@ export const Icon = ({ className, ...rest }: any) => {
     >
       <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v12m6-6H6" />
     </svg>
-  );
-};
+  )
+}

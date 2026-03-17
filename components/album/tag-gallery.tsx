@@ -46,8 +46,8 @@ export default function TagGallery(props : Readonly<ImageHandleProps>) {
   const t = useTranslations()
   const router = useRouter()
 
-  const exifIconClass = 'dark:text-gray-50'
-  const exifTextClass = 'text-tiny text-sm select-none items-center dark:text-gray-50'
+  const exifIconClass = ''
+  const exifTextClass = 'text-tiny text-sm select-none items-center'
 
   return (
     <div className="w-full p-2 space-y-4">

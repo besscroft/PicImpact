@@ -121,7 +121,7 @@ export default function Preferences() {
           {t('Button.submit')}
         </Button>
       </div>
-      <div className="grid grid-cols-1 gap-4 lg:grid-cols-4 lg:gap-8">
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-3 lg:gap-8">
         <div className="rounded space-y-4">
           <div className="grid w-full max-w-sm items-center gap-1.5">
             <Label htmlFor="title">{t('Preferences.webSiteTitle')}</Label>
@@ -192,7 +192,7 @@ export default function Preferences() {
                 onClick={async () => {
                   try {
                     const url = typeof window !== 'undefined' ? window.location.origin + '/rss.xml' : ''
-                    // @ts-ignore
+                    // @ts-expect-error
                     await navigator.clipboard.writeText(url)
                     toast.success('复制成功！', {duration: 500})
                   } catch (error) {
@@ -290,7 +290,7 @@ export default function Preferences() {
         <div className="rounded space-y-4">
           <label
             htmlFor="customIndexDownloadEnable"
-            className="w-full max-w-sm cursor-pointer block overflow-hidden rounded-md border border-gray-200 px-3 py-2 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600"
+            className="w-full max-w-sm cursor-pointer block overflow-hidden rounded-md border border-input px-3 py-2 shadow-sm focus-within:border-primary focus-within:ring-1 focus-within:ring-primary"
           >
             <span className="text-xs font-medium text-gray-700">{t('Preferences.customIndexDownloadEnable')}</span>
             <div>
@@ -307,7 +307,7 @@ export default function Preferences() {
           </label>
           <label
             htmlFor="enableMaxWidthLimit"
-            className="w-full max-w-sm cursor-pointer block overflow-hidden rounded-md border border-gray-200 px-3 py-2 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600"
+            className="w-full max-w-sm cursor-pointer block overflow-hidden rounded-md border border-input px-3 py-2 shadow-sm focus-within:border-primary focus-within:ring-1 focus-within:ring-primary"
           >
             <span className="text-xs font-medium text-gray-700">{t('Preferences.enableMaxWidthLimit')}</span>
             <div>
@@ -324,7 +324,7 @@ export default function Preferences() {
           </label>
           <label
             htmlFor="customIndexOriginEnable"
-            className="w-full max-w-sm cursor-pointer block overflow-hidden rounded-md border border-gray-200 px-3 py-2 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600"
+            className="w-full max-w-sm cursor-pointer block overflow-hidden rounded-md border border-input px-3 py-2 shadow-sm focus-within:border-primary focus-within:ring-1 focus-within:ring-primary"
           >
             <span className="text-xs font-medium text-gray-700">{t('Preferences.customIndexOriginEnable')}</span>
             <div>

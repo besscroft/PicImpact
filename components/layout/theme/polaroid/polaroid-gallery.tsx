@@ -80,7 +80,7 @@ const PolaroidCard = memo(function PolaroidCard({
       onMouseDown={() => onMouseDown(item.id)}
     >
       <div 
-        className="relative overflow-hidden bg-neutral-200 dark:bg-neutral-800 shrink-0 w-full h-full shadow-inner"
+        className="relative overflow-hidden bg-muted shrink-0 w-full h-full shadow-inner"
       >
         {isLoading && (
           <Skeleton className="absolute inset-0 z-20 rounded-none" />
@@ -91,8 +91,8 @@ const PolaroidCard = memo(function PolaroidCard({
           width={Math.round(imgWidth)}
           height={Math.round(imgHeight)}
           className={cn(
-            "pointer-events-none relative z-10 h-full w-full object-cover transition-opacity duration-500",
-            isLoading ? "opacity-0" : "opacity-100"
+            'pointer-events-none relative z-10 h-full w-full object-cover transition-opacity duration-500',
+            isLoading ? 'opacity-0' : 'opacity-100'
           )}
           placeholder="blur"
           blurDataURL={blurDataUrl}
@@ -111,7 +111,7 @@ const PolaroidCard = memo(function PolaroidCard({
         className="absolute bottom-0 left-0 right-0 flex items-center justify-center px-2 overflow-hidden"
         style={{ height: `${paddingBottom}px` }}
       >
-        <h3 className="w-full text-center text-sm font-medium text-neutral-600 dark:text-neutral-400 truncate opacity-80">
+        <h3 className="w-full text-center text-sm font-medium text-muted-foreground truncate opacity-80">
           {item.title}
         </h3>
       </div>
@@ -179,7 +179,7 @@ export default function PolaroidGallery(props: Readonly<ImageHandleProps>) {
 
   return (
     <DraggableCardContainer className="relative flex min-h-screen w-full items-center justify-center overflow-clip">
-      <p className="absolute top-1/2 mx-auto max-w-sm -translate-y-3/4 text-center text-2xl font-black text-neutral-400 md:text-4xl dark:text-neutral-800">
+      <p className="absolute top-1/2 mx-auto max-w-sm -translate-y-3/4 text-center text-2xl font-black text-muted-foreground md:text-4xl">
         {customTitle || '瓦达西可不可爱'}
       </p>
       {dataList?.map((item: ImageType) => (

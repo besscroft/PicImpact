@@ -12,6 +12,7 @@ import { Button } from '~/components/ui/button'
 import { ExternalLink, X, Camera, ImageIcon } from 'lucide-react'
 import Supercluster from 'supercluster'
 import type { BBox } from 'geojson'
+import { useTranslations } from 'next-intl'
 
 interface MapViewProps {
   images: ImageType[]
@@ -24,6 +25,7 @@ interface ImagePointProperties {
 
 export function MapView({ images }: MapViewProps) {
   const { resolvedTheme } = useTheme()
+  const t = useTranslations()
   const [popupInfo, setPopupInfo] = React.useState<ImageType | null>(null)
   const mapRef = React.useRef<any>(null)
   const [zoom, setZoom] = React.useState(1.5)
@@ -146,7 +148,7 @@ export function MapView({ images }: MapViewProps) {
                   })
                 }}
               >
-                <div className="relative cursor-pointer group">
+                <div className="relative cursor-pointer group" role="img" aria-label={`Cluster of ${point_count} photos`}>
                   <div
                     className="absolute rounded-full bg-primary/15 dark:bg-primary/25 transition-all duration-300 group-hover:bg-primary/25 dark:group-hover:bg-primary/35"
                     style={{
@@ -185,9 +187,11 @@ export function MapView({ images }: MapViewProps) {
             >
               <div
                 className="group relative cursor-pointer transform transition-all duration-300 hover:scale-110 hover:z-10"
+                role="img"
+                aria-label={image.title || 'Photo marker'}
                 title={image.title || 'View Photo'}
               >
-                <div className="relative h-10 w-10 overflow-hidden rounded-full border-2 border-white bg-white shadow-lg dark:border-gray-800 dark:bg-gray-800">
+                <div className="relative h-10 w-10 overflow-hidden rounded-full border-2 border-background bg-background shadow-lg">
                   <Image
                     src={image.preview_url || image.url || ''}
                     alt={image.title || 'Photo'}
@@ -196,7 +200,7 @@ export function MapView({ images }: MapViewProps) {
                     sizes="40px"
                   />
                 </div>
-                <div className="absolute -bottom-1 left-1/2 h-3 w-3 -translate-x-1/2 rotate-45 border-r-2 border-b-2 border-white bg-white dark:border-gray-800 dark:bg-gray-800"></div>
+                <div className="absolute -bottom-1 left-1/2 h-3 w-3 -translate-x-1/2 rotate-45 border-r-2 border-b-2 border-background bg-background"></div>
               </div>
             </Marker>
           )
@@ -221,11 +225,12 @@ export function MapView({ images }: MapViewProps) {
                   fill
                   className="object-cover"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/5 to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-t from-background/60 via-background/5 to-transparent" />
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="absolute right-2 top-2 h-7 w-7 rounded-full bg-black/40 text-white hover:bg-black/60 backdrop-blur-sm z-10"
+                  aria-label="Close"
+                  className="absolute right-2 top-2 h-7 w-7 rounded-full bg-overlay text-foreground hover:bg-foreground/20 backdrop-blur-sm z-10"
                   onClick={(e) => {
                     e.stopPropagation()
                     setPopupInfo(null)
@@ -234,7 +239,7 @@ export function MapView({ images }: MapViewProps) {
                   <X className="h-3.5 w-3.5" />
                 </Button>
                 <div className="absolute bottom-0 left-0 right-0 p-3">
-                  <h3 className="font-semibold text-white text-sm truncate drop-shadow-md">
+                  <h3 className="font-semibold text-card-foreground text-sm truncate drop-shadow-md">
                     {popupInfo.title || 'Untitled'}
                   </h3>
                 </div>
@@ -277,7 +282,7 @@ export function MapView({ images }: MapViewProps) {
                 <div className="flex justify-end">
                   <Link href={`/preview/${popupInfo.id}`} passHref>
                     <Button size="sm" className="h-8 text-xs gap-1.5 rounded-lg">
-                      查看详情 <ExternalLink className="h-3 w-3" />
+                      {t('Button.viewDetails', { defaultValue: 'View details' })} <ExternalLink className="h-3 w-3" />
                     </Button>
                   </Link>
                 </div>

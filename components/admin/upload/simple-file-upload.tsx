@@ -91,7 +91,7 @@ export default function SimpleFileUpload() {
           setWidth(Number(img.width))
           setHeight(Number(img.height))
         }
-        // @ts-ignore
+        // @ts-expect-error
         img.src = e.target.result
       }
       reader.readAsDataURL(file)
@@ -141,7 +141,7 @@ export default function SimpleFileUpload() {
           'Content-Type': 'application/json',
         },
         method: 'post',
-        // @ts-ignore
+        // @ts-expect-error
         body: JSON.stringify(data),
       }).then(res => res.json())
       if (res?.code === 200) {
@@ -451,7 +451,7 @@ export default function SimpleFileUpload() {
         <div className="w-full space-y-2">
           <label
             htmlFor="title"
-            className="block overflow-hidden rounded-md border border-gray-200 px-3 py-2 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600"
+            className="block overflow-hidden rounded-md border border-input px-3 py-2 shadow-sm focus-within:border-primary focus-within:ring-1 focus-within:ring-primary"
           >
             <span className="text-xs font-medium text-gray-700"> {t('Upload.title')} </span>
 
@@ -466,7 +466,7 @@ export default function SimpleFileUpload() {
           </label>
           <label
             htmlFor="url"
-            className="block overflow-hidden rounded-md border border-gray-200 px-3 py-2 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600"
+            className="block overflow-hidden rounded-md border border-input px-3 py-2 shadow-sm focus-within:border-primary focus-within:ring-1 focus-within:ring-primary"
           >
             <span className="text-xs font-medium text-gray-700"> {t('Upload.url')} </span>
 
@@ -480,7 +480,7 @@ export default function SimpleFileUpload() {
           </label>
           <label
             htmlFor="previewUrl"
-            className="block overflow-hidden rounded-md border border-gray-200 px-3 py-2 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600"
+            className="block overflow-hidden rounded-md border border-input px-3 py-2 shadow-sm focus-within:border-primary focus-within:ring-1 focus-within:ring-primary"
           >
             <span className="text-xs font-medium text-gray-700"> {t('Upload.previewUrl')} </span>
 
@@ -495,7 +495,7 @@ export default function SimpleFileUpload() {
           <div className="flex items-center space-x-1 w-full">
             <label
               htmlFor="width"
-              className="w-full block overflow-hidden rounded-md border border-gray-200 px-3 py-2 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600"
+              className="w-full block overflow-hidden rounded-md border border-input px-3 py-2 shadow-sm focus-within:border-primary focus-within:ring-1 focus-within:ring-primary"
             >
               <span className="text-xs font-medium text-gray-700"> {t('Upload.width')} </span>
 
@@ -511,7 +511,7 @@ export default function SimpleFileUpload() {
             </label>
             <label
               htmlFor="height"
-              className="w-full block overflow-hidden rounded-md border border-gray-200 px-3 py-2 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600"
+              className="w-full block overflow-hidden rounded-md border border-input px-3 py-2 shadow-sm focus-within:border-primary focus-within:ring-1 focus-within:ring-primary"
             >
               <span className="text-xs font-medium text-gray-700"> {t('Upload.height')} </span>
 
@@ -529,7 +529,7 @@ export default function SimpleFileUpload() {
           <div className="flex items-center space-x-1 w-full">
             <label
               htmlFor="lon"
-              className="w-full block overflow-hidden rounded-md border border-gray-200 px-3 py-2 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600"
+              className="w-full block overflow-hidden rounded-md border border-input px-3 py-2 shadow-sm focus-within:border-primary focus-within:ring-1 focus-within:ring-primary"
             >
               <span className="text-xs font-medium text-gray-700"> {t('Upload.lon')} </span>
 
@@ -544,7 +544,7 @@ export default function SimpleFileUpload() {
             </label>
             <label
               htmlFor="lat"
-              className="w-full block overflow-hidden rounded-md border border-gray-200 px-3 py-2 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600"
+              className="w-full block overflow-hidden rounded-md border border-input px-3 py-2 shadow-sm focus-within:border-primary focus-within:ring-1 focus-within:ring-primary"
             >
               <span className="text-xs font-medium text-gray-700"> {t('Upload.lat')} </span>
 
@@ -560,7 +560,7 @@ export default function SimpleFileUpload() {
           </div>
           <label
             htmlFor="detail"
-            className="block overflow-hidden rounded-md border border-gray-200 px-3 py-2 shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600"
+            className="block overflow-hidden rounded-md border border-input px-3 py-2 shadow-sm focus-within:border-primary focus-within:ring-1 focus-within:ring-primary"
           >
             <span className="text-xs font-medium text-gray-700"> {t('Upload.detail')} </span>
 

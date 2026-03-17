@@ -47,10 +47,13 @@ export default async function Page({
     configHandle: getConfig
   }
 
+  if (!data) {
+    return <DefaultGallery {...props} />
+  }
+
   return (
     <>
-      {data
-      && data.theme === '1' ? <SimpleGallery {...props} />
+      {data.theme === '1' ? <SimpleGallery {...props} />
         : data.theme === '2' ? <PolaroidGallery {...props} />
         : <DefaultGallery {...props} />
       }

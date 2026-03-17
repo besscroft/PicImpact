@@ -114,10 +114,10 @@ export default function ProgressiveImage(
         {isLoading && (
           <div className="absolute bottom-0 left-0 w-full">
             <div
-              className="h-1 bg-blue-500"
+              className="h-1 bg-primary"
               style={{ width: `${loadingProgress}%` }}
             ></div>
-            <div className="absolute bottom-2 right-2 bg-black/60 text-white text-xs px-2 py-1 rounded">
+            <div className="absolute bottom-2 right-2 bg-overlay text-foreground text-xs px-2 py-1 rounded">
               {loadingProgress}%
             </div>
           </div>
@@ -125,7 +125,7 @@ export default function ProgressiveImage(
         {/* 错误提示 */}
         {error && (
           <div className="absolute bottom-0 left-0 w-full">
-            <div className="absolute bottom-2 right-2 text-white bg-black/60 text-xs px-2 py-1 rounded">
+            <div className="absolute bottom-2 right-2 text-foreground bg-overlay text-xs px-2 py-1 rounded">
               {error}
             </div>
           </div>
@@ -153,7 +153,7 @@ export default function ProgressiveImage(
           </Activity>
           <Activity mode={showFullScreenViewer ? 'visible' : 'hidden'}>
             {webGLAvailable ? <div
-              className="fixed inset-0 z-[100] bg-black/90 flex items-center justify-center"
+              className="fixed inset-0 z-[100] bg-background/95 flex items-center justify-center"
               onClick={(e) => {
                 // 点击背景关闭
                 if (e.target === e.currentTarget) {
@@ -164,7 +164,7 @@ export default function ProgressiveImage(
               {/* 关闭按钮 */}
               <button
                 onClick={handleCloseViewer}
-                className="absolute top-4 right-4 z-[110] p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors"
+                className="absolute top-4 right-4 z-[110] p-2 rounded-full bg-foreground/10 hover:bg-foreground/20 transition-colors"
                 aria-label={t('Button.close')}
               >
                 <svg
@@ -177,7 +177,7 @@ export default function ProgressiveImage(
                   strokeWidth="2"
                   strokeLinecap="round"
                   strokeLinejoin="round"
-                  className="text-white"
+                  className="text-foreground"
                 >
                   <line x1="18" y1="6" x2="6" y2="18"></line>
                   <line x1="6" y1="6" x2="18" y2="18"></line>
@@ -185,7 +185,7 @@ export default function ProgressiveImage(
               </button>
 
               {/* 操作提示 */}
-              <div className="absolute bottom-4 left-1/2 -translate-x-1/2 text-white/50 text-sm pointer-events-none">
+              <div className="absolute bottom-4 left-1/2 -translate-x-1/2 text-foreground/50 text-sm pointer-events-none">
                 {t('Tips.zoomHint')}
               </div>
 
@@ -206,7 +206,7 @@ export default function ProgressiveImage(
                 />
               </div>
             </div> : <div
-              className="fixed inset-0 z-[100] bg-black/90 flex items-center justify-center overflow-auto"
+              className="fixed inset-0 z-[100] bg-background/95 flex items-center justify-center overflow-auto"
               onClick={(e) => {
                 if (e.target === e.currentTarget) {
                   handleCloseViewer()
@@ -215,7 +215,7 @@ export default function ProgressiveImage(
             >
               <button
                 onClick={handleCloseViewer}
-                className="absolute top-4 right-4 z-[110] p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors"
+                className="absolute top-4 right-4 z-[110] p-2 rounded-full bg-foreground/10 hover:bg-foreground/20 transition-colors"
                 aria-label={t('Button.close')}
               >
                 <svg
@@ -228,14 +228,14 @@ export default function ProgressiveImage(
                   strokeWidth="2"
                   strokeLinecap="round"
                   strokeLinejoin="round"
-                  className="text-white"
+                  className="text-foreground"
                 >
                   <line x1="18" y1="6" x2="6" y2="18"></line>
                   <line x1="6" y1="6" x2="18" y2="18"></line>
                 </svg>
               </button>
               {/* WebGL 不可用提示 */}
-              <div className="absolute top-4 left-4 text-white/70 text-sm bg-black/50 px-3 py-1 rounded">
+              <div className="absolute top-4 left-4 text-foreground/70 text-sm bg-overlay px-3 py-1 rounded">
                 {t('Tips.webglUnavailable')}
               </div>
               <img

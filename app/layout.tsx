@@ -1,4 +1,5 @@
 import type { Metadata } from 'next/types'
+import { Source_Serif_4, Source_Sans_3 } from 'next/font/google'
 
 import { ThemeProvider } from '~/app/providers/next-ui-providers'
 import { ToasterProviders } from '~/app/providers/toaster-providers'
@@ -13,6 +14,20 @@ import { getLocale, getMessages } from 'next-intl/server'
 import { ConfigStoreProvider } from '~/app/providers/config-store-providers'
 import Script from 'next/script'
 
+const sourceSerif4 = Source_Serif_4({
+  subsets: ['latin'],
+  variable: '--font-display',
+  display: 'swap',
+  weight: ['400', '600', '700'],
+})
+
+const sourceSans3 = Source_Sans_3({
+  subsets: ['latin'],
+  variable: '--font-sans',
+  display: 'swap',
+  weight: ['400', '500', '600'],
+})
+
 type ConfigItem = {
   id: string;
   config_key: string;
@@ -23,13 +38,32 @@ type ConfigItem = {
 export async function generateMetadata(): Promise<Metadata> {
   const data = await fetchConfigsByKeys([
     'custom_title',
-    'custom_favicon_url'
+    'custom_favicon_url',
+    'custom_author',
   ])
 
+  const title = data?.find((item: ConfigItem) => item.config_key === 'custom_title')?.config_value || 'PicImpact'
+  const author = data?.find((item: ConfigItem) => item.config_key === 'custom_author')?.config_value || ''
+  const description = author
+    ? `${author}'s photography portfolio — powered by PicImpact`
+    : 'A photography portfolio powered by PicImpact'
+
   return {
-    title: data?.find((item: ConfigItem) => item.config_key === 'custom_title')?.config_value || 'PicImpact',
+    title,
+    description,
     icons: { icon: data?.find((item: ConfigItem) => item.config_key === 'custom_favicon_url')?.config_value || './favicon.ico' },
     manifest: '/manifest.json',
+    openGraph: {
+      title,
+      description,
+      siteName: title,
+      type: 'website',
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title,
+      description,
+    },
     appleWebApp: {
       capable: true,
       statusBarStyle: 'default',
@@ -41,8 +75,8 @@ export async function generateMetadata(): Promise<Metadata> {
 export const viewport = {
   width: 'device-width',
   initialScale: 1,
-  maximumScale: 1,
-  themeColor: '#000000',
+  maximumScale: 5,
+  themeColor: '#2d2518',
 }
 
 export default async function RootLayout({
@@ -66,10 +100,10 @@ export default async function RootLayout({
   const umamiAnalytics = data?.find((item: ConfigItem) => item.config_key === 'umami_analytics')?.config_value
 
   return (
-    <html className="overflow-y-auto scrollbar-hide" lang={locale} suppressHydrationWarning>
+    <html className={`overflow-y-auto scrollbar-hide ${sourceSerif4.variable} ${sourceSans3.variable}`} lang={locale} suppressHydrationWarning>
     <head>
       <link rel="manifest" href="/manifest.json" />
-      <meta name="theme-color" content="#000000" />
+      <meta name="theme-color" content="#2d2518" />
       <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
       <meta name="apple-mobile-web-app-capable" content="yes" />
       <meta name="apple-mobile-web-app-status-bar-style" content="default" />

@@ -126,7 +126,7 @@ export default function MultipleFileUpload() {
               'Content-Type': 'application/json',
             },
             method: 'post',
-            // @ts-ignore
+            // @ts-expect-error
             body: JSON.stringify(data),
           }).then(res => res.json())
           if (res?.code === 200) {
@@ -135,7 +135,7 @@ export default function MultipleFileUpload() {
             toast.error('保存失败')
           }
         }
-        // @ts-ignore
+        // @ts-expect-error
         img.src = e.target.result
       }
       reader.readAsDataURL(file)
@@ -187,7 +187,7 @@ export default function MultipleFileUpload() {
         type: 'image/jpeg',
       })
       const outputFile = new File([outputBuffer], fileName + '.jpg', { type: 'image/jpeg' })// 添加文件名
-      // @ts-ignore
+      // @ts-expect-error
       new Compressor(outputFile, {
         quality: previewCompressQuality,
         checkOrientation: false,

@@ -20,7 +20,7 @@ interface CounterProps {
    * go up to the target value. If "down", the counter will start from the target
    * value and go down to 0.
    */
-  direction?: "up" | "down";
+  direction?: 'up' | 'down';
 
   /**
    * The delay in milliseconds before the counter starts counting.
@@ -46,60 +46,60 @@ interface CounterProps {
 }
 
 export const Formatter = {
-  number: (value: number) => Intl.NumberFormat("en-US").format(+value.toFixed(0)),
+  number: (value: number) => Intl.NumberFormat('en-US').format(+value.toFixed(0)),
   currency: (value: number) =>
-    Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(+value.toFixed(0)),
-};
+    Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(+value.toFixed(0)),
+}
 
 export default function TextCounter({
   format = Formatter.number,
   targetValue,
-  direction = "up",
+  direction = 'up',
   delay = 0,
   className,
-  fontStyle = "text-4xl font-bold text-foreground",
+  fontStyle = 'text-4xl font-bold text-foreground',
   animated = true,
 }: CounterProps) {
-  const ref = useRef<HTMLSpanElement>(null);
-  const isGoingUp = direction === "up";
-  const motionValue = useMotionValue(isGoingUp ? 0 : targetValue);
+  const ref = useRef<HTMLSpanElement>(null)
+  const isGoingUp = direction === 'up'
+  const motionValue = useMotionValue(isGoingUp ? 0 : targetValue)
 
   const springValue = useSpring(motionValue, {
     damping: 60,
     stiffness: 80,
-  });
-  const isInView = useInView(ref, { margin: "0px", once: true });
+  })
+  const isInView = useInView(ref, { margin: '0px', once: true })
 
   useEffect(() => {
     if (!animated) {
       // If animation is disabled, immediately set the content to the target value
       if (ref.current) {
-        ref.current.textContent = format(targetValue);
+        ref.current.textContent = format(targetValue)
       }
-      return;
+      return
     }
 
     if (!isInView) {
-      return;
+      return
     }
 
     const timer = setTimeout(() => {
-      motionValue.set(isGoingUp ? targetValue : 0);
-    }, delay);
+      motionValue.set(isGoingUp ? targetValue : 0)
+    }, delay)
 
-    return () => clearTimeout(timer);
-  }, [isInView, delay, isGoingUp, targetValue, motionValue, animated, format]);
+    return () => clearTimeout(timer)
+  }, [isInView, delay, isGoingUp, targetValue, motionValue, animated, format])
 
   useEffect(() => {
-    if (!animated) return; // Skip animation subscription if animation is disabled
+    if (!animated) return // Skip animation subscription if animation is disabled
     
-    springValue.on("change", (value) => {
+    springValue.on('change', (value) => {
       if (ref.current) {
-        // @ts-ignore
-        ref.current.textContent = format ? format(value) : value;
+        // @ts-expect-error
+        ref.current.textContent = format ? format(value) : value
       }
-    });
-  }, [springValue, format, animated]);
+    })
+  }, [springValue, format, animated])
 
-  return <span ref={ref} className={cn(fontStyle, className)} />;
+  return <span ref={ref} className={cn(fontStyle, className)} />
 }

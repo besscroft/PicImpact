@@ -347,21 +347,21 @@ export default function HistogramChart({ imageUrl, className = '' }: Readonly<Hi
   return (
     <div className={cn('relative w-full h-32 group', className)}>
       {loading && (
-        <div className="absolute inset-0 z-10 flex items-center justify-center rounded-sm bg-gray-900/80 backdrop-blur-xl">
-          <div className="animate-spin text-xl text-white/70">⟳</div>
+        <div className="absolute inset-0 z-10 flex items-center justify-center rounded-sm bg-overlay backdrop-blur-xl">
+          <div className="animate-spin text-xl text-foreground/70">⟳</div>
         </div>
       )}
       {needsCors && (
-        <div className="absolute inset-0 flex items-center justify-center rounded-sm bg-gray-900/80 backdrop-blur-xl">
+        <div className="absolute inset-0 flex items-center justify-center rounded-sm bg-overlay backdrop-blur-xl">
           <div className="text-center px-4">
-            <div className="text-xs text-gray-400">{t('Exif.histogramCorsError')}</div>
+            <div className="text-xs text-muted-foreground">{t('Exif.histogramCorsError')}</div>
           </div>
         </div>
       )}
       {error && !needsCors && (
-        <div className="absolute inset-0 flex items-center justify-center rounded-sm bg-gray-900/80 backdrop-blur-xl">
+        <div className="absolute inset-0 flex items-center justify-center rounded-sm bg-overlay backdrop-blur-xl">
           <div className="text-center">
-            <div className="text-xs text-gray-400">{t('Exif.histogramError')}</div>
+            <div className="text-xs text-muted-foreground">{t('Exif.histogramError')}</div>
           </div>
         </div>
       )}

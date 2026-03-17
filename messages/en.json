@@ -156,7 +156,8 @@
     "goBack": "Back",
     "removeTwoFactor": "Remove Two-Factor",
     "loadMore": "Load More",
-    "close": "Close"
+    "close": "Close",
+    "viewDetails": "View Details"
   },
   "Dashboard": {
     "picData": "Photo Data",

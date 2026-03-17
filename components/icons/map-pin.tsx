@@ -27,7 +27,7 @@ const SVG_VARIANTS: Variants = {
       times: [0, 0.6, 1],
     },
   },
-};
+}
 
 const CIRCLE_VARIANTS: Variants = {
   normal: {
@@ -43,21 +43,21 @@ const CIRCLE_VARIANTS: Variants = {
       opacity: { duration: 0.1, delay: 0.3 },
     },
   },
-};
+}
 
 const MapPinIcon = forwardRef<MapPinIconHandle, MapPinIconProps>(
   ({ onMouseEnter, onMouseLeave, className, size = 28, ...props }, ref) => {
-    const controls = useAnimation();
-    const isControlledRef = useRef(false);
+    const controls = useAnimation()
+    const isControlledRef = useRef(false)
 
     useImperativeHandle(ref, () => {
-      isControlledRef.current = true;
+      isControlledRef.current = true
 
       return {
-        startAnimation: () => controls.start("animate"),
-        stopAnimation: () => controls.start("normal"),
-      };
-    });
+        startAnimation: () => controls.start('animate'),
+        stopAnimation: () => controls.start('normal'),
+      }
+    })
 
     const handleMouseEnter = useCallback(
       (e: React.MouseEvent<HTMLDivElement>) => {
@@ -116,10 +116,10 @@ const MapPinIcon = forwardRef<MapPinIconHandle, MapPinIconProps>(
           />
         </motion.svg>
       </div>
-    );
+    )
   }
-);
+)
 
-MapPinIcon.displayName = "MapPinIcon";
+MapPinIcon.displayName = 'MapPinIcon'
 
-export { MapPinIcon };
+export { MapPinIcon }

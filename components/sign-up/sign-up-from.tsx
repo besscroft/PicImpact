@@ -7,12 +7,6 @@ import { SafeParseReturnType, z } from 'zod'
 import { Button } from '~/components/ui/button'
 import { ReloadIcon } from '@radix-ui/react-icons'
 import { cn } from '~/lib/utils'
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from '~/components/ui/card'
 import { Input } from '~/components/ui/input'
 import { Label } from '~/components/ui/label'
 import { useTranslations } from 'next-intl'
@@ -21,7 +15,7 @@ import { authClient } from '~/server/auth/auth-client'
 export const SignUpForm = ({
   className,
   ...props
-}: React.ComponentPropsWithoutRef<'div'>) => {
+}: React.ComponentPropsWithoutRef<'form'>) => {
   const router = useRouter()
   const t = useTranslations()
 
@@ -31,26 +25,26 @@ export const SignUpForm = ({
   const [password, setPassword] = useState('')
 
   const emailRef = React.useRef<HTMLInputElement>(null)
-    const passwordRef = React.useRef<HTMLInputElement>(null)
-  
-    useEffect(() => {
-      emailRef.current?.focus()
-    }, [])
-  
-    const emailKeyPressHandler = (e: React.KeyboardEvent<HTMLInputElement>) => {
-      if (e.key === 'Enter') {
-        e.preventDefault()
-        passwordRef.current?.focus()
-      }
+  const passwordRef = React.useRef<HTMLInputElement>(null)
+
+  useEffect(() => {
+    emailRef.current?.focus()
+  }, [])
+
+  const emailKeyPressHandler = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      e.preventDefault()
+      passwordRef.current?.focus()
     }
-  
-    const passwordKeyPressHandler = async (e: React.KeyboardEvent<HTMLInputElement>) => {
-      if (e.key === 'Enter') {
-        e.preventDefault()
-        passwordRef.current?.blur()
-        handleSignUp()
-      }
+  }
+
+  const passwordKeyPressHandler = async (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      e.preventDefault()
+      passwordRef.current?.blur()
+      handleSignUp()
     }
+  }
 
   function zHandle(): SafeParseReturnType<string | any, string | any> {
     const parsedCredentials = z
@@ -66,7 +60,7 @@ export const SignUpForm = ({
     try {
       const parsedCredentials = zHandle()
       if (!parsedCredentials.success) {
-        toast.error('请检查您的账号密码格式！')
+        toast.error(t('Login.invalidCredentials', { defaultValue: 'Please check your email and password format' }))
         return
       }
 
@@ -83,7 +77,7 @@ export const SignUpForm = ({
           console.log(ctx)
         },
         onSuccess: (ctx) => {
-          toast.success('注册成功！')
+          toast.success(t('Login.signUpSuccess', { defaultValue: 'Sign up successful' }))
           setTimeout(() => {
             location.replace('/admin')
           }, 1000)
@@ -95,64 +89,61 @@ export const SignUpForm = ({
 
     } catch (e) {
       console.error(e)
-      toast.error('登录过程中出现错误，请稍后重试')
+      toast.error(t('Login.error', { defaultValue: 'An error occurred, please try again' }))
     } finally {
       setIsLoading(false)
     }
   }
 
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    await handleSignUp()
+  }
+
   return (
-    <div className={cn('flex flex-col gap-6', className)} {...props}>
-      <Card>
-        <CardHeader className="text-center">
-          <CardTitle className="text-xl select-none">{t('Login.signUp')}</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid gap-6">
-            <div className="grid gap-6">
-              <div className="grid gap-2">
-                <Label htmlFor="email" className="select-none">{t('Login.email')}</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  ref={emailRef}
-                  onKeyDown={emailKeyPressHandler}
-                  required
-                />
-              </div>
-              <div className="grid gap-2">
-                <Label htmlFor="password" className="select-none">{t('Login.password')}</Label>
-                <Input
-                  id="password"
-                  type="password"
-                  required
-                  value={password}
-                  ref={passwordRef}
-                  onKeyDown={passwordKeyPressHandler}
-                  onChange={(e) => setPassword(e.target.value)}
-                />
-              </div>
-              <Button
-                className="w-full select-none cursor-pointer"
-                onClick={async () => await handleSignUp()}
-                disabled={email.length === 0 || password.length < 8}
-                aria-label={t('Login.signUp')}
-              >
-                {isLoading && <ReloadIcon className="mr-2 h-4 w-4 animate-spin"/>}{t('Login.signUp')}
-              </Button>
-              <Button
-                className="w-full select-none cursor-pointer"
-                onClick={() => router.push('/')}
-                aria-label={t('Login.goHome')}
-              >
-                {t('Login.goHome')}
-              </Button>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-    </div>
+    <form onSubmit={handleSubmit} className={cn('space-y-4', className)} {...props}>
+      <div className="space-y-2">
+        <Label htmlFor="email" className="select-none">{t('Login.email')}</Label>
+        <Input
+          id="email"
+          type="email"
+          className="h-12"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          ref={emailRef}
+          onKeyDown={emailKeyPressHandler}
+          required
+        />
+      </div>
+      <div className="space-y-2">
+        <Label htmlFor="password" className="select-none">{t('Login.password')}</Label>
+        <Input
+          id="password"
+          type="password"
+          className="h-12"
+          required
+          value={password}
+          ref={passwordRef}
+          onKeyDown={passwordKeyPressHandler}
+          onChange={(e) => setPassword(e.target.value)}
+        />
+      </div>
+      <Button
+        type="submit"
+        className="w-full h-12 select-none cursor-pointer"
+        disabled={email.length === 0 || password.length < 8}
+        aria-label={t('Login.signUp')}
+      >
+        {isLoading && <ReloadIcon className="mr-2 h-4 w-4 animate-spin"/>}{t('Login.signUp')}
+      </Button>
+      <Button
+        variant="ghost"
+        className="w-full select-none cursor-pointer"
+        onClick={() => router.push('/')}
+        aria-label={t('Login.goHome')}
+      >
+        {t('Login.goHome')}
+      </Button>
+    </form>
   )
 }
