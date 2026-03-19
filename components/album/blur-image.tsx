@@ -40,6 +40,7 @@ export default function BlurImage({ photo, dataList }: { photo: any, dataList: a
         width={photo.width}
         height={photo.height}
         loading="lazy"
+        unoptimized={!!photo.preview_url}
         placeholder={(photo.blurhash === DEFAULT_HASH || !photo.blurhash) ? 'empty' : 'blur'}
         blurDataURL={dataURL}
         onClick={() => router.push(`/preview/${photo?.id}`)}
