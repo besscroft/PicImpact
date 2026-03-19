@@ -49,6 +49,7 @@ export async function generateMetadata(): Promise<Metadata> {
     : 'A photography portfolio powered by PicImpact'
 
   return {
+    metadataBase: process.env.BETTER_AUTH_URL ? new URL(process.env.BETTER_AUTH_URL) : null,
     title,
     description,
     icons: { icon: data?.find((item: ConfigItem) => item.config_key === 'custom_favicon_url')?.config_value || './favicon.ico' },
