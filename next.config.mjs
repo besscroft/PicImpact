@@ -31,6 +31,7 @@ let nextConfig = {
         hostname: '**',
       },
     ],
+    maximumDiskCacheSize: 256 * 1024 * 1024,
   },
 }
 
