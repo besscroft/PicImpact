@@ -7,7 +7,7 @@ export default function AdminLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <SidebarProvider defaultOpen={false}>
+    <SidebarProvider defaultOpen={true}>
       <AppSidebar />
       <main id="main-content" className="flex w-full h-full flex-1 flex-col p-4">
         <SidebarTrigger className="cursor-pointer" />
