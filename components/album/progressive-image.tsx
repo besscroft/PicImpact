@@ -21,8 +21,9 @@ export default function ProgressiveImage(
 ) {
   const t = useTranslations()
 
+  const [isMobile] = useState(() => typeof window !== 'undefined' && window.innerWidth < 768)
   const [loadingProgress, setLoadingProgress] = useState(0)
-  const [isLoading, setIsLoading] = useState(true)
+  const [isLoading, setIsLoading] = useState(!isMobile)
   const [error, setError] = useState<string | null>(null)
   const [highResImageUrl, setHighResImageUrl] = useState<string | null>(null)
   const [highResImageLoaded, setHighResImageLoaded] = useState(false)
@@ -37,10 +38,17 @@ export default function ProgressiveImage(
   }, [])
   useEffect(() => {
     setShowFullScreenViewer(Boolean(props.showLightbox))
+    // On mobile, load full-res only when lightbox is requested
+    if (isMobile && props.showLightbox && !highResImageUrl && !isLoading) {
+      loadHighResolutionImage()
+    }
   }, [props.showLightbox])
 
   useEffect(() => {
-    loadHighResolutionImage()
+    // On mobile, defer full-res loading until user requests lightbox
+    if (!isMobile) {
+      loadHighResolutionImage()
+    }
     return () => {
       if (highResImageUrl) {
         URL.revokeObjectURL(highResImageUrl)

@@ -39,7 +39,6 @@ export default function BlurImage({ photo, dataList }: { photo: any, dataList: a
         alt={photo.alt || 'Photo'}
         width={photo.width}
         height={photo.height}
-        unoptimized
         loading="lazy"
         placeholder={(photo.blurhash === DEFAULT_HASH || !photo.blurhash) ? 'empty' : 'blur'}
         blurDataURL={dataURL}

@@ -62,7 +62,6 @@ export default function GalleryImage({ photo, configData }: { photo: ImageType, 
           width={photo.width}
           height={photo.height}
           loading="lazy"
-          unoptimized
           placeholder={(photo.blurhash === DEFAULT_HASH || !photo.blurhash) ? 'empty' : 'blur'}
           blurDataURL={dataURL}
           onLoad={() => setIsLoading(false)}
