@@ -8,15 +8,17 @@ import { useButtonStore } from '~/app/providers/button-store-providers'
 import { useTheme } from 'next-themes'
 import type { AlbumDataProps } from '~/types/props'
 import type { AlbumType } from '~/types'
+import { useIsHydrated } from '~/hooks/use-is-hydrated'
 import Link from 'next/link'
 import Command from '~/components/layout/command'
-import { MapPin, Search, Sun, Moon } from 'lucide-react'
+import { MapPin, Search, Sun, Moon, SunMoon } from 'lucide-react'
 
 export default function TopNav(props: Readonly<AlbumDataProps>) {
   const router = useRouter()
   const pathname = usePathname()
   const t = useTranslations()
   const { resolvedTheme, setTheme } = useTheme()
+  const isHydrated = useIsHydrated()
   const { setCommand } = useButtonStore(
     (state) => state,
   )
@@ -39,6 +41,10 @@ export default function TopNav(props: Readonly<AlbumDataProps>) {
     }
     return pathname === albumValue
   }
+
+  const themeToggleLabel = isHydrated
+    ? t(resolvedTheme === 'light' ? 'Button.dark' : 'Button.light')
+    : t('Button.theme')
 
   return (
     <>
@@ -102,16 +108,22 @@ export default function TopNav(props: Readonly<AlbumDataProps>) {
             </button>
             <button
               type="button"
-              onClick={() => setTheme(resolvedTheme === 'light' ? 'dark' : 'light')}
+              onClick={() => {
+                if (!isHydrated) {
+                  return
+                }
+                setTheme(resolvedTheme === 'light' ? 'dark' : 'light')
+              }}
               className="inline-flex items-center justify-center rounded-md min-w-[44px] min-h-[44px] p-2 cursor-pointer text-muted-foreground hover:text-foreground hover:bg-accent transition-colors focus-visible:ring-2 focus-visible:ring-ring"
-              aria-label={t(resolvedTheme === 'light' ? 'Button.dark' : 'Button.light')}
+              aria-label={themeToggleLabel}
+              disabled={!isHydrated}
             >
-              {resolvedTheme === 'light' ? <Sun size={18} /> : <Moon size={18} />}
+              {!isHydrated ? <SunMoon size={18} /> : resolvedTheme === 'light' ? <Sun size={18} /> : <Moon size={18} />}
             </button>
           </div>
         </nav>
       </header>
-      <Command {...props} />
+      <Command />
     </>
   )
 }

@@ -1,14 +1,20 @@
 'use client'
 
 import { createPortal } from 'react-dom'
-import { Dialog, DialogContent } from '~/components/ui/dialog'
+import { useTranslations } from 'next-intl'
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '~/components/ui/dialog'
 
 export function Modal({ children }: { children: React.ReactNode }) {
+  const t = useTranslations()
+
   return createPortal(
     <Dialog
       defaultOpen={true}
       modal={false}
     >
+      <DialogHeader className="sr-only">
+        <DialogTitle>{t('Button.viewDetails')}</DialogTitle>
+      </DialogHeader>
       <DialogContent
         showCloseButton={false}
         onInteractOutside={(event: any) => event.preventDefault()}

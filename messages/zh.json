@@ -140,6 +140,7 @@
   "Button": {
     "login": "登录",
     "language": "切换语言",
+    "theme": "切换主题",
     "light": "切换至⌈白夜⌋",
     "dark": "切换至⌈常夜⌋",
     "issue": "反馈 | 建议",
