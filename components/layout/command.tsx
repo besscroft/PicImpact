@@ -13,30 +13,28 @@ import { useButtonStore } from '~/app/providers/button-store-providers.tsx'
 import { useRouter } from 'next-nprogress-bar'
 import { useTheme } from 'next-themes'
 import { useTranslations } from 'next-intl'
-import type { AlbumDataProps } from '~/types/props.ts'
 import { SquareTerminalIcon } from '~/components/icons/square-terminal.tsx'
 import { SunMoonIcon } from '~/components/icons/sun-moon.tsx'
 import { SunMediumIcon } from '~/components/icons/sun-medium.tsx'
 import { UserIcon } from '~/components/icons/user.tsx'
-import { useEffect, useState } from 'react'
 import { authClient } from '~/server/auth/auth-client.ts'
+import { useIsHydrated } from '~/hooks/use-is-hydrated'
 
-export default function Command(props: Readonly<AlbumDataProps>) {
+export default function Command() {
   const { command, setCommand } = useButtonStore(
     (state) => state,
   )
   const { data: session } = authClient.useSession()
   const router = useRouter()
   const { resolvedTheme, setTheme } = useTheme()
+  const isHydrated = useIsHydrated()
   const t = useTranslations()
-  const [shortcut, setShortcut] = useState('⌘K')
-
-  useEffect(() => {
-    const isMac = /(Mac|iPhone|iPod|iPad)/i.test(navigator.platform)
-    setShortcut(isMac ? '⌘K' : 'Ctrl+K')
-  }, [])
+  const shortcut = isHydrated && /(Mac|iPhone|iPod|iPad)/i.test(navigator.platform) ? '⌘K' : 'Ctrl+K'
 
   const closeClasses = 'flex items-center space-x-2 w-full p-1 rounded-small active:scale-95 duration-200 ease-in-out cursor-pointer'
+  const themeToggleLabel = isHydrated
+    ? t(resolvedTheme === 'light' ? 'Button.dark' : 'Button.light')
+    : t('Button.theme')
 
   return (
     <>
@@ -66,9 +64,18 @@ export default function Command(props: Readonly<AlbumDataProps>) {
           }
           <CommandSeparator />
           <CommandGroup heading={t('Command.settings', { defaultValue: 'Settings' })}>
-            <CommandItem className={closeClasses} onSelect={() => setTheme(resolvedTheme === 'light' ? 'dark' : 'light')}>
-              {resolvedTheme === 'light' ? <SunMoonIcon size={18} /> : <SunMediumIcon size={18} />}
-              <p>{t(resolvedTheme === 'light' ? 'Button.dark' : 'Button.light')}</p>
+            <CommandItem
+              className={closeClasses}
+              disabled={!isHydrated}
+              onSelect={() => {
+                if (!isHydrated) {
+                  return
+                }
+                setTheme(resolvedTheme === 'light' ? 'dark' : 'light')
+              }}
+            >
+              {!isHydrated ? <SunMoonIcon size={18} /> : resolvedTheme === 'light' ? <SunMoonIcon size={18} /> : <SunMediumIcon size={18} />}
+              <p>{themeToggleLabel}</p>
             </CommandItem>
             <CommandItem className="justify-end">
               <a

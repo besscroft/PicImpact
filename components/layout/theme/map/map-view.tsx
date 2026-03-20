@@ -13,6 +13,7 @@ import { ExternalLink, X, Camera, ImageIcon } from 'lucide-react'
 import Supercluster from 'supercluster'
 import type { BBox } from 'geojson'
 import { useTranslations } from 'next-intl'
+import { useIsHydrated } from '~/hooks/use-is-hydrated'
 
 interface MapViewProps {
   images: ImageType[]
@@ -25,6 +26,7 @@ interface ImagePointProperties {
 
 export function MapView({ images }: MapViewProps) {
   const { resolvedTheme } = useTheme()
+  const isHydrated = useIsHydrated()
   const t = useTranslations()
   const [popupInfo, setPopupInfo] = React.useState<ImageType | null>(null)
   const mapRef = React.useRef<any>(null)
@@ -67,10 +69,10 @@ export function MapView({ images }: MapViewProps) {
   }, [clusterIndex, bounds, zoom])
 
   const mapStyle = React.useMemo(() => {
-    return resolvedTheme === 'dark'
+    return isHydrated && resolvedTheme === 'dark'
       ? 'https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json'
       : 'https://basemaps.cartocdn.com/gl/positron-gl-style/style.json'
-  }, [resolvedTheme])
+  }, [isHydrated, resolvedTheme])
 
   const syncMapState = React.useCallback(() => {
     const map = mapRef.current

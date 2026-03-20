@@ -140,6 +140,7 @@
   "Button": {
     "login": "Login",
     "language": "Switch Language",
+    "theme": "Toggle theme",
     "light": "Switch to Light Mode",
     "dark": "Switch to Dark Mode",
     "issue": "Feedback | Suggestions",

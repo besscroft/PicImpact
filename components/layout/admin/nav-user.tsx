@@ -25,7 +25,6 @@ import {
 } from '~/components/ui/sidebar'
 import { authClient } from '~/server/auth/auth-client'
 import { useTheme } from 'next-themes'
-import * as React from 'react'
 import { setUserLocale } from '~/lib/utils/locale'
 import { useTranslations } from 'next-intl'
 import { SunMoonIcon } from '~/components/icons/sun-moon'
@@ -33,12 +32,17 @@ import { SunMediumIcon } from '~/components/icons/sun-medium'
 import { LanguagesIcon } from '~/components/icons/languages'
 import { LogoutIcon } from '~/components/icons/logout'
 import { ChevronsDownUpIcon } from '~/components/icons/chevrons-up-down'
+import { useIsHydrated } from '~/hooks/use-is-hydrated'
 
 export function NavUser() {
   const { isMobile } = useSidebar()
   const { resolvedTheme, setTheme } = useTheme()
+  const isHydrated = useIsHydrated()
   const { data: session } = authClient.useSession()
   const t = useTranslations()
+  const themeToggleLabel = isHydrated
+    ? t(resolvedTheme === 'light' ? 'Button.dark' : 'Button.light')
+    : t('Button.theme')
 
   return (
     <SidebarMenu>
@@ -79,9 +83,18 @@ export function NavUser() {
               </div>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuItem className="cursor-pointer" onClick={() => setTheme(resolvedTheme === 'light' ? 'dark' : 'light')}>
-              {resolvedTheme === 'light' ? <SunMoonIcon size={18} /> : <SunMediumIcon size={18} />}
-              <span>{ resolvedTheme === 'light' ? t('Button.dark') : t('Button.light') }</span>
+            <DropdownMenuItem
+              className="cursor-pointer"
+              disabled={!isHydrated}
+              onClick={() => {
+                if (!isHydrated) {
+                  return
+                }
+                setTheme(resolvedTheme === 'light' ? 'dark' : 'light')
+              }}
+            >
+              {!isHydrated ? <SunMoonIcon size={18} /> : resolvedTheme === 'light' ? <SunMoonIcon size={18} /> : <SunMediumIcon size={18} />}
+              <span>{themeToggleLabel}</span>
             </DropdownMenuItem>
             <DropdownMenuSub>
               <DropdownMenuSubTrigger className="cursor-pointer"><LanguagesIcon size={18} />{t('Button.language')}</DropdownMenuSubTrigger>
