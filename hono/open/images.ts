@@ -26,7 +26,7 @@ app.get('/get-image-by-id', async (c) => {
     const id = searchParams.get('id')
     const data = await fetchImageByIdAndAuth(String(id))
     if (data) {
-      return c.json(data)
+      return c.json({ code: 200, data })
     } else {
       throw new HTTPException(404, { message: 'The image does not exist or is not publicly displayed' })
     }
