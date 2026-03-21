@@ -1,7 +1,7 @@
 'use client'
 
 import { useMemo, useState, useRef, useCallback, memo } from 'react'
-import type { HandleProps, ImageHandleProps } from '~/types/props.ts'
+import type { ImageHandleProps } from '~/types/props.ts'
 import useSWRInfinite from 'swr/infinite'
 import { useSwrHydrated } from '~/hooks/use-swr-hydrated.ts'
 import { DraggableCardBody, DraggableCardContainer } from '~/components/ui/origin/draggable-card.tsx'
@@ -124,11 +124,10 @@ const PolaroidCard = memo(function PolaroidCard({
  * @param props - 包含配置处理和图片加载处理
  */
 export default function PolaroidGallery(props: Readonly<ImageHandleProps>) {
-  const configProps: HandleProps = {
-    handle: props.configHandle,
+  const { data: configData } = useSwrHydrated({
+    handle: props.configHandle ?? (async () => []),
     args: 'system-config',
-  }
-  const { data: configData } = useSwrHydrated(configProps)
+  })
 
   const customTitle = configData?.find((item: any) => item.config_key === 'custom_title')?.config_value.toString()
 
@@ -143,7 +142,7 @@ export default function PolaroidGallery(props: Readonly<ImageHandleProps>) {
     revalidateOnReconnect: false,
   })
 
-  const dataList = useMemo(() => data ? [].concat(...data) : [], [data])
+  const dataList = useMemo(() => data?.flat() ?? [], [data])
 
   // 使用 ref 存储位置，确保数据追加时旧图片位置不变
   const positionsRef = useRef<Record<string, { top: string, left: string, rotate: string }>>({})

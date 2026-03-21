@@ -13,9 +13,9 @@ export type HandleProps = {
 }
 
 export type ImageServerHandleProps = {
-  handle: (pageNum: number, tag: string, showStatus?: number) => Promise<ImageType[]>
+  handle: (pageNum: number, tag: string, showStatus?: number, camera?: string, lens?: string) => Promise<ImageType[]>
   args: string
-  totalHandle: (tag: string, showStatus?: number) => Promise<number>
+  totalHandle: (tag: string, showStatus?: number, camera?: string, lens?: string) => Promise<number>
 }
 
 export type ImageHandleProps = {
@@ -23,14 +23,14 @@ export type ImageHandleProps = {
   args: string
   album: string
   totalHandle: (album: string, camera?: string, lens?: string) => Promise<number>
-  configHandle: () => Promise<Config[]>
+  configHandle?: () => Promise<Config[]>
 }
 
 export type PreviewImageHandleProps = {
   data: ImageType
   args: string
   id: string
-  configHandle: () => Promise<Config[]>
+  configHandle?: () => Promise<Config[]>
 }
 
 export type ProgressiveImageProps = {
