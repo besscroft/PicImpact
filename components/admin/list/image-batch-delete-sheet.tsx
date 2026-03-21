@@ -25,6 +25,7 @@ import {
 } from '~/components/ui/dialog'
 import { Label } from '~/components/ui/label'
 import { useSwrPageTotalServerHook } from '~/hooks/use-swr-page-total-server-hook'
+import { useTranslations } from 'next-intl'
 
 export default function ImageBatchDeleteSheet(props : Readonly<ImageServerHandleProps & { dataProps: ImageListDataProps } & { pageNum: number } & { album: string }>) {
   const { dataProps, pageNum, album, ...restProps } = props
@@ -35,28 +36,34 @@ export default function ImageBatchDeleteSheet(props : Readonly<ImageServerHandle
   )
   const [loading, setLoading] = useState(false)
   const [data, setData] = useState([] as any[])
+  const t = useTranslations()
 
   async function submit() {
     if (data.length === 0) {
-      toast.warning('请选择要删除的图片')
+      toast.warning(t('List.selectImagesToDelete'))
       return
     }
     try {
       setLoading(true)
-      await fetch('/api/v1/images/batch-delete', {
+      const res = await fetch('/api/v1/images/batch-delete', {
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(data),
         method: 'DELETE',
-      }).then(response => response.json())
-      toast.success('删除成功！')
+      })
+      if (!res.ok) {
+        toast.error(t('Tips.deleteFailed'))
+        return
+      }
+      await res.json()
+      toast.success(t('Tips.deleteSuccess'))
       setImageBatchDelete(false)
       setData([])
       await mutate()
       await totalMutate()
     } catch (e) {
-      toast.error('删除失败！')
+      toast.error(t('Tips.deleteFailed'))
     } finally {
       setLoading(false)
     }
@@ -76,7 +83,7 @@ export default function ImageBatchDeleteSheet(props : Readonly<ImageServerHandle
     >
       <SheetContent side="left" className="w-full overflow-y-auto scrollbar-hide p-2" onInteractOutside={(event: any) => event.preventDefault()}>
         <SheetHeader>
-          <SheetTitle>批量删除</SheetTitle>
+          <SheetTitle>{t('List.batchDelete')}</SheetTitle>
         </SheetHeader>
         <div className="space-y-2">
           {
@@ -119,18 +126,18 @@ export default function ImageBatchDeleteSheet(props : Readonly<ImageServerHandle
               <Button
                 className="cursor-pointer"
                 disabled={data.length === 0}
-                aria-label="更新"
+                aria-label={t('Button.delete')}
               >
-                删除
+                {t('Button.delete')}
               </Button>
             </DialogTrigger>
             <DialogContent className="sm:max-w-[425px]">
               <DialogHeader>
-                <DialogTitle>确定要删掉？</DialogTitle>
+                <DialogTitle>{t('List.confirmDelete')}</DialogTitle>
               </DialogHeader>
               <div>
                 {data && data?.map((item: string) => (
-                  <div key={item}>图片 ID：{item}</div>
+                  <div key={item}>{t('List.imageId', { id: item })}</div>
                 ))}
               </div>
               <DialogFooter>
@@ -138,10 +145,10 @@ export default function ImageBatchDeleteSheet(props : Readonly<ImageServerHandle
                   className="cursor-pointer"
                   disabled={loading}
                   onClick={() => submit()}
-                  aria-label="确认删除"
+                  aria-label={t('Button.yesDelete')}
                 >
                   {loading && <ReloadIcon className="mr-2 h-4 w-4 animate-spin"/>}
-                  删除
+                  {t('Button.delete')}
                 </Button>
               </DialogFooter>
             </DialogContent>

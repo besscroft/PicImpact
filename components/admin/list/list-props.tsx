@@ -120,22 +120,22 @@ export default function ListProps(props : Readonly<ImageServerHandleProps>) {
         }),
       })
       if (res.status === 200) {
-        toast.success('更新成功！')
+        toast.success(t('Tips.updateSuccess'))
         await mutate()
       } else {
-        toast.error('更新失败！')
+        toast.error(t('Tips.updateFailed'))
       }
     } catch {
-      toast.error('更新失败！')
+      toast.error(t('Tips.updateFailed'))
     } finally {
       setUpdateShowId('')
       setUpdateShowLoading(false)
     }
-  }, [mutate])
+  }, [mutate, t])
 
   async function updateImageAlbum() {
     if (!imageAlbum) {
-      toast.error('图片绑定的相册不能为空！')
+      toast.error(t('List.albumBindingRequired'))
       return
     }
     try {
@@ -151,15 +151,15 @@ export default function ListProps(props : Readonly<ImageServerHandleProps>) {
         }),
       })
       if (res.status === 200) {
-        toast.success('更新成功！')
+        toast.success(t('Tips.updateSuccess'))
         setImageAlbum('')
         setImage({} as ImageType)
         await mutate()
       } else {
-        toast.error('更新失败！')
+        toast.error(t('Tips.updateFailed'))
       }
     } catch {
-      toast.error('更新失败！')
+      toast.error(t('Tips.updateFailed'))
     } finally {
       setUpdateImageAlbumLoading(false)
     }
