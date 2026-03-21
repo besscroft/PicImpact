@@ -7,8 +7,12 @@ import { HTTPException } from 'hono/http-exception'
 const app = new Hono()
 
 app.get('/get', async (c) => {
-  const data = await fetchAlbumsList()
-  return c.json(data)
+  try {
+    const data = await fetchAlbumsList()
+    return c.json(data)
+  } catch (e) {
+    throw new HTTPException(500, { message: 'Failed to fetch albums', cause: e })
+  }
 })
 
 app.post('/add', async (c) => {
@@ -38,15 +42,23 @@ app.put('/update', async (c) => {
 })
 
 app.delete('/delete/:id', async (c) => {
-  const { id } = c.req.param()
-  const data = await deleteAlbum(id)
-  return c.json(data)
+  try {
+    const { id } = c.req.param()
+    await deleteAlbum(id)
+    return c.json({ code: 200, message: 'Success' })
+  } catch (e) {
+    throw new HTTPException(500, { message: 'Failed', cause: e })
+  }
 })
 
 app.put('/update-show', async (c) => {
-  const album = await c.req.json()
-  const data = await updateAlbumShow(album.id, album.show)
-  return c.json(data)
+  try {
+    const album = await c.req.json()
+    await updateAlbumShow(album.id, album.show)
+    return c.json({ code: 200, message: 'Success' })
+  } catch (e) {
+    throw new HTTPException(500, { message: 'Failed', cause: e })
+  }
 })
 
 export default app
