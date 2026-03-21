@@ -39,7 +39,8 @@
     "password": "Change Password",
     "storages": "Storage Configuration",
     "authenticator": "Two-Factor Authentication",
-    "passkey": "Passkey"
+    "passkey": "Passkey",
+    "daily": "Daily Homepage"
   },
   "Passkey": {
     "title": "Passkey Management",
@@ -432,5 +433,32 @@
     "copyExif": "Copy EXIF",
     "copySuccess": "Copied successfully!",
     "copyFailed": "Copy failed!"
+  },
+  "Daily": {
+    "title": "Daily Homepage Settings",
+    "enabled": "Enable Daily Homepage",
+    "enabledDescription": "When enabled, the homepage will automatically select photos from albums, replacing manual selection",
+    "refreshInterval": "Refresh Interval",
+    "every6Hours": "Every 6 hours",
+    "every12Hours": "Every 12 hours",
+    "everyDay": "Every day",
+    "everyWeek": "Every week",
+    "totalCount": "Total Photos",
+    "lastRefresh": "Last Refresh",
+    "nextRefresh": "Next Refresh",
+    "neverRefreshed": "Never refreshed",
+    "manualRefresh": "Refresh Now",
+    "refreshSuccess": "Refresh successful!",
+    "refreshFailed": "Refresh failed!",
+    "albumWeights": "Album Weight Configuration",
+    "albumName": "Album Name",
+    "photoCount": "Photo Count",
+    "weight": "Weight",
+    "estimatedQuota": "Estimated Quota",
+    "notParticipating": "Not participating",
+    "participating": "Participating",
+    "totalParticipating": "Participating Albums",
+    "saveSuccess": "Saved successfully!",
+    "saveFailed": "Save failed!"
   }
 }

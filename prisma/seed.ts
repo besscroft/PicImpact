@@ -38,6 +38,10 @@ const INITIAL_CONFIGS = [
   { config_key: 'umami_analytics', config_value: '', detail: 'Umami Website ID.' },
   { config_key: 'umami_host', config_value: '', detail: 'Umami Cloud Analytics' },
   { config_key: 'admin_images_per_page', config_value: '8', detail: '管理界面每页显示的图片数量' },
+  { config_key: 'daily_enabled', config_value: 'false', detail: '是否启用 Daily 首页模式' },
+  { config_key: 'daily_refresh_interval', config_value: '24', detail: 'Daily 首页刷新间隔（小时）：6/12/24/168' },
+  { config_key: 'daily_total_count', config_value: '30', detail: 'Daily 首页展示照片总数' },
+  { config_key: 'daily_last_refresh', config_value: '', detail: 'Daily 首页上次刷新时间' },
 ]
 
 export async function main() {

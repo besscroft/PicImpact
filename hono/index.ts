@@ -5,6 +5,7 @@ import file from '~/hono/file'
 import images from '~/hono/images'
 import albums from '~/hono/albums'
 import openList from '~/hono/storage/open-list.ts'
+import daily from '~/hono/daily'
 import { HTTPException } from 'hono/http-exception'
 
 const route = new Hono()
@@ -21,5 +22,6 @@ route.route('/file', file)
 route.route('/images', images)
 route.route('/albums', albums)
 route.route('/storage/open-list', openList)
+route.route('/daily', daily)
 
 export default route
