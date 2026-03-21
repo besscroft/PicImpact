@@ -2,10 +2,7 @@
 
 import React, { useState } from 'react'
 import { toast } from 'sonner'
-import useSWR from 'swr'
-import { fetcher } from '~/lib/utils/fetcher'
 import type { ExifType, AlbumType, ImageType } from '~/types'
-import Compressor from 'compressorjs'
 import {
   Select,
   SelectContent,
@@ -30,15 +27,27 @@ import {
 import { Button } from '~/components/ui/button'
 import { X } from 'lucide-react'
 import { UploadIcon } from '~/components/icons/upload'
-import { heicTo, isHeic } from 'heic-to'
 import { encodeBrowserThumbHash } from '~/lib/utils/blurhash-client'
+import { useUploadConfig, STORAGE_OPTIONS } from '~/hooks/use-upload-config'
 
 export default function LivephotoFileUpload() {
-  const [openListStorage, setOpenListStorage] = useState([])
-  const [storageSelect, setStorageSelect] = useState(false)
-  const [storage, setStorage] = useState('r2')
-  const [album, setAlbum] = useState('')
-  const [openListMountPath, setOpenListMountPath] = useState('')
+  const {
+    storage,
+    album,
+    setAlbum,
+    openListStorage,
+    storageSelect,
+    openListMountPath,
+    setOpenListMountPath,
+    albums,
+    isAlbumsLoading,
+    handleStorageChange,
+    resetStorageState,
+    isUploadDisabled,
+    uploadWithHeicConversion,
+    compressPreviewImage,
+  } = useUploadConfig()
+
   const [exif, setExif] = useState({} as ExifType)
   const [title, setTitle] = useState('')
   const [url, setUrl] = useState('')
@@ -55,16 +64,10 @@ export default function LivephotoFileUpload() {
   const [activeTagIndex, setActiveTagIndex] = useState<number | null>(null)
   const t = useTranslations()
 
-  const { data, isLoading } = useSWR('/api/v1/albums/get', fetcher)
-  const { data: configs } = useSWR<{ config_key: string, config_value: string }[]>('/api/v1/settings/get-custom-info', fetcher)
-
-  const previewImageMaxWidthLimitSwitchOn = configs?.find(config => config.config_key === 'preview_max_width_limit_switch')?.config_value === '1'
-  const previewImageMaxWidthLimit = parseInt(configs?.find(config => config.config_key === 'preview_max_width_limit')?.config_value || '0')
-  const previewCompressQuality = parseFloat(configs?.find(config => config.config_key === 'preview_quality')?.config_value || '0.2')
-
-  async function loadExif(file: File | any) {
+  async function loadExif(file: File) {
     try {
-      const { tags, exifObj } = await exifReader(file)
+      const fileBuffer = await file.arrayBuffer()
+      const { tags, exifObj } = await exifReader(fileBuffer)
       setExif(exifObj)
       if (tags?.GPSLatitude?.description) {
         setLat(tags?.GPSLatitude?.description)
@@ -151,110 +154,26 @@ export default function LivephotoFileUpload() {
     }
   }
 
-  async function getOpenListStorage() {
-    if (openListStorage.length > 0) {
-      setStorageSelect(true)
-      return
-    }
+  async function onRequestImageUpload(file: File) {
+    const { res, processedFile } = await uploadWithHeicConversion(file, album)
+    const previewType = album === '/' ? '/preview' : album + '/preview'
     try {
-      toast.info('正在获取 Open List 挂载目录')
-      const res = await fetch('/api/v1/storage/open-list/storages', {
-        method: 'GET',
-      }).then(res => res.json())
-      if (res?.code === 200) {
-        setOpenListStorage(res.data?.content)
-        setStorageSelect(true)
-      } else {
-        toast.error('获取失败')
-      }
+      const previewResultUrl = await compressPreviewImage(processedFile, previewType)
+      setPreviewUrl(previewResultUrl)
     } catch (e) {
-      toast.error('获取失败')
+      console.error('Failed to upload preview image:', e)
     }
+    await loadExif(processedFile)
+    setHash(await encodeBrowserThumbHash(processedFile))
+    setUrl(res?.data?.url)
   }
 
-  const storages = [
-    {
-      label: 'S3 API',
-      value: 's3',
-    },
-    {
-      label: 'Cloudflare R2',
-      value: 'r2',
-    },
-    {
-      label: 'Open List API',
-      value: 'openList',
-    }
-  ]
-
-  async function uploadPreviewImage(file: File, type: string) {
-    new Compressor(file, {
-      quality: previewCompressQuality,
-      checkOrientation: false,
-      mimeType: 'image/webp',
-      maxWidth: previewImageMaxWidthLimitSwitchOn && previewImageMaxWidthLimit > 0 ? previewImageMaxWidthLimit : undefined,
-      async success(compressedFile) {
-        const res = await uploadFile(compressedFile, type, storage, openListMountPath)
-        if (res?.code === 200) {
-          setPreviewUrl(res?.data?.url)
-        } else {
-          throw new Error('Upload failed')
-        }
-      },
-      error() {
-        throw new Error('Upload failed')
-      },
-    })
-  }
-
-  async function resHandle(res: any, file: File, type: number) {
-    if (type === 2) {
-      if (res?.code === 200) {
-        setVideoUrl(res?.data?.url)
-      } else {
-        throw new Error('Upload failed')
-      }
+  async function onRequestVideoUpload(file: File) {
+    const res = await uploadFile(file, album, storage, openListMountPath)
+    if (res?.code === 200) {
+      setVideoUrl(res?.data?.url)
     } else {
-      if (res?.code === 200) {
-        try {
-          if (album === '/') {
-            await uploadPreviewImage(file, '/preview')
-          } else {
-            await uploadPreviewImage(file, album + '/preview')
-          }
-        } catch (e) {
-          throw new Error('Upload failed')
-        }
-        await loadExif(file)
-        setHash(await encodeBrowserThumbHash(file))
-        setUrl(res?.data?.url)
-      } else {
-        throw new Error('Upload failed')
-      }
-    }
-  }
-
-  async function onRequestUpload(file: File, type: number) {
-    // 获取文件名但是去掉扩展名部分
-    const fileName = file.name.split('.').slice(0, -1).join('.')
-    if (await isHeic(file) && type === 1) {
-      // 把 HEIC 转成 JPEG
-      const outputBuffer: Blob | Blob[] = await heicTo({
-        blob: file,
-        type: 'image/jpeg',
-      })
-      const outputFile = new File([outputBuffer], fileName + '.jpg', { type: 'image/jpeg' })
-      await uploadFile(outputFile, album, storage, openListMountPath).then(async (res) => {
-        if (res.code === 200) {
-          await resHandle(res, outputFile, type)
-        } else {
-          throw new Error('Upload failed')
-        }
-      })
-    } else {
-      await uploadFile(file, album, storage, openListMountPath).then(async (res) => {
-        await resHandle(res, file, type)
-      })
+      throw new Error('Upload failed')
     }
   }
 
@@ -268,8 +187,7 @@ export default function LivephotoFileUpload() {
   }
 
   function onRemoveFile() {
-    setStorageSelect(false)
-    setOpenListMountPath('')
+    resetStorageState()
     setExif({} as ExifType)
     setHash('')
     setUrl('')
@@ -303,7 +221,7 @@ export default function LivephotoFileUpload() {
         const uploadPromises = files.map(async (file) => {
           try {
             await onBeforeUpload(1)
-            await onRequestUpload(file, 1)
+            await onRequestImageUpload(file)
             onSuccess(file)
           } catch (error) {
             onError(
@@ -327,7 +245,7 @@ export default function LivephotoFileUpload() {
         toast.error('Upload failed')
       }
     },
-    [onRequestUpload],
+    [onRequestImageUpload],
   )
 
   const onVideoUpload = React.useCallback(
@@ -347,7 +265,7 @@ export default function LivephotoFileUpload() {
         const uploadPromises = files.map(async (file) => {
           try {
             await onBeforeUpload(2)
-            await onRequestUpload(file, 2)
+            await onRequestVideoUpload(file)
             onSuccess(file)
           } catch (error) {
             onError(
@@ -371,7 +289,7 @@ export default function LivephotoFileUpload() {
         toast.error('Upload failed')
       }
     },
-    [onRequestUpload],
+    [onRequestVideoUpload],
   )
 
   return (
@@ -380,14 +298,7 @@ export default function LivephotoFileUpload() {
         <div className="flex flex-1 w-full space-x-1">
           <Select
             defaultValue={storage}
-            onValueChange={async (value: string) => {
-              setStorage(value)
-              if (value === 'openList') {
-                await getOpenListStorage()
-              } else {
-                setStorageSelect(false)
-              }
-            }}
+            onValueChange={handleStorageChange}
           >
             <SelectTrigger>
               <SelectValue placeholder={t('Upload.selectStorage')} />
@@ -395,7 +306,7 @@ export default function LivephotoFileUpload() {
             <SelectContent>
               <SelectGroup>
                 <SelectLabel>{t('Words.album')}</SelectLabel>
-                {storages?.map((storage: any) => (
+                {STORAGE_OPTIONS?.map((storage) => (
                   <SelectItem key={storage.value} value={storage.value}>
                     {storage.label}
                   </SelectItem>
@@ -404,7 +315,7 @@ export default function LivephotoFileUpload() {
             </SelectContent>
           </Select>
           <Select
-            disabled={isLoading}
+            disabled={isAlbumsLoading}
             defaultValue={album}
             onValueChange={(value: string) => setAlbum(value)}
           >
@@ -414,7 +325,7 @@ export default function LivephotoFileUpload() {
             <SelectContent>
               <SelectGroup>
                 <SelectLabel>{t('Words.album')}</SelectLabel>
-                {data?.map((album: AlbumType) => (
+                {albums?.map((album: AlbumType) => (
                   <SelectItem key={album.album_value} value={album.album_value}>
                     {album.name}
                   </SelectItem>
@@ -438,7 +349,7 @@ export default function LivephotoFileUpload() {
       {
         storageSelect && openListStorage?.length > 0 &&
         <Select
-          disabled={isLoading}
+          disabled={isAlbumsLoading}
           defaultValue={openListMountPath}
           onValueChange={(value: string) => setOpenListMountPath(value)}
         >
@@ -466,7 +377,7 @@ export default function LivephotoFileUpload() {
             onValueChange={setImages}
             onUpload={onImageUpload}
             multiple={false}
-            disabled={storage === '' || album === '' || (storage === 'openList' && openListMountPath === '')}
+            disabled={isUploadDisabled}
           >
             <FileUploadDropzone className="h-full">
               <div className="flex flex-col items-center gap-1">
@@ -498,7 +409,7 @@ export default function LivephotoFileUpload() {
             onValueChange={setVideos}
             onUpload={onVideoUpload}
             multiple={false}
-            disabled={storage === '' || album === '' || (storage === 'openList' && openListMountPath === '')}
+            disabled={isUploadDisabled}
           >
             <FileUploadDropzone className="h-full">
               <div className="flex flex-col items-center gap-1">
