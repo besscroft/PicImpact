@@ -35,7 +35,9 @@ app.get('/:id', async (c) => {
     // 如果没有开启直接下载，直接返回图片 URL
     const downloadConfigs = await fetchConfigsByKeys([
       's3_direct_download',
-      'r2_direct_download'
+      'r2_direct_download',
+      'storage_folder',
+      'r2_storage_folder'
     ])
     const s3DirectDownload = downloadConfigs.find((item: Config) => item.config_key === 's3_direct_download')?.config_value === 'true'
     const r2DirectDownload = downloadConfigs.find((item: Config) => item.config_key === 'r2_direct_download')?.config_value === 'true'

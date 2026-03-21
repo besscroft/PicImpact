@@ -132,6 +132,9 @@ app.post('/upload', async (c) => {
     if (storage) {
       switch (storage.toString()) {
         case 'openList': {
+          if (!file || !(file instanceof File)) {
+            throw new HTTPException(400, { message: 'File is required' })
+          }
           const result = await openListUpload(file, type, mountPath)
           return c.json({
             code: 200, data: result
@@ -161,25 +164,22 @@ app.post('/getObjectUrl', async (c) => {
         const forcePathStyle = configs.find((item: Config) => item.config_key === 'force_path_style')?.config_value || ''
         const endpoint = configs.find((item: Config) => item.config_key === 'endpoint')?.config_value || ''
 
+        const cleanEndpoint = endpoint.replace(/^https?:\/\//, '')
+        const cleanS3CdnUrl = s3CdnUrl.replace(/^https?:\/\//, '')
+
         if (s3Cdn && s3Cdn === 'true') {
           return c.json({
-            code: 200, data: `https://${
-              s3CdnUrl.includes('https://') ? s3CdnUrl.split('//')[1] : s3CdnUrl
-            }/${key}`
+            code: 200, data: `https://${cleanS3CdnUrl}/${key}`
           })
         } else {
           if (forcePathStyle && forcePathStyle === 'true') {
             return c.json({
-              code: 200, data: `https://${
-                endpoint.includes('https://') ? endpoint.split('//')[1] : endpoint
-              }/${bucket}/${key}`
+              code: 200, data: `https://${cleanEndpoint}/${bucket}/${key}`
             })
           }
         }
         return c.json({
-          code: 200, data: `https://${bucket}.${
-            endpoint.includes('https://') ? endpoint.split('//')[1] : endpoint
-          }/${key}`
+          code: 200, data: `https://${bucket}.${cleanEndpoint}/${key}`
         })
       }
 

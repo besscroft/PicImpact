@@ -28,6 +28,10 @@ app.get('/storages', async (c) => {
     const openListToken = findConfig.find((item: Config) => item.config_key === 'open_list_token')?.config_value || ''
     const openListUrl = findConfig.find((item: Config) => item.config_key === 'open_list_url')?.config_value || ''
 
+    if (!openListUrl || !openListToken) {
+      throw new HTTPException(400, { message: 'Open List URL and token must be configured' })
+    }
+
     const data = await fetch(`${openListUrl}/api/admin/storage/list`, {
       method: 'get',
       headers: {
@@ -36,6 +40,7 @@ app.get('/storages', async (c) => {
     }).then(res => res.json())
     return c.json(data)
   } catch (e) {
+    if (e instanceof HTTPException) throw e
     throw new HTTPException(500, { message: 'Failed to fetch storages', cause: e })
   }
 })

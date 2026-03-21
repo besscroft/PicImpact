@@ -29,7 +29,6 @@ app.get('/get-custom-info', async (c) => {
     ])
     return c.json(data)
   } catch (error) {
-    console.error('Error fetching custom info:', error)
     throw new HTTPException(500, { message: 'Failed to fetch custom info', cause: error })
   }
 })
@@ -47,7 +46,6 @@ app.get('/r2-info', async (c) => {
     ])
     return c.json(data)
   } catch (error) {
-    console.error('Error fetching R2 info:', error)
     throw new HTTPException(500, { message: 'Failed to fetch R2 info', cause: error })
   }
 })
@@ -68,7 +66,6 @@ app.get('/s3-info', async (c) => {
     ])
     return c.json(data)
   } catch (error) {
-    console.error('Error fetching S3 info:', error)
     throw new HTTPException(500, { message: 'Failed to fetch S3 info', cause: error })
   }
 })
@@ -80,7 +77,6 @@ app.get('/get-admin-config', async (c) => {
     ])
     return c.json(data)
   } catch (error) {
-    console.error('Error fetching admin config:', error)
     throw new HTTPException(500, { message: 'Failed to fetch admin config', cause: error })
   }
 })
