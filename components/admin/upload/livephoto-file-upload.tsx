@@ -160,7 +160,7 @@ export default function LivephotoFileUpload() {
       const previewResultUrl = await compressPreviewImage(processedFile, previewType)
       setPreviewUrl(previewResultUrl)
     } catch (e) {
-      throw new Error('Upload failed')
+      console.error('Failed to upload preview image:', e)
     }
     await loadExif(processedFile)
     setHash(await encodeBrowserThumbHash(processedFile))
