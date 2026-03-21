@@ -1,14 +1,12 @@
-'use server'
-
 import { Prisma } from '@prisma/client'
 
 /**
  * 构建相机/镜头 EXIF 过滤条件
  */
-export function buildExifFilters(camera?: string, lens?: string, alias = 'image') {
+export function buildExifFilters(camera?: string, lens?: string) {
   return Prisma.sql`
-    ${camera ? Prisma.sql`AND COALESCE(${Prisma.raw(alias)}.exif->>'model', 'Unknown') = ${camera}` : Prisma.empty}
-    ${lens ? Prisma.sql`AND COALESCE(${Prisma.raw(alias)}.exif->>'lens_model', 'Unknown') = ${lens}` : Prisma.empty}
+    ${camera ? Prisma.sql`AND COALESCE(image.exif->>'model', 'Unknown') = ${camera}` : Prisma.empty}
+    ${lens ? Prisma.sql`AND COALESCE(image.exif->>'lens_model', 'Unknown') = ${lens}` : Prisma.empty}
   `
 }
 
@@ -23,9 +21,9 @@ export function buildPagination(pageNum: number, pageSize: number) {
 /**
  * 构建公开状态过滤条件
  */
-export function buildShowFilter(showStatus: number, alias = 'image') {
+export function buildShowFilter(showStatus: number) {
   return showStatus !== -1
-    ? Prisma.sql`AND ${Prisma.raw(alias)}.show = ${showStatus}`
+    ? Prisma.sql`AND image.show = ${showStatus}`
     : Prisma.empty
 }
 
