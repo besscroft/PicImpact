@@ -1,6 +1,5 @@
-import { fetchClientImagesListByAlbum, fetchClientImagesPageTotalByAlbum } from '~/server/db/query/images.ts'
+import { getImagesData, getImagesPageTotal, getAlbumDisplayConfig } from '~/server/actions/images'
 import type { ImageHandleProps } from '~/types/props.ts'
-import { fetchConfigsByKeys } from '~/server/db/query/configs.ts'
 import DefaultGallery from '~/components/layout/theme/default/default-gallery.tsx'
 import { fetchAlbumByRouter } from '~/server/db/query/albums.ts'
 import 'react-photo-album/masonry.css'
@@ -15,36 +14,14 @@ export default async function Page({
 }) {
   const { album } = await params
 
-  const getData = async (pageNum: number, album: string, camera?: string, lens?: string) => {
-    'use server'
-    return await fetchClientImagesListByAlbum(pageNum, album, camera, lens)
-  }
-
-  const getPageTotal = async (album: string, camera?: string, lens?: string) => {
-    'use server'
-    return await fetchClientImagesPageTotalByAlbum(album, camera, lens)
-  }
-
-  const getConfig = async () => {
-    'use server'
-    return await fetchConfigsByKeys([
-      'custom_index_download_enable'
-    ])
-  }
-
-  const getAlbum = async (album: string) => {
-    'use server'
-    return await fetchAlbumByRouter(album)
-  }
-
-  const data: AlbumType = await getAlbum(`/${album}`)
+  const data: AlbumType = await fetchAlbumByRouter(`/${album}`)
 
   const props: ImageHandleProps = {
-    handle: getData,
+    handle: getImagesData,
     args: 'getImages-client',
     album: `/${album}`,
-    totalHandle: getPageTotal,
-    configHandle: getConfig
+    totalHandle: getImagesPageTotal,
+    configHandle: getAlbumDisplayConfig
   }
 
   if (!data) {
