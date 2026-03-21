@@ -39,7 +39,8 @@
     "password": "密码修改",
     "storages": "存储配置",
     "authenticator": "双因素验证",
-    "passkey": "Passkey"
+    "passkey": "Passkey",
+    "daily": "Daily 首页"
   },
   "Passkey": {
     "title": "Passkey 管理",
@@ -432,5 +433,32 @@
     "copyExif": "复制 EXIF",
     "copySuccess": "复制成功！",
     "copyFailed": "复制失败！"
+  },
+  "Daily": {
+    "title": "Daily 首页设置",
+    "enabled": "启用 Daily 首页",
+    "enabledDescription": "开启后首页将从相册中自动选取照片展示，替代手动选择模式",
+    "refreshInterval": "刷新间隔",
+    "every6Hours": "每 6 小时",
+    "every12Hours": "每 12 小时",
+    "everyDay": "每天",
+    "everyWeek": "每周",
+    "totalCount": "展示照片总数",
+    "lastRefresh": "上次刷新时间",
+    "nextRefresh": "下次刷新时间",
+    "neverRefreshed": "从未刷新",
+    "manualRefresh": "立即刷新",
+    "refreshSuccess": "刷新成功！",
+    "refreshFailed": "刷新失败！",
+    "albumWeights": "相册权重配置",
+    "albumName": "相册名称",
+    "photoCount": "照片数量",
+    "weight": "权重",
+    "estimatedQuota": "预计配额",
+    "notParticipating": "不参与",
+    "participating": "参与中",
+    "totalParticipating": "参与相册数",
+    "saveSuccess": "保存成功！",
+    "saveFailed": "保存失败！"
   }
 }

@@ -39,7 +39,8 @@
     "account": "アカウント設定",
     "storages": "ストレージ設定",
     "authenticator": "二要素認証",
-    "passkey": "Passkey"
+    "passkey": "Passkey",
+    "daily": "デイリーホームページ"
   },
   "Passkey": {
     "title": "Passkey 管理",
@@ -432,5 +433,32 @@
     "copyExif": "EXIFをコピー",
     "copySuccess": "コピーしました！",
     "copyFailed": "コピーに失敗しました！"
+  },
+  "Daily": {
+    "title": "デイリーホームページ設定",
+    "enabled": "デイリーホームページを有効にする",
+    "enabledDescription": "有効にすると、ホームページはアルバムから自動的に写真を選択して表示します",
+    "refreshInterval": "更新間隔",
+    "every6Hours": "6時間ごと",
+    "every12Hours": "12時間ごと",
+    "everyDay": "毎日",
+    "everyWeek": "毎週",
+    "totalCount": "表示写真数",
+    "lastRefresh": "前回の更新",
+    "nextRefresh": "次回の更新",
+    "neverRefreshed": "未更新",
+    "manualRefresh": "今すぐ更新",
+    "refreshSuccess": "更新成功！",
+    "refreshFailed": "更新失敗！",
+    "albumWeights": "アルバム重み設定",
+    "albumName": "アルバム名",
+    "photoCount": "写真数",
+    "weight": "重み",
+    "estimatedQuota": "推定割り当て",
+    "notParticipating": "不参加",
+    "participating": "参加中",
+    "totalParticipating": "参加アルバム数",
+    "saveSuccess": "保存成功！",
+    "saveFailed": "保存失敗！"
   }
 }
