@@ -1,7 +1,6 @@
 import useSWR from 'swr'
-import type { HandleProps } from '~/types/props'
 
-export const useSwrHydrated = ({ handle, args }: HandleProps)   => {
+export const useSwrHydrated = <T = unknown>({ handle, args }: { handle: () => Promise<T>, args: string }) => {
   const { data, error, isLoading, isValidating, mutate } = useSWR(args,
     () => {
       return handle()

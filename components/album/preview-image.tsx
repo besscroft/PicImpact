@@ -1,6 +1,6 @@
 'use client'
 
-import type { HandleProps, PreviewImageHandleProps } from '~/types/props'
+import type { PreviewImageHandleProps } from '~/types/props'
 import LivePhoto from '~/components/album/live-photo'
 import { toast } from 'sonner'
 import { LinkIcon } from '~/components/icons/link'
@@ -70,11 +70,10 @@ export default function PreviewImage(props: Readonly<PreviewImageHandleProps>) {
   const exifIconClass = 'text-muted-foreground hover:text-primary transition-colors'
   const badgeIconClass = 'shrink-0 text-primary/60'
 
-  const configProps: HandleProps = {
-    handle: props.configHandle,
+  const { data: configData } = useSwrHydrated({
+    handle: props.configHandle ?? (async () => []),
     args: 'system-config',
-  }
-  const { data: configData } = useSwrHydrated(configProps)
+  })
 
   // Format date time
   const formattedDateTime = useMemo(() => {

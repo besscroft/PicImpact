@@ -1,9 +1,8 @@
 'use client'
 
-import type { HandleProps, ImageHandleProps } from '~/types/props'
+import type { ImageHandleProps } from '~/types/props'
 import { useSwrPageTotalHook } from '~/hooks/use-swr-page-total-hook'
 import useSWRInfinite from 'swr/infinite'
-import { useSwrHydrated } from '~/hooks/use-swr-hydrated'
 import { useTranslations } from 'next-intl'
 import { MasonryPhotoAlbum, RenderImageContext, RenderImageProps } from 'react-photo-album'
 import type { ImageType } from '~/types'
@@ -37,12 +36,7 @@ export default function TagGallery(props : Readonly<ImageHandleProps>) {
       revalidateIfStale: false,
       revalidateOnReconnect: false,
     })
-  const configProps: HandleProps = {
-    handle: props.configHandle,
-    args: 'system-config',
-  }
-  const { data: configData } = useSwrHydrated(configProps)
-  const dataList = data ? [].concat(...data) : []
+  const dataList = data?.flat() ?? []
   const t = useTranslations()
   const router = useRouter()
 
@@ -91,7 +85,7 @@ export default function TagGallery(props : Readonly<ImageHandleProps>) {
           isValidating ?
             <ReloadIcon className="mr-2 h-4 w-4 animate-spin"/>
             : dataList.length > 0 ?
-              size < pageTotal &&
+              size < (pageTotal ?? 0) &&
               <Button
                 disabled={isLoading}
                 onClick={() => {

@@ -1,6 +1,6 @@
 'use client'
 
-import type { HandleProps, ImageHandleProps } from '~/types/props.ts'
+import type { ImageHandleProps } from '~/types/props.ts'
 import { useSwrPageTotalHook } from '~/hooks/use-swr-page-total-hook.ts'
 import useSWRInfinite from 'swr/infinite'
 import { useSwrHydrated } from '~/hooks/use-swr-hydrated.ts'
@@ -26,14 +26,13 @@ export default function TemplateGallery(props : Readonly<ImageHandleProps>) {
       revalidateIfStale: false,
       revalidateOnReconnect: false,
     })
-  const configProps: HandleProps = {
-    handle: props.configHandle,
-    args: 'system-config',
-  }
   // config 配置信息
-  const { data: configData } = useSwrHydrated(configProps)
+  const { data: configData } = useSwrHydrated({
+    handle: props.configHandle ?? (async () => []),
+    args: 'system-config',
+  })
   // 处理好的数据，直接用这个即可
-  const dataList: ImageType[] = data ? [].concat(...data) : []
+  const dataList: ImageType[] = data?.flat() ?? []
   // i18n
   const t = useTranslations()
 
