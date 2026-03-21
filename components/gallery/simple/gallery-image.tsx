@@ -51,22 +51,28 @@ export default function GalleryImage({ photo, configData }: { photo: ImageType, 
         {(photo.blurhash === DEFAULT_HASH || !photo.blurhash) && isLoading && (
           <Skeleton className="absolute inset-0 z-10 rounded-none" />
         )}
-        <MotionImage
-          className={cn('w-full h-auto', isLoading && 'animate-pulse')}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.5 }}
-          src={customIndexOriginEnable ? photo.url || photo.preview_url : photo.preview_url || photo.url}
-          overrideSrc={customIndexOriginEnable ? photo.url || photo.preview_url : photo.preview_url || photo.url}
-          alt={photo.title}
-          width={photo.width}
-          height={photo.height}
-          loading="lazy"
-          unoptimized
-          placeholder={(photo.blurhash === DEFAULT_HASH || !photo.blurhash) ? 'empty' : 'blur'}
-          blurDataURL={dataURL}
-          onLoad={() => setIsLoading(false)}
-        />
+        {(() => {
+          const imgSrc = customIndexOriginEnable ? photo.url || photo.preview_url : photo.preview_url || photo.url
+          const useUnoptimized = customIndexOriginEnable ? true : !!photo.preview_url
+          return (
+            <MotionImage
+              className={cn('w-full h-auto', isLoading && 'animate-pulse')}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.5 }}
+              src={imgSrc}
+              overrideSrc={imgSrc}
+              alt={photo.title}
+              width={photo.width}
+              height={photo.height}
+              loading="lazy"
+              unoptimized={useUnoptimized}
+              placeholder={(photo.blurhash === DEFAULT_HASH || !photo.blurhash) ? 'empty' : 'blur'}
+              blurDataURL={dataURL}
+              onLoad={() => setIsLoading(false)}
+            />
+          )
+        })()}
         {photo.type === 2 && (
           <div className="absolute top-2 left-2 p-5 rounded-full">
             <svg xmlns="http://www.w3.org/2000/svg" className="absolute bottom-3 right-3 text-white opacity-75 z-10"

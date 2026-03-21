@@ -28,17 +28,30 @@ export default function MasonryPhotoItem({ photo }: { photo: ImageType }) {
         }
       }}
     >
-      <Image
-        className="transition-transform duration-500 group-hover:scale-105 object-cover"
-        src={photo.preview_url || photo.url}
-        alt={photo.detail || photo.title || ''}
-        fill
-        sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
-        loading="lazy"
-        unoptimized
-        placeholder={(photo.blurhash === DEFAULT_HASH || !photo.blurhash) ? 'empty' : 'blur'}
-        blurDataURL={dataURL}
-      />
+      {photo.preview_url ? (
+        <Image
+          className="transition-transform duration-500 group-hover:scale-105 object-cover"
+          src={photo.preview_url}
+          alt={photo.detail || photo.title || ''}
+          fill
+          sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
+          loading="lazy"
+          unoptimized
+          placeholder={(photo.blurhash === DEFAULT_HASH || !photo.blurhash) ? 'empty' : 'blur'}
+          blurDataURL={dataURL}
+        />
+      ) : (
+        <Image
+          className="transition-transform duration-500 group-hover:scale-105 object-cover"
+          src={photo.url}
+          alt={photo.detail || photo.title || ''}
+          fill
+          sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
+          loading="lazy"
+          placeholder={(photo.blurhash === DEFAULT_HASH || !photo.blurhash) ? 'empty' : 'blur'}
+          blurDataURL={dataURL}
+        />
+      )}
       {/* Hover gradient overlay */}
       <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
       {/* Hover content */}
