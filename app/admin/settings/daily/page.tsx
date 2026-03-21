@@ -73,7 +73,7 @@ export default function DailySettings() {
     }
     try {
       setLoading(true)
-      await Promise.all([
+      const results = await Promise.all([
         fetch('/api/v1/daily/config', {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
@@ -91,6 +91,7 @@ export default function DailySettings() {
           ),
         }),
       ])
+      if (results.some(r => !r.ok)) throw new Error('Request failed')
       await mutateConfig()
       toast.success(t('Daily.saveSuccess'))
     } catch {
@@ -103,7 +104,8 @@ export default function DailySettings() {
   async function handleRefresh() {
     try {
       setRefreshing(true)
-      await fetch('/api/v1/daily/refresh', { method: 'POST' })
+      const res = await fetch('/api/v1/daily/refresh', { method: 'POST' })
+      if (!res.ok) throw new Error('Request failed')
       await mutateConfig()
       toast.success(t('Daily.refreshSuccess'))
     } catch {
