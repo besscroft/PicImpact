@@ -2,10 +2,7 @@
 
 import React, { useState } from 'react'
 import { toast } from 'sonner'
-import useSWR from 'swr'
-import { fetcher } from '~/lib/utils/fetcher'
 import type { ExifType, AlbumType, ImageType } from '~/types'
-import Compressor from 'compressorjs'
 import {
   Select,
   SelectContent,
@@ -17,7 +14,7 @@ import {
 } from '~/components/ui/select'
 import { Tag, TagInput } from 'emblor'
 import { useTranslations } from 'next-intl'
-import { exifReader, uploadFile } from '~/lib/utils/file'
+import { exifReader } from '~/lib/utils/file'
 import { RocketIcon } from '~/components/icons/rocket'
 import { RefreshCWIcon } from '~/components/icons/refresh-cw'
 import {
@@ -32,15 +29,27 @@ import {
 import { Button } from '~/components/ui/button'
 import { X } from 'lucide-react'
 import { UploadIcon } from '~/components/icons/upload'
-import { heicTo, isHeic } from 'heic-to'
 import { encodeBrowserThumbHash } from '~/lib/utils/blurhash-client.ts'
+import { useUploadConfig, STORAGE_OPTIONS } from '~/hooks/use-upload-config'
 
 export default function SimpleFileUpload() {
-  const [openListStorage, setOpenListStorage] = useState([])
-  const [storageSelect, setStorageSelect] = useState(false)
-  const [storage, setStorage] = useState('r2')
-  const [album, setAlbum] = useState('')
-  const [openListMountPath, setOpenListMountPath] = useState('')
+  const {
+    storage,
+    album,
+    setAlbum,
+    openListStorage,
+    storageSelect,
+    openListMountPath,
+    setOpenListMountPath,
+    albums,
+    isAlbumsLoading,
+    handleStorageChange,
+    resetStorageState,
+    isUploadDisabled,
+    uploadWithHeicConversion,
+    compressPreviewImage,
+  } = useUploadConfig()
+
   const [exif, setExif] = useState({} as ExifType)
   const [title, setTitle] = useState('')
   const [imageId, setImageId] = useState('')
@@ -59,14 +68,7 @@ export default function SimpleFileUpload() {
   const [activeTagIndex, setActiveTagIndex] = useState<number | null>(null)
   const t = useTranslations()
 
-  const { data, isLoading } = useSWR('/api/v1/albums/get', fetcher)
-  const { data: configs } = useSWR<{ config_key: string, config_value: string }[]>('/api/v1/settings/get-custom-info', fetcher)
-
-  const previewImageMaxWidthLimitSwitchOn = configs?.find(config => config.config_key === 'preview_max_width_limit_switch')?.config_value === '1'
-  const previewImageMaxWidthLimit = parseInt(configs?.find(config => config.config_key === 'preview_max_width_limit')?.config_value || '0')
-  const previewCompressQuality = parseFloat(configs?.find(config => config.config_key === 'preview_quality')?.config_value || '0.2')
-
-  async function loadExif(file: any) {
+  async function loadExif(file: File) {
     try {
       const { tags, exifObj } = await exifReader(file)
       setExif(exifObj)
@@ -156,110 +158,24 @@ export default function SimpleFileUpload() {
     }
   }
 
-  async function getOpenListStorage() {
-    if (openListStorage.length > 0) {
-      setStorageSelect(true)
-      return
-    }
+  async function onRequestUpload(file: File) {
+    const { res, processedFile } = await uploadWithHeicConversion(file, album)
+    const previewType = album === '/' ? '/preview' : album + '/preview'
     try {
-      toast.info(t('Tips.gettingOpenListDirs'))
-      const res = await fetch('/api/v1/storage/open-list/storages', {
-        method: 'GET',
-      }).then(res => res.json())
-      if (res?.code === 200) {
-        setOpenListStorage(res.data?.content)
-        setStorageSelect(true)
-      } else {
-        toast.error(t('Tips.getFailed'))
-      }
-    } catch (e) {
-      toast.error(t('Tips.getFailed'))
-    }
-  }
-
-  const storages = [
-    {
-      label: 'S3 API',
-      value: 's3',
-    },
-    {
-      label: 'Cloudflare R2',
-      value: 'r2',
-    },
-    {
-      label: 'Open List API',
-      value: 'openList',
-    }
-  ]
-
-  async function uploadPreviewImage(file: File, type: string) {
-    new Compressor(file, {
-      quality: previewCompressQuality,
-      checkOrientation: false,
-      mimeType: 'image/webp',
-      maxWidth: previewImageMaxWidthLimitSwitchOn && previewImageMaxWidthLimit > 0 ? previewImageMaxWidthLimit : undefined,
-      async success(compressedFile) {
-        const res = await uploadFile(compressedFile, type, storage, openListMountPath)
-        if (res?.code === 200) {
-          setPreviewUrl(res?.data?.url)
-        } else {
-          throw new Error('Upload failed')
-        }
-      },
-      error() {
-        throw new Error('Upload failed')
-      },
-    })
-  }
-
-  async function resHandle(res: any, file: File) {
-    try {
-      if (album === '/') {
-        await uploadPreviewImage(file, '/preview')
-      } else {
-        await uploadPreviewImage(file, album + '/preview')
-      }
+      const previewResultUrl = await compressPreviewImage(processedFile, previewType)
+      setPreviewUrl(previewResultUrl)
     } catch (e) {
       console.error('Failed to upload preview image:', e)
     }
-    await loadExif(file)
-    setHash(await encodeBrowserThumbHash(file))
+    await loadExif(processedFile)
+    setHash(await encodeBrowserThumbHash(processedFile))
     setUrl(res?.data?.url)
     setImageId(res?.data?.imageId)
     setImageName(res?.data?.fileName)
   }
 
-  async function onRequestUpload(file: File) {
-    // 获取文件名但是去掉扩展名部分
-    const fileName = file.name.split('.').slice(0, -1).join('.')
-    if (await isHeic(file)) {
-      // 把 HEIC 转成 JPEG
-      const outputBuffer: Blob | Blob[] = await heicTo({
-        blob: file,
-        type: 'image/jpeg',
-      })
-      const outputFile = new File([outputBuffer], fileName + '.jpg', { type: 'image/jpeg' })
-      await uploadFile(outputFile, album, storage, openListMountPath).then(async (res) => {
-        if (res.code === 200) {
-          await resHandle(res, outputFile)
-        } else {
-          throw new Error('Upload failed')
-        }
-      })
-    } else {
-      await uploadFile(file, album, storage, openListMountPath).then(async (res) => {
-        if (res.code === 200) {
-          await resHandle(res, file)
-        } else {
-          throw new Error('Upload failed')
-        }
-      })
-    }
-  }
-
   function onRemoveFile() {
-    setStorageSelect(false)
-    setOpenListMountPath('')
+    resetStorageState()
     setExif({} as ExifType)
     setUrl('')
     setHash('')
@@ -336,14 +252,7 @@ export default function SimpleFileUpload() {
         <div className="flex flex-1 w-full space-x-1">
           <Select
             defaultValue={storage}
-            onValueChange={async (value: string) => {
-              setStorage(value)
-              if (value === 'openList') {
-                await getOpenListStorage()
-              } else {
-                setStorageSelect(false)
-              }
-            }}
+            onValueChange={handleStorageChange}
           >
             <SelectTrigger>
               <SelectValue placeholder={t('Upload.selectStorage')}/>
@@ -351,7 +260,7 @@ export default function SimpleFileUpload() {
             <SelectContent>
               <SelectGroup>
                 <SelectLabel>{t('Words.album')}</SelectLabel>
-                {storages?.map((storage: any) => (
+                {STORAGE_OPTIONS?.map((storage) => (
                   <SelectItem key={storage.value} value={storage.value}>
                     {storage.label}
                   </SelectItem>
@@ -360,7 +269,7 @@ export default function SimpleFileUpload() {
             </SelectContent>
           </Select>
           <Select
-            disabled={isLoading}
+            disabled={isAlbumsLoading}
             defaultValue={album}
             onValueChange={async (value: string) => {
               setAlbum(value)
@@ -372,7 +281,7 @@ export default function SimpleFileUpload() {
             <SelectContent>
               <SelectGroup>
                 <SelectLabel>{t('Words.album')}</SelectLabel>
-                {data?.map((album: AlbumType) => (
+                {albums?.map((album: AlbumType) => (
                   <SelectItem key={album.album_value} value={album.album_value}>
                     {album.name}
                   </SelectItem>
@@ -396,7 +305,7 @@ export default function SimpleFileUpload() {
       {
         storageSelect && openListStorage?.length > 0 &&
         <Select
-          disabled={isLoading}
+          disabled={isAlbumsLoading}
           defaultValue={openListMountPath}
           onValueChange={(value: string) => setOpenListMountPath(value)}
         >
@@ -423,7 +332,7 @@ export default function SimpleFileUpload() {
           onValueChange={setFiles}
           onUpload={onUpload}
           multiple={false}
-          disabled={storage === '' || album === '' || (storage === 'openList' && openListMountPath === '')}
+          disabled={isUploadDisabled}
         >
           <FileUploadDropzone className="h-full">
             <div className="flex flex-col items-center gap-1">
