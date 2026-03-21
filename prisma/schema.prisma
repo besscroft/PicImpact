@@ -66,6 +66,7 @@ model Albums {
   del                  Int                    @default(0) @db.SmallInt
   imagesAlbumsRelation ImagesAlbumsRelation[]
   image_sorting        Int                    @default(1) @db.SmallInt
+  daily_weight         Int                    @default(0) @db.SmallInt
 
   @@map("albums")
 }
