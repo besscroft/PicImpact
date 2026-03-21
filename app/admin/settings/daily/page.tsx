@@ -30,7 +30,7 @@ export default function DailySettings() {
   const [albumWeights, setAlbumWeights] = useState<Array<{ id: string, name: string, album_value: string, daily_weight: number, photo_count: number }>>([])
   const t = useTranslations()
 
-  const { data: configData, isValidating: configValidating, isLoading: configLoading } = useSWR('/api/v1/daily/config', fetcher)
+  const { data: configData, isValidating: configValidating, isLoading: configLoading, mutate: mutateConfig } = useSWR('/api/v1/daily/config', fetcher)
   const { data: albumsData, isValidating: albumsValidating, isLoading: albumsLoading } = useSWR('/api/v1/daily/albums', fetcher)
 
   useEffect(() => {
@@ -91,6 +91,7 @@ export default function DailySettings() {
           ),
         }),
       ])
+      await mutateConfig()
       toast.success(t('Daily.saveSuccess'))
     } catch {
       toast.error(t('Daily.saveFailed'))
@@ -103,6 +104,7 @@ export default function DailySettings() {
     try {
       setRefreshing(true)
       await fetch('/api/v1/daily/refresh', { method: 'POST' })
+      await mutateConfig()
       toast.success(t('Daily.refreshSuccess'))
     } catch {
       toast.error(t('Daily.refreshFailed'))
