@@ -29,38 +29,45 @@ app.get('/get-custom-info', async (c) => {
     ])
     return c.json(data)
   } catch (error) {
-    console.error('Error fetching custom info:', error)
     throw new HTTPException(500, { message: 'Failed to fetch custom info', cause: error })
   }
 })
 
 app.get('/r2-info', async (c) => {
-  const data = await fetchConfigsByKeys([
-    'r2_accesskey_id',
-    'r2_accesskey_secret',
-    'r2_account_id',
-    'r2_bucket',
-    'r2_storage_folder',
-    'r2_public_domain',
-    'r2_direct_download'
-  ])
-  return c.json(data)
+  try {
+    const data = await fetchConfigsByKeys([
+      'r2_accesskey_id',
+      'r2_accesskey_secret',
+      'r2_account_id',
+      'r2_bucket',
+      'r2_storage_folder',
+      'r2_public_domain',
+      'r2_direct_download'
+    ])
+    return c.json(data)
+  } catch (error) {
+    throw new HTTPException(500, { message: 'Failed to fetch R2 info', cause: error })
+  }
 })
 
 app.get('/s3-info', async (c) => {
-  const data = await fetchConfigsByKeys([
-    'accesskey_id',
-    'accesskey_secret',
-    'region',
-    'endpoint',
-    'bucket',
-    'storage_folder',
-    'force_path_style',
-    's3_cdn',
-    's3_cdn_url',
-    's3_direct_download'
-  ])
-  return c.json(data)
+  try {
+    const data = await fetchConfigsByKeys([
+      'accesskey_id',
+      'accesskey_secret',
+      'region',
+      'endpoint',
+      'bucket',
+      'storage_folder',
+      'force_path_style',
+      's3_cdn',
+      's3_cdn_url',
+      's3_direct_download'
+    ])
+    return c.json(data)
+  } catch (error) {
+    throw new HTTPException(500, { message: 'Failed to fetch S3 info', cause: error })
+  }
 })
 
 app.get('/get-admin-config', async (c) => {
@@ -70,52 +77,63 @@ app.get('/get-admin-config', async (c) => {
     ])
     return c.json(data)
   } catch (error) {
-    console.error('Error fetching admin config:', error)
     throw new HTTPException(500, { message: 'Failed to fetch admin config', cause: error })
   }
 })
 
 app.put('/update-open-list-info', async (c) => {
-  const query = await c.req.json()
+  try {
+    const query = await c.req.json()
 
-  const openListUrl = query?.find((item: Config) => item.config_key === 'open_list_url').config_value
-  const openListToken = query?.find((item: Config) => item.config_key === 'open_list_token').config_value
+    const openListUrl = query?.find((item: Config) => item.config_key === 'open_list_url').config_value
+    const openListToken = query?.find((item: Config) => item.config_key === 'open_list_token').config_value
 
-  const data = await updateOpenListConfig({ openListUrl, openListToken })
-  return c.json(data)
+    await updateOpenListConfig({ openListUrl, openListToken })
+    return c.json({ code: 200, message: 'Success' })
+  } catch (e) {
+    throw new HTTPException(500, { message: 'Failed', cause: e })
+  }
 })
 
 app.put('/update-r2-info', async (c) => {
-  const query = await c.req.json()
+  try {
+    const query = await c.req.json()
 
-  const r2AccesskeyId = query?.find((item: Config) => item.config_key === 'r2_accesskey_id').config_value
-  const r2AccesskeySecret = query?.find((item: Config) => item.config_key === 'r2_accesskey_secret').config_value
-  const r2AccountId = query?.find((item: Config) => item.config_key === 'r2_account_id').config_value
-  const r2Bucket = query?.find((item: Config) => item.config_key === 'r2_bucket').config_value
-  const r2StorageFolder = query?.find((item: Config) => item.config_key === 'r2_storage_folder').config_value
-  const r2PublicDomain = query?.find((item: Config) => item.config_key === 'r2_public_domain').config_value
-  const r2DirectDownload = query?.find((item: Config) => item.config_key === 'r2_direct_download').config_value
+    const r2AccesskeyId = query?.find((item: Config) => item.config_key === 'r2_accesskey_id').config_value
+    const r2AccesskeySecret = query?.find((item: Config) => item.config_key === 'r2_accesskey_secret').config_value
+    const r2AccountId = query?.find((item: Config) => item.config_key === 'r2_account_id').config_value
+    const r2Bucket = query?.find((item: Config) => item.config_key === 'r2_bucket').config_value
+    const r2StorageFolder = query?.find((item: Config) => item.config_key === 'r2_storage_folder').config_value
+    const r2PublicDomain = query?.find((item: Config) => item.config_key === 'r2_public_domain').config_value
+    const r2DirectDownload = query?.find((item: Config) => item.config_key === 'r2_direct_download').config_value
 
-  const data = await updateR2Config({ r2AccesskeyId, r2AccesskeySecret, r2AccountId, r2Bucket, r2StorageFolder, r2PublicDomain, r2DirectDownload })
-  return c.json(data)
+    await updateR2Config({ r2AccesskeyId, r2AccesskeySecret, r2AccountId, r2Bucket, r2StorageFolder, r2PublicDomain, r2DirectDownload })
+    return c.json({ code: 200, message: 'Success' })
+  } catch (e) {
+    throw new HTTPException(500, { message: 'Failed', cause: e })
+  }
 })
 
 app.put('/update-s3-info', async (c) => {
-  const query = await c.req.json()
+  try {
+    const query = await c.req.json()
 
-  const accesskeyId = query?.find((item: Config) => item.config_key === 'accesskey_id').config_value
-  const accesskeySecret = query?.find((item: Config) => item.config_key === 'accesskey_secret').config_value
-  const region = query?.find((item: Config) => item.config_key === 'region').config_value
-  const endpoint = query?.find((item: Config) => item.config_key === 'endpoint').config_value
-  const bucket = query?.find((item: Config) => item.config_key === 'bucket').config_value
-  const storageFolder = query?.find((item: Config) => item.config_key === 'storage_folder').config_value
-  const forcePathStyle = query?.find((item: Config) => item.config_key === 'force_path_style').config_value
-  const s3Cdn = query?.find((item: Config) => item.config_key === 's3_cdn').config_value
-  const s3CdnUrl = query?.find((item: Config) => item.config_key === 's3_cdn_url').config_value
-  const s3DirectDownload = query?.find((item: Config) => item.config_key === 's3_direct_download').config_value
+    const accesskeyId = query?.find((item: Config) => item.config_key === 'accesskey_id').config_value
+    const accesskeySecret = query?.find((item: Config) => item.config_key === 'accesskey_secret').config_value
+    const region = query?.find((item: Config) => item.config_key === 'region').config_value
+    const endpoint = query?.find((item: Config) => item.config_key === 'endpoint').config_value
+    const bucket = query?.find((item: Config) => item.config_key === 'bucket').config_value
+    const storageFolder = query?.find((item: Config) => item.config_key === 'storage_folder').config_value
+    const forcePathStyle = query?.find((item: Config) => item.config_key === 'force_path_style').config_value
+    const s3Cdn = query?.find((item: Config) => item.config_key === 's3_cdn').config_value
+    const s3CdnUrl = query?.find((item: Config) => item.config_key === 's3_cdn_url').config_value
+    const s3DirectDownload = query?.find((item: Config) => item.config_key === 's3_direct_download').config_value
 
-  const data = await updateS3Config({ accesskeyId, accesskeySecret, region, endpoint, bucket, storageFolder, forcePathStyle, s3Cdn, s3CdnUrl, s3DirectDownload })
-  return c.json(data)
+    await updateS3Config({ accesskeyId, accesskeySecret, region, endpoint, bucket, storageFolder, forcePathStyle, s3Cdn, s3CdnUrl, s3DirectDownload })
+    return c.json({ code: 200, message: 'Success' })
+  } catch (e) {
+    throw new HTTPException(500, { message: 'Failed', cause: e })
+  }
 })
 
 app.put('/update-custom-info', async (c) => {
