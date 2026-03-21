@@ -33,7 +33,13 @@ export async function checkAndRefreshDailyImages() {
   const intervalMs = intervalHours * 60 * 60 * 1000
 
   if (now > lastRefresh + intervalMs) {
-    await refreshDailyImages()
+    const lockResult = await db.$queryRaw<Array<{ pg_try_advisory_lock: boolean }>>`SELECT pg_try_advisory_lock(42)`
+    if (!lockResult[0]?.pg_try_advisory_lock) return
+    try {
+      await refreshDailyImages()
+    } finally {
+      await db.$executeRaw`SELECT pg_advisory_unlock(42)`
+    }
   }
 }
 

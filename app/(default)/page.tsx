@@ -11,7 +11,11 @@ import { checkAndRefreshDailyImages } from '~/server/db/operate/daily'
 export default async function Home() {
   const dailyEnabled = await fetchConfigValue('daily_enabled', 'false')
   if (dailyEnabled === 'true') {
-    await checkAndRefreshDailyImages()
+    try {
+      await checkAndRefreshDailyImages()
+    } catch (error) {
+      console.error('Failed to refresh daily images:', error)
+    }
   }
 
   const getData = async (pageNum: number, album: string, camera?: string, lens?: string) => {

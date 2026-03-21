@@ -29,6 +29,16 @@ app.put('/config', async (c) => {
     dailyRefreshInterval: string
     dailyTotalCount: number
   }
+  const validIntervals = ['6', '12', '24', '168']
+  if (!validIntervals.includes(body.dailyRefreshInterval)) {
+    throw new HTTPException(400, { message: 'Invalid dailyRefreshInterval, must be one of: 6, 12, 24, 168' })
+  }
+  if (typeof body.dailyTotalCount !== 'number' || body.dailyTotalCount < 1 || body.dailyTotalCount > 1000) {
+    throw new HTTPException(400, { message: 'Invalid dailyTotalCount, must be between 1 and 1000' })
+  }
+  if (typeof body.dailyEnabled !== 'boolean') {
+    throw new HTTPException(400, { message: 'Invalid dailyEnabled, must be a boolean' })
+  }
   try {
     await updateDailyConfig(body)
     return c.json({
@@ -55,6 +65,17 @@ app.put('/albums', async (c) => {
     id: string
     dailyWeight: number
   }>
+  if (!Array.isArray(body)) {
+    throw new HTTPException(400, { message: 'Request body must be an array' })
+  }
+  for (const item of body) {
+    if (typeof item.id !== 'string' || !item.id) {
+      throw new HTTPException(400, { message: 'Each item must have a non-empty string id' })
+    }
+    if (typeof item.dailyWeight !== 'number' || item.dailyWeight < 0 || item.dailyWeight > 10) {
+      throw new HTTPException(400, { message: 'Each item must have a dailyWeight between 0 and 10' })
+    }
+  }
   try {
     await updateAlbumsDailyWeight(body)
     return c.json({

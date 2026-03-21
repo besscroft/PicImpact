@@ -43,13 +43,21 @@ ranked_images AS (
   INNER JOIN album_quotas aq ON iar.album_value = aq.album_value
   WHERE i.del = 0 AND i.show = 0
 )
+deduped_images AS (
+  SELECT DISTINCT ON (id)
+    id, image_name, url, preview_url, video_url, blurhash, exif, labels,
+    width, height, lon, lat, title, detail, type, show, show_on_mainpage,
+    sort, created_at, updated_at, del
+  FROM ranked_images
+  WHERE rn <= quota
+  ORDER BY id, random()
+)
 SELECT
   id, image_name, url, preview_url, video_url, blurhash, exif, labels,
   width, height, lon, lat, title, detail, type, show, show_on_mainpage,
   sort, created_at, updated_at, del,
   ROW_NUMBER() OVER (ORDER BY random()) AS daily_sort
-FROM ranked_images
-WHERE rn <= quota
+FROM deduped_images
 LIMIT (SELECT total_count FROM config);
 
 -- Create unique index for concurrent refresh support
