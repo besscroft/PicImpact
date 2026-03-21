@@ -21,6 +21,9 @@ let nextConfig = {
     ignoreBuildErrors: true,
   },
   images: {
+    // Intentionally permissive: PicImpact is a self-hosted photo portfolio
+    // where users configure their own storage backends (S3, R2, etc.), so
+    // we cannot predict which image domains will be used at build time.
     remotePatterns: [
       {
         protocol: 'https',
