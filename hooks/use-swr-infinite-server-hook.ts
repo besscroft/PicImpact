@@ -16,6 +16,8 @@ export const useSwrInfiniteServerHook = (
     },
     {
       revalidateOnFocus: false,
+      revalidateIfStale: false,
+      revalidateOnReconnect: false,
       keepPreviousData: true,
     }
   )
