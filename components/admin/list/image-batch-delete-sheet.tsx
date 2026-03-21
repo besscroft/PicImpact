@@ -45,13 +45,18 @@ export default function ImageBatchDeleteSheet(props : Readonly<ImageServerHandle
     }
     try {
       setLoading(true)
-      await fetch('/api/v1/images/batch-delete', {
+      const res = await fetch('/api/v1/images/batch-delete', {
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(data),
         method: 'DELETE',
-      }).then(response => response.json())
+      })
+      if (!res.ok) {
+        toast.error(t('Tips.deleteFailed'))
+        return
+      }
+      await res.json()
       toast.success(t('Tips.deleteSuccess'))
       setImageBatchDelete(false)
       setData([])

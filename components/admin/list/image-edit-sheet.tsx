@@ -38,13 +38,18 @@ export default function ImageEditSheet(props : Readonly<ImageServerHandleProps &
     }
     try {
       setLoading(true)
-      await fetch('/api/v1/images/update', {
+      const res = await fetch('/api/v1/images/update', {
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(image),
         method: 'PUT',
-      }).then(response => response.json())
+      })
+      if (!res.ok) {
+        toast.error(t('Tips.updateFailed'))
+        return
+      }
+      await res.json()
       toast.success(t('Tips.updateSuccess'))
       setImageEditData({} as ImageType)
       setImageEdit(false)
