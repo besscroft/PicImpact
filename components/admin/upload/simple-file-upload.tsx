@@ -70,7 +70,8 @@ export default function SimpleFileUpload() {
 
   async function loadExif(file: File) {
     try {
-      const { tags, exifObj } = await exifReader(file)
+      const fileBuffer = await file.arrayBuffer()
+      const { tags, exifObj } = await exifReader(fileBuffer)
       setExif(exifObj)
       if (tags?.GPSLatitude?.description) {
         setLat(tags?.GPSLatitude?.description)

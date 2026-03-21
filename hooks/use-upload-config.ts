@@ -30,7 +30,7 @@ export interface UploadConfig {
   setStorage: (value: string) => void
   album: string
   setAlbum: (value: string) => void
-  openListStorage: never[]
+  openListStorage: Array<{ mount_path: string }>
   storageSelect: boolean
   openListMountPath: string
   setOpenListMountPath: (value: string) => void
@@ -48,7 +48,7 @@ export interface UploadConfig {
 }
 
 export function useUploadConfig(): UploadConfig {
-  const [openListStorage, setOpenListStorage] = useState([] as never[])
+  const [openListStorage, setOpenListStorage] = useState<Array<{ mount_path: string }>>([])
   const [storageSelect, setStorageSelect] = useState(false)
   const [storage, setStorage] = useState('r2')
   const [album, setAlbum] = useState('')
@@ -108,7 +108,10 @@ export function useUploadConfig(): UploadConfig {
         blob: file,
         type: 'image/jpeg',
       })
-      processedFile = new File([outputBuffer], fileName + '.jpg', { type: 'image/jpeg' })
+      const normalizedBlob: Blob = Array.isArray(outputBuffer)
+        ? (outputBuffer[0] ?? new Blob())
+        : outputBuffer
+      processedFile = new File([normalizedBlob], fileName + '.jpg', { type: 'image/jpeg' })
     }
     const res = await uploadFile(processedFile, albumPath, storage, openListMountPath)
     if (res.code !== 200) {
