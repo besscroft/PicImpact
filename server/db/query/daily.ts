@@ -5,56 +5,8 @@
 import { Prisma } from '@prisma/client'
 import { db } from '~/server/lib/db'
 import type { ImageType } from '~/types'
-import { fetchConfigsByKeys } from './configs'
 
 const DEFAULT_SIZE = 24
-
-/**
- * 检查并刷新每日精选图片
- * 根据配置的刷新间隔，判断是否需要刷新物化视图
- */
-export async function checkAndRefreshDailyImages() {
-  const configs = await fetchConfigsByKeys([
-    'daily_enabled',
-    'daily_refresh_interval',
-    'daily_last_refresh',
-  ])
-
-  const enabledConfig = configs.find(c => c.config_key === 'daily_enabled')
-  const intervalConfig = configs.find(c => c.config_key === 'daily_refresh_interval')
-  const lastRefreshConfig = configs.find(c => c.config_key === 'daily_last_refresh')
-
-  if (!enabledConfig || enabledConfig.config_value !== 'true') {
-    return
-  }
-
-  const intervalHours = parseInt(intervalConfig?.config_value || '24', 10)
-  const lastRefresh = lastRefreshConfig?.config_value
-    ? new Date(lastRefreshConfig.config_value).getTime()
-    : 0
-
-  const now = Date.now()
-  const intervalMs = intervalHours * 60 * 60 * 1000
-
-  if (now > lastRefresh + intervalMs) {
-    await refreshDailyImages()
-  }
-}
-
-/**
- * 刷新每日精选物化视图
- * 并发刷新物化视图，更新最后刷新时间
- */
-export async function refreshDailyImages() {
-  await db.$executeRaw`REFRESH MATERIALIZED VIEW CONCURRENTLY "daily_images"`
-  await db.configs.update({
-    where: { config_key: 'daily_last_refresh' },
-    data: {
-      config_value: new Date().toISOString(),
-      updatedAt: new Date(),
-    },
-  })
-}
 
 /**
  * 获取每日精选图片分页列表
@@ -95,20 +47,14 @@ export async function fetchDailyImagesPageTotal(
   camera?: string,
   lens?: string
 ): Promise<number> {
-  const pageTotal = await db.$queryRaw`
-    SELECT COALESCE(COUNT(1),0) AS total
-    FROM (
-        SELECT DISTINCT ON (image.id)
-           image.id
-        FROM
-           "public"."daily_images" AS image
-        WHERE
-            1 = 1
-        ${camera ? Prisma.sql`AND COALESCE(image.exif->>'model', 'Unknown') = ${camera}` : Prisma.empty}
-        ${lens ? Prisma.sql`AND COALESCE(image.exif->>'lens_model', 'Unknown') = ${lens}` : Prisma.empty}
-    ) AS unique_images;
+  const pageTotal = await db.$queryRaw<Array<{ total: bigint }>>`
+    SELECT COALESCE(COUNT(1), 0) AS total
+    FROM "public"."daily_images" AS image
+    WHERE
+        1 = 1
+    ${camera ? Prisma.sql`AND COALESCE(image.exif->>'model', 'Unknown') = ${camera}` : Prisma.empty}
+    ${lens ? Prisma.sql`AND COALESCE(image.exif->>'lens_model', 'Unknown') = ${lens}` : Prisma.empty}
   `
-  // @ts-ignore
   return Number(pageTotal[0].total) > 0 ? Math.ceil(Number(pageTotal[0].total) / DEFAULT_SIZE) : 0
 }
 
@@ -150,8 +96,8 @@ export async function fetchAlbumsWithDailyWeight(): Promise<Array<{
         albums.id,
         albums.name,
         albums.album_value,
-        COALESCE(albums.daily_weight, 1) AS daily_weight,
-        COALESCE(COUNT(image.id), 0) AS photo_count
+        albums.daily_weight,
+        COALESCE(COUNT(image.id), 0)::INTEGER AS photo_count
     FROM
         "public"."albums" AS albums
     LEFT JOIN "public"."images_albums_relation" AS relation
