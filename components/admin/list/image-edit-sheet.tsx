@@ -11,6 +11,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle } from '~/components/ui/sh
 import { ReloadIcon } from '@radix-ui/react-icons'
 import { Button } from '~/components/ui/button'
 import { Tag, TagInput } from 'emblor'
+import { useTranslations } from 'next-intl'
 
 export default function ImageEditSheet(props : Readonly<ImageServerHandleProps & { pageNum: number } & { album: string }>) {
   const { pageNum, album, ...restProps } = props
@@ -20,18 +21,19 @@ export default function ImageEditSheet(props : Readonly<ImageServerHandleProps &
   )
   const [loading, setLoading] = useState(false)
   const [activeTagIndex, setActiveTagIndex] = useState<number | null>(null)
+  const t = useTranslations()
 
   async function submit() {
     if (!image.url) {
-      toast.error('图片链接不能为空！')
+      toast.error(t('List.imageUrlRequired'))
       return
     }
     if (!image.height || image.height <= 0) {
-      toast.error('图片高度不能为空且必须大于 0！')
+      toast.error(t('List.imageHeightRequired'))
       return
     }
     if (!image.width || image.width <= 0) {
-      toast.error('图片宽度不能为空且必须大于 0！')
+      toast.error(t('List.imageWidthRequired'))
       return
     }
     try {
@@ -43,12 +45,12 @@ export default function ImageEditSheet(props : Readonly<ImageServerHandleProps &
         body: JSON.stringify(image),
         method: 'PUT',
       }).then(response => response.json())
-      toast.success('更新成功！')
+      toast.success(t('Tips.updateSuccess'))
       setImageEditData({} as ImageType)
       setImageEdit(false)
       await mutate()
     } catch (e) {
-      toast.error('更新失败！')
+      toast.error(t('Tips.updateFailed'))
     } finally {
       setLoading(false)
     }
@@ -68,19 +70,19 @@ export default function ImageEditSheet(props : Readonly<ImageServerHandleProps &
     >
       <SheetContent side="left" className="w-full overflow-y-auto scrollbar-hide p-2" onInteractOutside={(event: any) => event.preventDefault()}>
         <SheetHeader>
-          <SheetTitle>编辑图片</SheetTitle>
+          <SheetTitle>{t('List.editImage')}</SheetTitle>
         </SheetHeader>
         <div className="mt-2 space-y-2">
           <label
             htmlFor="title"
             className="block overflow-hidden rounded-md border border-input px-3 py-2 shadow-sm focus-within:border-primary focus-within:ring-1 focus-within:ring-primary"
           >
-            <span className="text-xs font-medium text-gray-700"> 图片标题 </span>
+            <span className="text-xs font-medium text-gray-700"> {t('List.imageTitle')} </span>
 
             <input
               type="text"
               id="title"
-              placeholder="请输入图片标题"
+              placeholder={t('List.inputImageTitle')}
               value={image?.title ?? ''}
               onChange={(e) => setImageEditData({...image, title: e.target.value})}
               className="mt-1 w-full border-none p-0 focus:border-transparent focus:outline-none focus:ring-0 sm:text-sm"
@@ -90,12 +92,12 @@ export default function ImageEditSheet(props : Readonly<ImageServerHandleProps &
             htmlFor="url"
             className="block overflow-hidden rounded-md border border-input px-3 py-2 shadow-sm focus-within:border-primary focus-within:ring-1 focus-within:ring-primary"
           >
-            <span className="text-xs font-medium text-gray-700"> 链接 </span>
+            <span className="text-xs font-medium text-gray-700"> {t('List.link')} </span>
 
             <input
               type="text"
               id="url"
-              placeholder="输入链接"
+              placeholder={t('List.inputLink')}
               value={image?.url ?? ''}
               onChange={(e) => setImageEditData({...image, url: e.target.value})}
               className="mt-1 w-full border-none p-0 focus:border-transparent focus:outline-none focus:ring-0 sm:text-sm"
@@ -105,12 +107,12 @@ export default function ImageEditSheet(props : Readonly<ImageServerHandleProps &
             htmlFor="preview_url"
             className="block overflow-hidden rounded-md border border-input px-3 py-2 shadow-sm focus-within:border-primary focus-within:ring-1 focus-within:ring-primary"
           >
-            <span className="text-xs font-medium text-gray-700"> 预览链接 </span>
+            <span className="text-xs font-medium text-gray-700"> {t('List.previewLink')} </span>
 
             <input
               type="text"
               id="preview_url"
-              placeholder="输入预览链接"
+              placeholder={t('List.inputPreviewLink')}
               value={image?.preview_url ?? ''}
               onChange={(e) => setImageEditData({...image, preview_url: e.target.value})}
               className="mt-1 w-full border-none p-0 focus:border-transparent focus:outline-none focus:ring-0 sm:text-sm"
@@ -120,12 +122,12 @@ export default function ImageEditSheet(props : Readonly<ImageServerHandleProps &
             htmlFor="video_url"
             className="block overflow-hidden rounded-md border border-input px-3 py-2 shadow-sm focus-within:border-primary focus-within:ring-1 focus-within:ring-primary"
           >
-            <span className="text-xs font-medium text-gray-700"> 视频链接 </span>
+            <span className="text-xs font-medium text-gray-700"> {t('List.videoLink')} </span>
 
             <input
               type="text"
               id="video_url"
-              placeholder="输入视频链接"
+              placeholder={t('List.inputVideoLink')}
               value={image?.video_url ?? ''}
               onChange={(e) => setImageEditData({...image, video_url: e.target.value})}
               className="mt-1 w-full border-none p-0 focus:border-transparent focus:outline-none focus:ring-0 sm:text-sm"
@@ -135,12 +137,12 @@ export default function ImageEditSheet(props : Readonly<ImageServerHandleProps &
             htmlFor="detail"
             className="block overflow-hidden rounded-md border border-input px-3 py-2 shadow-sm focus-within:border-primary focus-within:ring-1 focus-within:ring-primary"
           >
-            <span className="text-xs font-medium text-gray-700"> 详情 </span>
+            <span className="text-xs font-medium text-gray-700"> {t('List.detail')} </span>
 
             <input
               type="text"
               id="detail"
-              placeholder="输入详情"
+              placeholder={t('List.inputDetail')}
               value={image?.detail ?? ''}
               onChange={(e) => setImageEditData({...image, detail: e.target.value})}
               className="mt-1 w-full border-none p-0 focus:border-transparent focus:outline-none focus:ring-0 sm:text-sm"
@@ -150,7 +152,7 @@ export default function ImageEditSheet(props : Readonly<ImageServerHandleProps &
             htmlFor="width"
             className="block overflow-hidden rounded-md border border-input px-3 py-2 shadow-sm focus-within:border-primary focus-within:ring-1 focus-within:ring-primary"
           >
-            <span className="text-xs font-medium text-gray-700"> 宽度 px </span>
+            <span className="text-xs font-medium text-gray-700"> {t('List.widthPx')} </span>
 
             <input
               type="number"
@@ -164,7 +166,7 @@ export default function ImageEditSheet(props : Readonly<ImageServerHandleProps &
             htmlFor="height"
             className="block overflow-hidden rounded-md border border-input px-3 py-2 shadow-sm focus-within:border-primary focus-within:ring-1 focus-within:ring-primary"
           >
-            <span className="text-xs font-medium text-gray-700"> 高度 px </span>
+            <span className="text-xs font-medium text-gray-700"> {t('List.heightPx')} </span>
 
             <input
               type="number"
@@ -178,12 +180,12 @@ export default function ImageEditSheet(props : Readonly<ImageServerHandleProps &
             htmlFor="lon"
             className="block overflow-hidden rounded-md border border-input px-3 py-2 shadow-sm focus-within:border-primary focus-within:ring-1 focus-within:ring-primary"
           >
-            <span className="text-xs font-medium text-gray-700"> 经度 </span>
+            <span className="text-xs font-medium text-gray-700"> {t('List.longitude')} </span>
 
             <input
               type="text"
               id="lon"
-              placeholder="输入经度"
+              placeholder={t('List.inputLongitude')}
               value={image?.lon ?? ''}
               onChange={(e) => setImageEditData({...image, lon: e.target.value})}
               className="mt-1 w-full border-none p-0 focus:border-transparent focus:outline-none focus:ring-0 sm:text-sm"
@@ -193,12 +195,12 @@ export default function ImageEditSheet(props : Readonly<ImageServerHandleProps &
             htmlFor="lat"
             className="block overflow-hidden rounded-md border border-input px-3 py-2 shadow-sm focus-within:border-primary focus-within:ring-1 focus-within:ring-primary"
           >
-            <span className="text-xs font-medium text-gray-700"> 纬度 </span>
+            <span className="text-xs font-medium text-gray-700"> {t('List.latitude')} </span>
 
             <input
               type="text"
               id="lat"
-              placeholder="输入纬度"
+              placeholder={t('List.inputLatitude')}
               value={image?.lat ?? ''}
               onChange={(e) => setImageEditData({...image, lat: e.target.value})}
               className="mt-1 w-full border-none p-0 focus:border-transparent focus:outline-none focus:ring-0 sm:text-sm"
@@ -208,7 +210,7 @@ export default function ImageEditSheet(props : Readonly<ImageServerHandleProps &
             htmlFor="sort"
             className="block overflow-hidden rounded-md border border-input px-3 py-2 shadow-sm focus-within:border-primary focus-within:ring-1 focus-within:ring-primary"
           >
-            <span className="text-xs font-medium text-gray-700"> 排序 </span>
+            <span className="text-xs font-medium text-gray-700"> {t('List.sort')} </span>
 
             <input
               type="number"
@@ -223,7 +225,7 @@ export default function ImageEditSheet(props : Readonly<ImageServerHandleProps &
             setTags={(newTags: any) => {
               setImageEditData({...image, labels: newTags?.map((label: Tag) => label.text)})
             }}
-            placeholder="请输入图片索引标签，如：猫猫，不要输入特殊字符。"
+            placeholder={t('List.indexTagPlaceholder')}
             styleClasses={{
               inlineTagsContainer:
                 'border-input rounded-lg bg-background shadow-sm shadow-black/5 transition-shadow focus-within:border-ring focus-within:outline-none focus-within:ring-[3px] focus-within:ring-ring/20 p-1 gap-1',
@@ -239,9 +241,9 @@ export default function ImageEditSheet(props : Readonly<ImageServerHandleProps &
           />
           <div className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
             <div className="flex flex-col gap-1">
-              <div className="text-medium">显示状态</div>
+              <div className="text-medium">{t('List.showStatus')}</div>
               <div className="text-tiny text-default-400">
-                是否需要显示图片
+                {t('List.showStatusDesc')}
               </div>
             </div>
             <Switch
@@ -252,9 +254,9 @@ export default function ImageEditSheet(props : Readonly<ImageServerHandleProps &
           </div>
           <div className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
             <div className="flex flex-col gap-1">
-              <div className="text-medium">首页显示状态</div>
+              <div className="text-medium">{t('List.homepageShowStatus')}</div>
               <div className="text-tiny text-default-400">
-                是否需要在首页显示图片
+                {t('List.homepageShowStatusDesc')}
               </div>
             </div>
             <Switch
@@ -267,10 +269,10 @@ export default function ImageEditSheet(props : Readonly<ImageServerHandleProps &
             className="cursor-pointer"
             disabled={loading}
             onClick={() => submit()}
-            aria-label="更新"
+            aria-label={t('Button.update')}
           >
             {loading && <ReloadIcon className="mr-2 h-4 w-4 animate-spin"/>}
-            更新
+            {t('Button.update')}
           </Button>
         </div>
       </SheetContent>
