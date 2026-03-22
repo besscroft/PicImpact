@@ -221,7 +221,7 @@ These endpoints currently deviate from the above specification and should be mig
 
 1. **GET endpoints returning raw arrays** — Settings, Albums, Daily config GETs return unwrapped arrays instead of `{ code, data }` envelope. Migration requires updating all frontend `useSWR` consumers.
 2. **`/api/v1/images/update-Album`** — PascalCase, should be `/api/v1/images/update-album`.
-3. **`/api/v1/file/getObjectUrl`** — camelCase path, should be `/api/v1/file/object-url`.
+3. ~~`/api/v1/file/getObjectUrl`~~ — **DONE:** Renamed to `/api/v1/file/object-url`.
 4. **`/api/v1/settings/get-custom-info`** — Verb prefix on GET, should be `/api/v1/settings/custom-info`.
 5. **`/api/v1/settings/get-admin-config`** — Same issue, should be `/api/v1/settings/admin-config`.
 6. **Request body snake_case** — Some endpoints accept `album_value`, `image_name` in snake_case instead of camelCase.
