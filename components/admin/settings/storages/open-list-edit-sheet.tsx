@@ -21,7 +21,7 @@ export default function OpenListEditSheet() {
   async function submit() {
     setLoading(true)
     try {
-      await fetch('/api/v1/settings/update-open-list-info', {
+      await fetch('/api/v1/settings/open-list-info', {
         headers: {
           'Content-Type': 'application/json',
         },

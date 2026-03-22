@@ -151,7 +151,7 @@ app.post('/upload', async (c) => {
   }
 })
 
-app.post('/getObjectUrl', async (c) => {
+app.post('/object-url', async (c) => {
   try {
     const { storage, key } = await c.req.json()
 

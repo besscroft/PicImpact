@@ -42,7 +42,7 @@ ranked_images AS (
   INNER JOIN "images_albums_relation" iar ON i.id = iar."imageId"
   INNER JOIN album_quotas aq ON iar.album_value = aq.album_value
   WHERE i.del = 0 AND i.show = 0
-)
+),
 deduped_images AS (
   SELECT DISTINCT ON (id)
     id, image_name, url, preview_url, video_url, blurhash, exif, labels,

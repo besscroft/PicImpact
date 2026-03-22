@@ -22,7 +22,7 @@ export default function S3EditSheet() {
   async function submit() {
     setLoading(true)
     try {
-      await fetch('/api/v1/settings/update-s3-info', {
+      await fetch('/api/v1/settings/s3-info', {
         headers: {
           'Content-Type': 'application/json',
         },

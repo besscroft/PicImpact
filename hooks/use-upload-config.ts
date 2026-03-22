@@ -55,8 +55,8 @@ export function useUploadConfig(): UploadConfig {
   const [openListMountPath, setOpenListMountPath] = useState('')
   const t = useTranslations()
 
-  const { data: albums, isLoading: isAlbumsLoading } = useSWR('/api/v1/albums/get', fetcher)
-  const { data: configs } = useSWR<{ config_key: string, config_value: string }[]>('/api/v1/settings/get-custom-info', fetcher)
+  const { data: albums, isLoading: isAlbumsLoading } = useSWR('/api/v1/albums', fetcher)
+  const { data: configs } = useSWR<{ config_key: string, config_value: string }[]>('/api/v1/settings/custom-info', fetcher)
 
   const previewImageMaxWidthLimitSwitchOn = configs?.find(config => config.config_key === 'preview_max_width_limit_switch')?.config_value === '1'
   const previewImageMaxWidthLimit = parseInt(configs?.find(config => config.config_key === 'preview_max_width_limit')?.config_value || '0')
@@ -70,11 +70,11 @@ export function useUploadConfig(): UploadConfig {
     }
     try {
       toast.info(t('Tips.gettingOpenListDirs'))
-      const res = await fetch('/api/v1/storage/open-list/storages', {
+      const envelope = await fetch('/api/v1/storage/open-list/storages', {
         method: 'GET',
       }).then(res => res.json())
-      if (res?.code === 200) {
-        setOpenListStorage(res.data?.content)
+      if (envelope?.code === 200) {
+        setOpenListStorage(envelope.data?.data?.content)
         setStorageSelect(true)
       } else {
         toast.error(t('Tips.getFailed'))
