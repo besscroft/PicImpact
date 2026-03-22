@@ -14,8 +14,9 @@ export function buildExifFilters(camera?: string, lens?: string) {
  * 构建分页条件
  */
 export function buildPagination(pageNum: number, pageSize: number) {
-  const validPage = Math.max(1, pageNum)
-  return Prisma.sql`LIMIT ${pageSize} OFFSET ${(validPage - 1) * pageSize}`
+  const validPage = Math.max(1, Number.isFinite(pageNum) ? Math.floor(pageNum) : 1)
+  const validSize = Number.isFinite(pageSize) && pageSize > 0 ? Math.floor(pageSize) : 24
+  return Prisma.sql`LIMIT ${validSize} OFFSET ${(validPage - 1) * validSize}`
 }
 
 /**
@@ -32,5 +33,6 @@ export function buildShowFilter(showStatus: number) {
  */
 export function calcPageTotal(total: number | bigint, pageSize: number): number {
   const count = Number(total)
+  if (!Number.isFinite(pageSize) || pageSize <= 0) return 0
   return count > 0 ? Math.ceil(count / pageSize) : 0
 }
