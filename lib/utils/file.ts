@@ -133,7 +133,7 @@ export async function uploadFile(file: any, type: string, storage: string, mount
       throw new Error(`Upload failed with status: ${response.status}`)
     }
 
-    const getObjectResponse = await fetch('/api/v1/file/getObjectUrl', {
+    const getObjectResponse = await fetch('/api/v1/file/object-url', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
