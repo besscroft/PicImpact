@@ -71,7 +71,7 @@ export default function ListProps(props : Readonly<ImageServerHandleProps>) {
     (state) => state,
   )
   const { data: albums, isLoading: albumsLoading } = useSWR('/api/v1/albums', fetcher)
-  const { data: adminConfig } = useSWR('/api/v1/settings/get-admin-config', fetcher)
+  const { data: adminConfig } = useSWR('/api/v1/settings/admin-config', fetcher)
   const t = useTranslations()
 
   const dataProps: ImageListDataProps = {

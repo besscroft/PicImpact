@@ -8,7 +8,7 @@ import { updateOpenListConfig, updateCustomInfo, updateR2Config, updateS3Config 
 
 const app = new Hono()
 
-app.get('/get-custom-info', async (c) => {
+app.get('/custom-info', async (c) => {
   try {
     const data = await fetchConfigsByKeys([
       'custom_title',
@@ -27,7 +27,7 @@ app.get('/get-custom-info', async (c) => {
       'custom_index_origin_enable',
       'admin_images_per_page'
     ])
-    return c.json(data)
+    return c.json({ code: 200, message: 'Success', data })
   } catch (error) {
     throw new HTTPException(500, { message: 'Failed to fetch custom info', cause: error })
   }
@@ -44,7 +44,7 @@ app.get('/r2-info', async (c) => {
       'r2_public_domain',
       'r2_direct_download'
     ])
-    return c.json(data)
+    return c.json({ code: 200, message: 'Success', data })
   } catch (error) {
     throw new HTTPException(500, { message: 'Failed to fetch R2 info', cause: error })
   }
@@ -64,24 +64,24 @@ app.get('/s3-info', async (c) => {
       's3_cdn_url',
       's3_direct_download'
     ])
-    return c.json(data)
+    return c.json({ code: 200, message: 'Success', data })
   } catch (error) {
     throw new HTTPException(500, { message: 'Failed to fetch S3 info', cause: error })
   }
 })
 
-app.get('/get-admin-config', async (c) => {
+app.get('/admin-config', async (c) => {
   try {
     const data = await fetchConfigsByKeys([
       'admin_images_per_page'
     ])
-    return c.json(data)
+    return c.json({ code: 200, message: 'Success', data })
   } catch (error) {
     throw new HTTPException(500, { message: 'Failed to fetch admin config', cause: error })
   }
 })
 
-app.put('/update-open-list-info', async (c) => {
+app.put('/open-list-info', async (c) => {
   try {
     const query = await c.req.json()
 
@@ -95,7 +95,7 @@ app.put('/update-open-list-info', async (c) => {
   }
 })
 
-app.put('/update-r2-info', async (c) => {
+app.put('/r2-info', async (c) => {
   try {
     const query = await c.req.json()
 
@@ -114,7 +114,7 @@ app.put('/update-r2-info', async (c) => {
   }
 })
 
-app.put('/update-s3-info', async (c) => {
+app.put('/s3-info', async (c) => {
   try {
     const query = await c.req.json()
 
@@ -136,7 +136,7 @@ app.put('/update-s3-info', async (c) => {
   }
 })
 
-app.put('/update-custom-info', async (c) => {
+app.put('/custom-info', async (c) => {
   const query = await c.req.json() satisfies {
     title: string
     customFaviconUrl: string

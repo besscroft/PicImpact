@@ -22,7 +22,7 @@ export default function R2EditSheet() {
   async function submit() {
     setLoading(true)
     try {
-      await fetch('/api/v1/settings/update-r2-info', {
+      await fetch('/api/v1/settings/r2-info', {
         headers: {
           'Content-Type': 'application/json',
         },

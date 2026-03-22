@@ -13,7 +13,7 @@ app.get('/info', async (c) => {
       'open_list_url',
       'open_list_token'
     ])
-    return c.json(data)
+    return c.json({ code: 200, message: 'Success', data })
   } catch (e) {
     throw new HTTPException(500, { message: 'Failed to fetch open list info', cause: e })
   }
@@ -38,7 +38,7 @@ app.get('/storages', async (c) => {
         'Authorization': openListToken.toString(),
       },
     }).then(res => res.json())
-    return c.json(data)
+    return c.json({ code: 200, message: 'Success', data })
   } catch (e) {
     if (e instanceof HTTPException) throw e
     throw new HTTPException(500, { message: 'Failed to fetch storages', cause: e })
