@@ -139,7 +139,7 @@ export default function SimpleFileUpload() {
       lon: lon,
     } as ImageType
     try {
-      const res = await fetch('/api/v1/images/add', {
+      const res = await fetch('/api/v1/images', {
         headers: {
           'Content-Type': 'application/json',
         },

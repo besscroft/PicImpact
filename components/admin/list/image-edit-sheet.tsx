@@ -38,7 +38,7 @@ export default function ImageEditSheet(props : Readonly<ImageServerHandleProps &
     }
     try {
       setLoading(true)
-      const res = await fetch('/api/v1/images/update', {
+      const res = await fetch('/api/v1/images', {
         headers: {
           'Content-Type': 'application/json',
         },

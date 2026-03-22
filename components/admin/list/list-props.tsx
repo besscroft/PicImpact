@@ -70,7 +70,7 @@ export default function ListProps(props : Readonly<ImageServerHandleProps>) {
   const { setImageEdit, setImageEditData, setImageView, setImageViewData, setImageBatchDelete } = useButtonStore(
     (state) => state,
   )
-  const { data: albums, isLoading: albumsLoading } = useSWR('/api/v1/albums/get', fetcher)
+  const { data: albums, isLoading: albumsLoading } = useSWR('/api/v1/albums', fetcher)
   const { data: adminConfig } = useSWR('/api/v1/settings/admin-config', fetcher)
   const t = useTranslations()
 
@@ -140,7 +140,7 @@ export default function ListProps(props : Readonly<ImageServerHandleProps>) {
     }
     try {
       setUpdateImageAlbumLoading(true)
-      const res = await fetch('/api/v1/images/update-Album', {
+      const res = await fetch('/api/v1/images/update-album', {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

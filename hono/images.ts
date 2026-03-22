@@ -13,7 +13,7 @@ import dayjs from 'dayjs'
 
 const app = new Hono()
 
-app.post('/add', async (c) => {
+app.post('/', async (c) => {
   const body = await c.req.json()
   if (!body) {
     throw new HTTPException(400, { message: 'Missing body' })
@@ -56,7 +56,7 @@ app.delete('/batch-delete', async (c) => {
   }
 })
 
-app.delete('/delete/:id', async (c) => {
+app.delete('/:id', async (c) => {
   try {
     const { id } = c.req.param()
     await deleteImage(id)
@@ -66,7 +66,7 @@ app.delete('/delete/:id', async (c) => {
   }
 })
 
-app.put('/update', async (c) => {
+app.put('/', async (c) => {
   const image = await c.req.json()
   if (!image.url) {
     throw new HTTPException(500, { message: 'Image link cannot be empty' })
@@ -95,7 +95,7 @@ app.put('/update-show', async (c) => {
   }
 })
 
-app.put('/update-Album', async (c) => {
+app.put('/update-album', async (c) => {
   const image = await c.req.json()
   try {
     await updateImageAlbum(image.imageId, image.albumId)

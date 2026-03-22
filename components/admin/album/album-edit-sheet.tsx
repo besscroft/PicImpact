@@ -40,7 +40,7 @@ export default function AlbumEditSheet(props : Readonly<HandleProps>) {
     }
     try {
       setLoading(true)
-      const res = await fetch('/api/v1/albums/update', {
+      const res = await fetch('/api/v1/albums', {
         headers: {
           'Content-Type': 'application/json',
         },
