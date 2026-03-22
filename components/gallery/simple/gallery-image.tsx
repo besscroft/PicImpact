@@ -1,6 +1,6 @@
 'use client'
 
-import type { ImageType } from '~/types'
+import type { Config, ImageType } from '~/types'
 import { cn } from '~/lib/utils'
 import { useRouter } from 'next-nprogress-bar'
 import { useBlurImageDataUrl, DEFAULT_HASH } from '~/hooks/use-blurhash.ts'
@@ -14,7 +14,7 @@ export default function GalleryImage({ photo, configData }: { photo: ImageType, 
   const [isLoading, setIsLoading] = useState(true)
   const dataURL = useBlurImageDataUrl(photo.blurhash)
 
-  const customIndexOriginEnable = configData?.find((item: any) => item.config_key === 'custom_index_origin_enable')?.config_value.toString() === 'true'
+  const customIndexOriginEnable = configData?.find((item: Config) => item.config_key === 'custom_index_origin_enable')?.config_value === 'true'
 
   // Build a single-line EXIF summary: camera · lens · f/X · 1/Xs · ISO XXX
   const exifParts: string[] = []

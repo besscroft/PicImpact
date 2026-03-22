@@ -36,10 +36,10 @@ app.post('/add', async (c) => {
       body.exif.data_time = ''
     }
     // 保存图片信息
-    const res = await insertImage(body)
-    return Response.json({
+    await insertImage(body)
+    return c.json({
       code: 200,
-      data: res
+      message: 'Success'
     })
   } catch (e) {
     throw new HTTPException(500, { message: 'Failed', cause: e })
@@ -86,9 +86,13 @@ app.put('/update', async (c) => {
 })
 
 app.put('/update-show', async (c) => {
-  const image = await c.req.json()
-  const data = await updateImageShow(image.id, image.show)
-  return c.json(data)
+  try {
+    const image = await c.req.json()
+    await updateImageShow(image.id, image.show)
+    return c.json({ code: 200, message: 'Success' })
+  } catch (e) {
+    throw new HTTPException(500, { message: 'Failed', cause: e })
+  }
 })
 
 app.put('/update-Album', async (c) => {

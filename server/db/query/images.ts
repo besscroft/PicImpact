@@ -6,6 +6,7 @@ import { Prisma } from '@prisma/client'
 import { db } from '~/server/lib/db'
 import type { ImageType } from '~/types'
 import { fetchConfigValue } from './configs'
+import { buildExifFilters, buildPagination, buildShowFilter, calcPageTotal } from './helpers'
 
 const ALBUM_IMAGE_SORTING_ORDER = [
   null,
@@ -38,10 +39,6 @@ export async function fetchServerImagesListByAlbum(
   if (album === 'all') {
     album = ''
   }
-  if (pageNum < 1) {
-    pageNum = 1
-  }
-  
   // 如果没有提供 pageSize，从配置中获取
   if (!pageSize) {
     const configPageSize = await fetchConfigValue('admin_images_per_page', '8')
@@ -66,11 +63,10 @@ export async function fetchServerImagesListByAlbum(
           albums.del = 0
       AND
           albums.album_value = ${album}
-          ${showStatus !== -1 ? Prisma.sql`AND image.show = ${showStatus}` : Prisma.empty}
-          ${camera ? Prisma.sql`AND COALESCE(image.exif->>'model', 'Unknown') = ${camera}` : Prisma.empty}
-          ${lens ? Prisma.sql`AND COALESCE(image.exif->>'lens_model', 'Unknown') = ${lens}` : Prisma.empty}
+          ${buildShowFilter(showStatus)}
+          ${buildExifFilters(camera, lens)}
       ORDER BY image.sort DESC, image.created_at DESC, image.updated_at DESC
-      LIMIT ${pageSize} OFFSET ${(pageNum - 1) * pageSize}
+      ${buildPagination(pageNum, pageSize)}
     `
   }
   return await db.$queryRaw`
@@ -86,11 +82,10 @@ export async function fetchServerImagesListByAlbum(
         ON relation.album_value = albums.album_value
     WHERE 
         image.del = 0
-        ${showStatus !== -1 ? Prisma.sql`AND image.show = ${showStatus}` : Prisma.empty}
-        ${camera ? Prisma.sql`AND COALESCE(image.exif->>'model', 'Unknown') = ${camera}` : Prisma.empty}
-        ${lens ? Prisma.sql`AND COALESCE(image.exif->>'lens_model', 'Unknown') = ${lens}` : Prisma.empty}
-    ORDER BY image.sort DESC, image.created_at DESC, image.updated_at DESC 
-    LIMIT ${pageSize} OFFSET ${(pageNum - 1) * pageSize}
+        ${buildShowFilter(showStatus)}
+        ${buildExifFilters(camera, lens)}
+    ORDER BY image.sort DESC, image.created_at DESC, image.updated_at DESC
+    ${buildPagination(pageNum, pageSize)}
   `
 }
 
@@ -112,32 +107,30 @@ export async function fetchServerImagesPageTotalByAlbum(
     album = ''
   }
   if (album && album !== '') {
-    const pageTotal = await db.$queryRaw`
+    const pageTotal = await db.$queryRaw<Array<{ total: bigint }>>`
       SELECT COALESCE(COUNT(1),0) AS total
       FROM (
         SELECT DISTINCT ON (image.id)
-            image.id 
-        FROM 
+            image.id
+        FROM
             "public"."images" AS image
         INNER JOIN "public"."images_albums_relation" AS relation
             ON image.id = relation."imageId"
         INNER JOIN "public"."albums" AS albums
             ON relation.album_value = albums.album_value
-        WHERE 
+        WHERE
             image.del = 0
         AND
             albums.del = 0
         AND
             albums.album_value = ${album}
-            ${showStatus !== -1 ? Prisma.sql`AND image.show = ${showStatus}` : Prisma.empty}
-            ${camera ? Prisma.sql`AND COALESCE(image.exif->>'model', 'Unknown') = ${camera}` : Prisma.empty}
-            ${lens ? Prisma.sql`AND COALESCE(image.exif->>'lens_model', 'Unknown') = ${lens}` : Prisma.empty}
+            ${buildShowFilter(showStatus)}
+            ${buildExifFilters(camera, lens)}
       ) AS unique_images;
     `
-    // @ts-expect-error - The query result is guaranteed to have a total field
     return Number(pageTotal[0].total) ?? 0
   }
-  const pageTotal = await db.$queryRaw`
+  const pageTotal = await db.$queryRaw<Array<{ total: bigint }>>`
     SELECT COALESCE(COUNT(1),0) AS total
     FROM (
         SELECT DISTINCT ON (image.id)
@@ -150,12 +143,10 @@ export async function fetchServerImagesPageTotalByAlbum(
             ON relation.album_value = albums.album_value
         WHERE
             image.del = 0
-            ${showStatus !== -1 ? Prisma.sql`AND image.show = ${showStatus}` : Prisma.empty}
-            ${camera ? Prisma.sql`AND COALESCE(image.exif->>'model', 'Unknown') = ${camera}` : Prisma.empty}
-            ${lens ? Prisma.sql`AND COALESCE(image.exif->>'lens_model', 'Unknown') = ${lens}` : Prisma.empty}
+            ${buildShowFilter(showStatus)}
+            ${buildExifFilters(camera, lens)}
      ) AS unique_images;
   `
-  // @ts-expect-error - The query result is guaranteed to have a total field
   return Number(pageTotal[0].total) ?? 0
 }
 
@@ -173,14 +164,11 @@ export async function fetchClientImagesListByAlbum(
   camera?: string,
   lens?: string
 ): Promise<ImageType[]> {
-  if (pageNum < 1) {
-    pageNum = 1
-  }
   if (album === '/') {
     return await db.$queryRaw`
-    SELECT 
+    SELECT
         image.*
-    FROM 
+    FROM
         "public"."images" AS image
     WHERE
         image.del = 0
@@ -188,10 +176,9 @@ export async function fetchClientImagesListByAlbum(
         image.show = 0
     AND
         image.show_on_mainpage = 0
-    ${camera ? Prisma.sql`AND COALESCE(image.exif->>'model', 'Unknown') = ${camera}` : Prisma.empty}
-    ${lens ? Prisma.sql`AND COALESCE(image.exif->>'lens_model', 'Unknown') = ${lens}` : Prisma.empty}
+    ${buildExifFilters(camera, lens)}
     ORDER BY image.sort DESC, image.created_at DESC, image.updated_at DESC
-    LIMIT ${DEFAULT_SIZE} OFFSET ${(pageNum - 1) * DEFAULT_SIZE}
+    ${buildPagination(pageNum, DEFAULT_SIZE)}
   `
   }
   const albumData = await db.albums.findFirst({
@@ -226,10 +213,9 @@ export async function fetchClientImagesListByAlbum(
         albums.show = 0
     AND
         albums.album_value = ${album}
-    ${camera ? Prisma.sql`AND COALESCE(image.exif->>'model', 'Unknown') = ${camera}` : Prisma.empty}
-    ${lens ? Prisma.sql`AND COALESCE(image.exif->>'lens_model', 'Unknown') = ${lens}` : Prisma.empty}
+    ${buildExifFilters(camera, lens)}
     ORDER BY ${orderBy}
-    LIMIT ${DEFAULT_SIZE} OFFSET ${(pageNum - 1) * DEFAULT_SIZE}
+    ${buildPagination(pageNum, DEFAULT_SIZE)}
   `
   if (dataList && albumData && albumData.random_show === 0) {
     return [...dataList].sort(() => Math.random() - 0.5)
@@ -250,7 +236,7 @@ export async function fetchClientImagesPageTotalByAlbum(
   lens?: string
 ): Promise<number> {
   if (album === '/') {
-    const pageTotal = await db.$queryRaw`
+    const pageTotal = await db.$queryRaw<Array<{ total: bigint }>>`
     SELECT COALESCE(COUNT(1),0) AS total
     FROM (
         SELECT DISTINCT ON (image.id)
@@ -263,14 +249,12 @@ export async function fetchClientImagesPageTotalByAlbum(
             image.show = 0
         AND
             image.show_on_mainpage = 0
-        ${camera ? Prisma.sql`AND COALESCE(image.exif->>'model', 'Unknown') = ${camera}` : Prisma.empty}
-        ${lens ? Prisma.sql`AND COALESCE(image.exif->>'lens_model', 'Unknown') = ${lens}` : Prisma.empty}
+        ${buildExifFilters(camera, lens)}
     ) AS unique_images;
   `
-    // @ts-ignore
-    return Number(pageTotal[0].total) > 0 ? Math.ceil(Number(pageTotal[0].total) / DEFAULT_SIZE) : 0
+    return calcPageTotal(pageTotal[0].total, DEFAULT_SIZE)
   }
-  const pageTotal = await db.$queryRaw`
+  const pageTotal = await db.$queryRaw<Array<{ total: bigint }>>`
     SELECT COALESCE(COUNT(1),0) AS total
     FROM (
         SELECT DISTINCT ON (image.id)
@@ -291,12 +275,10 @@ export async function fetchClientImagesPageTotalByAlbum(
             albums.show = 0
         AND
             albums.album_value = ${album}
-        ${camera ? Prisma.sql`AND COALESCE(image.exif->>'model', 'Unknown') = ${camera}` : Prisma.empty}
-        ${lens ? Prisma.sql`AND COALESCE(image.exif->>'lens_model', 'Unknown') = ${lens}` : Prisma.empty}
+        ${buildExifFilters(camera, lens)}
     ) AS unique_images;
   `
-  // @ts-ignore
-  return Number(pageTotal[0].total) > 0 ? Math.ceil(Number(pageTotal[0].total) / DEFAULT_SIZE) : 0
+  return calcPageTotal(pageTotal[0].total, DEFAULT_SIZE)
 }
 
 /**
@@ -342,16 +324,13 @@ export async function fetchMapImages(): Promise<ImageType[]> {
  * @returns {Promise<ImageType[]>} 图片列表
  */
 export async function fetchClientImagesListByTag(pageNum: number, tag: string): Promise<ImageType[]> {
-  if (pageNum < 1) {
-    pageNum = 1
-  }
   return await db.$queryRaw`
-    SELECT 
+    SELECT
         image.*,
         albums.name AS album_name,
         albums.id AS album_value,
         albums.license AS album_license
-    FROM 
+    FROM
         "public"."images" AS image
     INNER JOIN "public"."images_albums_relation" AS relation
         ON image.id = relation."imageId"
@@ -368,7 +347,7 @@ export async function fetchClientImagesListByTag(pageNum: number, tag: string): 
     AND
         image.labels::jsonb @> ${JSON.stringify([tag])}::jsonb
     ORDER BY image.sort DESC, image.created_at DESC, image.updated_at DESC
-    LIMIT ${DEFAULT_SIZE} OFFSET ${(pageNum - 1) * DEFAULT_SIZE}
+    ${buildPagination(pageNum, DEFAULT_SIZE)}
   `
 }
 
@@ -378,7 +357,7 @@ export async function fetchClientImagesListByTag(pageNum: number, tag: string): 
  * @returns {Promise<number>} 图片总数
  */
 export async function fetchClientImagesPageTotalByTag(tag: string): Promise<number> {
-  const pageTotal = await db.$queryRaw`
+  const pageTotal = await db.$queryRaw<Array<{ total: bigint }>>`
     SELECT COALESCE(COUNT(1),0) AS total
     FROM (
         SELECT DISTINCT ON (image.id)
@@ -401,8 +380,7 @@ export async function fetchClientImagesPageTotalByTag(tag: string): Promise<numb
             image.labels::jsonb @> ${JSON.stringify([tag])}::jsonb
     ) AS unique_images;
   `
-  // @ts-ignore
-  return Number(pageTotal[0].total) > 0 ? Math.ceil(Number(pageTotal[0].total) / DEFAULT_SIZE) : 0
+  return calcPageTotal(pageTotal[0].total, DEFAULT_SIZE)
 }
 
 /**

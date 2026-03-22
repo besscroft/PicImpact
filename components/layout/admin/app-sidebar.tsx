@@ -29,6 +29,7 @@ import { CogIcon } from '~/components/icons/cog'
 import { FingerprintIcon } from '~/components/icons/fingerprint'
 import { LoaderPinwheelIcon } from '~/components/icons/loader-pinwheel'
 import { KeySquareIcon } from '~/components/icons/key-square'
+import { CalendarDaysIcon } from '~/components/icons/calendar-days'
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const router = useRouter()
@@ -89,6 +90,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           name: t('Link.passkey'),
           url: '/admin/settings/passkey',
           icon: KeySquareIcon,
+        },
+        {
+          name: t('Link.daily'),
+          url: '/admin/settings/daily',
+          icon: CalendarDaysIcon,
         },
       ],
     },

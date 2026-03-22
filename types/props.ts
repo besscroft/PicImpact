@@ -1,6 +1,6 @@
 // 业务专用类型
 
-import { AlbumType, ImageType } from '~/types/index'
+import { AlbumType, Config, ImageType } from '~/types/index'
 
 export type AlbumDataProps = {
   data: AlbumType[]
@@ -8,29 +8,29 @@ export type AlbumDataProps = {
 }
 
 export type HandleProps = {
-  handle: () => any
+  handle: () => Promise<unknown>
   args: string
 }
 
 export type ImageServerHandleProps = {
-  handle: (pageNum: number, tag: string, showStatus?: number) => any
+  handle: (pageNum: number, tag: string, showStatus?: number, camera?: string, lens?: string) => Promise<ImageType[]>
   args: string
-  totalHandle: (tag: string, showStatus?: number) => any
+  totalHandle: (tag: string, showStatus?: number, camera?: string, lens?: string) => Promise<number>
 }
 
 export type ImageHandleProps = {
-  handle: (pageNum: number, album: string, camera?: string, lens?: string) => any
+  handle: (pageNum: number, album: string, camera?: string, lens?: string) => Promise<ImageType[]>
   args: string
   album: string
-  totalHandle: (album: string, camera?: string, lens?: string) => any
-  configHandle: () => any
+  totalHandle: (album: string, camera?: string, lens?: string) => Promise<number>
+  configHandle?: () => Promise<Config[]>
 }
 
 export type PreviewImageHandleProps = {
   data: ImageType
   args: string
   id: string
-  configHandle: () => any
+  configHandle?: () => Promise<Config[]>
 }
 
 export type ProgressiveImageProps = {
@@ -45,9 +45,9 @@ export type ProgressiveImageProps = {
 }
 
 export type LinkProps = {
-  handle: () => any
+  handle: () => Promise<unknown>
   args: string
-  data: any
+  data: unknown
 }
 
 export type AlbumListProps = {
