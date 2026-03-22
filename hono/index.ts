@@ -15,6 +15,8 @@ route.onError((err, c) => {
     console.error(err)
     return err.getResponse()
   }
+  console.error('Unexpected error:', err)
+  return c.json({ code: 500, message: 'Internal Server Error' }, 500)
 })
 
 route.route('/settings', settings)

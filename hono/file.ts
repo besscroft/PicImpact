@@ -9,6 +9,66 @@ import { getClient } from '~/server/lib/s3'
 import { getR2Client } from '~/server/lib/r2'
 import { generatePresignedUrl } from '~/server/lib/s3api'
 
+interface S3StorageConfig {
+  configs: Config[]
+  bucket: string
+  storageFolder: string
+  client: ReturnType<typeof getClient>
+}
+
+interface R2StorageConfig {
+  configs: Config[]
+  bucket: string
+  storageFolder: string
+  r2PublicDomain: string
+  client: ReturnType<typeof getR2Client>
+}
+
+async function getS3Config(): Promise<S3StorageConfig> {
+  const configs = await fetchConfigsByKeys([
+    'accesskey_id',
+    'accesskey_secret',
+    'region',
+    'endpoint',
+    'bucket',
+    'storage_folder',
+    'force_path_style',
+    's3_cdn',
+    's3_cdn_url',
+  ])
+  const bucket = configs.find((item: Config) => item.config_key === 'bucket')?.config_value || ''
+  const storageFolder = configs.find((item: Config) => item.config_key === 'storage_folder')?.config_value || ''
+  const client = getClient(configs)
+  return { configs, bucket, storageFolder, client }
+}
+
+async function getR2Config(): Promise<R2StorageConfig> {
+  const configs = await fetchConfigsByKeys([
+    'r2_accesskey_id',
+    'r2_accesskey_secret',
+    'r2_account_id',
+    'r2_bucket',
+    'r2_storage_folder',
+    'r2_public_domain',
+  ])
+  const bucket = configs.find((item: Config) => item.config_key === 'r2_bucket')?.config_value || ''
+  const storageFolder = configs.find((item: Config) => item.config_key === 'r2_storage_folder')?.config_value || ''
+  const r2PublicDomain = configs.find((item: Config) => item.config_key === 'r2_public_domain')?.config_value || ''
+  const client = getR2Client(configs)
+  return { configs, bucket, storageFolder, r2PublicDomain, client }
+}
+
+function buildStoragePath(storageFolder: string, type: string, filename: string): string {
+  if (storageFolder && storageFolder !== '/') {
+    return type && type !== '/'
+      ? `${storageFolder}${type}/${filename}`
+      : `${storageFolder}/${filename}`
+  }
+  return type && type !== '/'
+    ? `${type.slice(1)}/${filename}`
+    : `${filename}`
+}
+
 const app = new Hono()
 
 // 生成预签名 URL
@@ -24,28 +84,8 @@ app.post('/presigned-url', async (c) => {
 
     switch (storage) {
       case 's3': {
-        // 获取 S3 配置
-        const configs = await fetchConfigsByKeys([
-          'accesskey_id',
-          'accesskey_secret',
-          'region',
-          'endpoint',
-          'bucket',
-          'storage_folder',
-          'force_path_style',
-          's3_cdn',
-          's3_cdn_url',
-        ])
-
-        const bucket = configs.find((item: Config) => item.config_key === 'bucket')?.config_value || ''
-        const storageFolder = configs.find((item: Config) => item.config_key === 'storage_folder')?.config_value || ''
-
-        // 构建文件路径
-        const filePath = storageFolder && storageFolder !== '/'
-          ? type && type !== '/' ? `${storageFolder}${type}/${filename}` : `${storageFolder}/${filename}`
-          : type && type !== '/' ? `${type.slice(1)}/${filename}` : `${filename}`
-
-        const client = getClient(configs)
+        const { bucket, storageFolder, client } = await getS3Config()
+        const filePath = buildStoragePath(storageFolder, type, filename)
         const presignedUrl = await generatePresignedUrl(client, bucket, filePath, contentType, 'put')
 
         return c.json({
@@ -58,25 +98,8 @@ app.post('/presigned-url', async (c) => {
       }
 
       case 'r2': {
-        // 获取 R2 配置
-        const configs = await fetchConfigsByKeys([
-          'r2_accesskey_id',
-          'r2_accesskey_secret',
-          'r2_account_id',
-          'r2_bucket',
-          'r2_storage_folder',
-          'r2_public_domain',
-        ])
-
-        const bucket = configs.find((item: Config) => item.config_key === 'r2_bucket')?.config_value || ''
-        const storageFolder = configs.find((item: Config) => item.config_key === 'r2_storage_folder')?.config_value || ''
-
-        // 构建文件路径
-        const filePath = storageFolder && storageFolder !== '/'
-          ? type && type !== '/' ? `${storageFolder}${type}/${filename}` : `${storageFolder}/${filename}`
-          : type && type !== '/' ? `${type.slice(1)}/${filename}` : `${filename}`
-
-        const client = getR2Client(configs)
+        const { bucket, storageFolder, client } = await getR2Config()
+        const filePath = buildStoragePath(storageFolder, type, filename)
         const presignedUrl = await generatePresignedUrl(client, bucket, filePath, contentType, 'put')
 
         return c.json({
@@ -92,99 +115,88 @@ app.post('/presigned-url', async (c) => {
         throw new HTTPException(400, { message: 'Unsupported storage type' })
     }
   } catch (e) {
+    if (e instanceof HTTPException) throw e
     throw new HTTPException(500, { message: 'Failed to generate presigned URL', cause: e })
   }
 })
 
 app.post('/upload', async (c) => {
-  const formData = await c.req.formData()
+  try {
+    const formData = await c.req.formData()
 
-  const file = formData.get('file')
-  const storage = formData.get('storage')
-  const type = formData.get('type')
-  const mountPath = formData.get('mountPath') || ''
+    const file = formData.get('file')
+    const storage = formData.get('storage')
+    const type = formData.get('type')
+    const mountPath = formData.get('mountPath') || ''
 
-  if (storage) {
-    switch (storage.toString()) {
-      case 'openList':
-        return await openListUpload(file, type, mountPath)
-          .then((result: string | undefined) => {
-            return Response.json({
-              code: 200, data: result
-            })
+    if (storage) {
+      switch (storage.toString()) {
+        case 'openList': {
+          if (!file || !(file instanceof File)) {
+            throw new HTTPException(400, { message: 'File is required' })
+          }
+          const result = await openListUpload(file, type, mountPath)
+          return c.json({
+            code: 200, data: result
           })
-          .catch(e => {
-            throw new HTTPException(500, { message: 'Failed', cause: e })
-          })
-      default:
-        throw new HTTPException(500, { message: 'storage not support' })
+        }
+        default:
+          throw new HTTPException(500, { message: 'storage not support' })
+      }
     }
+    throw new HTTPException(400, { message: 'Storage type is required' })
+  } catch (e) {
+    if (e instanceof HTTPException) throw e
+    throw new HTTPException(500, { message: 'Failed to upload file', cause: e })
   }
 })
 
 app.post('/getObjectUrl', async (c) => {
-  const { storage, key } = await c.req.json()
+  try {
+    const { storage, key } = await c.req.json()
 
-  switch (storage) {
-    case 's3': {
-      // 获取 S3 配置
-      const configs = await fetchConfigsByKeys([
-        'accesskey_id',
-        'accesskey_secret',
-        'region',
-        'endpoint',
-        'bucket',
-        'storage_folder',
-        'force_path_style',
-        's3_cdn',
-        's3_cdn_url',
-      ])
+    switch (storage) {
+      case 's3': {
+        const { configs, bucket } = await getS3Config()
 
-      const bucket = configs.find((item: Config) => item.config_key === 'bucket')?.config_value || ''
-      const s3Cdn = configs.find((item: Config) => item.config_key === 's3_cdn')?.config_value || ''
-      const s3CdnUrl = configs.find((item: Config) => item.config_key === 's3_cdn_url')?.config_value || ''
-      const forcePathStyle = configs.find((item: Config) => item.config_key === 'force_path_style')?.config_value || ''
-      const endpoint = configs.find((item: Config) => item.config_key === 'endpoint')?.config_value || ''
+        const s3Cdn = configs.find((item: Config) => item.config_key === 's3_cdn')?.config_value || ''
+        const s3CdnUrl = configs.find((item: Config) => item.config_key === 's3_cdn_url')?.config_value || ''
+        const forcePathStyle = configs.find((item: Config) => item.config_key === 'force_path_style')?.config_value || ''
+        const endpoint = configs.find((item: Config) => item.config_key === 'endpoint')?.config_value || ''
 
-      if (s3Cdn && s3Cdn === 'true') {
-        return Response.json({
-          code: 200, data: `https://${
-            s3CdnUrl.includes('https://') ? s3CdnUrl.split('//')[1] : s3CdnUrl
-          }/${key}`
-        })
-      } else {
-        if (forcePathStyle && forcePathStyle === 'true') {
-          return Response.json({
-            code: 200, data: `https://${
-              endpoint.includes('https://') ? endpoint.split('//')[1] : endpoint
-            }/${bucket}/${key}`
+        const cleanEndpoint = endpoint.replace(/^https?:\/\//, '')
+        const cleanS3CdnUrl = s3CdnUrl.replace(/^https?:\/\//, '')
+
+        if (s3Cdn && s3Cdn === 'true') {
+          return c.json({
+            code: 200, data: `https://${cleanS3CdnUrl}/${key}`
           })
+        } else {
+          if (forcePathStyle && forcePathStyle === 'true') {
+            return c.json({
+              code: 200, data: `https://${cleanEndpoint}/${bucket}/${key}`
+            })
+          }
         }
+        return c.json({
+          code: 200, data: `https://${bucket}.${cleanEndpoint}/${key}`
+        })
       }
-      return Response.json({
-        code: 200, data: `https://${bucket}.${
-          endpoint.includes('https://') ? endpoint.split('//')[1] : endpoint
-        }/${key}`
-      })
+
+      case 'r2': {
+        const { r2PublicDomain } = await getR2Config()
+
+        return c.json({
+          code: 200, data: `${r2PublicDomain}/${key}`
+        })
+      }
+
+      default:
+        throw new HTTPException(400, { message: 'Unsupported storage type' })
     }
-
-    case 'r2': {
-      // 获取 R2 配置
-      const configs = await fetchConfigsByKeys([
-        'r2_accesskey_id',
-        'r2_accesskey_secret',
-        'r2_account_id',
-        'r2_bucket',
-        'r2_storage_folder',
-        'r2_public_domain',
-      ])
-
-      const r2PublicDomain = configs.find((item: Config) => item.config_key === 'r2_public_domain')?.config_value || ''
-
-      return Response.json({
-        code: 200, data: `${r2PublicDomain}/${key}`
-      })
-    }
+  } catch (e) {
+    if (e instanceof HTTPException) throw e
+    throw new HTTPException(500, { message: 'Failed to get object URL', cause: e })
   }
 })
 
