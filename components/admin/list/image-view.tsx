@@ -71,7 +71,7 @@ export default function ImageView() {
             htmlFor="detail"
             className="block overflow-hidden rounded-md border border-input px-3 py-2 shadow-sm focus-within:border-primary focus-within:ring-1 focus-within:ring-primary"
           >
-            <span className="text-xs font-medium text-gray-700"> 详情 </span>
+            <span className="text-xs font-medium text-gray-700"> {t('List.detail')} </span>
 
             <input
               type="text"
@@ -85,7 +85,7 @@ export default function ImageView() {
             htmlFor="width"
             className="block overflow-hidden rounded-md border border-input px-3 py-2 shadow-sm focus-within:border-primary focus-within:ring-1 focus-within:ring-primary"
           >
-            <span className="text-xs font-medium text-gray-700"> 宽度 px </span>
+            <span className="text-xs font-medium text-gray-700"> {t('List.widthPx')} </span>
 
             <input
               type="text"
@@ -99,7 +99,7 @@ export default function ImageView() {
             htmlFor="height"
             className="block overflow-hidden rounded-md border border-input px-3 py-2 shadow-sm focus-within:border-primary focus-within:ring-1 focus-within:ring-primary"
           >
-            <span className="text-xs font-medium text-gray-700"> 高度 px </span>
+            <span className="text-xs font-medium text-gray-700"> {t('List.heightPx')} </span>
 
             <input
               type="text"
@@ -113,7 +113,7 @@ export default function ImageView() {
             htmlFor="lon"
             className="block overflow-hidden rounded-md border border-input px-3 py-2 shadow-sm focus-within:border-primary focus-within:ring-1 focus-within:ring-primary"
           >
-            <span className="text-xs font-medium text-gray-700"> 经度 </span>
+            <span className="text-xs font-medium text-gray-700"> {t('List.longitude')} </span>
 
             <input
               type="text"
@@ -127,7 +127,7 @@ export default function ImageView() {
             htmlFor="lat"
             className="block overflow-hidden rounded-md border border-input px-3 py-2 shadow-sm focus-within:border-primary focus-within:ring-1 focus-within:ring-primary"
           >
-            <span className="text-xs font-medium text-gray-700"> 纬度 </span>
+            <span className="text-xs font-medium text-gray-700"> {t('List.latitude')} </span>
 
             <input
               type="text"
@@ -141,7 +141,7 @@ export default function ImageView() {
             htmlFor="sort"
             className="block overflow-hidden rounded-md border border-input px-3 py-2 shadow-sm focus-within:border-primary focus-within:ring-1 focus-within:ring-primary"
           >
-            <span className="text-xs font-medium text-gray-700"> 排序 </span>
+            <span className="text-xs font-medium text-gray-700"> {t('List.sort')} </span>
 
             <input
               type="text"
@@ -153,9 +153,9 @@ export default function ImageView() {
           </label>
           <div className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
             <div className="flex flex-col gap-1">
-              <div className="text-medium">显示状态</div>
+              <div className="text-medium">{t('List.showStatus')}</div>
               <div className="text-tiny text-default-400">
-                是否需要显示图片
+                {t('List.showStatusDesc')}
               </div>
             </div>
             <Switch
@@ -166,9 +166,9 @@ export default function ImageView() {
           </div>
           <div className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
             <div className="flex flex-col gap-1">
-              <div className="text-medium">首页显示状态</div>
+              <div className="text-medium">{t('List.homepageShowStatus')}</div>
               <div className="text-tiny text-default-400">
-                是否需要在首页显示图片
+                {t('List.homepageShowStatusDesc')}
               </div>
             </div>
             <Switch
