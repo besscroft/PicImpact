@@ -55,7 +55,7 @@ export function useUploadConfig(): UploadConfig {
   const [openListMountPath, setOpenListMountPath] = useState('')
   const t = useTranslations()
 
-  const { data: albums, isLoading: isAlbumsLoading } = useSWR('/api/v1/albums/get', fetcher)
+  const { data: albums, isLoading: isAlbumsLoading } = useSWR('/api/v1/albums', fetcher)
   const { data: configs } = useSWR<{ config_key: string, config_value: string }[]>('/api/v1/settings/get-custom-info', fetcher)
 
   const previewImageMaxWidthLimitSwitchOn = configs?.find(config => config.config_key === 'preview_max_width_limit_switch')?.config_value === '1'

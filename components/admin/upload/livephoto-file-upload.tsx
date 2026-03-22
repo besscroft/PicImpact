@@ -135,7 +135,7 @@ export default function LivephotoFileUpload() {
         lat: lat,
         lon: lon,
       } as ImageType
-      const res = await fetch('/api/v1/images/add', {
+      const res = await fetch('/api/v1/images', {
         headers: {
           'Content-Type': 'application/json',
         },

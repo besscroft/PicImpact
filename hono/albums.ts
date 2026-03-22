@@ -6,16 +6,16 @@ import { HTTPException } from 'hono/http-exception'
 
 const app = new Hono()
 
-app.get('/get', async (c) => {
+app.get('/', async (c) => {
   try {
     const data = await fetchAlbumsList()
-    return c.json(data)
+    return c.json({ code: 200, message: 'Success', data })
   } catch (e) {
     throw new HTTPException(500, { message: 'Failed to fetch albums', cause: e })
   }
 })
 
-app.post('/add', async (c) => {
+app.post('/', async (c) => {
   const album = await c.req.json()
   if (album.album_value && album.album_value.charAt(0) !== '/') {
     throw new HTTPException(500, { message: 'The route must start with /' })
@@ -28,7 +28,7 @@ app.post('/add', async (c) => {
   }
 })
 
-app.put('/update', async (c) => {
+app.put('/', async (c) => {
   const album = await c.req.json()
   if (album.album_value && album.album_value.charAt(0) !== '/') {
     throw new HTTPException(500, { message: 'The route must start with /' })
@@ -41,7 +41,7 @@ app.put('/update', async (c) => {
   }
 })
 
-app.delete('/delete/:id', async (c) => {
+app.delete('/:id', async (c) => {
   try {
     const { id } = c.req.param()
     await deleteAlbum(id)

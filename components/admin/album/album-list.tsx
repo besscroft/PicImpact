@@ -39,7 +39,7 @@ export default function AlbumList(props : Readonly<HandleProps>) {
     setDeleteLoading(true)
     if (!album.id) return
     try {
-      const res = await fetch(`/api/v1/albums/delete/${album.id}`, {
+      const res = await fetch(`/api/v1/albums/${album.id}`, {
         method: 'DELETE',
       })
       if (res.status === 200) {
