@@ -14,9 +14,6 @@ let nextConfig = {
     },
   },
   serverExternalPackages: ['pg'],
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
   typescript: {
     ignoreBuildErrors: true,
   },
