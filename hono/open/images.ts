@@ -5,7 +5,7 @@ import { fetchImageByIdAndAuth } from '~/server/db/query/images'
 
 const app = new Hono()
 
-app.get('/get-image-blob', async (c) => {
+app.get('/image-blob', async (c) => {
   try {
     const { searchParams } = new URL(c.req.url)
     const imageUrl = searchParams.get('imageUrl')
@@ -20,7 +20,7 @@ app.get('/get-image-blob', async (c) => {
   }
 })
 
-app.get('/get-image-by-id', async (c) => {
+app.get('/image-by-id', async (c) => {
   try {
     const { searchParams } = new URL(c.req.url)
     const id = searchParams.get('id')

@@ -16,7 +16,7 @@ app.get('/config', async (c) => {
       'daily_total_count',
       'daily_last_refresh'
     ])
-    return c.json(data)
+    return c.json({ code: 200, message: 'Success', data })
   } catch (error) {
     console.error('Error fetching daily config:', error)
     throw new HTTPException(500, { message: 'Failed to fetch daily config', cause: error })
@@ -53,7 +53,7 @@ app.put('/config', async (c) => {
 app.get('/albums', async (c) => {
   try {
     const data = await fetchAlbumsWithDailyWeight()
-    return c.json(data)
+    return c.json({ code: 200, message: 'Success', data })
   } catch (error) {
     console.error('Error fetching albums with daily weight:', error)
     throw new HTTPException(500, { message: 'Failed to fetch albums with daily weight', cause: error })
