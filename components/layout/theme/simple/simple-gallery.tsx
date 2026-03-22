@@ -4,7 +4,7 @@ import type { ImageHandleProps } from '~/types/props.ts'
 import useSWRInfinite from 'swr/infinite'
 import { useSwrHydrated } from '~/hooks/use-swr-hydrated.ts'
 import { useTranslations } from 'next-intl'
-import type { ImageType } from '~/types'
+import type { Config, ImageType } from '~/types'
 import GalleryImage from '~/components/gallery/simple/gallery-image.tsx'
 import InfiniteScroll from '~/components/ui/origin/infinite-scroll.tsx'
 import { useCallback, useEffect, useMemo, useRef, useState, useTransition } from 'react'
@@ -43,8 +43,8 @@ export default function SimpleGallery(props: Readonly<ImageHandleProps>) {
       keepPreviousData: true,
     }
   )
-  const { data: configData } = useSwrHydrated({
-    handle: props.configHandle ?? (async () => []),
+  const { data: configData } = useSwrHydrated<Config[]>({
+    handle: props.configHandle ?? (async () => [] as Config[]),
     args: 'system-config',
   })
   // Memoize dataList to avoid unnecessary recalculations

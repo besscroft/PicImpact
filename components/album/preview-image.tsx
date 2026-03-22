@@ -1,5 +1,6 @@
 'use client'
 
+import type { Config } from '~/types'
 import type { PreviewImageHandleProps } from '~/types/props'
 import LivePhoto from '~/components/album/live-photo'
 import { toast } from 'sonner'
@@ -70,8 +71,8 @@ export default function PreviewImage(props: Readonly<PreviewImageHandleProps>) {
   const exifIconClass = 'text-muted-foreground hover:text-primary transition-colors'
   const badgeIconClass = 'shrink-0 text-primary/60'
 
-  const { data: configData } = useSwrHydrated({
-    handle: props.configHandle ?? (async () => []),
+  const { data: configData } = useSwrHydrated<Config[]>({
+    handle: props.configHandle ?? (async () => [] as Config[]),
     args: 'system-config',
   })
 
@@ -261,7 +262,7 @@ export default function PreviewImage(props: Readonly<PreviewImageHandleProps>) {
                   size={20}
                 />
               </button>
-              {configData?.find((item: any) => item.config_key === 'custom_index_download_enable')?.config_value.toString() === 'true'
+              {configData?.find((item: Config) => item.config_key === 'custom_index_download_enable')?.config_value === 'true'
                 && <>
                   {download ?
                     <RefreshCWIcon
