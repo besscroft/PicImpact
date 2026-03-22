@@ -32,7 +32,7 @@ export default function Preferences() {
   const [adminImagesPerPage, setAdminImagesPerPage] = useState('8')
   const t = useTranslations()
 
-  const { data, isValidating, isLoading } = useSWR<{ config_key: string, config_value: string }[]>('/api/v1/settings/get-custom-info', fetcher)
+  const { data, isValidating, isLoading } = useSWR<{ config_key: string, config_value: string }[]>('/api/v1/settings/custom-info', fetcher)
 
   async function updateInfo() {
     const maxWidth = parseInt(previewImageMaxWidth)
@@ -57,7 +57,7 @@ export default function Preferences() {
     }
     try {
       setLoading(true)
-      await fetch('/api/v1/settings/update-custom-info', {
+      await fetch('/api/v1/settings/custom-info', {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
