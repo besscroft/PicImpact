@@ -75,7 +75,7 @@ export default function ListProps(props : Readonly<ImageServerHandleProps>) {
   const t = useTranslations()
 
   const dataProps: ImageListDataProps = {
-    data: data,
+    data: data ?? [],
   }
 
   useEffect(() => {
@@ -480,7 +480,7 @@ export default function ListProps(props : Readonly<ImageServerHandleProps>) {
           </Card>
         ))}
       </div>
-      {total !== 0 &&
+      {(total ?? 0) !== 0 &&
         <div className="flex space-x-2">
           <Select
             value={pageNum.toString()}
@@ -493,7 +493,7 @@ export default function ListProps(props : Readonly<ImageServerHandleProps>) {
               <SelectValue placeholder={pageNum} />
             </SelectTrigger>
             <SelectContent side="top">
-              {Array.from({ length: Math.ceil(total / pageSize) }, (_, i) => i + 1).map((num) => (
+              {Array.from({ length: Math.ceil((total ?? 0) / pageSize) }, (_, i) => i + 1).map((num) => (
                 <SelectItem key={num} value={num.toString()}>
                   {num}
                 </SelectItem>
@@ -511,7 +511,7 @@ export default function ListProps(props : Readonly<ImageServerHandleProps>) {
           />
           <ChevronRightIcon
             onClick={async () => {
-              if (pageNum < Math.ceil(total / pageSize)) {
+              if (pageNum < Math.ceil((total ?? 0) / pageSize)) {
                 setPageNum(pageNum + 1)
                 await mutate()
               }

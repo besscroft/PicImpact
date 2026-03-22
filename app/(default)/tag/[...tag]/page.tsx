@@ -18,18 +18,11 @@ export default async function Label({params}: { params: any }) {
     return await fetchClientImagesPageTotalByTag(tag)
   }
 
-  const getConfig = async () => {
-    'use server'
-    // 什么都不做
-    console.log('')
-  }
-
   const props: ImageHandleProps = {
     handle: getData,
     args: 'getImages-client-tag',
     album: `${decodeURIComponent(tag)}`,
     totalHandle: getPageTotal,
-    configHandle: getConfig
   }
 
   return (

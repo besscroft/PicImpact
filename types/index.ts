@@ -17,21 +17,21 @@ export type AlbumType = {
 }
 
 export type ExifType = {
-  make: any;
-  model: any;
-  bits: any;
-  data_time: any;
-  exposure_time: any;
-  f_number: any;
-  exposure_program: any;
-  iso_speed_rating: any;
-  focal_length: any;
-  lens_specification: any;
-  lens_model: any;
-  exposure_mode: any;
-  cfa_pattern: any;
-  color_space: any;
-  white_balance: any;
+  make: string | undefined;
+  model: string | undefined;
+  bits: string | undefined;
+  data_time: string | undefined;
+  exposure_time: string | undefined;
+  f_number: string | undefined;
+  exposure_program: string | undefined;
+  iso_speed_rating: string | undefined;
+  focal_length: string | undefined;
+  lens_specification: string | undefined;
+  lens_model: string | undefined;
+  exposure_mode: string | undefined;
+  cfa_pattern: string | undefined;
+  color_space: string | undefined;
+  white_balance: string | undefined;
 }
 
 export type ImageType = {

@@ -46,7 +46,7 @@ export default function DefaultGallery(props : Readonly<ImageHandleProps>) {
   )
 
   // Memoize dataList to avoid unnecessary recalculations
-  const dataList = useMemo(() => data ? [].concat(...data) : [], [data])
+  const dataList = useMemo(() => data?.flat() ?? [], [data])
   const t = useTranslations()
 
   // Reset pagination when debounced filters change - SWR key change will auto-refetch
@@ -91,7 +91,7 @@ export default function DefaultGallery(props : Readonly<ImageHandleProps>) {
     <>
       <InfiniteScroll
         className="w-full space-y-2"
-        hasMore={size < pageTotal}
+        hasMore={size < (pageTotal ?? 0)}
         isLoading={isValidating}
         next={() => setSize(size + 1)}
       >

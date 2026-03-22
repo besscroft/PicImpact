@@ -1,10 +1,10 @@
 'use client'
 
-import type { HandleProps, ImageHandleProps } from '~/types/props.ts'
+import type { ImageHandleProps } from '~/types/props.ts'
 import useSWRInfinite from 'swr/infinite'
 import { useSwrHydrated } from '~/hooks/use-swr-hydrated.ts'
 import { useTranslations } from 'next-intl'
-import type { ImageType } from '~/types'
+import type { Config, ImageType } from '~/types'
 import GalleryImage from '~/components/gallery/simple/gallery-image.tsx'
 import InfiniteScroll from '~/components/ui/origin/infinite-scroll.tsx'
 import { useCallback, useEffect, useMemo, useRef, useState, useTransition } from 'react'
@@ -43,13 +43,12 @@ export default function SimpleGallery(props: Readonly<ImageHandleProps>) {
       keepPreviousData: true,
     }
   )
-  const configProps: HandleProps = {
-    handle: props.configHandle,
+  const { data: configData } = useSwrHydrated<Config[]>({
+    handle: props.configHandle ?? (async () => [] as Config[]),
     args: 'system-config',
-  }
-  const { data: configData } = useSwrHydrated(configProps)
+  })
   // Memoize dataList to avoid unnecessary recalculations
-  const dataList = useMemo(() => data ? [].concat(...data) : [], [data])
+  const dataList = useMemo(() => data?.flat() ?? [], [data])
   const t = useTranslations()
 
   // Debounce filter changes
@@ -93,7 +92,7 @@ export default function SimpleGallery(props: Readonly<ImageHandleProps>) {
     <>
       <InfiniteScroll
         className="w-full max-w-3xl mx-auto px-4 space-y-8 sm:space-y-12"
-        hasMore={size < pageTotal}
+        hasMore={size < (pageTotal ?? 0)}
         isLoading={isValidating}
         next={() => setSize(size + 1)}
       >
