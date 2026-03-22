@@ -21,6 +21,13 @@ let nextConfig = {
     ignoreBuildErrors: true,
   },
   images: {
+    // PicImpact is a self-hosted photo portfolio where users configure their
+    // own storage backends (S3, R2, Open List, etc.), so image domains
+    // cannot be predicted at build time.
+    //
+    // SECURITY NOTE: Allowing any hostname is intentional for this use case.
+    // For production deployments, consider restricting to trusted storage
+    // domains via environment-driven configuration if your threat model requires it.
     remotePatterns: [
       {
         protocol: 'https',

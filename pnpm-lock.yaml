@@ -135,9 +135,6 @@ importers:
       compressorjs:
         specifier: 1.2.1
         version: 1.2.1
-      date-fns:
-        specifier: 4.1.0
-        version: 4.1.0
       dayjs:
         specifier: 1.11.19
         version: 1.11.19
