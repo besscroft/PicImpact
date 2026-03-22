@@ -6,15 +6,15 @@ import type { ImageType } from '~/types'
 import type { Config } from '~/types'
 
 export async function getImagesData(pageNum: number, album: string, camera?: string, lens?: string): Promise<ImageType[]> {
-  return await fetchClientImagesListByAlbum(pageNum, album, camera, lens)
+  return fetchClientImagesListByAlbum(pageNum, album, camera, lens)
 }
 
 export async function getImagesPageTotal(album: string, camera?: string, lens?: string): Promise<number> {
-  return await fetchClientImagesPageTotalByAlbum(album, camera, lens)
+  return fetchClientImagesPageTotalByAlbum(album, camera, lens)
 }
 
 export async function getDisplayConfig(): Promise<Config[]> {
-  return await fetchConfigsByKeys([
+  return fetchConfigsByKeys([
     'custom_index_download_enable',
     'custom_index_origin_enable',
     'custom_title'
@@ -22,7 +22,7 @@ export async function getDisplayConfig(): Promise<Config[]> {
 }
 
 export async function getAlbumDisplayConfig(): Promise<Config[]> {
-  return await fetchConfigsByKeys([
+  return fetchConfigsByKeys([
     'custom_index_download_enable'
   ])
 }

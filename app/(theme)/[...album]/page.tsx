@@ -1,11 +1,11 @@
 import { getImagesData, getImagesPageTotal, getAlbumDisplayConfig } from '~/server/actions/images'
-import type { ImageHandleProps } from '~/types/props.ts'
-import DefaultGallery from '~/components/layout/theme/default/default-gallery.tsx'
-import { fetchAlbumByRouter } from '~/server/db/query/albums.ts'
+import type { ImageHandleProps } from '~/types/props'
+import DefaultGallery from '~/components/layout/theme/default/default-gallery'
+import { fetchAlbumByRouter } from '~/server/db/query/albums'
 import 'react-photo-album/masonry.css'
 import type { AlbumType } from '~/types'
-import SimpleGallery from '~/components/layout/theme/simple/simple-gallery.tsx'
-import PolaroidGallery from '~/components/layout/theme/polaroid/polaroid-gallery.tsx'
+import SimpleGallery from '~/components/layout/theme/simple/simple-gallery'
+import PolaroidGallery from '~/components/layout/theme/polaroid/polaroid-gallery'
 
 export default async function Page({
   params
