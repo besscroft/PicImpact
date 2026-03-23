@@ -16,7 +16,7 @@ export default async function MapPage() {
   const images = await fetchMapImages()
 
   return (
-    <div className="w-full h-screen">
+    <div className="h-[calc(100dvh-3rem)] w-full overflow-hidden">
       <MapView images={images} />
     </div>
   )
