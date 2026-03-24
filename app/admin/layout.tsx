@@ -1,5 +1,6 @@
+import { AdminToolbar } from '~/components/layout/admin/admin-toolbar'
 import { AppSidebar } from '~/components/layout/admin/app-sidebar'
-import { SidebarProvider, SidebarTrigger } from '~/components/ui/sidebar'
+import { SidebarInset, SidebarProvider } from '~/components/ui/sidebar'
 
 export default function AdminLayout({
   children,
@@ -7,14 +8,19 @@ export default function AdminLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <SidebarProvider defaultOpen={true}>
+    <SidebarProvider defaultOpen={true} className="h-svh overflow-hidden">
       <AppSidebar />
-      <main id="main-content" className="flex w-full h-full flex-1 flex-col p-4">
-        <SidebarTrigger className="cursor-pointer" />
-        <div className="w-full h-full p-2">
-          {children}
+      <SidebarInset
+        id="main-content"
+        className="min-h-0 min-w-0 overflow-hidden"
+      >
+        <AdminToolbar />
+        <div className="scrollbar-hide min-h-0 flex-1 overflow-y-auto overflow-x-hidden px-4 pb-4">
+          <div className="flex min-h-full min-w-0 flex-col p-2">
+            {children}
+          </div>
         </div>
-      </main>
+      </SidebarInset>
     </SidebarProvider>
   )
 }
