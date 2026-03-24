@@ -50,6 +50,7 @@ import {
 } from '~/components/ui/popover'
 import { RefreshCWIcon } from '~/components/icons/refresh-cw.tsx'
 import { CircleChevronDownIcon } from '~/components/icons/circle-chevron-down.tsx'
+import { AnimatedIconTrigger, mergeAnimatedTriggerProps } from '~/components/icons/animated-trigger'
 
 export default function ListProps(props : Readonly<ImageServerHandleProps>) {
   const [pageNum, setPageNum] = useState(1)
@@ -263,37 +264,54 @@ export default function ListProps(props : Readonly<ImageServerHandleProps>) {
           </div>
         </div>
         <div className="flex items-center space-x-1">
-          <Button
-            variant="outline"
-            size="icon"
-            aria-label={t('Button.batchDelete')}
-            onClick={() => setImageBatchDelete(true)}
-          >
-            <DeleteIcon />
-          </Button>
-          <Button
-            className="cursor-pointer"
-            variant="outline"
-            size="icon"
-            disabled={isLoading}
-            onClick={async () => {
-              await totalMutate()
-              await mutate()
-            }}
-            aria-label={t('Button.refresh')}
-          >
-            <RefreshCWIcon />
-          </Button>
-          <Popover>
-            <PopoverTrigger asChild>
+          <AnimatedIconTrigger>
+            {({ iconRef, triggerProps }) => (
               <Button
-                className="flex sm:hidden cursor-pointer"
                 variant="outline"
                 size="icon"
+                aria-label={t('Button.batchDelete')}
+                {...mergeAnimatedTriggerProps({
+                  onClick: () => setImageBatchDelete(true)
+                }, triggerProps)}
               >
-                <CircleChevronDownIcon />
+                <DeleteIcon ref={iconRef} />
               </Button>
-            </PopoverTrigger>
+            )}
+          </AnimatedIconTrigger>
+          <AnimatedIconTrigger>
+            {({ iconRef, triggerProps }) => (
+              <Button
+                className="cursor-pointer"
+                variant="outline"
+                size="icon"
+                disabled={isLoading}
+                aria-label={t('Button.refresh')}
+                {...mergeAnimatedTriggerProps({
+                  onClick: async () => {
+                    await totalMutate()
+                    await mutate()
+                  },
+                }, triggerProps)}
+              >
+                <RefreshCWIcon ref={iconRef} />
+              </Button>
+            )}
+          </AnimatedIconTrigger>
+          <Popover>
+            <AnimatedIconTrigger>
+              {({ iconRef, triggerProps }) => (
+                <PopoverTrigger asChild>
+                  <Button
+                    className="flex sm:hidden cursor-pointer"
+                    variant="outline"
+                    size="icon"
+                    {...mergeAnimatedTriggerProps({}, triggerProps)}
+                  >
+                    <CircleChevronDownIcon ref={iconRef} />
+                  </Button>
+                </PopoverTrigger>
+              )}
+            </AnimatedIconTrigger>
             <PopoverContent className="w-80">
               <div className="flex flex-col items-center space-y-1">
                 <Select
@@ -464,17 +482,23 @@ export default function ListProps(props : Readonly<ImageServerHandleProps>) {
                     </AlertDialogFooter>
                   </AlertDialogContent>
                 </AlertDialog>
-                <Button
-                  variant="outline"
-                  size="icon"
-                  onClick={() => {
-                    setImageEditData(image)
-                    setImageEdit(true)
-                  }}
-                  aria-label={t('List.editImage')}
-                >
-                  <SquarePenIcon />
-                </Button>
+                <AnimatedIconTrigger>
+                  {({ iconRef, triggerProps }) => (
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      aria-label={t('List.editImage')}
+                      {...mergeAnimatedTriggerProps({
+                        onClick: () => {
+                          setImageEditData(image)
+                          setImageEdit(true)
+                        },
+                      }, triggerProps)}
+                    >
+                      <SquarePenIcon ref={iconRef} />
+                    </Button>
+                  )}
+                </AnimatedIconTrigger>
               </div>
             </CardFooter>
           </Card>
@@ -500,24 +524,44 @@ export default function ListProps(props : Readonly<ImageServerHandleProps>) {
               ))}
             </SelectContent>
           </Select>
-          <ChevronLeftIcon
-            onClick={async () => {
-              if (pageNum > 1) {
-                setPageNum(pageNum - 1)
-                await mutate()
-              }
-            }}
-            size={18}
-          />
-          <ChevronRightIcon
-            onClick={async () => {
-              if (pageNum < Math.ceil((total ?? 0) / pageSize)) {
-                setPageNum(pageNum + 1)
-                await mutate()
-              }
-            }}
-            size={18}
-          />
+          <AnimatedIconTrigger>
+            {({ iconRef, triggerProps }) => (
+              <button
+                type="button"
+                aria-label="Previous page"
+                className="inline-flex items-center justify-center rounded-md"
+                {...mergeAnimatedTriggerProps({
+                  onClick: async () => {
+                    if (pageNum > 1) {
+                      setPageNum(pageNum - 1)
+                      await mutate()
+                    }
+                  },
+                }, triggerProps)}
+              >
+                <ChevronLeftIcon ref={iconRef} size={18} />
+              </button>
+            )}
+          </AnimatedIconTrigger>
+          <AnimatedIconTrigger>
+            {({ iconRef, triggerProps }) => (
+              <button
+                type="button"
+                aria-label="Next page"
+                className="inline-flex items-center justify-center rounded-md"
+                {...mergeAnimatedTriggerProps({
+                  onClick: async () => {
+                    if (pageNum < Math.ceil((total ?? 0) / pageSize)) {
+                      setPageNum(pageNum + 1)
+                      await mutate()
+                    }
+                  },
+                }, triggerProps)}
+              >
+                <ChevronRightIcon ref={iconRef} size={18} />
+              </button>
+            )}
+          </AnimatedIconTrigger>
         </div>
       }
       <ImageEditSheet {...{...props, pageNum, album}} />

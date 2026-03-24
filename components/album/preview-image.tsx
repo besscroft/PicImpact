@@ -31,6 +31,7 @@ import { Separator } from '~/components/ui/separator'
 import { TelescopeIcon } from '~/components/icons/telescope'
 import { FlaskIcon } from '~/components/icons/flask'
 import { ScrollArea } from '~/components/ui/scroll-area'
+import { AnimatedIconTrigger, mergeAnimatedTriggerProps } from '~/components/icons/animated-trigger'
 
 // Row component for unified key-value display
 function Row({ label, value }: { label: string; value: string | number | null | undefined }) {
@@ -211,57 +212,74 @@ export default function PreviewImage(props: Readonly<PreviewImageHandleProps>) {
             {/* Header with title and close button */}
             <div className="flex items-center justify-between">
               <div className="flex-1 font-display font-semibold text-lg">{props.data?.title}</div>
-              <button
-                onClick={handleClose}
-                className="z-50"
-                aria-label={t('Button.goBack')}
-              >
-                <XIcon className={exifIconClass} size={18} />
-              </button>
+              <AnimatedIconTrigger>
+                {({ iconRef, triggerProps }) => (
+                  <button
+                    onClick={handleClose}
+                    className="z-50"
+                    aria-label={t('Button.goBack')}
+                    {...mergeAnimatedTriggerProps({}, triggerProps)}
+                  >
+                    <XIcon ref={iconRef} className={exifIconClass} size={18} />
+                  </button>
+                )}
+              </AnimatedIconTrigger>
             </div>
 
             {/* Action buttons */}
             <div className="flex flex-wrap gap-2">
-              <button
-                aria-label="Copy link"
-                className="inline-flex items-center justify-center cursor-pointer"
-                onClick={async () => {
-                  try {
-                    const url = props.data?.url
-                    await navigator.clipboard.writeText(url)
-                    let msg = t('Tips.copyImageSuccess')
-                    if (props.data?.album_license != null) {
-                      msg = t('Tips.downloadLicense', { license: props.data?.album_license })
-                    }
-                    toast.success(msg, { duration: 1500 })
-                  } catch {
-                    toast.error(t('Tips.copyImageFailed'), { duration: 500 })
-                  }
-                }}
-              >
-                <CopyIcon
-                  className={cn(exifIconClass, 'cursor-pointer')}
-                  size={20}
-                />
-              </button>
-              <button
-                aria-label="Copy share link"
-                className="inline-flex items-center justify-center cursor-pointer"
-                onClick={async () => {
-                  try {
-                    const url = window.location.origin + '/preview/' + props.id
-                    await navigator.clipboard.writeText(url)
-                    toast.success(t('Tips.copyShareSuccess'), { duration: 500 })
-                  } catch {
-                    toast.error(t('Tips.copyShareFailed'), { duration: 500 })
-                  }
-                }}
-              >
-                <LinkIcon
-                  className={cn(exifIconClass, 'cursor-pointer')}
-                  size={20}
-                />
-              </button>
+              <AnimatedIconTrigger>
+                {({ iconRef, triggerProps }) => (
+                  <button
+                    aria-label="Copy link"
+                    className="inline-flex items-center justify-center cursor-pointer"
+                    onClick={async () => {
+                      try {
+                        const url = props.data?.url
+                        await navigator.clipboard.writeText(url)
+                        let msg = t('Tips.copyImageSuccess')
+                        if (props.data?.album_license != null) {
+                          msg = t('Tips.downloadLicense', { license: props.data?.album_license })
+                        }
+                        toast.success(msg, { duration: 1500 })
+                      } catch {
+                        toast.error(t('Tips.copyImageFailed'), { duration: 500 })
+                      }
+                    }}
+                    {...mergeAnimatedTriggerProps({}, triggerProps)}
+                  >
+                    <CopyIcon
+                      ref={iconRef}
+                      className={cn(exifIconClass, 'cursor-pointer')}
+                      size={20}
+                    />
+                  </button>
+                )}
+              </AnimatedIconTrigger>
+              <AnimatedIconTrigger>
+                {({ iconRef, triggerProps }) => (
+                  <button
+                    aria-label="Copy share link"
+                    className="inline-flex items-center justify-center cursor-pointer"
+                    onClick={async () => {
+                      try {
+                        const url = window.location.origin + '/preview/' + props.id
+                        await navigator.clipboard.writeText(url)
+                        toast.success(t('Tips.copyShareSuccess'), { duration: 500 })
+                      } catch {
+                        toast.error(t('Tips.copyShareFailed'), { duration: 500 })
+                      }
+                    }}
+                    {...mergeAnimatedTriggerProps({}, triggerProps)}
+                  >
+                    <LinkIcon
+                      ref={iconRef}
+                      className={cn(exifIconClass, 'cursor-pointer')}
+                      size={20}
+                    />
+                  </button>
+                )}
+              </AnimatedIconTrigger>
               {configData?.find((item: Config) => item.config_key === 'custom_index_download_enable')?.config_value === 'true'
                 && <>
                   {download ?
@@ -269,31 +287,43 @@ export default function PreviewImage(props: Readonly<PreviewImageHandleProps>) {
                       className={cn(exifIconClass, 'animate-spin cursor-not-allowed')}
                       size={20}
                     /> :
-                    <button
-                      aria-label="Download"
-                      className="inline-flex items-center justify-center cursor-pointer"
-                      onClick={() => handleDownload()}
-                    >
-                      <DownloadIcon
-                        className={cn(exifIconClass, 'cursor-pointer')}
-                        size={20}
-                      />
-                    </button>
+                    <AnimatedIconTrigger>
+                      {({ iconRef, triggerProps }) => (
+                        <button
+                          aria-label="Download"
+                          className="inline-flex items-center justify-center cursor-pointer"
+                          onClick={() => handleDownload()}
+                          {...mergeAnimatedTriggerProps({}, triggerProps)}
+                        >
+                          <DownloadIcon
+                            ref={iconRef}
+                            className={cn(exifIconClass, 'cursor-pointer')}
+                            size={20}
+                          />
+                        </button>
+                      )}
+                    </AnimatedIconTrigger>
                   }
                 </>
               }
-              <button
-                aria-label="View fullscreen"
-                className="inline-flex items-center justify-center cursor-pointer"
-                onClick={() => {
-                  setLightboxPhoto(true)
-                }}
-              >
-                <ExpandIcon
-                  className={cn(exifIconClass, 'cursor-pointer')}
-                  size={20}
-                />
-              </button>
+              <AnimatedIconTrigger>
+                {({ iconRef, triggerProps }) => (
+                  <button
+                    aria-label="View fullscreen"
+                    className="inline-flex items-center justify-center cursor-pointer"
+                    onClick={() => {
+                      setLightboxPhoto(true)
+                    }}
+                    {...mergeAnimatedTriggerProps({}, triggerProps)}
+                  >
+                    <ExpandIcon
+                      ref={iconRef}
+                      className={cn(exifIconClass, 'cursor-pointer')}
+                      size={20}
+                    />
+                  </button>
+                )}
+              </AnimatedIconTrigger>
             </div>
 
             <Separator className="bg-border" />
@@ -460,21 +490,26 @@ export default function PreviewImage(props: Readonly<PreviewImageHandleProps>) {
 
             {/* Copy EXIF button */}
             <div className="flex w-full items-center justify-end pt-2">
-              <button
-                className="flex items-center space-x-1 text-sm text-muted-foreground transition-colors hover:text-primary"
-                onClick={async () => {
-                  try {
-                    const exif = JSON.stringify(props.data?.exif, null, 2)
-                    await navigator.clipboard.writeText(exif)
-                    toast.success(t('Exif.copySuccess'), { duration: 1500 })
-                  } catch {
-                    toast.error(t('Exif.copyFailed'), { duration: 500 })
-                  }
-                }}
-              >
-                <CopyIcon className={exifIconClass} size={16} />
-                <span>{t('Exif.copyExif')}</span>
-              </button>
+              <AnimatedIconTrigger>
+                {({ iconRef, triggerProps }) => (
+                  <button
+                    className="flex items-center space-x-1 text-sm text-muted-foreground transition-colors hover:text-primary"
+                    onClick={async () => {
+                      try {
+                        const exif = JSON.stringify(props.data?.exif, null, 2)
+                        await navigator.clipboard.writeText(exif)
+                        toast.success(t('Exif.copySuccess'), { duration: 1500 })
+                      } catch {
+                        toast.error(t('Exif.copyFailed'), { duration: 500 })
+                      }
+                    }}
+                    {...mergeAnimatedTriggerProps({}, triggerProps)}
+                  >
+                    <CopyIcon ref={iconRef} className={exifIconClass} size={16} />
+                    <span>{t('Exif.copyExif')}</span>
+                  </button>
+                )}
+              </AnimatedIconTrigger>
             </div>
           </div>
         </ScrollArea>

@@ -31,6 +31,7 @@ import { X } from 'lucide-react'
 import { UploadIcon } from '~/components/icons/upload'
 import { encodeBrowserThumbHash } from '~/lib/utils/blurhash-client.ts'
 import { useUploadConfig, STORAGE_OPTIONS } from '~/hooks/use-upload-config'
+import { AnimatedIconTrigger, mergeAnimatedTriggerProps } from '~/components/icons/animated-trigger'
 
 export default function SimpleFileUpload() {
   const {
@@ -296,11 +297,20 @@ export default function SimpleFileUpload() {
             size={20}
             className="animate-spin cursor-not-allowed"
           /> :
-          <RocketIcon
-            size={20}
-            onClick={() => handleSubmit()}
-            aria-label={t('Button.submit')}
-          />
+          <AnimatedIconTrigger>
+            {({ iconRef, triggerProps }) => (
+              <button
+                type="button"
+                aria-label={t('Button.submit')}
+                {...mergeAnimatedTriggerProps({
+                  className: 'inline-flex items-center justify-center',
+                  onClick: () => handleSubmit(),
+                }, triggerProps)}
+              >
+                <RocketIcon ref={iconRef} size={20} />
+              </button>
+            )}
+          </AnimatedIconTrigger>
         }
       </div>
       {
@@ -335,15 +345,19 @@ export default function SimpleFileUpload() {
           multiple={false}
           disabled={isUploadDisabled}
         >
-          <FileUploadDropzone className="h-full">
-            <div className="flex flex-col items-center gap-1">
-              <UploadIcon/>
-              <p className="font-medium text-sm">Drag & drop image here</p>
-              <p className="text-muted-foreground text-xs">
-                Or click to browse (max 1 files)
-              </p>
-            </div>
-          </FileUploadDropzone>
+          <AnimatedIconTrigger>
+            {({ iconRef, triggerProps }) => (
+              <FileUploadDropzone className="h-full" {...mergeAnimatedTriggerProps({}, triggerProps)}>
+                <div className="flex flex-col items-center gap-1">
+                  <UploadIcon ref={iconRef} />
+                  <p className="font-medium text-sm">Drag & drop image here</p>
+                  <p className="text-muted-foreground text-xs">
+                    Or click to browse (max 1 files)
+                  </p>
+                </div>
+              </FileUploadDropzone>
+            )}
+          </AnimatedIconTrigger>
           <FileUploadList>
             {files.map((file, index) => (
               <FileUploadItem key={index} value={file}>

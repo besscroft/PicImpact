@@ -1,6 +1,6 @@
 'use client'
 
-import { type LucideIcon } from 'lucide-react'
+import { AnimatedIconTrigger, type AnimatedIconComponent, mergeAnimatedTriggerProps } from '~/components/icons/animated-trigger'
 import {
   SidebarGroup,
   SidebarGroupLabel,
@@ -20,7 +20,7 @@ export function NavProjects({
     items?: {
       name: string
       url: string
-      icon: LucideIcon
+      icon: AnimatedIconComponent
     }[]
   }
 }) {
@@ -34,19 +34,26 @@ export function NavProjects({
       <SidebarGroupLabel className="select-none">{projects.title}</SidebarGroupLabel>
       <SidebarMenu className="select-none">
         {projects?.items?.map((item) => (
-          <SidebarMenuItem key={item.name}>
-            <SidebarMenuButton
-              className={buttonClasses}
-              tooltip={item.name}
-              isActive={pathname === item.url}
-              onClick={() => {
-                setOpenMobile(false)
-                router.push(item.url)
-              }}>
-              <item.icon size={18} />
-              <span>{item.name}</span>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
+          <AnimatedIconTrigger key={item.name}>
+            {({ iconRef, triggerProps }) => (
+              <SidebarMenuItem>
+                <SidebarMenuButton
+                  {...mergeAnimatedTriggerProps({
+                    className: buttonClasses,
+                    tooltip: item.name,
+                    isActive: pathname === item.url,
+                    onClick: () => {
+                      setOpenMobile(false)
+                      router.push(item.url)
+                    },
+                  }, triggerProps)}
+                >
+                  <item.icon ref={iconRef} size={18} />
+                  <span>{item.name}</span>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            )}
+          </AnimatedIconTrigger>
         ))}
       </SidebarMenu>
     </SidebarGroup>

@@ -23,6 +23,7 @@ import { SquarePenIcon } from '~/components/icons/square-pen'
 import { DeleteIcon } from '~/components/icons/delete'
 import { useTranslations } from 'next-intl'
 import { Badge } from '~/components/ui/badge'
+import { AnimatedIconTrigger, mergeAnimatedTriggerProps } from '~/components/icons/animated-trigger'
 
 export default function AlbumList(props : Readonly<HandleProps>) {
   const { data, mutate } = useSwrHydrated(props)
@@ -108,34 +109,46 @@ export default function AlbumList(props : Readonly<HandleProps>) {
               <Badge variant="secondary" aria-label={t('Words.sort')}><ArrowDown10 size={18}/>{album.sort}</Badge>
             </div>
             <div className="space-x-1">
-              <Button
-                variant="outline"
-                size="icon"
-                onClick={() => {
-                  setAlbumEditData(album)
-                  setAlbumEdit(true)
-                }}
-                aria-label={t('Album.editAlbum')}
-              >
-                <SquarePenIcon />
-              </Button>
+              <AnimatedIconTrigger>
+                {({ iconRef, triggerProps }) => (
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    aria-label={t('Album.editAlbum')}
+                    {...mergeAnimatedTriggerProps({
+                      onClick: () => {
+                        setAlbumEditData(album)
+                        setAlbumEdit(true)
+                      },
+                    }, triggerProps)}
+                  >
+                    <SquarePenIcon ref={iconRef} />
+                  </Button>
+                )}
+              </AnimatedIconTrigger>
               <Dialog onOpenChange={(value) => {
                 if (!value) {
                   setAlbum({} as AlbumType)
                 }
               }}>
-                <DialogTrigger asChild>
-                  <Button
-                    variant="outline"
-                    size="icon"
-                    onClick={() => {
-                      setAlbum(album)
-                    }}
-                    aria-label={t('Album.deleteAlbum')}
-                  >
-                    <DeleteIcon />
-                  </Button>
-                </DialogTrigger>
+                <AnimatedIconTrigger>
+                  {({ iconRef, triggerProps }) => (
+                    <DialogTrigger asChild>
+                      <Button
+                        variant="outline"
+                        size="icon"
+                        aria-label={t('Album.deleteAlbum')}
+                        {...mergeAnimatedTriggerProps({
+                          onClick: () => {
+                            setAlbum(album)
+                          },
+                        }, triggerProps)}
+                      >
+                        <DeleteIcon ref={iconRef} />
+                      </Button>
+                    </DialogTrigger>
+                  )}
+                </AnimatedIconTrigger>
                 <DialogContent className="sm:max-w-[425px]">
                   <DialogHeader>
                     <DialogTitle>{t('Tips.reallyDelete')}</DialogTitle>

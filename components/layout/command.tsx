@@ -19,6 +19,7 @@ import { SunMediumIcon } from '~/components/icons/sun-medium.tsx'
 import { UserIcon } from '~/components/icons/user.tsx'
 import { authClient } from '~/server/auth/auth-client.ts'
 import { useIsHydrated } from '~/hooks/use-is-hydrated'
+import { AnimatedIconTrigger, mergeAnimatedTriggerProps } from '~/components/icons/animated-trigger'
 
 export default function Command() {
   const { command, setCommand } = useButtonStore(
@@ -44,39 +45,63 @@ export default function Command() {
           <CommandEmpty>{t('Command.noResults', { defaultValue: 'No results found.' })}</CommandEmpty>
           {session ?
             <CommandGroup heading={t('Command.menu', { defaultValue: 'Menu' })}>
-              <CommandItem className={closeClasses} onSelect={() => {
-                router.push('/admin')
-                setCommand(false)
-              }}>
-                <SquareTerminalIcon size={18} />
-                <span>{t('Link.dashboard')}</span>
-              </CommandItem>
+              <AnimatedIconTrigger>
+                {({ iconRef, triggerProps }) => (
+                  <CommandItem
+                    {...mergeAnimatedTriggerProps({
+                      className: closeClasses,
+                      onSelect: () => {
+                        router.push('/admin')
+                        setCommand(false)
+                      },
+                    }, triggerProps)}
+                  >
+                    <SquareTerminalIcon ref={iconRef} size={18} />
+                    <span>{t('Link.dashboard')}</span>
+                  </CommandItem>
+                )}
+              </AnimatedIconTrigger>
             </CommandGroup> :
             <CommandGroup heading={t('Command.menu', { defaultValue: 'Menu' })}>
-              <CommandItem className={closeClasses} onSelect={() => {
-                router.push('/login')
-                setCommand(false)
-              }}>
-                <UserIcon size={18} />
-                <span>{t('Login.signIn')}</span>
-              </CommandItem>
+              <AnimatedIconTrigger>
+                {({ iconRef, triggerProps }) => (
+                  <CommandItem
+                    {...mergeAnimatedTriggerProps({
+                      className: closeClasses,
+                      onSelect: () => {
+                        router.push('/login')
+                        setCommand(false)
+                      },
+                    }, triggerProps)}
+                  >
+                    <UserIcon ref={iconRef} size={18} />
+                    <span>{t('Login.signIn')}</span>
+                  </CommandItem>
+                )}
+              </AnimatedIconTrigger>
             </CommandGroup>
           }
           <CommandSeparator />
           <CommandGroup heading={t('Command.settings', { defaultValue: 'Settings' })}>
-            <CommandItem
-              className={closeClasses}
-              disabled={!isHydrated}
-              onSelect={() => {
-                if (!isHydrated) {
-                  return
-                }
-                setTheme(resolvedTheme === 'light' ? 'dark' : 'light')
-              }}
-            >
-              {!isHydrated ? <SunMoonIcon size={18} /> : resolvedTheme === 'light' ? <SunMoonIcon size={18} /> : <SunMediumIcon size={18} />}
-              <p>{themeToggleLabel}</p>
-            </CommandItem>
+            <AnimatedIconTrigger>
+              {({ iconRef, triggerProps }) => (
+                <CommandItem
+                  {...mergeAnimatedTriggerProps({
+                    className: closeClasses,
+                    disabled: !isHydrated,
+                    onSelect: () => {
+                      if (!isHydrated) {
+                        return
+                      }
+                      setTheme(resolvedTheme === 'light' ? 'dark' : 'light')
+                    },
+                  }, triggerProps)}
+                >
+                  {!isHydrated ? <SunMoonIcon ref={iconRef} size={18} /> : resolvedTheme === 'light' ? <SunMoonIcon ref={iconRef} size={18} /> : <SunMediumIcon ref={iconRef} size={18} />}
+                  <p>{themeToggleLabel}</p>
+                </CommandItem>
+              )}
+            </AnimatedIconTrigger>
             <CommandItem className="justify-end">
               <a
                 className="text-xs text-muted-foreground flex items-center gap-0.25"

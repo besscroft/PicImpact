@@ -26,6 +26,7 @@ import { Button } from '~/components/ui/button'
 import { X } from 'lucide-react'
 import { encodeBrowserThumbHash } from '~/lib/utils/blurhash-client'
 import { useUploadConfig, STORAGE_OPTIONS } from '~/hooks/use-upload-config'
+import { AnimatedIconTrigger, mergeAnimatedTriggerProps } from '~/components/icons/animated-trigger'
 
 export default function MultipleFileUpload() {
   const {
@@ -242,18 +243,22 @@ export default function MultipleFileUpload() {
         multiple={true}
         disabled={isUploadDisabled}
       >
-        <FileUploadDropzone className="h-full">
-          <div className="flex flex-col items-center gap-1">
-            <UploadIcon/>
-            <p className="font-medium text-sm">{t('Upload.uploadTips1')}</p>
-            <p className="text-muted-foreground text-xs">
-              {t('Upload.uploadTips2')}
-            </p>
-            <p className="text-muted-foreground text-xs">
-              {t('Upload.uploadTips4', { count: maxUploadFiles })}
-            </p>
-          </div>
-        </FileUploadDropzone>
+        <AnimatedIconTrigger>
+          {({ iconRef, triggerProps }) => (
+            <FileUploadDropzone className="h-full" {...mergeAnimatedTriggerProps({}, triggerProps)}>
+              <div className="flex flex-col items-center gap-1">
+                <UploadIcon ref={iconRef} />
+                <p className="font-medium text-sm">{t('Upload.uploadTips1')}</p>
+                <p className="text-muted-foreground text-xs">
+                  {t('Upload.uploadTips2')}
+                </p>
+                <p className="text-muted-foreground text-xs">
+                  {t('Upload.uploadTips4', { count: maxUploadFiles })}
+                </p>
+              </div>
+            </FileUploadDropzone>
+          )}
+        </AnimatedIconTrigger>
         <FileUploadList>
           {files.map((file, index) => (
             <FileUploadItem key={index} value={file}>
