@@ -4,7 +4,7 @@ import favicon from '~/public/favicon.svg'
 import { getTranslations } from 'next-intl/server'
 
 export default async function Login() {
-  const t = await getTranslations()
+  const t = await getTranslations('Login')
 
   return (
     <div className="flex min-h-screen">
@@ -33,7 +33,7 @@ export default async function Login() {
               </div>
               <h1 className="font-display text-3xl font-semibold">PicImpact</h1>
             </div>
-            <p className="text-sm text-muted-foreground">{t('Login.signInDescription') || 'Sign in to continue'}</p>
+            <p className="text-sm text-muted-foreground">{t('signInDescription', { defaultValue: 'Sign in to continue' })}</p>
           </div>
 
           <UserFrom />

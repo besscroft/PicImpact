@@ -22,6 +22,8 @@
     "logout": "ログアウト",
     "signUp": "登録する",
     "signIn": "ログイン",
+    "signInDescription": "続行するにはログインしてください",
+    "signUpDescription": "アカウントを作成して始めましょう",
     "passkeyLogin": "Passkey でログイン",
     "or": "または"
   },

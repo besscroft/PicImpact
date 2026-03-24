@@ -22,6 +22,8 @@
     "logout": "登出",
     "signUp": "註冊",
     "signIn": "登入",
+    "signInDescription": "登入後繼續",
+    "signUpDescription": "建立你的帳戶以開始使用",
     "passkeyLogin": "使用 Passkey 登入",
     "or": "或者"
   },
