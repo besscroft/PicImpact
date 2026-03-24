@@ -22,6 +22,8 @@
     "logout": "Logout",
     "signUp": "SignUp",
     "signIn": "SignIn",
+    "signInDescription": "Sign in to continue",
+    "signUpDescription": "Create your account to get started",
     "passkeyLogin": "Sign in with Passkey",
     "or": "or"
   },

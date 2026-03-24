@@ -12,7 +12,7 @@ export default async function SignUp() {
     redirect('/login')
   }
 
-  const t = await getTranslations()
+  const t = await getTranslations('Login')
 
   return (
     <div className="flex min-h-screen">
@@ -41,7 +41,7 @@ export default async function SignUp() {
               </div>
               <h1 className="font-display text-3xl font-semibold">PicImpact</h1>
             </div>
-            <p className="text-sm text-muted-foreground">{t('Login.signUpDescription') || 'Create your account to get started'}</p>
+            <p className="text-sm text-muted-foreground">{t('signUpDescription', { defaultValue: 'Create your account to get started' })}</p>
           </div>
 
           <SignUpForm />
