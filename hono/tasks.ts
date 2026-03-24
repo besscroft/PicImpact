@@ -10,6 +10,7 @@ import {
   getMetadataTaskRunDetail,
   kickMetadataTaskRun,
   listMetadataTaskRuns,
+  tickMetadataTaskRuns,
 } from '~/server/tasks/service'
 import { ADMIN_TASK_KEY_REFRESH_IMAGE_METADATA, normalizeMetadataTaskScope } from '~/types/admin-tasks'
 
@@ -131,6 +132,16 @@ app.post('/runs/:id/cancel', async (c) => {
 
     return c.json({ code: 200, message: 'Success', data })
   } catch (error) {
+    rethrowTaskError(error)
+  }
+})
+
+app.post('/tick', async (c) => {
+  try {
+    const data = await tickMetadataTaskRuns()
+    return c.json({ code: 200, message: 'Success', data })
+  } catch (error) {
+    console.error('Task tick failed:', error)
     rethrowTaskError(error)
   }
 })
