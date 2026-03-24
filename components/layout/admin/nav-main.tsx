@@ -1,6 +1,6 @@
 'use client'
 
-import { type LucideIcon } from 'lucide-react'
+import { AnimatedIconTrigger, type AnimatedIconComponent, mergeAnimatedTriggerProps } from '~/components/icons/animated-trigger'
 import { Collapsible } from '~/components/ui/collapsible'
 import {
   SidebarGroup,
@@ -19,7 +19,7 @@ export function NavMain({
   items: {
     title: string
     url: string
-    icon?: LucideIcon
+    icon?: AnimatedIconComponent
     isActive?: boolean
     items?: {
       title: string
@@ -37,25 +37,31 @@ export function NavMain({
       <SidebarGroupLabel className="select-none">菜单</SidebarGroupLabel>
       <SidebarMenu>
         {items.map((item) => (
-          <Collapsible
-            key={item.title}
-            asChild
-            className="group/collapsible"
-          >
-            <SidebarMenuItem className="select-none">
-              <SidebarMenuButton
-                className={buttonClasses}
-                tooltip={item.title}
-                isActive={pathname === item.url}
-                onClick={() => {
-                  setOpenMobile(false)
-                  router.push(item.url)
-                }}>
-                {item.icon && <item.icon size={18} />}
-                <span>{item.title}</span>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-          </Collapsible>
+          <AnimatedIconTrigger key={item.title}>
+            {({ iconRef, triggerProps }) => (
+              <Collapsible
+                asChild
+                className="group/collapsible"
+              >
+                <SidebarMenuItem className="select-none">
+                  <SidebarMenuButton
+                    {...mergeAnimatedTriggerProps({
+                      className: buttonClasses,
+                      tooltip: item.title,
+                      isActive: pathname === item.url,
+                      onClick: () => {
+                        setOpenMobile(false)
+                        router.push(item.url)
+                      },
+                    }, triggerProps)}
+                  >
+                    {item.icon && <item.icon ref={iconRef} size={18} />}
+                    <span>{item.title}</span>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              </Collapsible>
+            )}
+          </AnimatedIconTrigger>
         ))}
       </SidebarMenu>
     </SidebarGroup>

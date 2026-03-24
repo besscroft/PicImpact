@@ -29,6 +29,7 @@ import { X } from 'lucide-react'
 import { UploadIcon } from '~/components/icons/upload'
 import { encodeBrowserThumbHash } from '~/lib/utils/blurhash-client'
 import { useUploadConfig, STORAGE_OPTIONS } from '~/hooks/use-upload-config'
+import { AnimatedIconTrigger, mergeAnimatedTriggerProps } from '~/components/icons/animated-trigger'
 
 export default function LivephotoFileUpload() {
   const {
@@ -339,11 +340,20 @@ export default function LivephotoFileUpload() {
             size={20}
             className="animate-spin cursor-not-allowed"
           /> :
-          <RocketIcon
-            size={20}
-            onClick={() => submit()}
-            aria-label={t('Button.submit')}
-          />
+          <AnimatedIconTrigger>
+            {({ iconRef, triggerProps }) => (
+              <button
+                type="button"
+                aria-label={t('Button.submit')}
+                {...mergeAnimatedTriggerProps({
+                  className: 'inline-flex items-center justify-center',
+                  onClick: () => submit(),
+                }, triggerProps)}
+              >
+                <RocketIcon ref={iconRef} size={20} />
+              </button>
+            )}
+          </AnimatedIconTrigger>
         }
       </div>
       {
@@ -379,15 +389,19 @@ export default function LivephotoFileUpload() {
             multiple={false}
             disabled={isUploadDisabled}
           >
-            <FileUploadDropzone className="h-full">
-              <div className="flex flex-col items-center gap-1">
-                <UploadIcon/>
-                <p className="font-medium text-sm">Drag & drop image here</p>
-                <p className="text-muted-foreground text-xs">
-                  Or click to browse (max 1 files)
-                </p>
-              </div>
-            </FileUploadDropzone>
+            <AnimatedIconTrigger>
+              {({ iconRef, triggerProps }) => (
+                <FileUploadDropzone className="h-full" {...mergeAnimatedTriggerProps({}, triggerProps)}>
+                  <div className="flex flex-col items-center gap-1">
+                    <UploadIcon ref={iconRef} />
+                    <p className="font-medium text-sm">Drag & drop image here</p>
+                    <p className="text-muted-foreground text-xs">
+                      Or click to browse (max 1 files)
+                    </p>
+                  </div>
+                </FileUploadDropzone>
+              )}
+            </AnimatedIconTrigger>
             <FileUploadList>
               {images.map((file, index) => (
                 <FileUploadItem key={index} value={file}>
@@ -411,15 +425,19 @@ export default function LivephotoFileUpload() {
             multiple={false}
             disabled={isUploadDisabled}
           >
-            <FileUploadDropzone className="h-full">
-              <div className="flex flex-col items-center gap-1">
-                <UploadIcon/>
-                <p className="font-medium text-sm">Drag & drop video here</p>
-                <p className="text-muted-foreground text-xs">
-                  Or click to browse (max 1 files)
-                </p>
-              </div>
-            </FileUploadDropzone>
+            <AnimatedIconTrigger>
+              {({ iconRef, triggerProps }) => (
+                <FileUploadDropzone className="h-full" {...mergeAnimatedTriggerProps({}, triggerProps)}>
+                  <div className="flex flex-col items-center gap-1">
+                    <UploadIcon ref={iconRef} />
+                    <p className="font-medium text-sm">Drag & drop video here</p>
+                    <p className="text-muted-foreground text-xs">
+                      Or click to browse (max 1 files)
+                    </p>
+                  </div>
+                </FileUploadDropzone>
+              )}
+            </AnimatedIconTrigger>
             <FileUploadList>
               {videos.map((file, index) => (
                 <FileUploadItem key={index} value={file}>

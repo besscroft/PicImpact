@@ -12,6 +12,7 @@ import BlurImage from '~/components/album/blur-image'
 import { SparklesIcon } from '~/components/icons/sparkles'
 import { UndoIcon } from '~/components/icons/undo'
 import { useRouter } from 'next-nprogress-bar'
+import { AnimatedIconTrigger, mergeAnimatedTriggerProps } from '~/components/icons/animated-trigger'
 
 function renderNextImage(
   _: RenderImageProps,
@@ -72,12 +73,21 @@ export default function TagGallery(props : Readonly<ImageHandleProps>) {
               {props.album}
             </p>
           </div>
-          <div className="flex items-center space-x-1" onClick={() => router.back()}>
-            <UndoIcon className={exifIconClass} size={18} />
-            <p className={exifTextClass}>
-              {t('Button.goBack')}
-            </p>
-          </div>
+          <AnimatedIconTrigger>
+            {({ iconRef, triggerProps }) => (
+              <button
+                type="button"
+                className="flex items-center space-x-1"
+                onClick={() => router.back()}
+                {...mergeAnimatedTriggerProps({}, triggerProps)}
+              >
+                <UndoIcon ref={iconRef} className={exifIconClass} size={18} />
+                <p className={exifTextClass}>
+                  {t('Button.goBack')}
+                </p>
+              </button>
+            )}
+          </AnimatedIconTrigger>
         </div>
       </div>
       <div className="flex items-center justify-center my-4">

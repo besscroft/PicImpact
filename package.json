@@ -72,6 +72,7 @@
     "embla-carousel-react": "8.6.0",
     "emblor": "1.4.8",
     "exifreader": "4.36.2",
+    "@xmldom/xmldom": "^0.8.11",
     "heic-to": "1.4.2",
     "heic2any": "0.0.4",
     "hono": "4.12.3",

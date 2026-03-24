@@ -33,6 +33,7 @@ import { LanguagesIcon } from '~/components/icons/languages'
 import { LogoutIcon } from '~/components/icons/logout'
 import { ChevronsDownUpIcon } from '~/components/icons/chevrons-up-down'
 import { useIsHydrated } from '~/hooks/use-is-hydrated'
+import { AnimatedIconTrigger, mergeAnimatedTriggerProps } from '~/components/icons/animated-trigger'
 
 export function NavUser() {
   const { isMobile } = useSidebar()
@@ -48,22 +49,28 @@ export function NavUser() {
     <SidebarMenu>
       <SidebarMenuItem>
         <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <SidebarMenuButton
-              size="lg"
-              className="space-x-2 data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground cursor-pointer"
-            >
-              <Avatar className="h-8 w-8 rounded-lg select-none">
-                <AvatarImage src={session?.user?.image!} alt={session?.user?.name!} />
-                <AvatarFallback className="rounded-lg">CN</AvatarFallback>
-              </Avatar>
-              <div className="grid flex-1 text-left text-sm leading-tight select-none">
-                <span className="truncate font-semibold">{session?.user?.name}</span>
-                <span className="truncate text-xs">{session?.user?.email}</span>
-              </div>
-              <ChevronsDownUpIcon size={18} />
-            </SidebarMenuButton>
-          </DropdownMenuTrigger>
+          <AnimatedIconTrigger>
+            {({ iconRef, triggerProps }) => (
+              <DropdownMenuTrigger asChild>
+                <SidebarMenuButton
+                  {...mergeAnimatedTriggerProps({
+                    size: 'lg',
+                    className: 'space-x-2 data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground cursor-pointer',
+                  }, triggerProps)}
+                >
+                  <Avatar className="h-8 w-8 rounded-lg select-none">
+                    <AvatarImage src={session?.user?.image!} alt={session?.user?.name!} />
+                    <AvatarFallback className="rounded-lg">CN</AvatarFallback>
+                  </Avatar>
+                  <div className="grid flex-1 text-left text-sm leading-tight select-none">
+                    <span className="truncate font-semibold">{session?.user?.name}</span>
+                    <span className="truncate text-xs">{session?.user?.email}</span>
+                  </div>
+                  <ChevronsDownUpIcon ref={iconRef} size={18} />
+                </SidebarMenuButton>
+              </DropdownMenuTrigger>
+            )}
+          </AnimatedIconTrigger>
           <DropdownMenuContent
             className="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg"
             side={isMobile ? 'bottom' : 'right'}
@@ -83,21 +90,38 @@ export function NavUser() {
               </div>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuItem
-              className="cursor-pointer"
-              disabled={!isHydrated}
-              onClick={() => {
-                if (!isHydrated) {
-                  return
-                }
-                setTheme(resolvedTheme === 'light' ? 'dark' : 'light')
-              }}
-            >
-              {!isHydrated ? <SunMoonIcon size={18} /> : resolvedTheme === 'light' ? <SunMoonIcon size={18} /> : <SunMediumIcon size={18} />}
-              <span>{themeToggleLabel}</span>
-            </DropdownMenuItem>
+            <AnimatedIconTrigger>
+              {({ iconRef, triggerProps }) => (
+                <DropdownMenuItem
+                  {...mergeAnimatedTriggerProps({
+                    className: 'cursor-pointer',
+                    disabled: !isHydrated,
+                    onClick: () => {
+                      if (!isHydrated) {
+                        return
+                      }
+                      setTheme(resolvedTheme === 'light' ? 'dark' : 'light')
+                    },
+                  }, triggerProps)}
+                >
+                  {!isHydrated ? <SunMoonIcon ref={iconRef} size={18} /> : resolvedTheme === 'light' ? <SunMoonIcon ref={iconRef} size={18} /> : <SunMediumIcon ref={iconRef} size={18} />}
+                  <span>{themeToggleLabel}</span>
+                </DropdownMenuItem>
+              )}
+            </AnimatedIconTrigger>
             <DropdownMenuSub>
-              <DropdownMenuSubTrigger className="cursor-pointer"><LanguagesIcon size={18} />{t('Button.language')}</DropdownMenuSubTrigger>
+              <AnimatedIconTrigger>
+                {({ iconRef, triggerProps }) => (
+                  <DropdownMenuSubTrigger
+                    {...mergeAnimatedTriggerProps({
+                      className: 'cursor-pointer',
+                    }, triggerProps)}
+                  >
+                    <LanguagesIcon ref={iconRef} size={18} />
+                    {t('Button.language')}
+                  </DropdownMenuSubTrigger>
+                )}
+              </AnimatedIconTrigger>
               <DropdownMenuPortal>
                 <DropdownMenuSubContent>
                   <DropdownMenuItem className="cursor-pointer" onClick={() => setUserLocale('zh')}>简体中文</DropdownMenuItem>
@@ -107,22 +131,31 @@ export function NavUser() {
                 </DropdownMenuSubContent>
               </DropdownMenuPortal>
             </DropdownMenuSub>
-            <DropdownMenuItem className="cursor-pointer" onClick={async () => {
-              try {
-                await authClient.signOut({
-                  fetchOptions: {
-                    onSuccess: () => {
-                      location.replace('/login')
+            <AnimatedIconTrigger>
+              {({ iconRef, triggerProps }) => (
+                <DropdownMenuItem
+                  {...mergeAnimatedTriggerProps({
+                    className: 'cursor-pointer',
+                    onClick: async () => {
+                      try {
+                        await authClient.signOut({
+                          fetchOptions: {
+                            onSuccess: () => {
+                              location.replace('/login')
+                            },
+                          },
+                        })
+                      } catch (e) {
+                        console.error(e)
+                      }
                     },
-                  },
-                })
-              } catch (e) {
-                console.error(e)
-              }
-            }}>
-              <LogoutIcon size={18} />
-              {t('Login.logout')}
-            </DropdownMenuItem>
+                  }, triggerProps)}
+                >
+                  <LogoutIcon ref={iconRef} size={18} />
+                  {t('Login.logout')}
+                </DropdownMenuItem>
+              )}
+            </AnimatedIconTrigger>
           </DropdownMenuContent>
         </DropdownMenu>
       </SidebarMenuItem>

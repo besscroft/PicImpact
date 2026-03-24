@@ -24,6 +24,7 @@ import {
   TooltipTrigger,
 } from '~/components/ui/tooltip'
 import { GripIcon } from '~/components/icons/grip'
+import { AnimatedIconTrigger, mergeAnimatedTriggerProps } from '~/components/icons/animated-trigger'
 
 const SIDEBAR_COOKIE_NAME = 'sidebar_state'
 const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7
@@ -261,21 +262,27 @@ function SidebarTrigger({
   const { toggleSidebar } = useSidebar()
 
   return (
-    <Button
-      data-sidebar="trigger"
-      data-slot="sidebar-trigger"
-      variant="ghost"
-      size="icon"
-      className={cn('size-7', className)}
-      onClick={(event) => {
-        onClick?.(event)
-        toggleSidebar()
-      }}
-      {...props}
-    >
-      <GripIcon size={24} />
-      <span className="sr-only">Toggle Sidebar</span>
-    </Button>
+    <AnimatedIconTrigger>
+      {({ iconRef, triggerProps }) => (
+        <Button
+          data-sidebar="trigger"
+          data-slot="sidebar-trigger"
+          variant="ghost"
+          size="icon"
+          {...mergeAnimatedTriggerProps({
+            ...props,
+            className: cn('size-7', className),
+            onClick: (event: React.MouseEvent<HTMLButtonElement>) => {
+              onClick?.(event)
+              toggleSidebar()
+            },
+          }, triggerProps)}
+        >
+          <GripIcon ref={iconRef} size={24} />
+          <span className="sr-only">Toggle Sidebar</span>
+        </Button>
+      )}
+    </AnimatedIconTrigger>
   )
 }
 

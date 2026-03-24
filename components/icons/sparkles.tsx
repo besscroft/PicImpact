@@ -40,10 +40,7 @@ const starVariants: Variants = {
     opacity: [0, 1, 0, 0, 0, 0, 1],
     transition: {
       duration: 2,
-      type: 'spring',
-      stiffness: 70,
-      damping: 10,
-      mass: 0.4,
+      ease: 'easeInOut',
     },
   }),
 }

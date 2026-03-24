@@ -25,6 +25,7 @@ import { useTranslations } from 'next-intl'
 import { ScrollArea } from '~/components/ui/scroll-area'
 import HistogramChart from '~/components/album/histogram-chart'
 import ToneAnalysis from '~/components/album/tone-analysis'
+import { AnimatedIconTrigger, mergeAnimatedTriggerProps } from '~/components/icons/animated-trigger'
 
 // Row component for unified key-value display
 function Row({ label, value }: { label: string; value: string | number | null | undefined }) {
@@ -88,12 +89,25 @@ export default function PreviewImageExif(props: Readonly<ImageDataProps>) {
 
   return (
     <Dialog>
-      <DialogTrigger>
-        <FrameIcon
-          className={exifIconClass}
-          size={20}
-        />
-      </DialogTrigger>
+      <AnimatedIconTrigger>
+        {({ iconRef, triggerProps }) => (
+          <DialogTrigger asChild>
+            <button
+              type="button"
+              aria-label={t('Exif.title')}
+              {...mergeAnimatedTriggerProps({
+                className: 'inline-flex items-center justify-center',
+              }, triggerProps)}
+            >
+              <FrameIcon
+                ref={iconRef}
+                className={exifIconClass}
+                size={20}
+              />
+            </button>
+          </DialogTrigger>
+        )}
+      </AnimatedIconTrigger>
       <DialogContent className="max-h-[85vh] sm:max-w-lg">
         <DialogHeader>
           <DialogTitle className="font-display font-semibold">{t('Exif.title')}</DialogTitle>
@@ -249,21 +263,26 @@ export default function PreviewImageExif(props: Readonly<ImageDataProps>) {
 
             {/* Copy EXIF button */}
             <div className="flex w-full items-center justify-end pt-2">
-              <button
-                className="flex items-center space-x-1 text-sm text-muted-foreground transition-colors hover:text-primary"
-                onClick={async () => {
-                  try {
-                    const exif = JSON.stringify(props.data?.exif, null, 2)
-                    await navigator.clipboard.writeText(exif)
-                    toast.success(t('Exif.copySuccess'), { duration: 1500 })
-                  } catch {
-                    toast.error(t('Exif.copyFailed'), { duration: 500 })
-                  }
-                }}
-              >
-                <CopyIcon className={exifIconClass} size={16} />
-                <span>{t('Exif.copyExif')}</span>
-              </button>
+              <AnimatedIconTrigger>
+                {({ iconRef, triggerProps }) => (
+                  <button
+                    className="flex items-center space-x-1 text-sm text-muted-foreground transition-colors hover:text-primary"
+                    onClick={async () => {
+                      try {
+                        const exif = JSON.stringify(props.data?.exif, null, 2)
+                        await navigator.clipboard.writeText(exif)
+                        toast.success(t('Exif.copySuccess'), { duration: 1500 })
+                      } catch {
+                        toast.error(t('Exif.copyFailed'), { duration: 500 })
+                      }
+                    }}
+                    {...mergeAnimatedTriggerProps({}, triggerProps)}
+                  >
+                    <CopyIcon ref={iconRef} className={exifIconClass} size={16} />
+                    <span>{t('Exif.copyExif')}</span>
+                  </button>
+                )}
+              </AnimatedIconTrigger>
             </div>
           </div>
         </ScrollArea>
