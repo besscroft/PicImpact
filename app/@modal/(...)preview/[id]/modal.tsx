@@ -18,7 +18,7 @@ export function Modal({ children }: { children: React.ReactNode }) {
       <DialogContent
         showCloseButton={false}
         onInteractOutside={(event: any) => event.preventDefault()}
-        className="h-full w-full rounded-none max-w-full sm:rounded-md sm:shadow-xl"
+        className="inset-0 top-0 left-0 h-dvh w-full max-h-none max-w-none translate-x-0 translate-y-0 gap-0 overflow-hidden rounded-none p-0 ring-0 shadow-none sm:max-w-none sm:rounded-none"
       >
         {children}
       </DialogContent>
