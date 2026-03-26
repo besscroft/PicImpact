@@ -43,7 +43,7 @@
     "authenticator": "Two-Factor Authentication",
     "passkey": "Passkey",
     "daily": "Daily Homepage",
-    "backup": "Backup",
+    "backup": "Data Backup",
     "tasks": "Tasks"
   },
   "Passkey": {

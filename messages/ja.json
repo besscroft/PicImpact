@@ -43,7 +43,7 @@
     "authenticator": "二要素認証",
     "passkey": "Passkey",
     "daily": "デイリーホームページ",
-    "backup": "Backup",
+    "backup": "データバックアップ",
     "tasks": "タスクセンター"
   },
   "Passkey": {
