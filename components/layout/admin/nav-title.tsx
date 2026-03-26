@@ -21,18 +21,20 @@ export function NavTitle() {
     <SidebarMenu>
       <SidebarMenuItem>
         <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <SidebarMenuButton className="cursor-pointer select-none" size="lg" onClick={() => router.push('/')}>
-              <div className="flex aspect-square size-8 items-center justify-center rounded-lg">
-                <Image src={favicon} alt="Logo" />
-              </div>
-              <div className="grid flex-1 text-left text-sm leading-tight">
-                <span className="truncate font-semibold select-none">
-                  {'PicImpact'}
-                </span>
-              </div>
-            </SidebarMenuButton>
-          </DropdownMenuTrigger>
+          <DropdownMenuTrigger
+            render={
+              <SidebarMenuButton className="cursor-pointer select-none" size="lg" onClick={() => router.push('/')}>
+                <div className="flex aspect-square size-8 items-center justify-center rounded-lg">
+                  <Image src={favicon} alt="Logo" />
+                </div>
+                <div className="grid flex-1 text-left text-sm leading-tight">
+                  <span className="truncate font-semibold select-none">
+                    {'PicImpact'}
+                  </span>
+                </div>
+              </SidebarMenuButton>
+            }
+          />
         </DropdownMenu>
       </SidebarMenuItem>
     </SidebarMenu>

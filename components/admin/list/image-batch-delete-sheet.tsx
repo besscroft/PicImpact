@@ -122,15 +122,17 @@ export default function ImageBatchDeleteSheet(props : Readonly<ImageServerHandle
             ))
           }
           <Dialog>
-            <DialogTrigger asChild>
-              <Button
-                className="cursor-pointer"
-                disabled={data.length === 0}
-                aria-label={t('Button.delete')}
-              >
-                {t('Button.delete')}
-              </Button>
-            </DialogTrigger>
+            <DialogTrigger
+              render={
+                <Button
+                  className="cursor-pointer"
+                  disabled={data.length === 0}
+                  aria-label={t('Button.delete')}
+                >
+                  {t('Button.delete')}
+                </Button>
+              }
+            />
             <DialogContent className="sm:max-w-[425px]">
               <DialogHeader>
                 <DialogTitle>{t('List.confirmDelete')}</DialogTitle>

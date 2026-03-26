@@ -300,16 +300,18 @@ export default function ListProps(props : Readonly<ImageServerHandleProps>) {
           <Popover>
             <AnimatedIconTrigger>
               {({ iconRef, triggerProps }) => (
-                <PopoverTrigger asChild>
-                  <Button
-                    className="flex sm:hidden cursor-pointer"
-                    variant="outline"
-                    size="icon"
-                    {...mergeAnimatedTriggerProps({}, triggerProps)}
-                  >
-                    <CircleChevronDownIcon ref={iconRef} />
-                  </Button>
-                </PopoverTrigger>
+                <PopoverTrigger
+                  render={
+                    <Button
+                      className="flex sm:hidden cursor-pointer"
+                      variant="outline"
+                      size="icon"
+                      {...mergeAnimatedTriggerProps({}, triggerProps)}
+                    >
+                      <CircleChevronDownIcon ref={iconRef} />
+                    </Button>
+                  }
+                />
               )}
             </AnimatedIconTrigger>
             <PopoverContent className="w-80">
@@ -424,20 +426,22 @@ export default function ListProps(props : Readonly<ImageServerHandleProps>) {
               </div>
               <div className="space-x-1">
                 <AlertDialog>
-                  <AlertDialogTrigger asChild>
-                    <Button
-                      variant="outline"
-                      size="icon"
-                      className="cursor-pointer"
-                      onClick={() => {
-                        setImage(image)
-                        setImageAlbum(image.album_value)
-                      }}
-                      aria-label={t('List.bindAlbum')}
-                    >
-                      <Replace size={20} />
-                    </Button>
-                  </AlertDialogTrigger>
+                  <AlertDialogTrigger
+                    render={
+                      <Button
+                        variant="outline"
+                        size="icon"
+                        className="cursor-pointer"
+                        onClick={() => {
+                          setImage(image)
+                          setImageAlbum(image.album_value)
+                        }}
+                        aria-label={t('List.bindAlbum')}
+                      >
+                        <Replace size={20} />
+                      </Button>
+                    }
+                  />
                   <AlertDialogContent>
                     <AlertDialogHeader>
                       <AlertDialogTitle>{t('List.bindAlbum')}</AlertDialogTitle>

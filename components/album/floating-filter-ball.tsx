@@ -326,9 +326,11 @@ export default function FloatingFilterBall({
 
   return (
     <Popover open={isOpen} onOpenChange={setIsOpen}>
-      <PopoverTrigger asChild onClick={handleClick}>
-        {BallButton}
-      </PopoverTrigger>
+      <PopoverTrigger
+        render={BallButton}
+        nativeButton={false}
+        onClick={handleClick}
+      />
       <PopoverContent 
         className="w-72" 
         side="left" 

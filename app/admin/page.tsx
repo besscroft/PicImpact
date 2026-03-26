@@ -248,12 +248,17 @@ export default async function Admin() {
             <SectionHeading
               title={t('Dashboard.recentUploads')}
               action={
-                <Button asChild variant="outline" className="rounded-full">
-                  <Link href="/admin/list">
-                    {t('Dashboard.openImageManagement')}
-                    <ArrowRight />
-                  </Link>
-                </Button>
+                <Button
+                  render={
+                    <Link href="/admin/list">
+                      {t('Dashboard.openImageManagement')}
+                      <ArrowRight />
+                    </Link>
+                  }
+                  nativeButton={false}
+                  variant="outline"
+                  className="rounded-full"
+                />
               }
             />
 
@@ -261,12 +266,16 @@ export default async function Admin() {
               <div className="mt-6 rounded-[1.35rem] border border-dashed border-border/80 bg-background/60 px-5 py-10 text-center">
                 <p className="text-sm text-muted-foreground">{t('Dashboard.recentUploadsEmpty')}</p>
                 <div className="mt-5">
-                  <Button asChild className="rounded-full">
-                    <Link href="/admin/upload">
-                      {t('Link.upload')}
-                      <ArrowRight />
-                    </Link>
-                  </Button>
+                  <Button
+                    render={
+                      <Link href="/admin/upload">
+                        {t('Link.upload')}
+                        <ArrowRight />
+                      </Link>
+                    }
+                    nativeButton={false}
+                    className="rounded-full"
+                  />
                 </div>
               </div>
             ) : (
@@ -386,12 +395,17 @@ export default async function Admin() {
           <SectionHeading
             title={t('Dashboard.albumBreakdown')}
             action={
-              <Button asChild variant="ghost" className="rounded-full">
-                <Link href="/admin/album">
-                  {t('Link.album')}
-                  <ArrowRight />
-                </Link>
-              </Button>
+              <Button
+                render={
+                  <Link href="/admin/album">
+                    {t('Link.album')}
+                    <ArrowRight />
+                  </Link>
+                }
+                nativeButton={false}
+                variant="ghost"
+                className="rounded-full"
+              />
             }
           />
 
