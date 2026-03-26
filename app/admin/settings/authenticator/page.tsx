@@ -109,11 +109,13 @@ export default function Authenticator() {
                 </AlertDescription>
               </Alert>
               <Dialog>
-                <DialogTrigger asChild>
-                  <Button className="cursor-pointer w-36" variant="destructive">
-                    {t('Button.removeTwoFactor')}
-                  </Button>
-                </DialogTrigger>
+                <DialogTrigger
+                  render={
+                    <Button className="cursor-pointer w-36" variant="destructive">
+                      {t('Button.removeTwoFactor')}
+                    </Button>
+                  }
+                />
                 <DialogContent className="sm:max-w-[425px]">
                   <DialogHeader>
                     <DialogTitle>{t('Tips.confirmRemoveTwoFactor')}</DialogTitle>

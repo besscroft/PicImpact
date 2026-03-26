@@ -133,20 +133,22 @@ export default function AlbumList(props : Readonly<HandleProps>) {
               }}>
                 <AnimatedIconTrigger>
                   {({ iconRef, triggerProps }) => (
-                    <DialogTrigger asChild>
-                      <Button
-                        variant="outline"
-                        size="icon"
-                        aria-label={t('Album.deleteAlbum')}
-                        {...mergeAnimatedTriggerProps({
-                          onClick: () => {
-                            setAlbum(album)
-                          },
-                        }, triggerProps)}
-                      >
-                        <DeleteIcon ref={iconRef} />
-                      </Button>
-                    </DialogTrigger>
+                    <DialogTrigger
+                      render={
+                        <Button
+                          variant="outline"
+                          size="icon"
+                          aria-label={t('Album.deleteAlbum')}
+                          {...mergeAnimatedTriggerProps({
+                            onClick: () => {
+                              setAlbum(album)
+                            },
+                          }, triggerProps)}
+                        >
+                          <DeleteIcon ref={iconRef} />
+                        </Button>
+                      }
+                    />
                   )}
                 </AnimatedIconTrigger>
                 <DialogContent className="sm:max-w-[425px]">

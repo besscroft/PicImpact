@@ -91,21 +91,23 @@ export default function PreviewImageExif(props: Readonly<ImageDataProps>) {
     <Dialog>
       <AnimatedIconTrigger>
         {({ iconRef, triggerProps }) => (
-          <DialogTrigger asChild>
-            <button
-              type="button"
-              aria-label={t('Exif.title')}
-              {...mergeAnimatedTriggerProps({
-                className: 'inline-flex items-center justify-center',
-              }, triggerProps)}
-            >
-              <FrameIcon
-                ref={iconRef}
-                className={exifIconClass}
-                size={20}
-              />
-            </button>
-          </DialogTrigger>
+          <DialogTrigger
+            render={
+              <button
+                type="button"
+                aria-label={t('Exif.title')}
+                {...mergeAnimatedTriggerProps({
+                  className: 'inline-flex items-center justify-center',
+                }, triggerProps)}
+              >
+                <FrameIcon
+                  ref={iconRef}
+                  className={exifIconClass}
+                  size={20}
+                />
+              </button>
+            }
+          />
         )}
       </AnimatedIconTrigger>
       <DialogContent className="max-h-[85vh] sm:max-w-lg">

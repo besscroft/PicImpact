@@ -40,25 +40,23 @@ export function NavMain({
           <AnimatedIconTrigger key={item.title}>
             {({ iconRef, triggerProps }) => (
               <Collapsible
-                asChild
                 className="group/collapsible"
+                render={<SidebarMenuItem className="select-none" />}
               >
-                <SidebarMenuItem className="select-none">
-                  <SidebarMenuButton
-                    {...mergeAnimatedTriggerProps({
-                      className: buttonClasses,
-                      tooltip: item.title,
-                      isActive: pathname === item.url,
-                      onClick: () => {
-                        setOpenMobile(false)
-                        router.push(item.url)
-                      },
-                    }, triggerProps)}
-                  >
-                    {item.icon && <item.icon ref={iconRef} size={18} />}
-                    <span>{item.title}</span>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
+                <SidebarMenuButton
+                  {...mergeAnimatedTriggerProps({
+                    className: buttonClasses,
+                    tooltip: item.title,
+                    isActive: pathname === item.url,
+                    onClick: () => {
+                      setOpenMobile(false)
+                      router.push(item.url)
+                    },
+                  }, triggerProps)}
+                >
+                  {item.icon && <item.icon ref={iconRef} size={18} />}
+                  <span>{item.title}</span>
+                </SidebarMenuButton>
               </Collapsible>
             )}
           </AnimatedIconTrigger>

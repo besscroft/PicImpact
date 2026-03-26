@@ -66,8 +66,7 @@ export default function AlbumAddSheet(props : Readonly<HandleProps>) {
       <SheetContent side="left" className="w-full overflow-y-auto scrollbar-hide" onInteractOutside={(event: any) => event.preventDefault()}>
         <SheetHeader>
           <SheetTitle>{t('Album.addAlbum')}</SheetTitle>
-          <SheetDescription asChild>
-            <div className="text-muted-foreground space-y-2 text-sm">
+          <SheetDescription render={<div className="space-y-2 text-sm" />}>
               <label
                 htmlFor="name"
                 className="block overflow-hidden rounded-md border border-input px-3 py-2 shadow-sm focus-within:border-primary focus-within:ring-1 focus-within:ring-primary"
@@ -219,7 +218,6 @@ export default function AlbumAddSheet(props : Readonly<HandleProps>) {
                 {loading && <ReloadIcon className="mr-2 h-4 w-4 animate-spin"/>}
                 {t('Album.submit')}
               </Button>
-            </div>
           </SheetDescription>
         </SheetHeader>
       </SheetContent>
