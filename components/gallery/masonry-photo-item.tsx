@@ -6,20 +6,28 @@ import { cn } from '~/lib/utils'
 import type { ImageType } from '~/types'
 import { Aperture, Timer, Focus, Disc3 } from 'lucide-react'
 import { useBlurImageDataUrl, DEFAULT_HASH } from '~/hooks/use-blurhash'
+import { Skeleton } from '~/components/ui/skeleton'
+import { useState } from 'react'
 
 export default function MasonryPhotoItem({ photo }: { photo: ImageType }) {
   const router = useRouter()
   const dataURL = useBlurImageDataUrl(photo.blurhash)
+  const preferredSrc = photo.preview_url || photo.url
+  const [imgSrc, setImgSrc] = useState(preferredSrc)
+  const [isLoading, setIsLoading] = useState(true)
 
   const exif = photo.exif
   const hasExif = exif && (exif.focal_length || exif.f_number || exif.exposure_time || exif.iso_speed_rating)
+  const aspectRatio = photo.width > 0 && photo.height > 0 ? photo.width / photo.height : 1
+  const isUsingPreview = !!photo.preview_url && imgSrc === photo.preview_url
+  const hasRealBlurhash = !!photo.blurhash && photo.blurhash !== DEFAULT_HASH
 
   return (
     <div
       role="link"
       tabIndex={0}
       className="group relative cursor-pointer overflow-hidden rounded-sm"
-      style={{ aspectRatio: photo.width / photo.height, willChange: 'transform' }}
+      style={{ aspectRatio, willChange: 'transform' }}
       onClick={() => router.push(`/preview/${photo.id}`)}
       onKeyDown={(e: React.KeyboardEvent) => {
         if (e.key === 'Enter' || e.key === ' ') {
@@ -28,30 +36,39 @@ export default function MasonryPhotoItem({ photo }: { photo: ImageType }) {
         }
       }}
     >
-      {photo.preview_url ? (
-        <Image
-          className="transition-transform duration-500 group-hover:scale-105 object-cover"
-          src={photo.preview_url}
-          alt={photo.detail || photo.title || ''}
-          fill
-          sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
-          loading="lazy"
-          unoptimized
-          placeholder={(photo.blurhash === DEFAULT_HASH || !photo.blurhash) ? 'empty' : 'blur'}
-          blurDataURL={dataURL}
-        />
-      ) : (
-        <Image
-          className="transition-transform duration-500 group-hover:scale-105 object-cover"
-          src={photo.url}
-          alt={photo.detail || photo.title || ''}
-          fill
-          sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
-          loading="lazy"
-          placeholder={(photo.blurhash === DEFAULT_HASH || !photo.blurhash) ? 'empty' : 'blur'}
-          blurDataURL={dataURL}
+      {isLoading && (
+        <Skeleton
+          className={cn(
+            'absolute inset-0 z-10 rounded-none',
+            hasRealBlurhash
+              ? 'animate-none bg-black/10 backdrop-blur-[2px] dark:bg-white/10'
+              : 'bg-accent/80'
+          )}
         />
       )}
+      <Image
+        key={imgSrc}
+        className={cn(
+          'object-cover transition-transform duration-500 group-hover:scale-105',
+          isLoading && !hasRealBlurhash && 'animate-pulse'
+        )}
+        src={imgSrc}
+        alt={photo.detail || photo.title || ''}
+        fill
+        sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
+        loading="lazy"
+        unoptimized={isUsingPreview}
+        placeholder={hasRealBlurhash ? 'blur' : 'empty'}
+        blurDataURL={dataURL}
+        onLoad={() => setIsLoading(false)}
+        onError={() => {
+          if (photo.preview_url && imgSrc !== photo.url) {
+            setImgSrc(photo.url)
+            return
+          }
+          setIsLoading(false)
+        }}
+      />
       {/* Hover gradient overlay */}
       <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
       {/* Hover content */}

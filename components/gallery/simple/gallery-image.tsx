@@ -1,6 +1,6 @@
 'use client'
 
-import type { Config, ImageType } from '~/types'
+import type { ImageType } from '~/types'
 import { cn } from '~/lib/utils'
 import { useRouter } from 'next-nprogress-bar'
 import { useBlurImageDataUrl, DEFAULT_HASH } from '~/hooks/use-blurhash.ts'
@@ -9,14 +9,23 @@ import { Skeleton } from '~/components/ui/skeleton'
 import { useState } from 'react'
 import { Badge } from '~/components/ui/badge.tsx'
 
-export default function GalleryImage({ photo, configData }: { photo: ImageType, configData: any }) {
+export default function GalleryImage({
+  photo,
+  customIndexOriginEnable,
+}: {
+  photo: ImageType
+  customIndexOriginEnable: boolean
+}) {
   const router = useRouter()
+  const preferredSrc = customIndexOriginEnable ? photo.url || photo.preview_url : photo.preview_url || photo.url
+  const fallbackSrc = customIndexOriginEnable ? photo.preview_url || photo.url : photo.url || photo.preview_url
+  const [imgSrc, setImgSrc] = useState(preferredSrc)
   const [isLoading, setIsLoading] = useState(true)
   const dataURL = useBlurImageDataUrl(photo.blurhash)
+  const hasRealBlurhash = !!photo.blurhash && photo.blurhash !== DEFAULT_HASH
+  const hasFallbackSrc = !!fallbackSrc && fallbackSrc !== preferredSrc
+  const useUnoptimized = customIndexOriginEnable || (!!photo.preview_url && imgSrc === photo.preview_url)
 
-  const customIndexOriginEnable = configData?.find((item: Config) => item.config_key === 'custom_index_origin_enable')?.config_value === 'true'
-
-  // Build a single-line EXIF summary: camera · lens · f/X · 1/Xs · ISO XXX
   const exifParts: string[] = []
   if (photo?.exif?.make && photo?.exif?.model) {
     exifParts.push(`${photo.exif.make} ${photo.exif.model}`)
@@ -48,31 +57,40 @@ export default function GalleryImage({ photo, configData }: { photo: ImageType, 
           }
         }}
       >
-        {(photo.blurhash === DEFAULT_HASH || !photo.blurhash) && isLoading && (
-          <Skeleton className="absolute inset-0 z-10 rounded-none" />
+        {isLoading && (
+          <Skeleton
+            className={cn(
+              'absolute inset-0 z-10 rounded-none',
+              hasRealBlurhash
+                ? 'animate-none bg-black/10 backdrop-blur-[2px] dark:bg-white/10'
+                : 'bg-accent'
+            )}
+          />
         )}
-        {(() => {
-          const imgSrc = customIndexOriginEnable ? photo.url || photo.preview_url : photo.preview_url || photo.url
-          const useUnoptimized = customIndexOriginEnable ? true : !!photo.preview_url
-          return (
-            <MotionImage
-              className={cn('w-full h-auto', isLoading && 'animate-pulse')}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.5 }}
-              src={imgSrc}
-              overrideSrc={imgSrc}
-              alt={photo.title}
-              width={photo.width}
-              height={photo.height}
-              loading="lazy"
-              unoptimized={useUnoptimized}
-              placeholder={(photo.blurhash === DEFAULT_HASH || !photo.blurhash) ? 'empty' : 'blur'}
-              blurDataURL={dataURL}
-              onLoad={() => setIsLoading(false)}
-            />
-          )
-        })()}
+        <MotionImage
+          key={imgSrc}
+          className={cn('w-full h-auto', isLoading && !hasRealBlurhash && 'animate-pulse')}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.5 }}
+          src={imgSrc}
+          overrideSrc={imgSrc}
+          alt={photo.title}
+          width={photo.width}
+          height={photo.height}
+          loading="lazy"
+          unoptimized={useUnoptimized}
+          placeholder={hasRealBlurhash ? 'blur' : 'empty'}
+          blurDataURL={dataURL}
+          onLoad={() => setIsLoading(false)}
+          onError={() => {
+            if (hasFallbackSrc && imgSrc !== fallbackSrc) {
+              setImgSrc(fallbackSrc)
+              return
+            }
+            setIsLoading(false)
+          }}
+        />
         {photo.type === 2 && (
           <div className="absolute top-2 left-2 p-5 rounded-full">
             <svg xmlns="http://www.w3.org/2000/svg" className="absolute bottom-3 right-3 text-white opacity-75 z-10"
