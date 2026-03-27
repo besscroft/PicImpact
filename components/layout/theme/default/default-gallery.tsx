@@ -9,6 +9,40 @@ import { useState, useCallback, useEffect, useRef, useMemo, useTransition } from
 import MasonryPhotoItem from '~/components/gallery/masonry-photo-item'
 import InfiniteScroll from '~/components/ui/origin/infinite-scroll.tsx'
 import FloatingFilterBall from '~/components/album/floating-filter-ball.tsx'
+import { Skeleton } from '~/components/ui/skeleton'
+
+const MASONRY_SKELETON_RATIOS = [
+  '4 / 5',
+  '1 / 1',
+  '3 / 4',
+  '5 / 4',
+  '2 / 3',
+  '4 / 3',
+  '3 / 5',
+  '1 / 1',
+  '5 / 6',
+  '6 / 5',
+  '3 / 4',
+  '4 / 5',
+]
+
+function MasonrySkeletonGrid() {
+  return (
+    <div
+      aria-hidden="true"
+      className="columns-2 gap-1 px-1 sm:columns-3 sm:px-2 lg:columns-4 xl:columns-5"
+    >
+      {MASONRY_SKELETON_RATIOS.map((aspectRatio, index) => (
+        <div key={`${aspectRatio}-${index}`} className="mb-1 break-inside-avoid">
+          <Skeleton
+            className="w-full rounded-sm bg-accent/80"
+            style={{ aspectRatio }}
+          />
+        </div>
+      ))}
+    </div>
+  )
+}
 
 export default function DefaultGallery(props : Readonly<ImageHandleProps>) {
   const [selectedCamera, setSelectedCamera] = useState('')
@@ -47,6 +81,8 @@ export default function DefaultGallery(props : Readonly<ImageHandleProps>) {
 
   // Memoize dataList to avoid unnecessary recalculations
   const dataList = useMemo(() => data?.flat() ?? [], [data])
+  const showInitialSkeleton = dataList.length === 0 && isValidating
+  const isPaginating = isValidating && dataList.length > 0
   const t = useTranslations()
 
   // Reset pagination when debounced filters change - SWR key change will auto-refetch
@@ -92,16 +128,20 @@ export default function DefaultGallery(props : Readonly<ImageHandleProps>) {
       <InfiniteScroll
         className="w-full space-y-2"
         hasMore={size < (pageTotal ?? 0)}
-        isLoading={isValidating}
+        isLoading={isPaginating}
         next={() => setSize(size + 1)}
       >
-        <div className="columns-2 gap-1 sm:columns-3 lg:columns-4 xl:columns-5 px-1 sm:px-2">
-          {dataList?.map((item: ImageType) => (
-            <div key={item.id} className="mb-1 break-inside-avoid">
-              <MasonryPhotoItem photo={item} />
-            </div>
-          ))}
-        </div>
+        {showInitialSkeleton ? (
+          <MasonrySkeletonGrid />
+        ) : (
+          <div className="columns-2 gap-1 px-1 sm:columns-3 sm:px-2 lg:columns-4 xl:columns-5">
+            {dataList?.map((item: ImageType) => (
+              <div key={`${item.id}-${item.preview_url || item.url}`} className="mb-1 break-inside-avoid">
+                <MasonryPhotoItem photo={item} />
+              </div>
+            ))}
+          </div>
+        )}
         {dataList.length === 0 && !isValidating && (
           <div className="flex items-center justify-center my-4">
             {t('Tips.noImg')}

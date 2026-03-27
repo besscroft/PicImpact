@@ -49,6 +49,10 @@ export default function SimpleGallery(props: Readonly<ImageHandleProps>) {
   })
   // Memoize dataList to avoid unnecessary recalculations
   const dataList = useMemo(() => data?.flat() ?? [], [data])
+  const customIndexOriginEnable = useMemo(
+    () => configData?.find((item: Config) => item.config_key === 'custom_index_origin_enable')?.config_value === 'true',
+    [configData]
+  )
   const t = useTranslations()
 
   // Debounce filter changes
@@ -97,7 +101,11 @@ export default function SimpleGallery(props: Readonly<ImageHandleProps>) {
         next={() => setSize(size + 1)}
       >
         {dataList?.map((item: ImageType) => (
-          <GalleryImage key={item.id} photo={item} configData={configData} />
+          <GalleryImage
+            key={`${item.id}-${item.url}-${item.preview_url}-${customIndexOriginEnable ? 'origin' : 'preview'}`}
+            photo={item}
+            customIndexOriginEnable={customIndexOriginEnable}
+          />
         ))}
         {dataList.length === 0 && !isValidating && (
           <div className="flex items-center justify-center my-4">
