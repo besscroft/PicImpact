@@ -3,6 +3,7 @@
 'use server'
 
 import { db } from '~/server/lib/db'
+import { normalizeDefaultTheme } from '~/lib/utils/theme'
 
 /**
  * 更新 S3 配置
@@ -88,6 +89,7 @@ export async function updateCustomInfo(payload: {
   maxUploadFiles: number
   customIndexOriginEnable: boolean
   adminImagesPerPage: number
+  defaultTheme: string
 }) {
   const {
     title,
@@ -105,7 +107,9 @@ export async function updateCustomInfo(payload: {
     maxUploadFiles,
     customIndexOriginEnable,
     adminImagesPerPage,
+    defaultTheme,
   } = payload
+  const normalizedDefaultTheme = normalizeDefaultTheme(defaultTheme)
 
   const updates = [
     db.configs.update({ where: { config_key: 'custom_title' }, data: { config_value: title, updatedAt: new Date() } }),
@@ -121,6 +125,15 @@ export async function updateCustomInfo(payload: {
     db.configs.update({ where: { config_key: 'max_upload_files' }, data: { config_value: maxUploadFiles.toString(), updatedAt: new Date() } }),
     db.configs.update({ where: { config_key: 'custom_index_origin_enable' }, data: { config_value: customIndexOriginEnable ? 'true' : 'false', updatedAt: new Date() } }),
     db.configs.update({ where: { config_key: 'admin_images_per_page' }, data: { config_value: adminImagesPerPage.toString(), updatedAt: new Date() } }),
+    db.configs.upsert({
+      where: { config_key: 'default_theme' },
+      update: { config_value: normalizedDefaultTheme, updatedAt: new Date() },
+      create: {
+        config_key: 'default_theme',
+        config_value: normalizedDefaultTheme,
+        detail: 'Default theme for users without a saved preference.',
+      },
+    }),
   ]
 
   if (previewImageMaxWidth > 0) {

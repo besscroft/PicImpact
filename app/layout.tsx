@@ -13,6 +13,7 @@ import { NextIntlClientProvider } from 'next-intl'
 import { getLocale, getMessages } from 'next-intl/server'
 import { ConfigStoreProvider } from '~/app/providers/config-store-providers'
 import Script from 'next/script'
+import { normalizeDefaultTheme } from '~/lib/utils/theme'
 
 const sourceSerif4 = Source_Serif_4({
   subsets: ['latin'],
@@ -93,10 +94,12 @@ export default async function RootLayout({
   const messages = await getMessages()
 
   const data = await fetchConfigsByKeys([
+    'default_theme',
     'umami_analytics',
     'umami_host'
   ])
 
+  const defaultTheme = normalizeDefaultTheme(data?.find((item: ConfigItem) => item.config_key === 'default_theme')?.config_value)
   const umamiHost = data?.find((item: ConfigItem) => item.config_key === 'umami_host')?.config_value || 'https://cloud.umami.is/script.js'
   const umamiAnalytics = data?.find((item: ConfigItem) => item.config_key === 'umami_analytics')?.config_value
 
@@ -114,7 +117,7 @@ export default async function RootLayout({
     <NextIntlClientProvider messages={messages}>
       <ConfigStoreProvider>
         <ButtonStoreProvider>
-          <ThemeProvider>
+          <ThemeProvider defaultTheme={defaultTheme}>
             <ToasterProviders/>
             <ProgressBarProviders>
               {children}

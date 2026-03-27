@@ -37,6 +37,7 @@ const INITIAL_CONFIGS = [
   { config_key: 'max_upload_files', config_value: '5', detail: '最大上传文件数量' },
   { config_key: 'umami_analytics', config_value: '', detail: 'Umami Website ID.' },
   { config_key: 'umami_host', config_value: '', detail: 'Umami Cloud Analytics' },
+  { config_key: 'default_theme', config_value: 'light', detail: 'Default theme for users without a saved preference.' },
   { config_key: 'admin_images_per_page', config_value: '8', detail: '管理界面每页显示的图片数量' },
   { config_key: 'daily_enabled', config_value: 'false', detail: '是否启用 Daily 首页模式' },
   { config_key: 'daily_refresh_interval', config_value: '24', detail: 'Daily 首页刷新间隔（小时）：6/12/24/168' },
