@@ -338,6 +338,8 @@
     "maxWidth": "預覽圖最大寬度(正整數)",
     "inputMaxWidth": "請輸入預覽圖最大寬度限制，正整數",
     "indexThemeSelect": "選擇首頁主題",
+    "defaultTheme": "預設主題",
+    "defaultThemeDescription": "對尚未手動選擇主題的訪客生效。",
     "customIndexDownloadEnable": "下載按鈕顯示",
     "umamiHost": "Umami Website Host",
     "umamiAnalytics": "Umami Website ID",
@@ -407,7 +409,10 @@
   "Theme": {
     "indexDefaultStyle": "預設",
     "indexSimpleStyle": "單欄",
-    "indexPolaroidStyle": "寶麗來"
+    "indexPolaroidStyle": "寶麗來",
+    "light": "淺色",
+    "dark": "深色",
+    "system": "跟隨系統"
   },
   "Filter": {
     "title": "篩選",

@@ -338,6 +338,8 @@
     "maxWidth": "Maximum Width for Preview Images (positive integer)",
     "inputMaxWidth": "Please enter the maximum width limit for preview images, a positive integer.",
     "indexThemeSelect": "Select Home Page Theme",
+    "defaultTheme": "Default Theme",
+    "defaultThemeDescription": "Applies to visitors who have not chosen a theme yet.",
     "customIndexDownloadEnable": "Show Download Button",
     "umamiHost": "Umami Website Host",
     "umamiAnalytics": "Umami Website ID",
@@ -407,7 +409,10 @@
   "Theme": {
     "indexDefaultStyle": "Default",
     "indexSimpleStyle": "Single Column",
-    "indexPolaroidStyle": "Polaroid"
+    "indexPolaroidStyle": "Polaroid",
+    "light": "Light",
+    "dark": "Dark",
+    "system": "System"
   },
   "Filter": {
     "title": "Filter",

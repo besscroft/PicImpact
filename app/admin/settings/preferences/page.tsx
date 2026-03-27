@@ -12,6 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '~
 import { Input } from '~/components/ui/input'
 import { Label } from '~/components/ui/label'
 import { CopyIcon } from '~/components/icons/copy'
+import { normalizeDefaultTheme } from '~/lib/utils/theme'
 
 export default function Preferences() {
   const [title, setTitle] = useState('')
@@ -30,6 +31,7 @@ export default function Preferences() {
   const [maxUploadFiles, setMaxUploadFiles] = useState('5')
   const [customIndexOriginEnable, setCustomIndexOriginEnable] = useState(false)
   const [adminImagesPerPage, setAdminImagesPerPage] = useState('8')
+  const [defaultTheme, setDefaultTheme] = useState<'light' | 'dark' | 'system'>('light')
   const t = useTranslations()
 
   const { data, isValidating, isLoading } = useSWR<{ config_key: string, config_value: string }[]>('/api/v1/settings/custom-info', fetcher)
@@ -77,7 +79,8 @@ export default function Preferences() {
           umamiAnalytics,
           maxUploadFiles: maxFiles,
           customIndexOriginEnable,
-          adminImagesPerPage: imagesPerPage
+          adminImagesPerPage: imagesPerPage,
+          defaultTheme,
         }),
       }).then(res => res.json())
       toast.success('修改成功！')
@@ -104,6 +107,7 @@ export default function Preferences() {
     setMaxUploadFiles(data?.find((item) => item.config_key === 'max_upload_files')?.config_value || '5')
     setCustomIndexOriginEnable(data?.find((item) => item.config_key === 'custom_index_origin_enable')?.config_value.toString() === 'true' || false)
     setAdminImagesPerPage(data?.find((item) => item.config_key === 'admin_images_per_page')?.config_value || '8')
+    setDefaultTheme(normalizeDefaultTheme(data?.find((item) => item.config_key === 'default_theme')?.config_value))
   }, [data])
 
   return (
@@ -239,6 +243,20 @@ export default function Preferences() {
                 <SelectItem className="cursor-pointer" value="2">{t('Theme.indexPolaroidStyle')}</SelectItem>
               </SelectContent>
             </Select>
+          </div>
+          <div className="w-full max-w-sm space-y-1">
+            <Label htmlFor="defaultThemeSelect">{t('Preferences.defaultTheme')}</Label>
+            <Select value={defaultTheme} onValueChange={(value) => setDefaultTheme(value as 'light' | 'dark' | 'system')}>
+              <SelectTrigger id="defaultThemeSelect" className="w-full cursor-pointer">
+                <SelectValue placeholder={t('Preferences.defaultTheme')} />
+              </SelectTrigger>
+              <SelectContent className="cursor-pointer">
+                <SelectItem className="cursor-pointer" value="light">{t('Theme.light')}</SelectItem>
+                <SelectItem className="cursor-pointer" value="dark">{t('Theme.dark')}</SelectItem>
+                <SelectItem className="cursor-pointer" value="system">{t('Theme.system')}</SelectItem>
+              </SelectContent>
+            </Select>
+            <p className="text-xs text-muted-foreground">{t('Preferences.defaultThemeDescription')}</p>
           </div>
           <div className="grid w-full max-w-sm items-center gap-1.5">
             <Label htmlFor="previewQuality">{t('Preferences.previewQuality')}</Label>

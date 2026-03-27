@@ -5,6 +5,7 @@ import type { Config } from '~/types'
 import { Hono } from 'hono'
 import { HTTPException } from 'hono/http-exception'
 import { updateOpenListConfig, updateCustomInfo, updateR2Config, updateS3Config } from '~/server/db/operate/configs'
+import { normalizeDefaultTheme } from '~/lib/utils/theme'
 
 const app = new Hono()
 
@@ -25,7 +26,8 @@ app.get('/custom-info', async (c) => {
       'umami_analytics',
       'max_upload_files',
       'custom_index_origin_enable',
-      'admin_images_per_page'
+      'admin_images_per_page',
+      'default_theme'
     ])
     return c.json({ code: 200, message: 'Success', data })
   } catch (error) {
@@ -153,9 +155,13 @@ app.put('/custom-info', async (c) => {
     maxUploadFiles: number
     customIndexOriginEnable: boolean
     adminImagesPerPage: number
+    defaultTheme: string
   }
   try {
-    await updateCustomInfo(query)
+    await updateCustomInfo({
+      ...query,
+      defaultTheme: normalizeDefaultTheme(query.defaultTheme),
+    })
     return c.json({
       code: 200,
       message: 'Success'
