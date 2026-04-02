@@ -292,7 +292,11 @@
     "showStatus": "顯示狀態",
     "showStatusDesc": "是否需要顯示圖片",
     "homepageShowStatus": "首頁顯示狀態",
-    "homepageShowStatusDesc": "是否需要在首頁顯示圖片"
+    "homepageShowStatusDesc": "是否需要在首頁顯示圖片",
+    "emptyTitle": "還沒有圖片",
+    "emptyDescription": "圖片上傳後會在這裡統一維護。",
+    "filteredEmptyTitle": "沒有匹配的圖片",
+    "filteredEmptyDescription": "目前篩選條件下沒有結果，調整篩選後再查看。"
   },
   "Album": {
     "router": "路由",
@@ -328,7 +332,9 @@
     "update": "更新",
     "requiredFields": "請先填寫必填項！",
     "routerStartWithSlash": "路由必須以 / 開頭！",
-    "rootRouterWarning": "/ 路由不允許設置為不顯示！"
+    "rootRouterWarning": "/ 路由不允許設置為不顯示！",
+    "emptyTitle": "還沒有相簿",
+    "emptyDescription": "建立相簿後，這裡會顯示你的相簿列表。"
   },
   "Preferences": {
     "webSiteTitle": "網站標題",

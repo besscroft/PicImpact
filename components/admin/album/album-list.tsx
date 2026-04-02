@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react'
 import { useSwrHydrated } from '~/hooks/use-swr-hydrated'
-import { ArrowDown10 } from 'lucide-react'
+import { ArrowDown10, FolderOpen } from 'lucide-react'
 import { toast } from 'sonner'
 import type { AlbumType } from '~/types'
 import type { HandleProps } from '~/types/props'
@@ -24,9 +24,10 @@ import { DeleteIcon } from '~/components/icons/delete'
 import { useTranslations } from 'next-intl'
 import { Badge } from '~/components/ui/badge'
 import { AnimatedIconTrigger, mergeAnimatedTriggerProps } from '~/components/icons/animated-trigger'
+import AdminEmptyState from '~/components/admin/empty-state'
 
 export default function AlbumList(props : Readonly<HandleProps>) {
-  const { data, mutate } = useSwrHydrated(props)
+  const { data, isLoading, mutate } = useSwrHydrated(props)
   const [album, setAlbum] = useState({} as AlbumType)
   const [deleteLoading, setDeleteLoading] = useState(false)
   const [updateAlbumLoading, setUpdateAlbumLoading] = useState(false)
@@ -35,6 +36,8 @@ export default function AlbumList(props : Readonly<HandleProps>) {
     (state) => state,
   )
   const t = useTranslations()
+  const albumList: AlbumType[] = data ?? []
+  const isEmpty = !isLoading && albumList.length === 0
 
   async function deleteAlbum() {
     setDeleteLoading(true)
@@ -86,7 +89,14 @@ export default function AlbumList(props : Readonly<HandleProps>) {
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-      {data && data.map((album: AlbumType) => (
+      {isEmpty ? (
+        <AdminEmptyState
+          className="col-span-full min-h-[22rem]"
+          icon={FolderOpen}
+          title={t('Album.emptyTitle')}
+          description={t('Album.emptyDescription')}
+        />
+      ) : albumList.map((album: AlbumType) => (
         <Card key={album.id} className="flex flex-col h-72 show-up-motion items-center gap-0 py-0">
           <div className="flex h-12 justify-start w-full p-2 space-x-2">
             <Badge aria-label={t('Album.albumName')}>{album.name}</Badge>

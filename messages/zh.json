@@ -292,7 +292,11 @@
     "showStatus": "显示状态",
     "showStatusDesc": "是否需要显示图片",
     "homepageShowStatus": "首页显示状态",
-    "homepageShowStatusDesc": "是否需要在首页显示图片"
+    "homepageShowStatusDesc": "是否需要在首页显示图片",
+    "emptyTitle": "还没有图片",
+    "emptyDescription": "图片上传后会在这里统一维护。",
+    "filteredEmptyTitle": "没有匹配的图片",
+    "filteredEmptyDescription": "当前筛选条件下暂无结果，调整筛选后再查看。"
   },
   "Album": {
     "router": "路由",
@@ -328,7 +332,9 @@
     "update": "更新",
     "requiredFields": "请先填写必填项！",
     "routerStartWithSlash": "路由必须以 / 开头！",
-    "rootRouterWarning": "/ 路由不允许设置为不显示！"
+    "rootRouterWarning": "/ 路由不允许设置为不显示！",
+    "emptyTitle": "还没有相册",
+    "emptyDescription": "创建相册后，这里会显示你的相册列表。"
   },
   "Preferences": {
     "webSiteTitle": "网站标题",
