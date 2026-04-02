@@ -17,7 +17,7 @@ export const SignUpForm = ({
   ...props
 }: React.ComponentPropsWithoutRef<'form'>) => {
   const router = useRouter()
-  const t = useTranslations()
+  const t = useTranslations('Login')
 
   const [isLoading, setIsLoading] = useState<boolean>(false)
 
@@ -60,7 +60,7 @@ export const SignUpForm = ({
     try {
       const parsedCredentials = zHandle()
       if (!parsedCredentials.success) {
-        toast.error(t('Login.invalidCredentials', { defaultValue: 'Please check your email and password format' }))
+        toast.error(t('invalidCredentials'))
         return
       }
 
@@ -76,10 +76,10 @@ export const SignUpForm = ({
           //show loading
           console.log(ctx)
         },
-        onSuccess: (ctx) => {
-          toast.success(t('Login.signUpSuccess', { defaultValue: 'Sign up successful' }))
+        onSuccess: () => {
+          toast.success(t('signUpSuccess'))
           setTimeout(() => {
-            location.replace('/admin')
+            router.replace('/admin')
           }, 1000)
         },
         onError: (ctx) => {
@@ -89,7 +89,7 @@ export const SignUpForm = ({
 
     } catch (e) {
       console.error(e)
-      toast.error(t('Login.error', { defaultValue: 'An error occurred, please try again' }))
+      toast.error(t('error'))
     } finally {
       setIsLoading(false)
     }
@@ -103,7 +103,7 @@ export const SignUpForm = ({
   return (
     <form onSubmit={handleSubmit} className={cn('space-y-4', className)} {...props}>
       <div className="space-y-2">
-        <Label htmlFor="email" className="select-none">{t('Login.email')}</Label>
+        <Label htmlFor="email" className="select-none">{t('email')}</Label>
         <Input
           id="email"
           type="email"
@@ -116,7 +116,7 @@ export const SignUpForm = ({
         />
       </div>
       <div className="space-y-2">
-        <Label htmlFor="password" className="select-none">{t('Login.password')}</Label>
+        <Label htmlFor="password" className="select-none">{t('password')}</Label>
         <Input
           id="password"
           type="password"
@@ -132,17 +132,17 @@ export const SignUpForm = ({
         type="submit"
         className="w-full h-12 select-none cursor-pointer"
         disabled={email.length === 0 || password.length < 8}
-        aria-label={t('Login.signUp')}
+        aria-label={t('signUp')}
       >
-        {isLoading && <ReloadIcon className="mr-2 h-4 w-4 animate-spin"/>}{t('Login.signUp')}
+        {isLoading && <ReloadIcon className="mr-2 h-4 w-4 animate-spin"/>}{t('signUp')}
       </Button>
       <Button
         variant="ghost"
         className="w-full select-none cursor-pointer"
         onClick={() => router.push('/')}
-        aria-label={t('Login.goHome')}
+        aria-label={t('goHome')}
       >
-        {t('Login.goHome')}
+        {t('goHome')}
       </Button>
     </form>
   )

@@ -25,7 +25,13 @@
     "signInDescription": "続行するにはログインしてください",
     "signUpDescription": "アカウントを作成して始めましょう",
     "passkeyLogin": "Passkey でログイン",
-    "or": "または"
+    "or": "または",
+    "success": "ログインに成功しました",
+    "signUpSuccess": "登録に成功しました",
+    "twoFactorFailed": "二要素認証に失敗しました",
+    "invalidCredentials": "メールアドレスとパスワードの形式を確認してください",
+    "wrongCredentials": "メールアドレスまたはパスワードが正しくありません",
+    "error": "エラーが発生しました。もう一度お試しください"
   },
   "Link": {
     "home": "ホーム",
