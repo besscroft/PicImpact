@@ -25,7 +25,13 @@
     "signInDescription": "登入後繼續",
     "signUpDescription": "建立你的帳戶以開始使用",
     "passkeyLogin": "使用 Passkey 登入",
-    "or": "或者"
+    "or": "或者",
+    "success": "登入成功",
+    "signUpSuccess": "註冊成功",
+    "twoFactorFailed": "雙重驗證失敗",
+    "invalidCredentials": "請檢查電子郵件和密碼格式",
+    "wrongCredentials": "電子郵件或密碼錯誤",
+    "error": "發生錯誤，請重試"
   },
   "Link": {
     "home": "首頁",

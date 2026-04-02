@@ -25,7 +25,13 @@
     "signInDescription": "Sign in to continue",
     "signUpDescription": "Create your account to get started",
     "passkeyLogin": "Sign in with Passkey",
-    "or": "or"
+    "or": "or",
+    "success": "Login successful",
+    "signUpSuccess": "Sign up successful",
+    "twoFactorFailed": "Two-factor verification failed",
+    "invalidCredentials": "Please check your email and password format",
+    "wrongCredentials": "Incorrect email or password",
+    "error": "An error occurred, please try again"
   },
   "Link": {
     "home": "Home",
