@@ -292,7 +292,11 @@
     "showStatus": "表示状態",
     "showStatusDesc": "画像を表示するかどうか",
     "homepageShowStatus": "ホーム表示状態",
-    "homepageShowStatusDesc": "ホームページに画像を表示するかどうか"
+    "homepageShowStatusDesc": "ホームページに画像を表示するかどうか",
+    "emptyTitle": "画像はまだありません",
+    "emptyDescription": "画像をアップロードすると、ここでまとめて管理できます。",
+    "filteredEmptyTitle": "一致する画像がありません",
+    "filteredEmptyDescription": "現在の絞り込み条件では結果がありません。条件を調整してもう一度確認してください。"
   },
   "Album": {
     "router": "ルーター",
@@ -328,7 +332,9 @@
     "update": "更新",
     "requiredFields": "必須項目を入力してください！",
     "routerStartWithSlash": "ルーターは / で始める必要があります！",
-    "rootRouterWarning": "/ ルーターは非表示に設定できません！"
+    "rootRouterWarning": "/ ルーターは非表示に設定できません！",
+    "emptyTitle": "アルバムはまだありません",
+    "emptyDescription": "アルバムを作成すると、ここに一覧が表示されます。"
   },
   "Preferences": {
     "webSiteTitle": "ウェブサイトタイトル",

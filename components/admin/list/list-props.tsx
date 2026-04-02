@@ -5,7 +5,7 @@ import type { ImageType, AlbumType } from '~/types'
 import type { ImageListDataProps, ImageServerHandleProps } from '~/types/props'
 import { useSwrInfiniteServerHook } from '~/hooks/use-swr-infinite-server-hook'
 import { useSwrPageTotalServerHook } from '~/hooks/use-swr-page-total-server-hook'
-import { ArrowDown10, ScanSearch, Replace } from 'lucide-react'
+import { ArrowDown10, Images, Replace, ScanSearch } from 'lucide-react'
 import { toast } from 'sonner'
 import { useButtonStore } from '~/app/providers/button-store-providers'
 import ImageEditSheet from '~/components/admin/list/image-edit-sheet'
@@ -48,6 +48,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '~/components/ui/popover'
+import AdminEmptyState from '~/components/admin/empty-state'
 import { RefreshCWIcon } from '~/components/icons/refresh-cw.tsx'
 import { CircleChevronDownIcon } from '~/components/icons/circle-chevron-down.tsx'
 import { AnimatedIconTrigger, mergeAnimatedTriggerProps } from '~/components/icons/animated-trigger'
@@ -105,6 +106,17 @@ export default function ListProps(props : Readonly<ImageServerHandleProps>) {
       }
     }
   }, [adminConfig])
+
+  useEffect(() => {
+    setPageNum((current) => current === 1 ? current : 1)
+  }, [album, showStatus, selectedCamera, selectedLens])
+
+  useEffect(() => {
+    const totalPages = Math.max(1, Math.ceil((total ?? 0) / pageSize))
+    if (!isLoading && (total ?? 0) > 0 && pageNum > totalPages) {
+      setPageNum(totalPages)
+    }
+  }, [isLoading, pageNum, pageSize, total])
 
   const updateImageShow = useCallback(async (id: string, show: number) => {
     try {
@@ -165,6 +177,14 @@ export default function ListProps(props : Readonly<ImageServerHandleProps>) {
       setUpdateImageAlbumLoading(false)
     }
   }
+
+  const hasActiveFilters = [album, showStatus, selectedCamera, selectedLens].some(
+    (value) => value !== '' && value !== 'all'
+  )
+  const imageCount = Array.isArray(data) ? data.length : 0
+  const isCollectionEmpty = !isLoading && imageCount === 0 && (total ?? 0) === 0
+  const isEmptyDatabase = isCollectionEmpty && !hasActiveFilters
+  const isFilteredEmpty = isCollectionEmpty && hasActiveFilters
 
   return (
     <div className="flex flex-col space-y-2 h-full flex-1">
@@ -270,6 +290,7 @@ export default function ListProps(props : Readonly<ImageServerHandleProps>) {
                 variant="outline"
                 size="icon"
                 aria-label={t('Button.batchDelete')}
+                disabled={isLoading || (total ?? 0) === 0}
                 {...mergeAnimatedTriggerProps({
                   onClick: () => setImageBatchDelete(true)
                 }, triggerProps)}
@@ -386,7 +407,21 @@ export default function ListProps(props : Readonly<ImageServerHandleProps>) {
         </div>
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-        {Array.isArray(data) && data?.map((image: ImageType) => (
+        {isEmptyDatabase ? (
+          <AdminEmptyState
+            className="col-span-full min-h-[22rem]"
+            icon={Images}
+            title={t('List.emptyTitle')}
+            description={t('List.emptyDescription')}
+          />
+        ) : isFilteredEmpty ? (
+          <AdminEmptyState
+            className="col-span-full min-h-[22rem]"
+            icon={Images}
+            title={t('List.filteredEmptyTitle')}
+            description={t('List.filteredEmptyDescription')}
+          />
+        ) : Array.isArray(data) && data?.map((image: ImageType) => (
           <Card key={image.id} className="flex flex-col h-72 show-up-motion items-center gap-0 py-0">
             <div className="flex h-12 justify-between w-full p-2 space-x-2">
               <Badge variant="secondary" aria-label={t('Words.album')}>{image.album_name}</Badge>

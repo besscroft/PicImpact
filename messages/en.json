@@ -292,7 +292,11 @@
     "showStatus": "Show Status",
     "showStatusDesc": "Whether to display the image",
     "homepageShowStatus": "Homepage Show Status",
-    "homepageShowStatusDesc": "Whether to display the image on the homepage"
+    "homepageShowStatusDesc": "Whether to display the image on the homepage",
+    "emptyTitle": "No images yet",
+    "emptyDescription": "Uploaded images will appear here for management.",
+    "filteredEmptyTitle": "No matching images",
+    "filteredEmptyDescription": "There are no images under the current filters. Adjust them and try again."
   },
   "Album": {
     "router": "Router",
@@ -328,7 +332,9 @@
     "update": "Update",
     "requiredFields": "Please fill in the required fields first!",
     "routerStartWithSlash": "Router must start with /!",
-    "rootRouterWarning": "/ router cannot be set to hidden!"
+    "rootRouterWarning": "/ router cannot be set to hidden!",
+    "emptyTitle": "No albums yet",
+    "emptyDescription": "Your album list will appear here after you create one."
   },
   "Preferences": {
     "webSiteTitle": "Website Title",
