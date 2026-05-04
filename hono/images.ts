@@ -10,6 +10,9 @@ import {
 import { Hono } from 'hono'
 import { HTTPException } from 'hono/http-exception'
 import dayjs from 'dayjs'
+import customParseFormat from 'dayjs/plugin/customParseFormat'
+
+dayjs.extend(customParseFormat)
 
 const app = new Hono()
 
@@ -32,7 +35,7 @@ app.post('/', async (c) => {
 
   try {
     // 验证可能存在的时间信息
-    if (body?.exif?.data_time && !dayjs(body?.exif?.data_time).isValid()) {
+    if (body?.exif?.data_time && !dayjs(body?.exif?.data_time, 'YYYY:MM:DD HH:mm:ss', true).isValid()) {
       body.exif.data_time = ''
     }
     // 保存图片信息

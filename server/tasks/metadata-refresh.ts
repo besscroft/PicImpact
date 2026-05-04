@@ -1,9 +1,12 @@
 import 'server-only'
 
 import dayjs from 'dayjs'
+import customParseFormat from 'dayjs/plugin/customParseFormat'
 import ExifReader from 'exifreader'
 import sharp from 'sharp'
 import { DOMParser } from '@xmldom/xmldom'
+
+dayjs.extend(customParseFormat)
 
 import type { ExifType } from '~/types'
 import type { AdminTaskIssue, AdminTaskStage } from '~/types/admin-tasks'
@@ -162,7 +165,7 @@ function normalizeExif(input: Partial<ExifType> | null | undefined): ExifType | 
     white_balance: cleanString(input?.white_balance),
   }
 
-  if (exif.data_time && !dayjs(exif.data_time).isValid()) {
+  if (exif.data_time && !dayjs(exif.data_time, 'YYYY:MM:DD HH:mm:ss', true).isValid()) {
     exif.data_time = ''
   }
 
