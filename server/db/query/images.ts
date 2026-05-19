@@ -11,9 +11,9 @@ import { buildExifFilters, buildPagination, buildShowFilter, calcPageTotal } fro
 const ALBUM_IMAGE_SORTING_ORDER = [
   null,
   'image.created_at DESC, image.updated_at DESC',
-  'COALESCE(TO_TIMESTAMP(image.exif->>\'data_time\', \'YYYY:MM:DD HH24:MI:SS\'), \'1970-01-01 00:00:00\') DESC, image.created_at DESC, image.updated_at DESC',
+  'COALESCE(TO_TIMESTAMP(image.exif->>\'dateTime\', \'YYYY:MM:DD HH24:MI:SS\'), \'1970-01-01 00:00:00\') DESC, image.created_at DESC, image.updated_at DESC',
   'image.created_at ASC, image.updated_at ASC',
-  'COALESCE(TO_TIMESTAMP(image.exif->>\'data_time\', \'YYYY:MM:DD HH24:MI:SS\'), \'1970-01-01 00:00:00\') ASC, image.created_at ASC, image.updated_at ASC',
+  'COALESCE(TO_TIMESTAMP(image.exif->>\'dateTime\', \'YYYY:MM:DD HH24:MI:SS\'), \'1970-01-01 00:00:00\') ASC, image.created_at ASC, image.updated_at ASC',
 ]
 
 const DEFAULT_SIZE = 24

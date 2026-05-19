@@ -79,10 +79,10 @@ export default function PreviewImage(props: Readonly<PreviewImageHandleProps>) {
 
   // Format date time
   const formattedDateTime = useMemo(() => {
-    if (!props.data?.exif?.data_time) return null
-    const parsed = dayjs(props.data.exif.data_time, 'YYYY:MM:DD HH:mm:ss')
-    return parsed.isValid() ? parsed.format('YYYY-MM-DD HH:mm:ss') : props.data.exif.data_time
-  }, [props.data?.exif?.data_time])
+    if (!props.data?.exif?.dateTime) return null
+    const parsed = dayjs(props.data.exif.dateTime, 'YYYY:MM:DD HH:mm:ss')
+    return parsed.isValid() ? parsed.format('YYYY-MM-DD HH:mm:ss') : props.data.exif.dateTime
+  }, [props.data?.exif?.dateTime])
 
   // Calculate file info
   const dimensions = useMemo(() => {

@@ -20,7 +20,7 @@ export type ExifType = {
   make: string | undefined;
   model: string | undefined;
   bits: string | undefined;
-  data_time: string | undefined;
+  dateTime: string | undefined;
   exposure_time: string | undefined;
   f_number: string | undefined;
   exposure_program: string | undefined;
