@@ -90,7 +90,6 @@ style/                  # Global CSS
 ```
 
 All `/api/v1/*` and `/api/public/*` routes are handled by Hono via `app/api/[[...route]]/route.ts`.
-Exception: `app/api/public/camera-lens-list/route.ts` and `app/api/v1/images/camera-lens-list/route.ts` are Next.js route handlers.
 
 ### Response Format (Target Standard)
 
@@ -243,7 +242,7 @@ per module is tracked in the API refactor plan.
 | GET | `/public/images/image-blob` | Proxy image binary |
 | GET | `/public/images/image-by-id` | Fetch image metadata by ID |
 | GET | `/public/download/:id` | Download image file |
-| GET | `/public/camera-lens-list` | List camera/lens models (public) |
+| GET | `/public/camera-lens` | List camera/lens models (public, filtered to visible albums) |
 
 ### Known Deviations from Target Standard
 
@@ -252,7 +251,7 @@ Tracked in `docs/plans/2026-05-19-api-refactor-design.md`. Snapshot:
 1. **snake_case data model leak** — `Config.config_key/config_value`, `Album.album_value`, `Image.image_name`, `image_sorting`, `show_on_mainpage`, `Exif.data_time` are exposed in API responses and request bodies. Server-side mapping layer pending. (PR-07, PR-08, PR-09.)
 2. **`/api/public/download/:id` dual return type** — Returns binary blob OR `{ url, filename }` JSON depending on direct-download config. To be split into `/download/:id` (binary) and `/download/:id/presigned` (JSON envelope). (PR-01.)
 3. **`/api/public/images/image-blob` SSRF** — Accepts arbitrary `imageUrl` query parameter and fetches server-side with no allowlist. Recommended action: remove (no in-repo consumers). (PR-02.)
-4. **`/api/v1/images/camera-lens-list` & `/api/public/camera-lens-list`** — Still Next.js route handlers instead of Hono; public variant lacks `show=true` album filtering. (PR-04.)
+4. ~~`/api/v1/images/camera-lens-list` & `/api/public/camera-lens-list`~~ — **DONE (PR-04):** Both endpoints consolidated under Hono. Public moved to `GET /api/public/camera-lens` and reuses `fetchClientCameraAndLensList` / `fetchDailyCameraAndLensList`, which filter to `show=0` (visible) images and, for album-scoped requests, `albums.show=0` as well. Admin remains at `GET /api/v1/images/camera-lens-list` and returns the unfiltered set.
 5. **Settings PUT body shape** — `/settings/{r2,s3,open-list}-info` PUT accepts `Config[]` array with snake_case `config_key/config_value` instead of a flat camelCase object. (PR-07.)
 6. **Per-handler auth & admin layout server check** — `/api/v1/*` auth is enforced only in `proxy.ts` middleware; no defense-in-depth. `app/admin/layout.tsx` has no server-side session check. (PR-10.)
 7. **Tasks advisory lock scope** — `kickMetadataTaskRun` holds `withTaskLock` across the entire 10-image batch (~200s worst case). (PR-05.)
