@@ -5,7 +5,7 @@ import type { ImageHandleProps } from '~/types/props.ts'
 import useSWRInfinite from 'swr/infinite'
 import { useSwrHydrated } from '~/hooks/use-swr-hydrated.ts'
 import { DraggableCardBody, DraggableCardContainer } from '~/components/ui/origin/draggable-card.tsx'
-import type { Config, ImageType } from '~/types'
+import type { GalleryDisplayConfig, ImageType } from '~/types'
 import Image from 'next/image'
 import { Skeleton } from '~/components/ui/skeleton'
 import { useBlurImageDataUrl } from '~/hooks/use-blurhash'
@@ -124,12 +124,16 @@ const PolaroidCard = memo(function PolaroidCard({
  * @param props - 包含配置处理和图片加载处理
  */
 export default function PolaroidGallery(props: Readonly<ImageHandleProps>) {
-  const { data: configData } = useSwrHydrated<Config[]>({
-    handle: props.configHandle ?? (async () => [] as Config[]),
+  const emptyConfig: GalleryDisplayConfig = {
+    customIndexDownloadEnable: false,
+    customIndexOriginEnable: false,
+  }
+  const { data: configData } = useSwrHydrated<GalleryDisplayConfig>({
+    handle: props.configHandle ?? (async () => emptyConfig),
     args: 'system-config',
   })
 
-  const customTitle = configData?.find((item: Config) => item.config_key === 'custom_title')?.config_value
+  const customTitle = configData?.customTitle
 
   const { data } = useSWRInfinite((index) => {
     return [`client-${props.args}-${index}-${props.album}`, index]

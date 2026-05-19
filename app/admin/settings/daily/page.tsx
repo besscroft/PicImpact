@@ -20,6 +20,7 @@ import {
   TableHeader,
   TableRow,
 } from '~/components/ui/table'
+import type { DailyConfig } from '~/types'
 
 export default function DailySettings() {
   const [dailyEnabled, setDailyEnabled] = useState(false)
@@ -30,14 +31,14 @@ export default function DailySettings() {
   const [albumWeights, setAlbumWeights] = useState<Array<{ id: string, name: string, album_value: string, daily_weight: number, photo_count: number }>>([])
   const t = useTranslations()
 
-  const { data: configData, isValidating: configValidating, isLoading: configLoading, mutate: mutateConfig } = useSWR('/api/v1/daily/config', fetcher)
+  const { data: configData, isValidating: configValidating, isLoading: configLoading, mutate: mutateConfig } = useSWR<DailyConfig>('/api/v1/daily/config', fetcher)
   const { data: albumsData, isValidating: albumsValidating, isLoading: albumsLoading } = useSWR('/api/v1/daily/albums', fetcher)
 
   useEffect(() => {
     if (configData) {
-      setDailyEnabled(configData.find((item: { config_key: string, config_value: string }) => item.config_key === 'daily_enabled')?.config_value === 'true')
-      setRefreshInterval(configData.find((item: { config_key: string, config_value: string }) => item.config_key === 'daily_refresh_interval')?.config_value || '24')
-      setTotalCount(configData.find((item: { config_key: string, config_value: string }) => item.config_key === 'daily_total_count')?.config_value || '30')
+      setDailyEnabled(configData.dailyEnabled === true)
+      setRefreshInterval(configData.dailyRefreshInterval ?? '24')
+      setTotalCount((configData.dailyTotalCount ?? 30).toString())
     }
   }, [configData])
 
@@ -47,7 +48,7 @@ export default function DailySettings() {
     }
   }, [albumsData])
 
-  const lastRefresh = configData?.find((item: { config_key: string, config_value: string }) => item.config_key === 'daily_last_refresh')?.config_value
+  const lastRefresh = configData?.dailyLastRefresh
   const lastRefreshDate = lastRefresh ? new Date(lastRefresh) : null
   const intervalHours = parseInt(refreshInterval, 10)
   const nextRefreshDate = lastRefreshDate ? new Date(lastRefreshDate.getTime() + intervalHours * 60 * 60 * 1000) : null

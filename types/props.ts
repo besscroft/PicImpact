@@ -1,6 +1,6 @@
 // 业务专用类型
 
-import { AlbumType, Config, ImageType } from '~/types/index'
+import { AlbumType, GalleryDisplayConfig, ImageType } from '~/types/index'
 
 export type AlbumDataProps = {
   data: AlbumType[]
@@ -23,14 +23,14 @@ export type ImageHandleProps = {
   args: string
   album: string
   totalHandle: (album: string, camera?: string, lens?: string) => Promise<number>
-  configHandle?: () => Promise<Config[]>
+  configHandle?: () => Promise<GalleryDisplayConfig>
 }
 
 export type PreviewImageHandleProps = {
   data: ImageType
   args: string
   id: string
-  configHandle?: () => Promise<Config[]>
+  configHandle?: () => Promise<GalleryDisplayConfig>
 }
 
 export type ProgressiveImageProps = {

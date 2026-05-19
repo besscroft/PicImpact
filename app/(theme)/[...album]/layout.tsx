@@ -1,5 +1,6 @@
 import { fetchAlbumsShow } from '~/server/db/query/albums'
 import { fetchConfigsByKeys } from '~/server/db/query/configs'
+import { toCustomInfo } from '~/server/lib/config-transform'
 import type { AlbumType } from '~/types'
 import type { AlbumDataProps } from '~/types/props'
 import TopNav from '~/components/layout/top-nav'
@@ -18,8 +19,8 @@ export default async function ThemeAlbumLayout({
 
   const getTitle = async () => {
     'use server'
-    const configs = await fetchConfigsByKeys(['custom_title'])
-    return configs?.find((item) => item.config_key === 'custom_title')?.config_value || 'PicImpact'
+    const rows = await fetchConfigsByKeys(['custom_title'])
+    return toCustomInfo(rows).customTitle || 'PicImpact'
   }
 
   const dataList: AlbumType[] = await getData()

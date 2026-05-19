@@ -1,20 +1,22 @@
 import 'server-only'
 import RSS from 'rss'
 import { fetchConfigsByKeys } from '~/server/db/query/configs'
+import { toCustomInfo } from '~/server/lib/config-transform'
 import { getRSSImages } from '~/server/db/query/images'
 
 export async function GET(request: Request) {
-  const data = await fetchConfigsByKeys([
+  const rows = await fetchConfigsByKeys([
     'custom_title',
     'custom_author',
     'rss_feed_id',
     'rss_user_id'
   ])
+  const info = toCustomInfo(rows)
 
   const url = new URL(request.url)
 
-  const feedId = data?.find((item: any) => item.config_key === 'rss_feed_id')?.config_value?.toString()
-  const userId = data?.find((item: any) => item.config_key === 'rss_user_id')?.config_value?.toString()
+  const feedId = info.rssFeedId
+  const userId = info.rssUserId
 
   const customElements = feedId && userId
     ? [
@@ -28,13 +30,11 @@ export async function GET(request: Request) {
     : []
 
   const feed = new RSS({
-    title: data?.find((item: any) => item.config_key === 'custom_title')?.config_value?.toString() || '相册',
+    title: info.customTitle || '相册',
     generator: 'RSS for Next.js',
     feed_url: `${url.origin}/rss.xml`,
     site_url: url.origin,
-    copyright: `© 2024${new Date().getFullYear().toString() === '2024' ? '' : `-${new Date().getFullYear().toString()}`} ${
-      data?.find((item: any) => item.config_key === 'custom_author')?.config_value?.toString() || ''
-    }.`,
+    copyright: `© 2024${new Date().getFullYear().toString() === '2024' ? '' : `-${new Date().getFullYear().toString()}`} ${info.customAuthor}.`,
     pubDate: new Date().toUTCString(),
     ttl: 60,
     custom_elements: customElements,

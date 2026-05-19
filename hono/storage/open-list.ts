@@ -3,7 +3,7 @@ import { fetchConfigsByKeys } from '~/server/db/query/configs'
 
 import { Hono } from 'hono'
 import { HTTPException } from 'hono/http-exception'
-import type { Config } from '~/types'
+import { toOpenListInfo } from '~/server/lib/config-transform'
 import { ok } from '~/hono/_lib/response'
 import { badRequest, serverError } from '~/hono/_lib/errors'
 
@@ -11,11 +11,11 @@ const app = new Hono()
 
 app.get('/info', async (c) => {
   try {
-    const data = await fetchConfigsByKeys([
+    const rows = await fetchConfigsByKeys([
       'open_list_url',
       'open_list_token'
     ])
-    return ok(c, data)
+    return ok(c, toOpenListInfo(rows))
   } catch (e) {
     throw serverError('Failed to fetch open list info', e)
   }
@@ -23,12 +23,11 @@ app.get('/info', async (c) => {
 
 app.get('/storages', async (c) => {
   try {
-    const findConfig = await fetchConfigsByKeys([
+    const rows = await fetchConfigsByKeys([
       'open_list_url',
       'open_list_token'
     ])
-    const openListToken = findConfig.find((item: Config) => item.config_key === 'open_list_token')?.config_value || ''
-    const openListUrl = findConfig.find((item: Config) => item.config_key === 'open_list_url')?.config_value || ''
+    const { openListUrl, openListToken } = toOpenListInfo(rows)
 
     if (!openListUrl || !openListToken) {
       throw badRequest('Open List URL and token must be configured')
@@ -37,7 +36,7 @@ app.get('/storages', async (c) => {
     const data = await fetch(`${openListUrl}/api/admin/storage/list`, {
       method: 'get',
       headers: {
-        'Authorization': openListToken.toString(),
+        'Authorization': openListToken,
       },
     }).then(res => res.json())
     return ok(c, data)

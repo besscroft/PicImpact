@@ -2,8 +2,8 @@ import type { ImageHandleProps } from '~/types/props'
 import { getImagesData, getImagesPageTotal, getDisplayConfig, initDailyIfNeeded } from '~/server/actions/images'
 import SimpleGallery from '~/components/layout/theme/simple/simple-gallery.tsx'
 import { fetchConfigsByKeys } from '~/server/db/query/configs'
+import { toCustomInfo } from '~/server/lib/config-transform'
 import DefaultGallery from '~/components/layout/theme/default/default-gallery.tsx'
-import type { Config } from '~/types'
 import PolaroidGallery from '~/components/layout/theme/polaroid/polaroid-gallery.tsx'
 
 export default async function Home() {
@@ -11,13 +11,11 @@ export default async function Home() {
 
   const getStyleConfig = async () => {
     'use server'
-    return await fetchConfigsByKeys([
-      'custom_index_style',
-    ])
+    const rows = await fetchConfigsByKeys(['custom_index_style'])
+    return toCustomInfo(rows).customIndexStyle
   }
 
-  const style: Config[] = await getStyleConfig()
-  const currentStyle = style.find(a => a.config_key === 'custom_index_style')?.config_value
+  const currentStyle = await getStyleConfig()
 
   const props: ImageHandleProps = {
     handle: getImagesData,

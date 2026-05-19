@@ -17,9 +17,10 @@ import { useButtonStore } from '~/app/providers/button-store-providers'
 import S3EditSheet from '~/components/admin/settings/storages/s3-edit-sheet'
 import { useTranslations } from 'next-intl'
 import TabsTableCell from '~/components/admin/settings/storages/tabs-table-cell'
+import type { S3Info } from '~/types'
 
 export default function S3Tabs() {
-  const { data, error, isValidating, mutate } = useSWR('/api/v1/settings/s3-info', fetcher
+  const { data, error, isValidating, mutate } = useSWR<S3Info>('/api/v1/settings/s3-info', fetcher
     , { revalidateOnFocus: false })
   const { setS3Edit, setS3EditData } = useButtonStore(
     (state) => state,
@@ -80,7 +81,7 @@ export default function S3Tabs() {
           </Table>
         </Card>
       }
-      {Array.isArray(data) && data.length > 0 && <S3EditSheet />}
+      {data && <S3EditSheet />}
     </div>
   )
 }

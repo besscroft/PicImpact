@@ -17,9 +17,10 @@ import { useButtonStore } from '~/app/providers/button-store-providers'
 import R2EditSheet from '~/components/admin/settings/storages/r2-edit-sheet'
 import { useTranslations } from 'next-intl'
 import TabsTableCell from '~/components/admin/settings/storages/tabs-table-cell'
+import type { R2Info } from '~/types'
 
 export default function R2Tabs() {
-  const { data, error, isValidating, mutate } = useSWR('/api/v1/settings/r2-info', fetcher
+  const { data, error, isValidating, mutate } = useSWR<R2Info>('/api/v1/settings/r2-info', fetcher
     , { revalidateOnFocus: false })
   const { setR2Edit, setR2EditData } = useButtonStore(
     (state) => state,
@@ -80,7 +81,7 @@ export default function R2Tabs() {
           </Table>
         </Card>
       }
-      {Array.isArray(data) && data.length > 0 && <R2EditSheet />}
+      {data && <R2EditSheet />}
     </div>
   )
 }

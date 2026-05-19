@@ -8,12 +8,12 @@ import { ButtonStoreProvider } from '~/app/providers/button-store-providers'
 
 import '~/style/globals.css'
 import { fetchConfigsByKeys } from '~/server/db/query/configs'
+import { toCustomInfo } from '~/server/lib/config-transform'
 
 import { NextIntlClientProvider } from 'next-intl'
 import { getLocale, getMessages } from 'next-intl/server'
 import { ConfigStoreProvider } from '~/app/providers/config-store-providers'
 import Script from 'next/script'
-import { normalizeDefaultTheme } from '~/lib/utils/theme'
 
 const sourceSerif4 = Source_Serif_4({
   subsets: ['latin'],
@@ -29,22 +29,16 @@ const sourceSans3 = Source_Sans_3({
   weight: ['400', '500', '600'],
 })
 
-type ConfigItem = {
-  id: string;
-  config_key: string;
-  config_value: string | null;
-  detail: string | null;
-}
-
 export async function generateMetadata(): Promise<Metadata> {
-  const data = await fetchConfigsByKeys([
+  const rows = await fetchConfigsByKeys([
     'custom_title',
     'custom_favicon_url',
     'custom_author',
   ])
+  const info = toCustomInfo(rows)
 
-  const title = data?.find((item: ConfigItem) => item.config_key === 'custom_title')?.config_value || 'PicImpact'
-  const author = data?.find((item: ConfigItem) => item.config_key === 'custom_author')?.config_value || ''
+  const title = info.customTitle || 'PicImpact'
+  const author = info.customAuthor
   const description = author
     ? `${author}'s photography portfolio — powered by PicImpact`
     : 'A photography portfolio powered by PicImpact'
@@ -53,7 +47,7 @@ export async function generateMetadata(): Promise<Metadata> {
     metadataBase: process.env.BETTER_AUTH_URL ? new URL(process.env.BETTER_AUTH_URL) : null,
     title,
     description,
-    icons: { icon: data?.find((item: ConfigItem) => item.config_key === 'custom_favicon_url')?.config_value || './favicon.ico' },
+    icons: { icon: info.customFaviconUrl || './favicon.ico' },
     manifest: '/manifest.json',
     openGraph: {
       title,
@@ -93,15 +87,19 @@ export default async function RootLayout({
 
   const messages = await getMessages()
 
-  const data = await fetchConfigsByKeys([
+  const rows = await fetchConfigsByKeys([
     'default_theme',
     'umami_analytics',
     'umami_host'
   ])
+  const info = toCustomInfo(rows)
 
-  const defaultTheme = normalizeDefaultTheme(data?.find((item: ConfigItem) => item.config_key === 'default_theme')?.config_value)
-  const umamiHost = data?.find((item: ConfigItem) => item.config_key === 'umami_host')?.config_value || 'https://cloud.umami.is/script.js'
-  const umamiAnalytics = data?.find((item: ConfigItem) => item.config_key === 'umami_analytics')?.config_value
+  // `toCustomInfo` runs `default_theme` through `normalizeDefaultTheme`, so the
+  // value is already guaranteed to be one of 'light' | 'dark' | 'system'. Cast
+  // here because the public-facing `CustomInfo` type keeps the field as `string`.
+  const defaultTheme = info.defaultTheme as 'light' | 'dark' | 'system'
+  const umamiHost = info.umamiHost || 'https://cloud.umami.is/script.js'
+  const umamiAnalytics = info.umamiAnalytics
 
   return (
     <html className={`overflow-y-auto scrollbar-hide ${sourceSerif4.variable} ${sourceSans3.variable}`} lang={locale} suppressHydrationWarning>

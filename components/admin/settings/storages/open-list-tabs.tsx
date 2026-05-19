@@ -17,9 +17,10 @@ import { ReloadIcon } from '@radix-ui/react-icons'
 import OpenListEditSheet from '~/components/admin/settings/storages/open-list-edit-sheet.tsx'
 import { useTranslations } from 'next-intl'
 import TabsTableCell from '~/components/admin/settings/storages/tabs-table-cell'
+import type { OpenListInfo } from '~/types'
 
 export default function OpenListTabs() {
-  const { data, error, isValidating, mutate } = useSWR('/api/v1/storage/open-list/info', fetcher
+  const { data, error, isValidating, mutate } = useSWR<OpenListInfo>('/api/v1/storage/open-list/info', fetcher
     , { revalidateOnFocus: false })
   const { setOpenListEdit, setOpenListEditData } = useButtonStore(
     (state) => state,
@@ -79,7 +80,7 @@ export default function OpenListTabs() {
           </Table>
         </Card>
       }
-      {Array.isArray(data) && data.length > 0 && <OpenListEditSheet />}
+      {data && <OpenListEditSheet />}
     </div>
   )
 }

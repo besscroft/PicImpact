@@ -5,7 +5,7 @@ import { useSwrPageTotalHook } from '~/hooks/use-swr-page-total-hook.ts'
 import useSWRInfinite from 'swr/infinite'
 import { useSwrHydrated } from '~/hooks/use-swr-hydrated.ts'
 import { useTranslations } from 'next-intl'
-import type { Config, ImageType } from '~/types'
+import type { GalleryDisplayConfig, ImageType } from '~/types'
 
 /**
  * 这个是相册页面模板，需要写新主题时直接复制一份，然后开写！
@@ -27,8 +27,12 @@ export default function TemplateGallery(props : Readonly<ImageHandleProps>) {
       revalidateOnReconnect: false,
     })
   // config 配置信息
-  const { data: configData } = useSwrHydrated<Config[]>({
-    handle: props.configHandle ?? (async () => [] as Config[]),
+  const emptyConfig: GalleryDisplayConfig = {
+    customIndexDownloadEnable: false,
+    customIndexOriginEnable: false,
+  }
+  const { data: configData } = useSwrHydrated<GalleryDisplayConfig>({
+    handle: props.configHandle ?? (async () => emptyConfig),
     args: 'system-config',
   })
   // 处理好的数据，直接用这个即可

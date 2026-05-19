@@ -73,7 +73,7 @@ export default function ListProps(props : Readonly<ImageServerHandleProps>) {
     (state) => state,
   )
   const { data: albums, isLoading: albumsLoading } = useSWR('/api/v1/albums', fetcher)
-  const { data: adminConfig } = useSWR('/api/v1/settings/admin-config', fetcher)
+  const { data: adminConfig } = useSWR<import('~/types').AdminConfig>('/api/v1/settings/admin-config', fetcher)
   const t = useTranslations()
 
   const dataProps: ImageListDataProps = {
@@ -100,12 +100,8 @@ export default function ListProps(props : Readonly<ImageServerHandleProps>) {
   }, [])
 
   useEffect(() => {
-    if (adminConfig && adminConfig.length > 0) {
-      const pageSizeConfig = adminConfig.find((config: any) => config.config_key === 'admin_images_per_page')
-      if (pageSizeConfig) {
-        const newPageSize = parseInt(pageSizeConfig.config_value, 10) || 8
-        setPageSize(newPageSize)
-      }
+    if (adminConfig && typeof adminConfig.adminImagesPerPage === 'number' && adminConfig.adminImagesPerPage > 0) {
+      setPageSize(adminConfig.adminImagesPerPage)
     }
   }, [adminConfig])
 
