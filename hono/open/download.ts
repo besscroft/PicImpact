@@ -8,31 +8,35 @@ import { getR2Client } from '~/server/lib/r2'
 import { fetchImageByIdAndAuth } from '~/server/db/query/images'
 import type { Config } from '~/types'
 import { generatePresignedUrl } from '~/server/lib/s3api'
+import { badRequest, notFound, serverError } from '~/hono/_lib/errors'
 
 const app = new Hono()
 
+// NOTE: This endpoint intentionally returns a non-envelope response — either
+// a binary blob (with Content-Disposition) or a `{ url, filename }` JSON
+// payload. PR-01 in the API refactor plan splits this into two endpoints
+// with single contracts. Until then, the frontend
+// (components/album/preview-image.tsx) discriminates by Content-Type.
 app.get('/:id', async (c) => {
   const id = c.req.param('id')
   const storage = c.req.query('storage')
 
   if (!storage) {
-    throw new HTTPException(400, { message: 'Missing storage parameter' })
+    throw badRequest('Missing storage parameter')
   }
 
   try {
-    // 从数据库获取图片信息
     const imageData = await fetchImageByIdAndAuth(id)
     if (!imageData) {
-      throw new HTTPException(404, { message: 'Image not found' })
+      throw notFound('Image not found')
     }
 
     const imageUrl = imageData.url
     const imageName = imageData.image_name
     if (!imageUrl) {
-      throw new HTTPException(404, { message: 'Image URL not found' })
+      throw notFound('Image URL not found')
     }
 
-    // 如果没有开启直接下载，直接返回图片 URL
     const downloadConfigs = await fetchConfigsByKeys([
       's3_direct_download',
       'r2_direct_download',
@@ -43,11 +47,9 @@ app.get('/:id', async (c) => {
     const r2DirectDownload = downloadConfigs.find((item: Config) => item.config_key === 'r2_direct_download')?.config_value === 'true'
 
     if ((storage === 's3' && !s3DirectDownload) || (storage === 'r2' && !r2DirectDownload)) {
-      // 对于非直接下载，返回带有 Content-Disposition 的响应
       const response = await fetch(imageUrl)
       const blob = await response.blob()
 
-      // 提取并解码文件名
       const filename = imageName
         ? imageName
         : decodeURIComponent(imageUrl.split('/').pop() || 'download.jpg')
@@ -60,17 +62,14 @@ app.get('/:id', async (c) => {
       })
     }
 
-    // 处理 URL 格式，提取 key
     let key: string
     if (imageUrl.startsWith('http://') || imageUrl.startsWith('https://')) {
-      // 从完整 URL 中提取路径部分，避免自动解码
       const urlMatch = imageUrl.match(/^https?:\/\/[^\/]+(\/.*)$/)
       if (urlMatch) {
-        key = urlMatch[1].slice(1) // 移除开头的斜杠
+        key = urlMatch[1].slice(1)
       } else {
         key = imageUrl
       }
-      // 如果路径以 storage_folder 开头，移除它
       if (storage === 's3') {
         const s3StorageFolder = downloadConfigs.find((item: Config) => item.config_key === 'storage_folder')?.config_value || ''
         if (s3StorageFolder && key.startsWith(s3StorageFolder)) {
@@ -86,7 +85,6 @@ app.get('/:id', async (c) => {
       key = imageUrl
     }
 
-    // 提取文件名
     const filename = imageName
       ? imageName
       : decodeURIComponent(imageUrl.split('/').pop() || 'download.jpg')
@@ -108,7 +106,6 @@ app.get('/:id', async (c) => {
         const bucket = configs.find((item: Config) => item.config_key === 'bucket')?.config_value || ''
         const storageFolder = configs.find((item: Config) => item.config_key === 'storage_folder')?.config_value || ''
 
-        // 如果 key 已经包含了 storage_folder，就不再添加
         const filePath = key.startsWith(storageFolder) ? key : `${storageFolder}${key}`
         const client = getClient(configs)
         const presignedUrl = await generatePresignedUrl(client, bucket, filePath, '')
@@ -131,7 +128,6 @@ app.get('/:id', async (c) => {
         const bucket = configs.find((item: Config) => item.config_key === 'r2_bucket')?.config_value || ''
         const storageFolder = configs.find((item: Config) => item.config_key === 'r2_storage_folder')?.config_value || ''
 
-        // 如果 key 已经包含了 storage_folder，就不再添加
         const filePath = key.startsWith(storageFolder) ? key : `${storageFolder}${key}`
         const client = getR2Client(configs)
         const presignedUrl = await generatePresignedUrl(client, bucket, filePath, '')
@@ -142,11 +138,11 @@ app.get('/:id', async (c) => {
         })
       }
       default:
-        throw new HTTPException(400, { message: 'Unsupported storage type' })
+        throw badRequest('Unsupported storage type')
     }
   } catch (e) {
     if (e instanceof HTTPException) throw e
-    throw new HTTPException(500, { message: 'Failed to process download', cause: e })
+    throw serverError('Failed to process download', e)
   }
 })
 

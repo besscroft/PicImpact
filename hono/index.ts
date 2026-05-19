@@ -9,13 +9,16 @@ import daily from '~/hono/daily'
 import tasks from '~/hono/tasks'
 import backup from '~/hono/backup'
 import { HTTPException } from 'hono/http-exception'
+import { sessionMiddleware } from '~/hono/_lib/context'
 
 const route = new Hono()
+
+route.use('*', sessionMiddleware)
 
 route.onError((err, c) => {
   if (err instanceof HTTPException) {
     console.error(err)
-    return err.getResponse()
+    return c.json({ code: err.status, message: err.message }, err.status)
   }
   console.error('Unexpected error:', err)
   return c.json({ code: 500, message: 'Internal Server Error' }, 500)

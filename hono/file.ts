@@ -1,13 +1,15 @@
 import 'server-only'
 
 import { Hono } from 'hono'
-import { HTTPException } from 'hono/http-exception'
 import { openListUpload } from '~/server/lib/file-upload'
 import { fetchConfigsByKeys } from '~/server/db/query/configs'
 import type { Config } from '~/types'
 import { getClient } from '~/server/lib/s3'
 import { getR2Client } from '~/server/lib/r2'
 import { generatePresignedUrl } from '~/server/lib/s3api'
+import { ok } from '~/hono/_lib/response'
+import { badRequest, serverError } from '~/hono/_lib/errors'
+import { HTTPException } from 'hono/http-exception'
 
 interface S3StorageConfig {
   configs: Config[]
@@ -76,10 +78,10 @@ app.post('/presigned-url', async (c) => {
   try {
     const { filename, contentType, type = '/', storage } = await c.req.json()
     if (!filename) {
-      throw new HTTPException(400, { message: 'Filename is required' })
+      throw badRequest('Filename is required')
     }
     if (!storage) {
-      throw new HTTPException(400, { message: 'Storage type is required' })
+      throw badRequest('Storage type is required')
     }
 
     switch (storage) {
@@ -88,13 +90,7 @@ app.post('/presigned-url', async (c) => {
         const filePath = buildStoragePath(storageFolder, type, filename)
         const presignedUrl = await generatePresignedUrl(client, bucket, filePath, contentType, 'put')
 
-        return c.json({
-          code: 200,
-          data: {
-            presignedUrl,
-            key: filePath
-          }
-        })
+        return ok(c, { presignedUrl, key: filePath })
       }
 
       case 'r2': {
@@ -102,21 +98,15 @@ app.post('/presigned-url', async (c) => {
         const filePath = buildStoragePath(storageFolder, type, filename)
         const presignedUrl = await generatePresignedUrl(client, bucket, filePath, contentType, 'put')
 
-        return c.json({
-          code: 200,
-          data: {
-            presignedUrl,
-            key: filePath
-          }
-        })
+        return ok(c, { presignedUrl, key: filePath })
       }
 
       default:
-        throw new HTTPException(400, { message: 'Unsupported storage type' })
+        throw badRequest('Unsupported storage type')
     }
   } catch (e) {
     if (e instanceof HTTPException) throw e
-    throw new HTTPException(500, { message: 'Failed to generate presigned URL', cause: e })
+    throw serverError('Failed to generate presigned URL', e)
   }
 })
 
@@ -133,21 +123,19 @@ app.post('/upload', async (c) => {
       switch (storage.toString()) {
         case 'openList': {
           if (!file || !(file instanceof File)) {
-            throw new HTTPException(400, { message: 'File is required' })
+            throw badRequest('File is required')
           }
           const result = await openListUpload(file, type, mountPath)
-          return c.json({
-            code: 200, data: result
-          })
+          return ok(c, result)
         }
         default:
-          throw new HTTPException(500, { message: 'storage not support' })
+          throw badRequest('Unsupported storage type')
       }
     }
-    throw new HTTPException(400, { message: 'Storage type is required' })
+    throw badRequest('Storage type is required')
   } catch (e) {
     if (e instanceof HTTPException) throw e
-    throw new HTTPException(500, { message: 'Failed to upload file', cause: e })
+    throw serverError('Failed to upload file', e)
   }
 })
 
@@ -168,35 +156,27 @@ app.post('/object-url', async (c) => {
         const cleanS3CdnUrl = s3CdnUrl.replace(/^https?:\/\//, '')
 
         if (s3Cdn && s3Cdn === 'true') {
-          return c.json({
-            code: 200, data: `https://${cleanS3CdnUrl}/${key}`
-          })
+          return ok(c, `https://${cleanS3CdnUrl}/${key}`)
         } else {
           if (forcePathStyle && forcePathStyle === 'true') {
-            return c.json({
-              code: 200, data: `https://${cleanEndpoint}/${bucket}/${key}`
-            })
+            return ok(c, `https://${cleanEndpoint}/${bucket}/${key}`)
           }
         }
-        return c.json({
-          code: 200, data: `https://${bucket}.${cleanEndpoint}/${key}`
-        })
+        return ok(c, `https://${bucket}.${cleanEndpoint}/${key}`)
       }
 
       case 'r2': {
         const { r2PublicDomain } = await getR2Config()
 
-        return c.json({
-          code: 200, data: `${r2PublicDomain}/${key}`
-        })
+        return ok(c, `${r2PublicDomain}/${key}`)
       }
 
       default:
-        throw new HTTPException(400, { message: 'Unsupported storage type' })
+        throw badRequest('Unsupported storage type')
     }
   } catch (e) {
     if (e instanceof HTTPException) throw e
-    throw new HTTPException(500, { message: 'Failed to get object URL', cause: e })
+    throw serverError('Failed to get object URL', e)
   }
 })
 
