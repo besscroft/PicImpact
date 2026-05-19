@@ -85,9 +85,11 @@ export default function ListProps(props : Readonly<ImageServerHandleProps>) {
       try {
         const response = await fetch('/api/v1/images/camera-lens-list')
         if (response.ok) {
-          const data = await response.json()
-          setCameras(data.cameras)
-          setLenses(data.lenses)
+          const payload = await response.json()
+          if (payload?.data) {
+            setCameras(payload.data.cameras ?? [])
+            setLenses(payload.data.lenses ?? [])
+          }
         }
       } catch (error) {
         console.error('Failed to fetch camera and lens list:', error)

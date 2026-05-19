@@ -4,6 +4,7 @@ import { Hono } from 'hono'
 import route from '~/hono'
 import download from '~/hono/open/download'
 import images from '~/hono/open/images'
+import cameraLens from '~/hono/open/camera-lens'
 
 const app = new Hono().basePath('/api')
 
@@ -11,6 +12,7 @@ app.route('/v1', route)
 // 注意只有 /v1 开头是需要鉴权的
 app.route('/public/download', download)
 app.route('/public/images', images)
+app.route('/public/camera-lens', cameraLens)
 app.notFound((c) => {
   return c.text('not found', 404)
 })

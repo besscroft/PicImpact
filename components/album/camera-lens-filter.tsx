@@ -49,11 +49,13 @@ export default function CameraLensFilter({
         if (album && album !== '/') {
           params.set('album', album)
         }
-        const url = `/api/public/camera-lens-list${params.toString() ? `?${params.toString()}` : ''}`
+        const url = `/api/public/camera-lens${params.toString() ? `?${params.toString()}` : ''}`
         const response = await fetch(url)
         if (response.ok) {
-          const data = await response.json()
-          setFilterData(data)
+          const payload = await response.json()
+          if (payload?.data) {
+            setFilterData(payload.data)
+          }
         }
       } catch (error) {
         console.error('Failed to fetch filter data:', error)

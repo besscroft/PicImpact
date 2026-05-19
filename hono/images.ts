@@ -7,11 +7,13 @@ import {
   updateImageShow,
   updateImageAlbum
 } from '~/server/db/operate/images'
+import { fetchCameraAndLensList } from '~/server/db/query/images'
 import { Hono } from 'hono'
 import dayjs from 'dayjs'
 import customParseFormat from 'dayjs/plugin/customParseFormat'
-import { okEmpty } from '~/hono/_lib/response'
+import { ok, okEmpty } from '~/hono/_lib/response'
 import { badRequest, serverError } from '~/hono/_lib/errors'
+import { filterStringArray } from '~/lib/utils/array'
 
 dayjs.extend(customParseFormat)
 
@@ -100,6 +102,24 @@ app.put('/update-album', async (c) => {
     return okEmpty(c)
   } catch (e) {
     throw serverError('Failed', e)
+  }
+})
+
+// Admin-only camera/lens enumeration. Returns the full set across all images
+// (unfiltered by album visibility), powering the admin list filter dropdowns.
+// The public-facing counterpart lives at GET /api/public/camera-lens and
+// applies album/image visibility filters — do not call this route from any
+// unauthenticated context.
+app.get('/camera-lens-list', async (c) => {
+  try {
+    const { cameras, lenses } = await fetchCameraAndLensList()
+    return ok(c, {
+      cameras: filterStringArray(cameras),
+      lenses: filterStringArray(lenses),
+    })
+  } catch (e) {
+    console.error('Failed to fetch camera and lens list:', e)
+    throw serverError('Failed to fetch camera and lens list', e)
   }
 })
 
