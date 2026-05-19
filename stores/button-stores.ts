@@ -1,6 +1,6 @@
 import { createStore } from 'zustand/vanilla'
 import { persist, createJSONStorage } from 'zustand/middleware'
-import type { AlbumType, ImageType, Config } from '~/types'
+import type { AlbumType, ImageType, OpenListInfo, R2Info, S3Info } from '~/types'
 
 export type ButtonState = {
   albumAdd: boolean
@@ -11,11 +11,11 @@ export type ButtonState = {
   imageViewData: ImageType
   imageView: boolean
   s3Edit: boolean
-  s3Data: Config[]
+  s3Data: S3Info | null
   r2Edit: boolean
-  r2Data: Config[]
+  r2Data: R2Info | null
   openListEdit: boolean
-  openListData: Config[]
+  openListData: OpenListInfo | null
   MasonryView: boolean
   MasonryViewData: ImageType
   MasonryViewDataList: ImageType[]
@@ -34,11 +34,11 @@ export type ButtonActions = {
   setImageView: (imageView: boolean) => void
   setImageViewData: (imageViewData: ImageType) => void
   setS3Edit: (s3Edit: boolean) => void
-  setS3EditData: (s3Data: Config[]) => void
+  setS3EditData: (s3Data: S3Info | null) => void
   setR2Edit: (r2Edit: boolean) => void
-  setR2EditData: (r2Data: Config[]) => void
+  setR2EditData: (r2Data: R2Info | null) => void
   setOpenListEdit: (openListEdit: boolean) => void
-  setOpenListEditData: (openListData: Config[]) => void
+  setOpenListEditData: (openListData: OpenListInfo | null) => void
   setMasonryView: (masonryView: boolean) => void
   setMasonryViewData: (masonryViewData: ImageType) => void
   setMasonryViewDataList: (masonryViewDataList: ImageType[]) => void
@@ -60,11 +60,11 @@ export const initButtonStore = (): ButtonState => {
     imageView: false,
     imageViewData: {} as ImageType,
     s3Edit: false,
-    s3Data: [] as Config[],
+    s3Data: null,
     r2Edit: false,
-    r2Data: [] as Config[],
+    r2Data: null,
     openListEdit: false,
-    openListData: [] as Config[],
+    openListData: null,
     MasonryView: false,
     MasonryViewData: {} as ImageType,
     MasonryViewDataList: [] as ImageType[],
@@ -84,11 +84,11 @@ export const defaultInitState: ButtonState = {
   imageView: false,
   imageViewData: {} as ImageType,
   s3Edit: false,
-  s3Data: [] as Config[],
+  s3Data: null,
   r2Edit: false,
-  r2Data: [] as Config[],
+  r2Data: null,
   openListEdit: false,
-  openListData: [] as Config[],
+  openListData: null,
   MasonryView: false,
   MasonryViewData: {} as ImageType,
   MasonryViewDataList: [] as ImageType[],

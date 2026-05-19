@@ -4,30 +4,26 @@
 
 import { db } from '~/server/lib/db'
 import { fetchConfigsByKeys } from '~/server/db/query/configs'
+import { toDailyConfig } from '~/server/lib/config-transform'
 
 /**
  * 检查并刷新每日精选图片
  * 根据配置的刷新间隔，判断是否需要刷新物化视图
  */
 export async function checkAndRefreshDailyImages() {
-  const configs = await fetchConfigsByKeys([
+  const rows = await fetchConfigsByKeys([
     'daily_enabled',
     'daily_refresh_interval',
     'daily_last_refresh',
   ])
+  const { dailyEnabled, dailyRefreshInterval, dailyLastRefresh } = toDailyConfig(rows)
 
-  const enabledConfig = configs.find(c => c.config_key === 'daily_enabled')
-  const intervalConfig = configs.find(c => c.config_key === 'daily_refresh_interval')
-  const lastRefreshConfig = configs.find(c => c.config_key === 'daily_last_refresh')
-
-  if (!enabledConfig || enabledConfig.config_value !== 'true') {
+  if (!dailyEnabled) {
     return
   }
 
-  const intervalHours = parseInt(intervalConfig?.config_value || '24', 10)
-  const lastRefresh = lastRefreshConfig?.config_value
-    ? new Date(lastRefreshConfig.config_value).getTime()
-    : 0
+  const intervalHours = parseInt(dailyRefreshInterval, 10)
+  const lastRefresh = dailyLastRefresh ? new Date(dailyLastRefresh).getTime() : 0
 
   const now = Date.now()
   const intervalMs = intervalHours * 60 * 60 * 1000

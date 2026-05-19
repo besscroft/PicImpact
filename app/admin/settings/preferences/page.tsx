@@ -13,6 +13,7 @@ import { Input } from '~/components/ui/input'
 import { Label } from '~/components/ui/label'
 import { CopyIcon } from '~/components/icons/copy'
 import { normalizeDefaultTheme } from '~/lib/utils/theme'
+import type { CustomInfo } from '~/types'
 
 export default function Preferences() {
   const [title, setTitle] = useState('')
@@ -34,7 +35,7 @@ export default function Preferences() {
   const [defaultTheme, setDefaultTheme] = useState<'light' | 'dark' | 'system'>('light')
   const t = useTranslations()
 
-  const { data, isValidating, isLoading } = useSWR<{ config_key: string, config_value: string }[]>('/api/v1/settings/custom-info', fetcher)
+  const { data, isValidating, isLoading } = useSWR<CustomInfo>('/api/v1/settings/custom-info', fetcher)
 
   async function updateInfo() {
     const maxWidth = parseInt(previewImageMaxWidth)
@@ -57,6 +58,24 @@ export default function Preferences() {
       toast.error(t('Preferences.inputAdminImagesPerPage'))
       return
     }
+    const payload: CustomInfo = {
+      customTitle: title,
+      customFaviconUrl,
+      customAuthor,
+      rssFeedId: feedId,
+      rssUserId: userId,
+      customIndexStyle,
+      customIndexDownloadEnable,
+      previewMaxWidthLimitSwitch: enablePreviewImageMaxWidthLimit,
+      previewMaxWidthLimit: maxWidth,
+      previewQuality,
+      umamiHost,
+      umamiAnalytics,
+      maxUploadFiles: maxFiles,
+      customIndexOriginEnable,
+      adminImagesPerPage: imagesPerPage,
+      defaultTheme,
+    }
     try {
       setLoading(true)
       await fetch('/api/v1/settings/custom-info', {
@@ -64,24 +83,7 @@ export default function Preferences() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          title: title,
-          customFaviconUrl: customFaviconUrl,
-          customAuthor: customAuthor,
-          feedId: feedId,
-          userId: userId,
-          customIndexStyle: customIndexStyle,
-          customIndexDownloadEnable: customIndexDownloadEnable,
-          enablePreviewImageMaxWidthLimit,
-          previewImageMaxWidth: maxWidth,
-          previewQuality,
-          umamiHost,
-          umamiAnalytics,
-          maxUploadFiles: maxFiles,
-          customIndexOriginEnable,
-          adminImagesPerPage: imagesPerPage,
-          defaultTheme,
-        }),
+        body: JSON.stringify(payload),
       }).then(res => res.json())
       toast.success('修改成功！')
     } catch (e) {
@@ -92,22 +94,23 @@ export default function Preferences() {
   }
 
   useEffect(() => {
-    setTitle(data?.find((item) => item.config_key === 'custom_title')?.config_value || '')
-    setCustomFaviconUrl(data?.find((item) => item.config_key === 'custom_favicon_url')?.config_value || '')
-    setCustomAuthor(data?.find((item) => item.config_key === 'custom_author')?.config_value || '')
-    setFeedId(data?.find((item) => item.config_key === 'rss_feed_id')?.config_value || '')
-    setUserId(data?.find((item) => item.config_key === 'rss_user_id')?.config_value || '')
-    setCustomIndexStyle(data?.find((item) => item.config_key === 'custom_index_style')?.config_value || '0')
-    setCustomIndexDownloadEnable(data?.find((item) => item.config_key === 'custom_index_download_enable')?.config_value.toString() === 'true' || false)
-    setPreviewImageMaxWidth(data?.find((item) => item.config_key === 'preview_max_width_limit')?.config_value?.toString() || '0')
-    setPreviewImageMaxWidthLimitEnabled(data?.find((item) => item.config_key === 'preview_max_width_limit_switch')?.config_value === '1')
-    setPreviewQualityInput(data?.find((item) => item.config_key === 'preview_quality')?.config_value || '0.2')
-    setUmamiHost(data?.find((item) => item.config_key === 'umami_host')?.config_value || '')
-    setUmamiAnalytics(data?.find((item) => item.config_key === 'umami_analytics')?.config_value || '')
-    setMaxUploadFiles(data?.find((item) => item.config_key === 'max_upload_files')?.config_value || '5')
-    setCustomIndexOriginEnable(data?.find((item) => item.config_key === 'custom_index_origin_enable')?.config_value.toString() === 'true' || false)
-    setAdminImagesPerPage(data?.find((item) => item.config_key === 'admin_images_per_page')?.config_value || '8')
-    setDefaultTheme(normalizeDefaultTheme(data?.find((item) => item.config_key === 'default_theme')?.config_value))
+    if (!data) return
+    setTitle(data.customTitle ?? '')
+    setCustomFaviconUrl(data.customFaviconUrl ?? '')
+    setCustomAuthor(data.customAuthor ?? '')
+    setFeedId(data.rssFeedId ?? '')
+    setUserId(data.rssUserId ?? '')
+    setCustomIndexStyle(data.customIndexStyle ?? '0')
+    setCustomIndexDownloadEnable(data.customIndexDownloadEnable === true)
+    setPreviewImageMaxWidth((data.previewMaxWidthLimit ?? 0).toString())
+    setPreviewImageMaxWidthLimitEnabled(data.previewMaxWidthLimitSwitch === true)
+    setPreviewQualityInput((data.previewQuality ?? 0.2).toString())
+    setUmamiHost(data.umamiHost ?? '')
+    setUmamiAnalytics(data.umamiAnalytics ?? '')
+    setMaxUploadFiles((data.maxUploadFiles ?? 5).toString())
+    setCustomIndexOriginEnable(data.customIndexOriginEnable === true)
+    setAdminImagesPerPage((data.adminImagesPerPage ?? 8).toString())
+    setDefaultTheme(normalizeDefaultTheme(data.defaultTheme))
   }, [data])
 
   return (

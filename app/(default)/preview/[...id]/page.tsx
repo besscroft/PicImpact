@@ -2,6 +2,7 @@ import { fetchImageByIdAndAuth } from '~/server/db/query/images'
 import type { PreviewImageHandleProps } from '~/types/props'
 import PreviewImage from '~/components/album/preview-image'
 import { fetchConfigsByKeys } from '~/server/db/query/configs'
+import type { GalleryDisplayConfig } from '~/types'
 import type { Metadata } from 'next/types'
 
 export async function generateMetadata({ params }: { params: any }): Promise<Metadata> {
@@ -49,11 +50,14 @@ export default async function PreView({params}: { params: any }) {
     return await fetchImageByIdAndAuth(String(id))
   }
 
-  const getConfig = async () => {
+  const getConfig = async (): Promise<GalleryDisplayConfig> => {
     'use server'
-    return await fetchConfigsByKeys([
-      'custom_index_download_enable'
-    ])
+    const rows = await fetchConfigsByKeys(['custom_index_download_enable'])
+    const value = rows.find((item) => item.config_key === 'custom_index_download_enable')?.config_value
+    return {
+      customIndexDownloadEnable: value === 'true',
+      customIndexOriginEnable: false,
+    }
   }
 
   const imageData = await getData(id)

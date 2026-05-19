@@ -4,6 +4,7 @@ import { fetchConfigsByKeys } from '~/server/db/query/configs'
 import { fetchAlbumsWithDailyWeight } from '~/server/db/query/daily'
 import { Hono } from 'hono'
 import { updateDailyConfig, updateAlbumsDailyWeight, refreshDailyImages } from '~/server/db/operate/daily'
+import { toDailyConfig } from '~/server/lib/config-transform'
 import { ok, okEmpty } from '~/hono/_lib/response'
 import { badRequest, serverError } from '~/hono/_lib/errors'
 
@@ -11,13 +12,13 @@ const app = new Hono()
 
 app.get('/config', async (c) => {
   try {
-    const data = await fetchConfigsByKeys([
+    const rows = await fetchConfigsByKeys([
       'daily_enabled',
       'daily_refresh_interval',
       'daily_total_count',
       'daily_last_refresh'
     ])
-    return ok(c, data)
+    return ok(c, toDailyConfig(rows))
   } catch (error) {
     console.error('Error fetching daily config:', error)
     throw serverError('Failed to fetch daily config', error)

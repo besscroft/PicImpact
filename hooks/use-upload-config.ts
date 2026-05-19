@@ -8,7 +8,7 @@ import { useTranslations } from 'next-intl'
 import Compressor from 'compressorjs'
 import { heicTo, isHeic } from 'heic-to'
 import { uploadFile } from '~/lib/utils/file'
-import type { AlbumType } from '~/types'
+import type { AlbumType, CustomInfo } from '~/types'
 
 export const STORAGE_OPTIONS = [
   {
@@ -56,12 +56,12 @@ export function useUploadConfig(): UploadConfig {
   const t = useTranslations()
 
   const { data: albums, isLoading: isAlbumsLoading } = useSWR('/api/v1/albums', fetcher)
-  const { data: configs } = useSWR<{ config_key: string, config_value: string }[]>('/api/v1/settings/custom-info', fetcher)
+  const { data: configs } = useSWR<CustomInfo>('/api/v1/settings/custom-info', fetcher)
 
-  const previewImageMaxWidthLimitSwitchOn = configs?.find(config => config.config_key === 'preview_max_width_limit_switch')?.config_value === '1'
-  const previewImageMaxWidthLimit = parseInt(configs?.find(config => config.config_key === 'preview_max_width_limit')?.config_value || '0')
-  const previewCompressQuality = parseFloat(configs?.find(config => config.config_key === 'preview_quality')?.config_value || '0.2')
-  const maxUploadFiles = parseInt(configs?.find(config => config.config_key === 'max_upload_files')?.config_value || '5')
+  const previewImageMaxWidthLimitSwitchOn = configs?.previewMaxWidthLimitSwitch === true
+  const previewImageMaxWidthLimit = configs?.previewMaxWidthLimit ?? 0
+  const previewCompressQuality = configs?.previewQuality ?? 0.2
+  const maxUploadFiles = configs?.maxUploadFiles ?? 5
 
   const getOpenListStorage = useCallback(async () => {
     if (openListStorage.length > 0) {
