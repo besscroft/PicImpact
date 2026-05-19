@@ -48,10 +48,10 @@ export default function ExifView(props: Readonly<ImageDataProps>) {
             </TableRow>
           }
           {
-            dayjs(props.data?.exif?.data_time, 'YYYY:MM:DD HH:mm:ss').isValid() &&
-            <TableRow key="data_time">
+            dayjs(props.data?.exif?.dateTime, 'YYYY:MM:DD HH:mm:ss').isValid() &&
+            <TableRow key="dateTime">
               <TableCell className="font-medium">拍摄时间</TableCell>
-              <TableCell className="truncate max-w-48">{dayjs(props.data?.exif?.data_time, 'YYYY:MM:DD HH:mm:ss').format('YYYY-MM-DD HH:mm:ss')}</TableCell>
+              <TableCell className="truncate max-w-48">{dayjs(props.data?.exif?.dateTime, 'YYYY:MM:DD HH:mm:ss').format('YYYY-MM-DD HH:mm:ss')}</TableCell>
             </TableRow>
           }
           {

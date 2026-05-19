@@ -26,7 +26,7 @@ const EMPTY_EXIF: ExifType = {
   make: '',
   model: '',
   bits: '',
-  data_time: '',
+  dateTime: '',
   exposure_time: '',
   f_number: '',
   exposure_program: '',
@@ -151,7 +151,7 @@ function normalizeExif(input: Partial<ExifType> | null | undefined): ExifType | 
     make: cleanString(input?.make),
     model: cleanString(input?.model),
     bits: cleanString(input?.bits),
-    data_time: cleanString(input?.data_time),
+    dateTime: cleanString(input?.dateTime),
     exposure_time: cleanString(input?.exposure_time),
     f_number: cleanString(input?.f_number),
     exposure_program: cleanString(input?.exposure_program),
@@ -165,8 +165,8 @@ function normalizeExif(input: Partial<ExifType> | null | undefined): ExifType | 
     white_balance: cleanString(input?.white_balance),
   }
 
-  if (exif.data_time && !dayjs(exif.data_time, 'YYYY:MM:DD HH:mm:ss', true).isValid()) {
-    exif.data_time = ''
+  if (exif.dateTime && !dayjs(exif.dateTime, 'YYYY:MM:DD HH:mm:ss', true).isValid()) {
+    exif.dateTime = ''
   }
 
   return Object.values(exif).some(Boolean) ? exif : null
@@ -329,7 +329,7 @@ function buildNormalizedExifFromTags(tags: ExifTags | null) {
     make: tags.Make?.description,
     model: tags.Model?.description,
     bits: tags['Bits Per Sample']?.description,
-    data_time: tags.DateTimeOriginal?.description || tags.DateTime?.description,
+    dateTime: tags.DateTimeOriginal?.description || tags.DateTime?.description,
     exposure_time: tags.ExposureTime?.description,
     f_number: tags.FNumber?.description,
     exposure_program: tags.ExposureProgram?.description,

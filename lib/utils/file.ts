@@ -14,7 +14,7 @@ export async function exifReader(file: ArrayBuffer | SharedArrayBuffer | Buffer)
     make: '',
     model: '',
     bits: '',
-    data_time: '',
+    dateTime: '',
     exposure_time: '',
     f_number: '',
     exposure_program: '',
@@ -30,7 +30,7 @@ export async function exifReader(file: ArrayBuffer | SharedArrayBuffer | Buffer)
   exifObj.make = tags?.Make?.description
   exifObj.model = tags?.Model?.description
   exifObj.bits = tags?.['Bits Per Sample']?.description
-  exifObj.data_time = tags?.DateTimeOriginal?.description !== '' ? tags?.DateTimeOriginal?.description : tags?.DateTime?.description
+  exifObj.dateTime = tags?.DateTimeOriginal?.description !== '' ? tags?.DateTimeOriginal?.description : tags?.DateTime?.description
   exifObj.exposure_time = tags?.ExposureTime?.description
   exifObj.f_number = tags?.FNumber?.description
   exifObj.exposure_program = tags?.ExposureProgram?.description

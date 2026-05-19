@@ -36,8 +36,8 @@ app.post('/', async (c) => {
   }
 
   try {
-    if (body?.exif?.data_time && !dayjs(body?.exif?.data_time, 'YYYY:MM:DD HH:mm:ss', true).isValid()) {
-      body.exif.data_time = ''
+    if (body?.exif?.dateTime && !dayjs(body?.exif?.dateTime, 'YYYY:MM:DD HH:mm:ss', true).isValid()) {
+      body.exif.dateTime = ''
     }
     await insertImage(body)
     return okEmpty(c)

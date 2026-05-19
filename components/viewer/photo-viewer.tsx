@@ -190,8 +190,8 @@ export default function PhotoViewer({ photo, photos }: PhotoViewerProps) {
             )}
 
             {/* Date */}
-            {currentPhoto.exif?.data_time && (
-              <p className="text-sm text-muted-foreground">{currentPhoto.exif.data_time}</p>
+            {currentPhoto.exif?.dateTime && (
+              <p className="text-sm text-muted-foreground">{currentPhoto.exif.dateTime}</p>
             )}
 
             {/* Description */}
