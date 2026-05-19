@@ -82,3 +82,48 @@ export function validateFileSize(size: unknown): void {
     throw badRequest('File too large')
   }
 }
+
+/**
+ * Validate and normalize an OpenList mount path.
+ *
+ * Unlike a filename, a mount path is a *directory prefix* that may legitimately
+ * contain multiple segments (e.g. `/storage/uploads`). We must preserve the
+ * full path while still rejecting genuinely dangerous input:
+ *
+ * - `..` as a path segment (would let a caller traverse out of the mount).
+ * - NUL bytes (terminator injection in downstream consumers).
+ *
+ * Normalization:
+ * - Repeated slashes are collapsed (`//foo//bar` -> `/foo/bar`).
+ * - A trailing slash is trimmed (`/foo/` -> `/foo`), except for the root.
+ * - A leading slash, if present in the input, is preserved.
+ * - `null`/`undefined`/empty input returns `''` (no mount prefix).
+ *
+ * Throws `badRequest('Invalid mount path')` if the input contains a `..`
+ * segment or a NUL byte.
+ */
+export function validateMountPath(mountPath: unknown): string {
+  if (mountPath == null) {
+    return ''
+  }
+  const raw = typeof mountPath === 'string' ? mountPath : String(mountPath)
+  if (raw.length === 0) {
+    return ''
+  }
+  if (raw.includes('\0')) {
+    throw badRequest('Invalid mount path')
+  }
+  const hasLeadingSlash = raw.startsWith('/')
+  const segments = raw.split('/').filter((segment) => segment.length > 0)
+  for (const segment of segments) {
+    if (segment === '..') {
+      throw badRequest('Invalid mount path')
+    }
+  }
+  if (segments.length === 0) {
+    // Input was something like '/' or '///' — treat as root, no prefix.
+    return hasLeadingSlash ? '/' : ''
+  }
+  const joined = segments.join('/')
+  return hasLeadingSlash ? `/${joined}` : joined
+}

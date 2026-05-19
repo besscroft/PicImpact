@@ -1,6 +1,5 @@
 import 'server-only'
 
-import path from 'node:path'
 import { fetchConfigsByKeys } from '~/server/db/query/configs'
 import { HTTPException } from 'hono/http-exception'
 import { Config } from '~/types'
@@ -8,6 +7,7 @@ import {
   validateFilename,
   validateFileSize,
   validateMimeType,
+  validateMountPath,
 } from '~/server/lib/upload-validation'
 
 /**
@@ -24,11 +24,12 @@ export async function openListUpload(file: any, type: any, mountPath: any): Prom
   validateMimeType(file?.type)
   validateFileSize(file?.size)
 
-  // Sanitize the mount path so a malicious caller can't traverse out via
-  // `..` segments in the OpenList `File-Path` header. `path.basename` strips
-  // any directory portion that might have been embedded.
-  const mountString = mountPath == null ? '' : mountPath.toString()
-  const mountBase = mountString === '/' || mountString === '' ? '' : path.basename(mountString)
+  // Validate the mount path without flattening it: OpenList deployments
+  // routinely use multi-segment mounts like `/storage/uploads`, which an
+  // earlier `path.basename` sanitization incorrectly collapsed to `uploads`.
+  // `validateMountPath` rejects `..` traversal and NUL bytes while preserving
+  // the full path.
+  const normalizedMount = validateMountPath(mountPath)
 
   const findConfig = await fetchConfigsByKeys([
     'open_list_url',
@@ -36,7 +37,10 @@ export async function openListUpload(file: any, type: any, mountPath: any): Prom
   ])
   const openListToken = findConfig.find((item: Config) => item.config_key === 'open_list_token')?.config_value || ''
   const openListUrl = findConfig.find((item: Config) => item.config_key === 'open_list_url')?.config_value || ''
-  const mountPrefix = mountBase ? `/${mountBase}` : ''
+  // The downstream path always carries its own leading slash via either `type`
+  // or the `/${safeName}` fallback. Strip a root-only mount so we don't emit
+  // `//<file>`.
+  const mountPrefix = normalizedMount === '/' ? '' : normalizedMount
   const filePath = encodeURIComponent(`${mountPrefix}${
     type && type !== '/' ? `${type}/${safeName}` : `/${safeName}`}`)
   const data = await fetch(`${openListUrl}/api/fs/put`, {
