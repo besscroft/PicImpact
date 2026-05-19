@@ -385,6 +385,36 @@ async function withTaskLock<T>(callback: () => Promise<T>) {
   }
 }
 
+async function withTaskLockWarn<T>(context: string, callback: () => Promise<T>) {
+  const result = await withTaskLock(callback)
+  if (result === null) {
+    console.warn(`metadata task lock busy: ${context}`)
+  }
+  return result
+}
+
+const PROGRESS_LOCK_RETRY_COUNT = 5
+const PROGRESS_LOCK_RETRY_DELAY_MS = 50
+
+async function delay(ms: number) {
+  return new Promise<void>((resolve) => setTimeout(resolve, ms))
+}
+
+// Re-acquires the advisory lock briefly to run a state-transition callback. The
+// per-image checkpoint and finalization paths use this so they don't have to
+// give up cleanly when another short-lived lock holder is mid-write.
+async function withTaskLockRetry<T>(context: string, callback: () => Promise<T>) {
+  for (let attempt = 0; attempt < PROGRESS_LOCK_RETRY_COUNT; attempt += 1) {
+    const result = await withTaskLock(callback)
+    if (result !== null) return result
+    if (attempt < PROGRESS_LOCK_RETRY_COUNT - 1) {
+      await delay(PROGRESS_LOCK_RETRY_DELAY_MS)
+    }
+  }
+  console.warn(`metadata task lock busy after retries: ${context}`)
+  return null
+}
+
 async function findTaskRunById(runId: string) {
   const rows = await db.$queryRaw<TaskRunRecord[]>`
     ${taskRunSelect}
@@ -466,22 +496,46 @@ async function finalizeTaskRunAsCancelled(runId: string, now = new Date()) {
   return rows[0] ?? null
 }
 
-async function ensureTaskRunCanContinue(runId: string, controller: AbortController) {
-  throwIfMetadataTaskCancelled(controller.signal)
-
-  const record = await findTaskRunById(runId)
-  if (!record) {
-    abortTaskController(controller, 'Task run no longer exists.')
-    throw createMetadataTaskCancelledError('Task run no longer exists.')
+async function commitTaskRunProgress(runId: string, progress: TaskBatchProgress) {
+  if (progress.processedCount === 0 && progress.issues.length === 0) {
+    return findTaskRunById(runId)
   }
 
-  if (record.status === 'cancelling' || record.status === 'cancelled') {
-    abortTaskController(controller, 'Task cancellation requested.')
-    throw createMetadataTaskCancelledError('Task cancellation requested.')
-  }
+  const currentRecord = await findTaskRunById(runId)
+  if (!currentRecord) return null
 
-  throwIfMetadataTaskCancelled(controller.signal)
-  return record
+  const now = new Date()
+  const leaseExpiresAt = new Date(now.getTime() + METADATA_TASK_LEASE_MS)
+  const nextCursor = progress.processedCount > 0 ? progress.nextCursor : currentRecord.nextCursor
+  const mergedIssues = mergeRecentIssues(currentRecord.recentIssues, progress.issues, fallbackIssueTime(currentRecord))
+
+  const rows = await db.$queryRaw<TaskRunRecord[]>`
+    UPDATE "public"."admin_task_runs"
+    SET
+      "processed_count" = "processed_count" + ${progress.processedCount},
+      "success_count" = "success_count" + ${progress.successCount},
+      "skipped_count" = "skipped_count" + ${progress.skippedCount},
+      "failed_count" = "failed_count" + ${progress.failedCount},
+      "next_cursor" = ${nextCursor},
+      "recent_issues" = ${jsonValue(mergedIssues)},
+      "lease_expires_at" = CASE
+        WHEN "status" IN ('cancelling', 'cancelled') THEN "lease_expires_at"
+        ELSE ${leaseExpiresAt}
+      END,
+      "updated_at" = ${now}
+    WHERE "id" = ${runId}
+    ${taskRunReturning}
+  `
+
+  return rows[0] ?? null
+}
+
+function resetProgress(progress: TaskBatchProgress) {
+  progress.processedCount = 0
+  progress.successCount = 0
+  progress.skippedCount = 0
+  progress.failedCount = 0
+  progress.issues = []
 }
 
 async function finalizeFailedTaskRun(runId: string, progress: TaskBatchProgress, error: unknown) {
@@ -584,7 +638,7 @@ export async function getMetadataTaskRunDetail(runId: string) {
 }
 
 export async function createMetadataTaskRun(scope: AdminTaskScope) {
-  return withTaskLock(async () => {
+  return withTaskLockWarn('createRun', async () => {
     const existingRun = await findActiveTaskRun('desc')
     if (existingRun) throw new Error('Another metadata task is already active')
 
@@ -658,84 +712,132 @@ export async function cancelMetadataTaskRun(runId: string) {
 }
 
 export async function kickMetadataTaskRun(runId: string) {
-  const result = await withTaskLock(async () => {
+  // Phase 1: state transition — lease the run under the advisory lock so
+  // concurrent kick attempts see a held lease and bail. The lock is released
+  // immediately after this; the per-image network I/O happens outside it.
+  const leaseResult = await withTaskLockWarn('kick:lease', async () => {
     const leasedRun = await leaseTaskRun(runId)
-    if (!leasedRun) return toAdminTaskRunSummary(await findTaskRunById(runId))
+    if (!leasedRun) return { leased: null as TaskRunRecord | null }
+    return { leased: leasedRun }
+  })
 
-    const controller = registerTaskAbortController(leasedRun.id)
-    const progress: TaskBatchProgress = {
-      processedCount: 0,
-      successCount: 0,
-      skippedCount: 0,
-      failedCount: 0,
-      nextCursor: leasedRun.nextCursor,
-      issues: [],
+  if (leaseResult === null) {
+    // Advisory lock unavailable; surface the current state without progressing.
+    return toAdminTaskRunSummary(await findTaskRunById(runId))
+  }
+
+  const leasedRun = leaseResult.leased
+  if (!leasedRun) {
+    // Lock was free but the run couldn't be leased (wrong status, lease held,
+    // or row missing). Mirror previous behavior: return the current row.
+    return toAdminTaskRunSummary(await findTaskRunById(runId))
+  }
+
+  const controller = registerTaskAbortController(leasedRun.id)
+  const progress: TaskBatchProgress = {
+    processedCount: 0,
+    successCount: 0,
+    skippedCount: 0,
+    failedCount: 0,
+    nextCursor: leasedRun.nextCursor,
+    issues: [],
+  }
+  let stoppedByCancellation = false
+  let batchLength = 0
+
+  try {
+    const scope = normalizeMetadataTaskScope(leasedRun.scope)
+    // Phase 2: batch read happens outside the advisory lock — it is a
+    // read-only DB query and does not need the lock.
+    const batch = await fetchImagesBatchForScope(scope, leasedRun.nextCursor)
+    batchLength = batch.length
+
+    if (batch.length === 0) {
+      const finalized = await withTaskLockRetry('kick:finalize-empty', () =>
+        finalizeTaskRunBatch(leasedRun.id, progress, 0, false),
+      )
+      return finalized ?? toAdminTaskRunSummary(await findTaskRunById(runId))
     }
 
     try {
-      const scope = normalizeMetadataTaskScope(leasedRun.scope)
-      const batch = await fetchImagesBatchForScope(scope, leasedRun.nextCursor)
+      for (const image of batch) {
+        throwIfMetadataTaskCancelled(controller.signal)
 
-      if (batch.length === 0) {
-        return await finalizeTaskRunBatch(leasedRun.id, progress, 0, false)
-      }
+        try {
+          // Network fetch + EXIF parse: happens entirely OUTSIDE the lock.
+          const result = await refreshImageMetadata(image, controller.signal)
+          throwIfMetadataTaskCancelled(controller.signal)
 
-      let stoppedByCancellation = false
+          progress.issues.push(...result.issues)
 
-      try {
-        for (const image of batch) {
-          await ensureTaskRunCanContinue(leasedRun.id, controller)
-
-          try {
-            const result = await refreshImageMetadata(image, controller.signal)
-            await ensureTaskRunCanContinue(leasedRun.id, controller)
-
-            progress.issues.push(...result.issues)
-
-            if (result.outcome === 'success') {
-              await updateImageMetadataFields(image.id, result.updates)
-              progress.successCount += 1
-            } else if (result.outcome === 'skipped') {
-              progress.skippedCount += 1
-            } else {
-              progress.failedCount += 1
-            }
-
-            progress.processedCount += 1
-            progress.nextCursor = image.id
-          } catch (error) {
-            if (isMetadataTaskCancelledError(error)) {
-              stoppedByCancellation = true
-              break
-            }
-
+          if (result.outcome === 'success') {
+            await updateImageMetadataFields(image.id, result.updates)
+            progress.successCount += 1
+          } else if (result.outcome === 'skipped') {
+            progress.skippedCount += 1
+          } else {
             progress.failedCount += 1
-            progress.processedCount += 1
-            progress.nextCursor = image.id
-            progress.issues.push(createImageIssue(image, {
-              level: 'error',
-              stage: 'process-batch',
-              code: 'unexpected_error',
-              summary: 'Unexpected error while processing image metadata.',
-              detail: unknownErrorDetail(error),
-            }))
+          }
+
+          progress.processedCount += 1
+          progress.nextCursor = image.id
+        } catch (error) {
+          if (isMetadataTaskCancelledError(error)) {
+            stoppedByCancellation = true
+            break
+          }
+
+          progress.failedCount += 1
+          progress.processedCount += 1
+          progress.nextCursor = image.id
+          progress.issues.push(createImageIssue(image, {
+            level: 'error',
+            stage: 'process-batch',
+            code: 'unexpected_error',
+            summary: 'Unexpected error while processing image metadata.',
+            detail: unknownErrorDetail(error),
+          }))
+        }
+
+        // Per-image checkpoint: briefly re-acquire the advisory lock to
+        // persist incremental progress, refresh the lease, and check whether
+        // a concurrent cancel has flipped the row into the cancelling state.
+        const checkpoint = await withTaskLockRetry('kick:checkpoint', () =>
+          commitTaskRunProgress(leasedRun.id, progress),
+        )
+
+        if (checkpoint) {
+          resetProgress(progress)
+
+          if (checkpoint.status === 'cancelling' || checkpoint.status === 'cancelled') {
+            abortTaskController(controller, 'Task cancellation requested.')
+            stoppedByCancellation = true
+            break
           }
         }
-      } catch (error) {
-        if (isMetadataTaskCancelledError(error)) {
-          stoppedByCancellation = true
-        } else {
-          return await finalizeFailedTaskRun(leasedRun.id, progress, error)
-        }
+        // If checkpoint is null (row missing or lock saturated after retries),
+        // we keep the local progress and let the finalize step flush it.
       }
-
-      return await finalizeTaskRunBatch(leasedRun.id, progress, batch.length, stoppedByCancellation)
-    } finally {
-      clearTaskAbortController(leasedRun.id, controller)
+    } catch (error) {
+      if (isMetadataTaskCancelledError(error)) {
+        stoppedByCancellation = true
+      } else {
+        const failed = await withTaskLockRetry('kick:finalize-failed', () =>
+          finalizeFailedTaskRun(leasedRun.id, progress, error),
+        )
+        return failed ?? toAdminTaskRunSummary(await findTaskRunById(leasedRun.id))
+      }
     }
-  })
 
-  return result ?? toAdminTaskRunSummary(await findTaskRunById(runId))
+    // Phase 3: state transition — flip status to succeeded/running/cancelled
+    // and flush any tail counters the checkpoint loop hasn't committed yet.
+    const finalized = await withTaskLockRetry('kick:finalize', () =>
+      finalizeTaskRunBatch(leasedRun.id, progress, batchLength, stoppedByCancellation),
+    )
+    return finalized ?? toAdminTaskRunSummary(await findTaskRunById(leasedRun.id))
+  } finally {
+    clearTaskAbortController(leasedRun.id, controller)
+  }
 }
 
 export async function tickMetadataTaskRuns() {
