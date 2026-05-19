@@ -24,11 +24,11 @@ export default function AlbumAddSheet(props : Readonly<HandleProps>) {
   const t = useTranslations()
 
   async function submit() {
-    if (!data.name || !data.album_value) {
+    if (!data.name || !data.albumValue) {
       toast.error(t('Album.requiredFields'))
       return
     }
-    if (data.album_value && data.album_value.charAt(0) !== '/') {
+    if (data.albumValue && data.albumValue.charAt(0) !== '/') {
       toast.error(t('Album.routerStartWithSlash'))
       return
     }
@@ -92,9 +92,9 @@ export default function AlbumAddSheet(props : Readonly<HandleProps>) {
                 <input
                   type="text"
                   id="album_value"
-                  value={data?.album_value}
+                  value={data?.albumValue}
                   placeholder={t('Album.inputRouter')}
-                  onChange={(e) => setData({...data, album_value: e.target.value})}
+                  onChange={(e) => setData({...data, albumValue: e.target.value})}
                   className="mt-1 w-full border-none p-0 focus:border-transparent focus:outline-none focus:ring-0 sm:text-sm"
                 />
               </label>
@@ -189,11 +189,11 @@ export default function AlbumAddSheet(props : Readonly<HandleProps>) {
               <div className="flex flex-col gap-1 rounded-lg border p-3 shadow-sm">
                 <div className="text-medium">{t('Album.imageSortRule')}</div>
                 <Select
-                  value={typeof data.image_sorting === 'number' ? data.image_sorting.toString() : '1'}
+                  value={typeof data.imageSorting === 'number' ? data.imageSorting.toString() : '1'}
                   onValueChange={(value) => {
                     setData({
                       ...data,
-                      image_sorting: parseInt(value),
+                      imageSorting: parseInt(value),
                     })
                   }}
                 >

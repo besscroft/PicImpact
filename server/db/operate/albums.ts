@@ -3,6 +3,10 @@
 'use server'
 
 import { db } from '~/server/lib/db'
+import {
+  toAlbumPrismaCreate,
+  toAlbumPrismaUpdate,
+} from '~/server/lib/model-transform'
 import type { AlbumType } from '~/types'
 
 /**
@@ -14,18 +18,7 @@ export async function insertAlbums(album: AlbumType) {
     album.sort = 0
   }
   return await db.albums.create({
-    data: {
-      name: album.name,
-      album_value: album.album_value,
-      detail: album.detail,
-      sort: album.sort,
-      theme: album.theme,
-      show: album.show,
-      license: album.license,
-      del: 0,
-      image_sorting: album.image_sorting,
-      random_show: album.random_show,
-    }
+    data: toAlbumPrismaCreate(album)
   })
 }
 
@@ -66,25 +59,14 @@ export async function updateAlbum(album: AlbumType) {
       where: {
         id: album.id
       },
-      data: {
-        name: album.name,
-        album_value: album.album_value,
-        detail: album.detail,
-        sort: album.sort,
-        theme: album.theme,
-        show: album.show,
-        license: album.license,
-        updatedAt: new Date(),
-        image_sorting: album.image_sorting,
-        random_show: album.random_show,
-      }
+      data: toAlbumPrismaUpdate(album)
     })
     await tx.imagesAlbumsRelation.updateMany({
       where: {
         album_value: tagOld.album_value
       },
       data: {
-        album_value: album.album_value
+        album_value: album.albumValue
       }
     })
   })

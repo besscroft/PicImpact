@@ -49,10 +49,10 @@ export async function GET(request: Request) {
           <div>
             <img src="${item.preview_url || item.url}" alt="${item.detail}" />
             <p>${item.detail}</p>
-            <a href="${url.origin + (item.album_value === '/' ? '/preview/' : item.album_value + '/preview/') + item.id}" target="_blank">查看图片信息</a>
+            <a href="${url.origin + (item.albumValue === '/' ? '/preview/' : item.albumValue + '/preview/') + item.id}" target="_blank">查看图片信息</a>
           </div>
         `,
-        url: url.origin + (item.album_value === '/' ? '/preview/' : item.album_value + '/preview/') + item.id,
+        url: url.origin + (item.albumValue === '/' ? '/preview/' : item.albumValue + '/preview/') + item.id,
         guid: item.id,
         date: item.created_at,
         enclosure: {

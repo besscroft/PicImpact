@@ -4,6 +4,7 @@
 
 import { Prisma } from '@prisma/client'
 import { db } from '~/server/lib/db'
+import { mapRawImageRows } from '~/server/lib/model-transform'
 import type { ImageType } from '~/types'
 import { fetchConfigValue } from './configs'
 import { buildExifFilters, buildPagination, buildShowFilter, calcPageTotal } from './helpers'
@@ -46,12 +47,12 @@ export async function fetchServerImagesListByAlbum(
   }
   
   if (album && album !== '') {
-    return await db.$queryRaw`
-      SELECT 
+    const rows = await db.$queryRaw<ImageType[]>`
+      SELECT
           image.*,
           albums.name AS album_name,
-          albums.id AS album_value
-      FROM 
+          albums.id AS "albumValue"
+      FROM
           "public"."images" AS image
       INNER JOIN "public"."images_albums_relation" AS relation
           ON image.id = relation."imageId"
@@ -68,25 +69,27 @@ export async function fetchServerImagesListByAlbum(
       ORDER BY image.sort DESC, image.created_at DESC, image.updated_at DESC
       ${buildPagination(pageNum, pageSize)}
     `
+    return mapRawImageRows(rows)
   }
-  return await db.$queryRaw`
-    SELECT 
+  const rows = await db.$queryRaw<ImageType[]>`
+    SELECT
         image.*,
         albums.name AS album_name,
-        albums.id AS album_value
-    FROM 
+        albums.id AS "albumValue"
+    FROM
         "public"."images" AS image
     LEFT JOIN "public"."images_albums_relation" AS relation
         ON image.id = relation."imageId"
     LEFT JOIN "public"."albums" AS albums
         ON relation.album_value = albums.album_value
-    WHERE 
+    WHERE
         image.del = 0
         ${buildShowFilter(showStatus)}
         ${buildExifFilters(camera, lens)}
     ORDER BY image.sort DESC, image.created_at DESC, image.updated_at DESC
     ${buildPagination(pageNum, pageSize)}
   `
+  return mapRawImageRows(rows)
 }
 
 /**
@@ -165,7 +168,7 @@ export async function fetchClientImagesListByAlbum(
   lens?: string
 ): Promise<ImageType[]> {
   if (album === '/') {
-    return await db.$queryRaw`
+    const rows = await db.$queryRaw<ImageType[]>`
     SELECT
         image.*
     FROM
@@ -180,6 +183,7 @@ export async function fetchClientImagesListByAlbum(
     ORDER BY image.sort DESC, image.created_at DESC, image.updated_at DESC
     ${buildPagination(pageNum, DEFAULT_SIZE)}
   `
+    return mapRawImageRows(rows)
   }
   const albumData = await db.albums.findFirst({
     where: {
@@ -190,14 +194,14 @@ export async function fetchClientImagesListByAlbum(
   if (albumData && albumData.image_sorting && ALBUM_IMAGE_SORTING_ORDER[albumData.image_sorting]) {
     orderBy = Prisma.sql([`image.sort DESC, ${ALBUM_IMAGE_SORTING_ORDER[albumData.image_sorting]}`])
   }
-  const dataList: any[] = await db.$queryRaw`
-    SELECT 
+  const dataList = await db.$queryRaw<ImageType[]>`
+    SELECT
         image.*,
         albums.name AS album_name,
-        albums.id AS album_value,
+        albums.id AS "albumValue",
         albums.license AS album_license,
         albums.image_sorting AS album_image_sorting
-    FROM 
+    FROM
         "public"."images" AS image
     INNER JOIN "public"."images_albums_relation" AS relation
         ON image.id = relation."imageId"
@@ -217,10 +221,11 @@ export async function fetchClientImagesListByAlbum(
     ORDER BY ${orderBy}
     ${buildPagination(pageNum, DEFAULT_SIZE)}
   `
-  if (dataList && albumData && albumData.random_show === 0) {
-    return [...dataList].sort(() => Math.random() - 0.5)
+  const mapped = mapRawImageRows(dataList)
+  if (mapped && albumData && albumData.random_show === 0) {
+    return [...mapped].sort(() => Math.random() - 0.5)
   }
-  return dataList
+  return mapped
 }
 
 /**
@@ -286,8 +291,8 @@ export async function fetchClientImagesPageTotalByAlbum(
  * @returns {Promise<ImageType[]>} 图片列表
  */
 export async function fetchMapImages(): Promise<ImageType[]> {
-  return await db.$queryRaw`
-    SELECT 
+  const rows = await db.$queryRaw<ImageType[]>`
+    SELECT
         image.id,
         image.title,
         image.url,
@@ -298,8 +303,8 @@ export async function fetchMapImages(): Promise<ImageType[]> {
         image.lon,
         image.exif,
         image.show,
-        image.show_on_mainpage
-    FROM 
+        image.show_on_mainpage AS "showOnMainpage"
+    FROM
         "public"."images" AS image
     WHERE
         image.del = 0
@@ -309,12 +314,13 @@ export async function fetchMapImages(): Promise<ImageType[]> {
         image.lat IS NOT NULL
     AND
         image.lon IS NOT NULL
-    AND 
+    AND
         image.lat != ''
-    AND 
+    AND
         image.lon != ''
     ORDER BY image.created_at DESC
   `
+  return rows
 }
 
 /**
@@ -324,11 +330,11 @@ export async function fetchMapImages(): Promise<ImageType[]> {
  * @returns {Promise<ImageType[]>} 图片列表
  */
 export async function fetchClientImagesListByTag(pageNum: number, tag: string): Promise<ImageType[]> {
-  return await db.$queryRaw`
+  const rows = await db.$queryRaw<ImageType[]>`
     SELECT
         image.*,
         albums.name AS album_name,
-        albums.id AS album_value,
+        albums.id AS "albumValue",
         albums.license AS album_license
     FROM
         "public"."images" AS image
@@ -349,6 +355,7 @@ export async function fetchClientImagesListByTag(pageNum: number, tag: string): 
     ORDER BY image.sort DESC, image.created_at DESC, image.updated_at DESC
     ${buildPagination(pageNum, DEFAULT_SIZE)}
   `
+  return mapRawImageRows(rows)
 }
 
 /**
@@ -454,11 +461,11 @@ export async function fetchImagesAnalysis():
  * @returns {Promise<ImageType>} 图片详情
  */
 export async function fetchImageByIdAndAuth(id: string): Promise<ImageType> {
-  const data: ImageType[] = await db.$queryRaw`
+  const data = await db.$queryRaw<ImageType[]>`
     SELECT
         "images".*,
         "albums".license AS album_license,
-        "albums".album_value AS album_value
+        "albums".album_value AS "albumValue"
     FROM
         "images"
     INNER JOIN "images_albums_relation"
@@ -476,7 +483,7 @@ export async function fetchImageByIdAndAuth(id: string): Promise<ImageType> {
     AND
         "images".id = ${id}
   `
-  return data[0]
+  return mapRawImageRows(data)[0]
 }
 
 /**
@@ -485,11 +492,11 @@ export async function fetchImageByIdAndAuth(id: string): Promise<ImageType> {
  */
 export async function getRSSImages(): Promise<ImageType[]> {
   // 每个相册取最新 10 张照片
-  return await db.$queryRaw`
+  const rows = await db.$queryRaw<ImageType[]>`
     WITH RankedImages AS (
     SELECT
       i.*,
-      A.album_value,
+      A.album_value AS "albumValue",
       ROW_NUMBER() OVER (PARTITION BY A.album_value ORDER BY i.created_at DESC) AS rn
     FROM
       images i
@@ -505,6 +512,7 @@ export async function getRSSImages(): Promise<ImageType[]> {
     FROM RankedImages
     WHERE rn <= 10;
   `
+  return mapRawImageRows(rows)
 }
 
 /**

@@ -327,7 +327,7 @@ export default function LivephotoFileUpload() {
               <SelectGroup>
                 <SelectLabel>{t('Words.album')}</SelectLabel>
                 {albums?.map((album: AlbumType) => (
-                  <SelectItem key={album.album_value} value={album.album_value}>
+                  <SelectItem key={album.albumValue} value={album.albumValue}>
                     {album.name}
                   </SelectItem>
                 ))}

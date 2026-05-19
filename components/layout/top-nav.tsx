@@ -75,9 +75,9 @@ export default function TopNav(props: Readonly<AlbumDataProps>) {
               props.data.map((album: AlbumType) => (
                 <Link
                   key={album.id}
-                  href={album.album_value}
+                  href={album.albumValue}
                   className={`rounded-full px-3 py-1 text-sm whitespace-nowrap transition-colors focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ${
-                    isActiveTab(album.album_value)
+                    isActiveTab(album.albumValue)
                       ? 'bg-primary/10 text-foreground font-medium'
                       : 'text-muted-foreground hover:text-foreground'
                   }`}

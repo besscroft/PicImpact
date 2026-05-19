@@ -172,7 +172,7 @@ export default function ImageView() {
               </div>
             </div>
             <Switch
-              checked={imageViewData?.show_on_mainpage === 0}
+              checked={imageViewData?.showOnMainpage === 0}
               disabled
               aria-readonly
             />

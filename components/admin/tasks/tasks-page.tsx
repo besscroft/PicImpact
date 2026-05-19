@@ -29,7 +29,7 @@ import type {
 import { ADMIN_TASK_KEY_REFRESH_IMAGE_METADATA } from '~/types/admin-tasks'
 
 type ApiEnvelope<T> = { code: number; message: string; data: T }
-type AlbumOption = Pick<AlbumType, 'id' | 'name' | 'album_value'>
+type AlbumOption = Pick<AlbumType, 'id' | 'name' | 'albumValue'>
 
 const DEFAULT_SCOPE: AdminTaskScope = { albumValue: 'all', showStatus: -1 }
 const HISTORY_RECENT_LIMIT = 10
@@ -303,7 +303,7 @@ export default function TasksPage() {
   const selectedRun = selectedRunDetail ?? selectedRunSummary
 
   const albumName = (albumValue: string) =>
-    albumValue === 'all' ? tx('Words.all') : albums?.find((album) => album.album_value === albumValue)?.name || albumValue
+    albumValue === 'all' ? tx('Words.all') : albums?.find((album) => album.albumValue === albumValue)?.name || albumValue
   const showLabel = (showStatus: AdminTaskScope['showStatus']) =>
     showStatus === 0 ? tx('Words.public') : showStatus === 1 ? tx('Words.private') : tx('Words.all')
   const statusLabel = (status: AdminTaskStatus) =>
@@ -501,7 +501,7 @@ export default function TasksPage() {
                         <SelectContent>
                           <SelectItem value='all'>{tx('Words.all')}</SelectItem>
                           {albums?.map((album) => (
-                            <SelectItem key={album.id} value={album.album_value}>{album.name}</SelectItem>
+                            <SelectItem key={album.id} value={album.albumValue}>{album.name}</SelectItem>
                           ))}
                         </SelectContent>
                       </Select>

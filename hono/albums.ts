@@ -18,7 +18,7 @@ app.get('/', async (c) => {
 
 app.post('/', async (c) => {
   const album = await c.req.json()
-  if (album.album_value && album.album_value.charAt(0) !== '/') {
+  if (album.albumValue && album.albumValue.charAt(0) !== '/') {
     throw badRequest('The route must start with /')
   }
   try {
@@ -31,7 +31,7 @@ app.post('/', async (c) => {
 
 app.put('/', async (c) => {
   const album = await c.req.json()
-  if (album.album_value && album.album_value.charAt(0) !== '/') {
+  if (album.albumValue && album.albumValue.charAt(0) !== '/') {
     throw badRequest('The route must start with /')
   }
   try {

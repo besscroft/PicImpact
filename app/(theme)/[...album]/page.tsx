@@ -14,7 +14,7 @@ export default async function Page({
 }) {
   const { album } = await params
 
-  const data: AlbumType = await fetchAlbumByRouter(`/${album}`)
+  const data: AlbumType | null = await fetchAlbumByRouter(`/${album}`)
 
   const props: ImageHandleProps = {
     handle: getImagesData,

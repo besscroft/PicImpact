@@ -266,8 +266,8 @@ export default function ImageEditSheet(props : Readonly<ImageServerHandleProps &
             </div>
             <Switch
               className="cursor-pointer"
-              checked={image?.show_on_mainpage === 0}
-              onCheckedChange={(value) => setImageEditData({...image, show_on_mainpage: value ? 0 : 1})}
+              checked={image?.showOnMainpage === 0}
+              onCheckedChange={(value) => setImageEditData({...image, showOnMainpage: value ? 0 : 1})}
             />
           </div>
           <Button
