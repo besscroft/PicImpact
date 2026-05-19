@@ -129,44 +129,51 @@ export default function PreviewImage(props: Readonly<PreviewImageHandleProps>) {
       // 获取存储类型
       const storageType = props.data?.url?.includes('s3') ? 's3' : 'r2'
 
-      // 使用新的下载 API
-      let response = await fetch(`/api/public/download/${props.id}?storage=${storageType}`)
-      const contentType = response.headers.get('content-type')
+      // 读取直接下载配置，决定走二进制 blob 端点还是 presigned URL 端点
+      const flagsResponse = await fetch('/api/public/download/config')
+      const flagsJson = flagsResponse.ok ? await flagsResponse.json() : null
+      const directDownload = storageType === 's3'
+        ? Boolean(flagsJson?.data?.s3DirectDownload)
+        : Boolean(flagsJson?.data?.r2DirectDownload)
 
-      if (contentType?.includes('application/json')) {
-        // 如果是 JSON 响应，说明是直接下载模式
-        const data = await response.json()
-        // 使用后端返回的文件名，并进行 URL 解码
-        const filename = decodeURIComponent(data.filename || 'download.jpg')
-        // 直接使用 window.location.href 触发下载
-        response = await fetch(data.url)
-        const blob = await response.blob()
-        const url = window.URL.createObjectURL(new Blob([blob]))
-        const link = document.createElement('a')
-        link.href = url
-        link.download = filename
-        document.body.appendChild(link)
-        link.click()
-        document.body.removeChild(link)
+      let blob: Blob
+      let filename: string
+
+      if (directDownload) {
+        // 直接下载模式：从 presigned 端点拿到 URL 后由浏览器拉对象存储
+        const presignedResponse = await fetch(`/api/public/download/${props.id}/presigned?storage=${storageType}`)
+        if (!presignedResponse.ok) throw new Error('presigned request failed')
+        const presignedJson = await presignedResponse.json()
+        const data = presignedJson?.data
+        if (!data?.url) throw new Error('presigned response missing url')
+        filename = decodeURIComponent(data.filename || 'download.jpg')
+        const objectResponse = await fetch(data.url)
+        if (!objectResponse.ok) throw new Error('object fetch failed')
+        blob = await objectResponse.blob()
       } else {
-        // 对于非直接下载模式，从 Content-Disposition 头中获取文件名
-        const contentDisposition = response.headers.get('content-disposition')
-        let filename = 'download'
+        // 代理下载模式：服务端返回二进制 blob，文件名从 Content-Disposition 取
+        const binaryResponse = await fetch(`/api/public/download/${props.id}?storage=${storageType}`)
+        if (!binaryResponse.ok) throw new Error('download request failed')
+        const contentDisposition = binaryResponse.headers.get('content-disposition')
+        let parsedFilename = 'download'
         if (contentDisposition) {
           const filenameMatch = contentDisposition.match(/filename="([^"]+)"/)
           if (filenameMatch) {
-            filename = decodeURIComponent(filenameMatch[1])
+            parsedFilename = decodeURIComponent(filenameMatch[1])
           }
         }
-        const blob = await response.blob()
-        const url = window.URL.createObjectURL(new Blob([blob]))
-        const link = document.createElement('a')
-        link.href = url
-        link.download = filename
-        document.body.appendChild(link)
-        link.click()
-        document.body.removeChild(link)
+        blob = await binaryResponse.blob()
+        filename = parsedFilename
       }
+
+      const objectUrl = window.URL.createObjectURL(new Blob([blob]))
+      const link = document.createElement('a')
+      link.href = objectUrl
+      link.download = filename
+      document.body.appendChild(link)
+      link.click()
+      document.body.removeChild(link)
+      window.URL.revokeObjectURL(objectUrl)
     } catch {
       toast.error(t('Tips.downloadFailed'), { duration: 500 })
     } finally {
