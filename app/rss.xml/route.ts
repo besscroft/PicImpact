@@ -75,6 +75,7 @@ export async function GET(request: Request) {
   return new Response(feed.xml(), {
     headers: {
       'Content-Type': 'application/xml',
+      'Cache-Control': 'public, max-age=3600, s-maxage=3600',
     }
   })
 }
