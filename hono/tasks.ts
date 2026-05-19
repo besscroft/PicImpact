@@ -1,4 +1,4 @@
-﻿import 'server-only'
+import 'server-only'
 
 import { Hono } from 'hono'
 import { HTTPException } from 'hono/http-exception'
@@ -13,12 +13,14 @@ import {
   tickMetadataTaskRuns,
 } from '~/server/tasks/service'
 import { ADMIN_TASK_KEY_REFRESH_IMAGE_METADATA, normalizeMetadataTaskScope } from '~/types/admin-tasks'
+import { ok } from '~/hono/_lib/response'
+import { badRequest, conflict, notFound, serverError } from '~/hono/_lib/errors'
 
 const app = new Hono()
 
 function ensureTaskKey(taskKey: unknown) {
   if (taskKey !== ADMIN_TASK_KEY_REFRESH_IMAGE_METADATA) {
-    throw new HTTPException(400, { message: 'Unsupported task key' })
+    throw badRequest('Unsupported task key')
   }
 
   return taskKey
@@ -35,7 +37,7 @@ function getScopeFromBody(body: Record<string, unknown> | null) {
   return normalizeMetadataTaskScope(body?.scope)
 }
 
-function rethrowTaskError(error: unknown) {
+function rethrowTaskError(error: unknown): never {
   if (error instanceof HTTPException) {
     throw error
   }
@@ -43,21 +45,21 @@ function rethrowTaskError(error: unknown) {
   const message = error instanceof Error ? error.message : 'Task request failed'
 
   if (message === 'Another metadata task is already active') {
-    throw new HTTPException(409, { message })
+    throw conflict(message)
   }
 
   if (message === 'No images matched the selected filters') {
-    throw new HTTPException(400, { message })
+    throw badRequest(message)
   }
 
-  throw new HTTPException(500, { message, cause: error })
+  throw serverError(message, error)
 }
 
 app.get('/preview-count', async (c) => {
   try {
     const scope = getScopeFromQuery(c.req.query())
     const data = await getMetadataTaskPreviewCount(scope)
-    return c.json({ code: 200, message: 'Success', data })
+    return ok(c, data)
   } catch (error) {
     rethrowTaskError(error)
   }
@@ -66,7 +68,7 @@ app.get('/preview-count', async (c) => {
 app.get('/runs', async (c) => {
   try {
     const data = await listMetadataTaskRuns()
-    return c.json({ code: 200, message: 'Success', data })
+    return ok(c, data)
   } catch (error) {
     rethrowTaskError(error)
   }
@@ -77,10 +79,10 @@ app.get('/runs/:id', async (c) => {
     const data = await getMetadataTaskRunDetail(c.req.param('id'))
 
     if (!data) {
-      throw new HTTPException(404, { message: 'Task run not found' })
+      throw notFound('Task run not found')
     }
 
-    return c.json({ code: 200, message: 'Success', data })
+    return ok(c, data)
   } catch (error) {
     rethrowTaskError(error)
   }
@@ -90,7 +92,7 @@ app.post('/runs', async (c) => {
   const body = await c.req.json<Record<string, unknown>>().catch(() => null)
 
   if (!body || typeof body !== 'object' || Array.isArray(body)) {
-    throw new HTTPException(400, { message: 'Invalid task request body' })
+    throw badRequest('Invalid task request body')
   }
 
   try {
@@ -99,10 +101,10 @@ app.post('/runs', async (c) => {
     const data = await createMetadataTaskRun(scope)
 
     if (!data) {
-      throw new HTTPException(409, { message: 'Task system is busy, please retry shortly' })
+      throw conflict('Task system is busy, please retry shortly')
     }
 
-    return c.json({ code: 200, message: 'Success', data }, 201)
+    return ok(c, data)
   } catch (error) {
     rethrowTaskError(error)
   }
@@ -113,10 +115,10 @@ app.post('/runs/:id/kick', async (c) => {
     const data = await kickMetadataTaskRun(c.req.param('id'))
 
     if (!data) {
-      throw new HTTPException(404, { message: 'Task run not found' })
+      throw notFound('Task run not found')
     }
 
-    return c.json({ code: 200, message: 'Success', data })
+    return ok(c, data)
   } catch (error) {
     rethrowTaskError(error)
   }
@@ -127,10 +129,10 @@ app.post('/runs/:id/cancel', async (c) => {
     const data = await cancelMetadataTaskRun(c.req.param('id'))
 
     if (!data) {
-      throw new HTTPException(404, { message: 'Task run not found' })
+      throw notFound('Task run not found')
     }
 
-    return c.json({ code: 200, message: 'Success', data })
+    return ok(c, data)
   } catch (error) {
     rethrowTaskError(error)
   }
@@ -139,7 +141,7 @@ app.post('/runs/:id/cancel', async (c) => {
 app.post('/tick', async (c) => {
   try {
     const data = await tickMetadataTaskRuns()
-    return c.json({ code: 200, message: 'Success', data })
+    return ok(c, data)
   } catch (error) {
     console.error('Task tick failed:', error)
     rethrowTaskError(error)

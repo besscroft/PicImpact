@@ -3,9 +3,10 @@ import 'server-only'
 import { fetchConfigsByKeys } from '~/server/db/query/configs'
 import type { Config } from '~/types'
 import { Hono } from 'hono'
-import { HTTPException } from 'hono/http-exception'
 import { updateOpenListConfig, updateCustomInfo, updateR2Config, updateS3Config } from '~/server/db/operate/configs'
 import { normalizeDefaultTheme } from '~/lib/utils/theme'
+import { ok, okEmpty } from '~/hono/_lib/response'
+import { serverError } from '~/hono/_lib/errors'
 
 const app = new Hono()
 
@@ -29,9 +30,9 @@ app.get('/custom-info', async (c) => {
       'admin_images_per_page',
       'default_theme'
     ])
-    return c.json({ code: 200, message: 'Success', data })
+    return ok(c, data)
   } catch (error) {
-    throw new HTTPException(500, { message: 'Failed to fetch custom info', cause: error })
+    throw serverError('Failed to fetch custom info', error)
   }
 })
 
@@ -46,9 +47,9 @@ app.get('/r2-info', async (c) => {
       'r2_public_domain',
       'r2_direct_download'
     ])
-    return c.json({ code: 200, message: 'Success', data })
+    return ok(c, data)
   } catch (error) {
-    throw new HTTPException(500, { message: 'Failed to fetch R2 info', cause: error })
+    throw serverError('Failed to fetch R2 info', error)
   }
 })
 
@@ -66,9 +67,9 @@ app.get('/s3-info', async (c) => {
       's3_cdn_url',
       's3_direct_download'
     ])
-    return c.json({ code: 200, message: 'Success', data })
+    return ok(c, data)
   } catch (error) {
-    throw new HTTPException(500, { message: 'Failed to fetch S3 info', cause: error })
+    throw serverError('Failed to fetch S3 info', error)
   }
 })
 
@@ -77,9 +78,9 @@ app.get('/admin-config', async (c) => {
     const data = await fetchConfigsByKeys([
       'admin_images_per_page'
     ])
-    return c.json({ code: 200, message: 'Success', data })
+    return ok(c, data)
   } catch (error) {
-    throw new HTTPException(500, { message: 'Failed to fetch admin config', cause: error })
+    throw serverError('Failed to fetch admin config', error)
   }
 })
 
@@ -91,9 +92,9 @@ app.put('/open-list-info', async (c) => {
     const openListToken = query?.find((item: Config) => item.config_key === 'open_list_token').config_value
 
     await updateOpenListConfig({ openListUrl, openListToken })
-    return c.json({ code: 200, message: 'Success' })
+    return okEmpty(c)
   } catch (e) {
-    throw new HTTPException(500, { message: 'Failed', cause: e })
+    throw serverError('Failed', e)
   }
 })
 
@@ -110,9 +111,9 @@ app.put('/r2-info', async (c) => {
     const r2DirectDownload = query?.find((item: Config) => item.config_key === 'r2_direct_download').config_value
 
     await updateR2Config({ r2AccesskeyId, r2AccesskeySecret, r2AccountId, r2Bucket, r2StorageFolder, r2PublicDomain, r2DirectDownload })
-    return c.json({ code: 200, message: 'Success' })
+    return okEmpty(c)
   } catch (e) {
-    throw new HTTPException(500, { message: 'Failed', cause: e })
+    throw serverError('Failed', e)
   }
 })
 
@@ -132,9 +133,9 @@ app.put('/s3-info', async (c) => {
     const s3DirectDownload = query?.find((item: Config) => item.config_key === 's3_direct_download').config_value
 
     await updateS3Config({ accesskeyId, accesskeySecret, region, endpoint, bucket, storageFolder, forcePathStyle, s3Cdn, s3CdnUrl, s3DirectDownload })
-    return c.json({ code: 200, message: 'Success' })
+    return okEmpty(c)
   } catch (e) {
-    throw new HTTPException(500, { message: 'Failed', cause: e })
+    throw serverError('Failed', e)
   }
 })
 
@@ -162,12 +163,9 @@ app.put('/custom-info', async (c) => {
       ...query,
       defaultTheme: normalizeDefaultTheme(query.defaultTheme),
     })
-    return c.json({
-      code: 200,
-      message: 'Success'
-    })
+    return okEmpty(c)
   } catch (e) {
-    throw new HTTPException(500, { message: 'Failed', cause: e })
+    throw serverError('Failed', e)
   }
 })
 

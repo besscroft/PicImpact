@@ -4,6 +4,8 @@ import { fetchConfigsByKeys } from '~/server/db/query/configs'
 import { Hono } from 'hono'
 import { HTTPException } from 'hono/http-exception'
 import type { Config } from '~/types'
+import { ok } from '~/hono/_lib/response'
+import { badRequest, serverError } from '~/hono/_lib/errors'
 
 const app = new Hono()
 
@@ -13,9 +15,9 @@ app.get('/info', async (c) => {
       'open_list_url',
       'open_list_token'
     ])
-    return c.json({ code: 200, message: 'Success', data })
+    return ok(c, data)
   } catch (e) {
-    throw new HTTPException(500, { message: 'Failed to fetch open list info', cause: e })
+    throw serverError('Failed to fetch open list info', e)
   }
 })
 
@@ -29,7 +31,7 @@ app.get('/storages', async (c) => {
     const openListUrl = findConfig.find((item: Config) => item.config_key === 'open_list_url')?.config_value || ''
 
     if (!openListUrl || !openListToken) {
-      throw new HTTPException(400, { message: 'Open List URL and token must be configured' })
+      throw badRequest('Open List URL and token must be configured')
     }
 
     const data = await fetch(`${openListUrl}/api/admin/storage/list`, {
@@ -38,10 +40,10 @@ app.get('/storages', async (c) => {
         'Authorization': openListToken.toString(),
       },
     }).then(res => res.json())
-    return c.json({ code: 200, message: 'Success', data })
+    return ok(c, data)
   } catch (e) {
     if (e instanceof HTTPException) throw e
-    throw new HTTPException(500, { message: 'Failed to fetch storages', cause: e })
+    throw serverError('Failed to fetch storages', e)
   }
 })
 

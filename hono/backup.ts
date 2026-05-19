@@ -6,6 +6,8 @@ import { HTTPException } from 'hono/http-exception'
 import type { BackupPreviewData } from '~/types/backup'
 import { previewBackupImport, exportBackupEnvelope, importBackupEnvelope } from '~/server/backup/service'
 import { BackupValidationError } from '~/server/backup/format-adapter'
+import { ok } from '~/hono/_lib/response'
+import { badRequest, serverError } from '~/hono/_lib/errors'
 
 const app = new Hono()
 
@@ -40,20 +42,14 @@ function getUtcFileName() {
 
 function rethrowBackupError(error: unknown): never {
   if (error instanceof BackupValidationError) {
-    throw new HTTPException(400, {
-      message: error.message,
-      cause: error,
-    })
+    throw badRequest(error.message, error)
   }
 
   if (error instanceof HTTPException) {
     throw error
   }
 
-  throw new HTTPException(500, {
-    message: 'Backup request failed',
-    cause: error,
-  })
+  throw serverError('Backup request failed', error)
 }
 
 app.get('/export', async (c) => {
@@ -82,7 +78,7 @@ app.post('/import/preview', async (c) => {
 
   try {
     const data = await previewBackupImport(body)
-    return c.json({ code: 200, message: 'Success', data })
+    return ok(c, data)
   } catch (error) {
     if (error instanceof BackupValidationError) {
       return c.json({
@@ -109,7 +105,7 @@ app.post('/import', async (c) => {
 
   try {
     const data = await importBackupEnvelope(body)
-    return c.json({ code: 200, message: 'Success', data })
+    return ok(c, data)
   } catch (error) {
     if (error instanceof BackupValidationError) {
       return c.json({

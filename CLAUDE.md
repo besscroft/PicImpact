@@ -114,8 +114,38 @@ All API responses MUST follow this envelope format:
 **Rules:**
 - GET endpoints: return `{ code: 200, message: 'Success', data: <result> }`
 - Mutation endpoints (POST/PUT/DELETE): return `{ code: 200, message: 'Success' }`
-- Errors: throw `HTTPException(statusCode, { message })`, handled by global `onError`
-- Binary endpoints (image blob, file download): return raw binary with appropriate Content-Type header
+- Errors: throw via helpers in `hono/_lib/errors.ts` (`badRequest`, `notFound`, `conflict`, `serverError`); the global `onError` in `hono/index.ts` shapes the response into the envelope.
+- Binary endpoints (image blob, file download): return raw binary with appropriate Content-Type header.
+
+### API Helpers (`hono/_lib/`)
+
+Use these in every Hono handler instead of writing `c.json(...)` by hand:
+
+```ts
+import { ok, okEmpty } from '~/hono/_lib/response'
+import { badRequest, notFound, conflict, serverError } from '~/hono/_lib/errors'
+
+app.get('/things', async (c) => {
+  const data = await fetchThings()
+  return ok(c, data)                       // { code: 200, message: 'Success', data }
+})
+
+app.put('/things', async (c) => {
+  await updateThing(await c.req.json())
+  return okEmpty(c)                        // { code: 200, message: 'Success' }
+})
+
+app.post('/things', async (c) => {
+  const body = await c.req.json()
+  if (!body.name) throw badRequest('name is required')
+  // ...
+})
+```
+
+The `sessionMiddleware` in `hono/_lib/context.ts` is mounted on the `/api/v1` chain;
+handlers can read `c.get('session')` to access the better-auth session (or `null`
+when unauthenticated). `requireAuth` is exported but **not yet mounted** — opt-in
+per module is tracked in the API refactor plan.
 
 ### URL Naming Convention
 
@@ -217,15 +247,15 @@ All API responses MUST follow this envelope format:
 
 ### Known Deviations from Target Standard
 
-These endpoints currently deviate from the above specification and should be migrated:
+Tracked in `docs/plans/2026-05-19-api-refactor-design.md`. Snapshot:
 
-1. **GET endpoints returning raw arrays** — Settings, Albums, Daily config GETs return unwrapped arrays instead of `{ code, data }` envelope. Migration requires updating all frontend `useSWR` consumers.
-2. **`/api/v1/images/update-Album`** — PascalCase, should be `/api/v1/images/update-album`.
-3. ~~`/api/v1/file/getObjectUrl`~~ — **DONE:** Renamed to `/api/v1/file/object-url`.
-4. **`/api/v1/settings/get-custom-info`** — Verb prefix on GET, should be `/api/v1/settings/custom-info`.
-5. **`/api/v1/settings/get-admin-config`** — Same issue, should be `/api/v1/settings/admin-config`.
-6. **Request body snake_case** — Some endpoints accept `album_value`, `image_name` in snake_case instead of camelCase.
-7. **`/api/public/download/:id`** — Returns either binary or JSON depending on config, should be consistent.
+1. **snake_case data model leak** — `Config.config_key/config_value`, `Album.album_value`, `Image.image_name`, `image_sorting`, `show_on_mainpage`, `Exif.data_time` are exposed in API responses and request bodies. Server-side mapping layer pending. (PR-07, PR-08, PR-09.)
+2. **`/api/public/download/:id` dual return type** — Returns binary blob OR `{ url, filename }` JSON depending on direct-download config. To be split into `/download/:id` (binary) and `/download/:id/presigned` (JSON envelope). (PR-01.)
+3. **`/api/public/images/image-blob` SSRF** — Accepts arbitrary `imageUrl` query parameter and fetches server-side with no allowlist. Recommended action: remove (no in-repo consumers). (PR-02.)
+4. **`/api/v1/images/camera-lens-list` & `/api/public/camera-lens-list`** — Still Next.js route handlers instead of Hono; public variant lacks `show=true` album filtering. (PR-04.)
+5. **Settings PUT body shape** — `/settings/{r2,s3,open-list}-info` PUT accepts `Config[]` array with snake_case `config_key/config_value` instead of a flat camelCase object. (PR-07.)
+6. **Per-handler auth & admin layout server check** — `/api/v1/*` auth is enforced only in `proxy.ts` middleware; no defense-in-depth. `app/admin/layout.tsx` has no server-side session check. (PR-10.)
+7. **Tasks advisory lock scope** — `kickMetadataTaskRun` holds `withTaskLock` across the entire 10-image batch (~200s worst case). (PR-05.)
 
 ## Environment Variables
 
