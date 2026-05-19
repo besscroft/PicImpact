@@ -9,6 +9,11 @@ import { getR2Client } from '~/server/lib/r2'
 import { generatePresignedUrl } from '~/server/lib/s3api'
 import { ok } from '~/hono/_lib/response'
 import { badRequest, serverError } from '~/hono/_lib/errors'
+import {
+  validateFilename,
+  validateFileSize,
+  validateMimeType,
+} from '~/server/lib/upload-validation'
 import { HTTPException } from 'hono/http-exception'
 
 interface S3StorageConfig {
@@ -77,17 +82,16 @@ const app = new Hono()
 app.post('/presigned-url', async (c) => {
   try {
     const { filename, contentType, type = '/', storage } = await c.req.json()
-    if (!filename) {
-      throw badRequest('Filename is required')
-    }
     if (!storage) {
       throw badRequest('Storage type is required')
     }
+    const safeFilename = validateFilename(filename)
+    validateMimeType(contentType)
 
     switch (storage) {
       case 's3': {
         const { bucket, storageFolder, client } = await getS3Config()
-        const filePath = buildStoragePath(storageFolder, type, filename)
+        const filePath = buildStoragePath(storageFolder, type, safeFilename)
         const presignedUrl = await generatePresignedUrl(client, bucket, filePath, contentType, 'put')
 
         return ok(c, { presignedUrl, key: filePath })
@@ -95,7 +99,7 @@ app.post('/presigned-url', async (c) => {
 
       case 'r2': {
         const { bucket, storageFolder, client } = await getR2Config()
-        const filePath = buildStoragePath(storageFolder, type, filename)
+        const filePath = buildStoragePath(storageFolder, type, safeFilename)
         const presignedUrl = await generatePresignedUrl(client, bucket, filePath, contentType, 'put')
 
         return ok(c, { presignedUrl, key: filePath })
@@ -125,6 +129,9 @@ app.post('/upload', async (c) => {
           if (!file || !(file instanceof File)) {
             throw badRequest('File is required')
           }
+          validateFilename(file.name)
+          validateMimeType(file.type)
+          validateFileSize(file.size)
           const result = await openListUpload(file, type, mountPath)
           return ok(c, result)
         }

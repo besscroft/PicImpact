@@ -1,8 +1,14 @@
 import 'server-only'
 
+import path from 'node:path'
 import { fetchConfigsByKeys } from '~/server/db/query/configs'
 import { HTTPException } from 'hono/http-exception'
 import { Config } from '~/types'
+import {
+  validateFilename,
+  validateFileSize,
+  validateMimeType,
+} from '~/server/lib/upload-validation'
 
 /**
  * Open List API 文件上传封装
@@ -12,14 +18,27 @@ import { Config } from '~/types'
  * @return {Promise<string>} 返回文件路径
  */
 export async function openListUpload(file: any, type: any, mountPath: any): Promise<string | undefined> {
+  // Defence in depth: validate even though the Hono handler already checked.
+  // `openListUpload` is exported and may be called from other code paths.
+  const safeName = validateFilename(file?.name)
+  validateMimeType(file?.type)
+  validateFileSize(file?.size)
+
+  // Sanitize the mount path so a malicious caller can't traverse out via
+  // `..` segments in the OpenList `File-Path` header. `path.basename` strips
+  // any directory portion that might have been embedded.
+  const mountString = mountPath == null ? '' : mountPath.toString()
+  const mountBase = mountString === '/' || mountString === '' ? '' : path.basename(mountString)
+
   const findConfig = await fetchConfigsByKeys([
     'open_list_url',
     'open_list_token'
   ])
   const openListToken = findConfig.find((item: Config) => item.config_key === 'open_list_token')?.config_value || ''
   const openListUrl = findConfig.find((item: Config) => item.config_key === 'open_list_url')?.config_value || ''
-  const filePath = encodeURIComponent(`${mountPath && mountPath.toString() === '/' ? '' : mountPath}${
-    type && type !== '/' ? `${type}/${file?.name}` : `/${file?.name}`}`)
+  const mountPrefix = mountBase ? `/${mountBase}` : ''
+  const filePath = encodeURIComponent(`${mountPrefix}${
+    type && type !== '/' ? `${type}/${safeName}` : `/${safeName}`}`)
   const data = await fetch(`${openListUrl}/api/fs/put`, {
     method: 'PUT',
     headers: {
