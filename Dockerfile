@@ -17,6 +17,23 @@ RUN apk add --no-cache libc6-compat
 
 WORKDIR /app
 
+# Write a minimal package.json before installing so:
+# - corepack picks up the pinned `packageManager` version (avoids drifting to
+#   whatever pnpm corepack@latest defaults to)
+# - pnpm reads `onlyBuiltDependencies`, which pnpm 10+ requires in order to
+#   run prisma's postinstall (otherwise [ERR_PNPM_IGNORED_BUILDS] aborts the
+#   install before the query engine is fetched)
+RUN cat > package.json <<'EOF'
+{
+  "name": "picimpact-runner-base",
+  "private": true,
+  "packageManager": "pnpm@9.15.9",
+  "pnpm": {
+    "onlyBuiltDependencies": ["@prisma/client", "@prisma/engines", "prisma"]
+  }
+}
+EOF
+
 RUN npm install -g corepack@latest && corepack enable pnpm && pnpm add prisma@6.19.3 @prisma/client@6.19.3 && pnpm add -D tsx
 
 FROM base AS builder
