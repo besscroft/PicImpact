@@ -113,7 +113,7 @@
     "@next/bundle-analyzer": "16.2.4",
     "@next/eslint-plugin-next": "16.2.4",
     "@tailwindcss/postcss": "4.2.2",
-    "@types/node": "22.19.17",
+    "@types/node": "24.12.4",
     "@types/react": "19.2.14",
     "@types/react-dom": "19.2.3",
     "@types/rss": "0.0.32",
@@ -131,6 +131,11 @@
     "overrides": {
       "@types/react": "19.2.14",
       "@types/react-dom": "19.2.3"
-    }
+    },
+    "onlyBuiltDependencies": [
+      "@prisma/client",
+      "@prisma/engines",
+      "prisma"
+    ]
   }
 }
