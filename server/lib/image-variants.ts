@@ -29,11 +29,33 @@ export {
 export type { VariantFormat }
 
 /**
- * Decompression-bomb guard for sharp. 100 MP comfortably covers high-end
- * camera output (e.g. 100MP medium format) while rejecting pathological
- * inputs crafted to exhaust memory.
+ * Default decompression-bomb guard for sharp, in pixels. sharp's own default is
+ * ~268MP; an earlier revision tightened this to 100MP, which turned out to
+ * reject large stitched panoramas (well above 100MP). The default is raised to
+ * comfortably cover multi-row panoramas while still rejecting pathological
+ * gigapixel inputs crafted to exhaust memory, and is overridable via the
+ * `IMAGE_MAX_INPUT_PIXELS` env var for outliers.
+ *
+ * Memory note: variants only need a <=2560px decode and `resize` downsamples,
+ * and JPEG benefits from libvips shrink-on-load (decode memory tracks the
+ * output, not the input) — so a high limit is memory-safe for the common JPEG
+ * case. Very large non-JPEG sources (e.g. a 300MP PNG) still decode in full
+ * (~1.2GB raw), so the guard stays a bounded number rather than disabled
+ * (`false`).
  */
-const MAX_INPUT_PIXELS = 100_000_000
+const DEFAULT_MAX_INPUT_PIXELS = 500_000_000
+
+function resolveMaxInputPixels(raw: string | undefined): number {
+  if (raw) {
+    const parsed = Number(raw)
+    if (Number.isFinite(parsed) && parsed > 0) {
+      return Math.floor(parsed)
+    }
+  }
+  return DEFAULT_MAX_INPUT_PIXELS
+}
+
+const MAX_INPUT_PIXELS = resolveMaxInputPixels(process.env.IMAGE_MAX_INPUT_PIXELS)
 
 /** Edge length used when sampling the image down to compute its thumbhash. */
 const THUMBHASH_MAX_EDGE = 100
