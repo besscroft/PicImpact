@@ -42,6 +42,9 @@ export type ImageType = {
   preview_url: string;
   video_url: string;
   blurhash: string;
+  image_key: string;
+  variants_ready: boolean;
+  ready_max_width: number;
   exif: ExifType;
   labels: any;
   width: number;

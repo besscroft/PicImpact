@@ -18,6 +18,9 @@ model Images {
   preview_url          String?                @db.Text
   video_url            String?                @db.Text
   blurhash             String?                @db.Text
+  image_key            String?                @db.Text
+  variants_ready       Boolean                @default(false)
+  ready_max_width      Int                    @default(0)
   exif                 Json?                  @db.Json
   labels               Json?                  @db.Json
   width                Int                    @default(0)
@@ -35,6 +38,7 @@ model Images {
   del                  Int                    @default(0) @db.SmallInt
   imagesAlbumsRelation ImagesAlbumsRelation[]
 
+  @@index([variants_ready, del])
   @@map("images")
 }
 
@@ -175,23 +179,23 @@ model Passkey {
 }
 
 model AdminTaskRun {
-  id              String    @id @default(cuid()) @db.VarChar(50)
-  taskKey         String    @map("task_key") @db.VarChar(100)
-  status          String    @default("queued") @db.VarChar(50)
-  scope           Json      @db.Json
-  totalCount      Int       @default(0) @map("total_count")
-  processedCount  Int       @default(0) @map("processed_count")
-  successCount    Int       @default(0) @map("success_count")
-  skippedCount    Int       @default(0) @map("skipped_count")
-  failedCount     Int       @default(0) @map("failed_count")
-  nextCursor      String?   @map("next_cursor") @db.VarChar(50)
-  recentIssues    Json      @default("[]") @map("recent_issues") @db.Json
-  lastError       Json?     @map("last_error") @db.Json
-  leaseExpiresAt  DateTime? @map("lease_expires_at") @db.Timestamp
-  startedAt       DateTime? @map("started_at") @db.Timestamp
-  finishedAt      DateTime? @map("finished_at") @db.Timestamp
-  createdAt       DateTime  @default(now()) @map("created_at") @db.Timestamp
-  updatedAt       DateTime? @updatedAt @map("updated_at") @db.Timestamp
+  id             String    @id @default(cuid()) @db.VarChar(50)
+  taskKey        String    @map("task_key") @db.VarChar(100)
+  status         String    @default("queued") @db.VarChar(50)
+  scope          Json      @db.Json
+  totalCount     Int       @default(0) @map("total_count")
+  processedCount Int       @default(0) @map("processed_count")
+  successCount   Int       @default(0) @map("success_count")
+  skippedCount   Int       @default(0) @map("skipped_count")
+  failedCount    Int       @default(0) @map("failed_count")
+  nextCursor     String?   @map("next_cursor") @db.VarChar(50)
+  recentIssues   Json      @default("[]") @map("recent_issues") @db.Json
+  lastError      Json?     @map("last_error") @db.Json
+  leaseExpiresAt DateTime? @map("lease_expires_at") @db.Timestamp
+  startedAt      DateTime? @map("started_at") @db.Timestamp
+  finishedAt     DateTime? @map("finished_at") @db.Timestamp
+  createdAt      DateTime  @default(now()) @map("created_at") @db.Timestamp
+  updatedAt      DateTime? @updatedAt @map("updated_at") @db.Timestamp
 
   @@index([taskKey, status])
   @@index([status])
