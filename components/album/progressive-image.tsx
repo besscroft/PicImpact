@@ -11,9 +11,9 @@ import { isWebGLSupported } from '~/lib/utils/webgl'
 import { hasReadyVariants, makeVariantLoader } from '~/lib/image/loader'
 import { useAvifSupport } from '~/hooks/use-avif-support'
 
-// Width requested for the detail high-res view; the loader clamps it to the
-// largest generated tier (variants go up to 2560), so we never pull the
-// multi-MB original for in-page viewing.
+// Width requested for the variant FALLBACK used only when a photo has no
+// original URL; the loader clamps it to the largest generated tier (2560). The
+// zoom viewer normally loads the original (see highResSource below).
 const DETAIL_HIGH_RES_WIDTH = 2560
 
 /**
@@ -37,16 +37,23 @@ export default function ProgressiveImage(
   const [webGLAvailable] = useState(() => isWebGLSupported())
   const avifOk = useAvifSupport()
 
-  // High-res source for the viewer: the largest generated variant (≤2560) when
-  // available, else the original. Deliberately NOT the multi-MB original.
-  const highResSource = hasReadyVariants(props.imageKey, props.readyMaxWidth ?? 0, props.variantBaseUrl)
+  // High-res source for the full-screen zoom viewer: the ORIGINAL, full-
+  // resolution image. The zoom panel is where the user explicitly pixel-peeps,
+  // so it must show native detail — the largest variant (≤2560) looks soft once
+  // magnified past that width. This is loaded lazily, gated to the lightbox
+  // actually opening (see below), so the multi-MB original is only fetched when
+  // the user opts into zooming; the inline detail view keeps showing the
+  // lightweight preview/variant and never pulls the original. Falls back to the
+  // largest variant only if no original URL is available.
+  const variantHighResSource = hasReadyVariants(props.imageKey, props.readyMaxWidth ?? 0, props.variantBaseUrl)
     ? makeVariantLoader({
         base: props.variantBaseUrl as string,
         imageKey: props.imageKey as string,
         readyMaxWidth: props.readyMaxWidth as number,
         format: avifOk ? 'avif' : 'webp',
       })({ src: props.imageKey as string, width: DETAIL_HIGH_RES_WIDTH })
-    : props.imageUrl
+    : ''
+  const highResSource = props.imageUrl || variantHighResSource
 
   const webglViewerRef = useRef<WebGLImageViewerRef | null>(null)
   useEffect(() => {
