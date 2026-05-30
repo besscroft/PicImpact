@@ -199,13 +199,16 @@ export default function PreviewImage(props: Readonly<PreviewImageHandleProps>) {
         <div className="show-up-motion sm:col-span-2 sm:flex sm:justify-center sm:max-h-[90vh] select-none">
           {
             props.data.type === 1 ?
-              <ProgressiveImage 
+              <ProgressiveImage
                 imageUrl={props.data.url}
                 previewUrl={props.data.preview_url}
                 alt={props.data.title}
                 height={props.data.height}
                 width={props.data.width}
                 blurhash={props.data.blurhash}
+                imageKey={props.data.image_key}
+                readyMaxWidth={props.data.ready_max_width}
+                variantBaseUrl={configData?.variantBaseUrl ?? ''}
                 showLightbox={lightboxPhoto}
                 onShowLightboxChange={(value)=>setLightboxPhoto(value)}
               />
