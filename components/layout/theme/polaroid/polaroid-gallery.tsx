@@ -12,6 +12,7 @@ import { useBlurImageDataUrl } from '~/hooks/use-blurhash'
 import { cn } from '~/lib/utils'
 import { hasReadyVariants, makeVariantLoader } from '~/lib/image/loader'
 import { useAvifSupport } from '~/hooks/use-avif-support'
+import { POLAROID_GRID_SIZES } from '~/lib/image/grid-image-sizes'
 
 /**
  * 拍立得照片卡片组件
@@ -23,12 +24,14 @@ const PolaroidCard = memo(function PolaroidCard({
   onMouseDown,
   zIndex,
   variantBaseUrl = '',
+  priority = false,
 }: {
   item: ImageType
   style: React.CSSProperties
   onMouseDown: (id: string) => void
   zIndex: number
   variantBaseUrl?: string
+  priority?: boolean
 }) {
   const [isLoading, setIsLoading] = useState(true)
   const blurDataUrl = useBlurImageDataUrl(item.blurhash)
@@ -131,8 +134,8 @@ const PolaroidCard = memo(function PolaroidCard({
               }
               setIsLoading(false)
             }}
-            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-            priority={false}
+            sizes={POLAROID_GRID_SIZES}
+            priority={priority}
           />
         ) : (
           <div
@@ -222,7 +225,7 @@ export default function PolaroidGallery(props: Readonly<ImageHandleProps>) {
       <p className="absolute top-1/2 mx-auto max-w-sm -translate-y-3/4 text-center text-2xl font-black text-muted-foreground md:text-4xl">
         {customTitle || '瓦达西可不可爱'}
       </p>
-      {dataList?.map((item: ImageType) => (
+      {dataList?.map((item: ImageType, index: number) => (
         <PolaroidCard
           key={item.id}
           item={item}
@@ -230,6 +233,7 @@ export default function PolaroidGallery(props: Readonly<ImageHandleProps>) {
           zIndex={cardZIndices[item.id] || 1}
           onMouseDown={handleCardClick}
           variantBaseUrl={variantBaseUrl}
+          priority={index < 3}
         />
       ))}
     </DraggableCardContainer>

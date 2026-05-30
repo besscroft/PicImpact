@@ -10,8 +10,9 @@ import { Skeleton } from '~/components/ui/skeleton'
 import { useState } from 'react'
 import { hasReadyVariants, makeVariantLoader } from '~/lib/image/loader'
 import { useAvifSupport } from '~/hooks/use-avif-support'
+import { DEFAULT_GRID_SIZES } from '~/lib/image/grid-image-sizes'
 
-export default function MasonryPhotoItem({ photo, width, variantBaseUrl = '' }: { photo: ImageType, width?: number, variantBaseUrl?: string }) {
+export default function MasonryPhotoItem({ photo, width, variantBaseUrl = '', priority = false }: { photo: ImageType, width?: number, variantBaseUrl?: string, priority?: boolean }) {
   const router = useRouter()
   const dataURL = useBlurImageDataUrl(photo.blurhash)
   const avifOk = useAvifSupport()
@@ -93,8 +94,12 @@ export default function MasonryPhotoItem({ photo, width, variantBaseUrl = '' }: 
           )}
           alt={photo.detail || photo.title || ''}
           fill
-          sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
-          loading="lazy"
+          sizes={DEFAULT_GRID_SIZES}
+          // First above-the-fold items load eagerly with high fetch priority so the
+          // LCP image is discovered immediately instead of waiting on the lazy
+          // IntersectionObserver at low priority (the variant is a tiny AVIF — the
+          // cost was discovery delay, not bytes). Later items stay lazy.
+          {...(priority ? { priority: true } : { loading: 'lazy' as const })}
           placeholder={hasRealBlurhash ? 'blur' : 'empty'}
           blurDataURL={dataURL}
           onLoad={() => setIsLoading(false)}
