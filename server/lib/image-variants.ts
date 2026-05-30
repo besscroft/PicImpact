@@ -6,21 +6,27 @@ import { PutObjectCommand, type S3Client } from '@aws-sdk/client-s3'
 import sharp from 'sharp'
 import { rgbaToThumbHash } from 'thumbhash'
 
-/**
- * Responsive width ladder for generated image variants.
- *
- * Kept in sync with `next.config` `imageSizes` (320, 480) + `deviceSizes`
- * (640..2560) so every width the custom image loader requests maps onto a
- * width we actually generated. Always ascending — the preprocessing queue
- * generates tiers small-to-large so `ready_max_width` is a monotonic
- * watermark (a tier is ready iff its width <= ready_max_width).
- */
-export const VARIANT_TIER_WIDTHS = [320, 480, 640, 800, 1080, 1280, 1920, 2560] as const
+import {
+  VARIANT_FORMATS,
+  VARIANT_TIER_WIDTHS,
+  buildVariantKey,
+  tierWidthsForSource,
+  variantContentType,
+  type VariantFormat,
+} from '~/lib/image/variant-tiers'
 
-export type VariantFormat = 'avif' | 'webp'
-
-/** Formats generated for every tier. Distinct immutable objects per format. */
-export const VARIANT_FORMATS: readonly VariantFormat[] = ['avif', 'webp']
+// The variant tier ladder + key/format helpers live in the client-safe
+// `~/lib/image/variant-tiers` module (the single source of truth shared with
+// the gallery loader). Re-export them so existing server-side imports from
+// this module keep working.
+export {
+  VARIANT_FORMATS,
+  VARIANT_TIER_WIDTHS,
+  buildVariantKey,
+  tierWidthsForSource,
+  variantContentType,
+}
+export type { VariantFormat }
 
 /**
  * Decompression-bomb guard for sharp. 100 MP comfortably covers high-end
@@ -35,20 +41,6 @@ const THUMBHASH_MAX_EDGE = 100
 /** Immutable cache header for content-addressed variant objects. */
 export const VARIANT_CACHE_CONTROL = 'public, max-age=31536000, immutable'
 
-export function variantContentType(format: VariantFormat): string {
-  return format === 'avif' ? 'image/avif' : 'image/webp'
-}
-
-/**
- * Variant object key: `{baseKey}_{width}.{format}`.
- *
- * The custom next/image loader builds the same string client-side, so this is
- * the single source of truth for the naming convention.
- */
-export function buildVariantKey(baseKey: string, width: number, format: VariantFormat): string {
-  return `${baseKey}_${width}.${format}`
-}
-
 /**
  * Content-addressed base key derived from the original bytes. Because the key
  * changes whenever the content changes, variant objects can be served with an
@@ -57,16 +49,6 @@ export function buildVariantKey(baseKey: string, width: number, format: VariantF
 export function computeImageKey(input: Buffer, prefix = 'variants'): string {
   const digest = createHash('sha256').update(input).digest('hex').slice(0, 32)
   return `${prefix}/${digest}`
-}
-
-/**
- * Tier widths to generate for a given source width, ascending. Never upscales:
- * only tiers up to the source width are produced. Sources smaller than the
- * smallest tier yield a single variant at their native width.
- */
-export function tierWidthsForSource(sourceWidth: number): number[] {
-  const tiers = VARIANT_TIER_WIDTHS.filter((width) => width <= sourceWidth)
-  return tiers.length > 0 ? tiers : [sourceWidth]
 }
 
 /**
