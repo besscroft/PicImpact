@@ -10,15 +10,18 @@ import { useState } from 'react'
 import { Badge } from '~/components/ui/badge.tsx'
 import { hasReadyVariants, makeVariantLoader } from '~/lib/image/loader'
 import { useAvifSupport } from '~/hooks/use-avif-support'
+import { SIMPLE_GRID_SIZES } from '~/lib/image/grid-image-sizes'
 
 export default function GalleryImage({
   photo,
   customIndexOriginEnable,
   variantBaseUrl = '',
+  priority = false,
 }: {
   photo: ImageType
   customIndexOriginEnable: boolean
   variantBaseUrl?: string
+  priority?: boolean
 }) {
   const router = useRouter()
   const avifOk = useAvifSupport()
@@ -89,8 +92,8 @@ export default function GalleryImage({
             alt={photo.title}
             width={photo.width}
             height={photo.height}
-            sizes="(min-width: 768px) 75vw, 100vw"
-            loading="lazy"
+            sizes={SIMPLE_GRID_SIZES}
+            {...(priority ? { priority: true } : { loading: 'lazy' as const })}
             loader={makeVariantLoader({
               base: variantBaseUrl,
               imageKey: photo.image_key,
@@ -114,7 +117,7 @@ export default function GalleryImage({
             alt={photo.title}
             width={photo.width}
             height={photo.height}
-            loading="lazy"
+            {...(priority ? { priority: true } : { loading: 'lazy' as const })}
             unoptimized={useUnoptimized}
             placeholder={hasRealBlurhash ? 'blur' : 'empty'}
             blurDataURL={dataURL}

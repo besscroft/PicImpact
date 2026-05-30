@@ -13,6 +13,12 @@ import InfiniteScroll from '~/components/ui/origin/infinite-scroll.tsx'
 import FloatingFilterBall from '~/components/album/floating-filter-ball.tsx'
 import { Skeleton } from '~/components/ui/skeleton'
 
+// How many leading items load eagerly (priority) rather than lazily. Sized to
+// the widest column count (xl = 5) so the first visible row is always eager,
+// which lets the LCP image start downloading immediately. Variants are tiny
+// AVIFs (~5KB), so a few eager fetches cost almost nothing.
+const LCP_EAGER_COUNT = 5
+
 // Responsive column count matching the previous Tailwind breakpoints
 // (columns-2 / sm:columns-3 / lg:columns-4 / xl:columns-5).
 function useResponsiveColumnCount(): number {
@@ -123,8 +129,11 @@ export default function DefaultGallery(props : Readonly<ImageHandleProps>) {
   // shared photo item sized to that column. Memoized on `variantBaseUrl` so
   // masonic keeps a stable render-component identity (avoids remounting items).
   const RenderItem = useMemo(() => {
-    return function RenderItem({ data, width }: { index: number, data: ImageType, width: number }) {
-      return <MasonryPhotoItem photo={data} width={width} variantBaseUrl={variantBaseUrl} />
+    return function RenderItem({ index, data, width }: { index: number, data: ImageType, width: number }) {
+      // Eager-load the first row(s) so the LCP image is fetched at high priority
+      // instead of waiting on the lazy IntersectionObserver. Covers up to the
+      // widest column count (5) so the first visible row is always eager.
+      return <MasonryPhotoItem photo={data} width={width} variantBaseUrl={variantBaseUrl} priority={index < LCP_EAGER_COUNT} />
     }
   }, [variantBaseUrl])
 

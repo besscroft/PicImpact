@@ -62,8 +62,10 @@ export default function SimpleGallery(props: Readonly<ImageHandleProps>) {
   // masonic render adapter (single column vertical feed). Memoized on the
   // config flags so masonic keeps a stable render-component identity.
   const SimpleRender = useMemo(() => {
-    return function SimpleRender({ data }: { index: number, data: ImageType, width: number }) {
-      return <GalleryImage photo={data} customIndexOriginEnable={customIndexOriginEnable} variantBaseUrl={variantBaseUrl} />
+    return function SimpleRender({ index, data }: { index: number, data: ImageType, width: number }) {
+      // Single-column feed: only the first image is above the fold, so eager-load
+      // the first two to cover the LCP element without wasting bandwidth.
+      return <GalleryImage photo={data} customIndexOriginEnable={customIndexOriginEnable} variantBaseUrl={variantBaseUrl} priority={index < 2} />
     }
   }, [customIndexOriginEnable, variantBaseUrl])
   const t = useTranslations()
