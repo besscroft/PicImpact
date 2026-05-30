@@ -77,7 +77,9 @@ export default function MasonryPhotoItem({ photo, width, variantBaseUrl = '' }: 
             'absolute inset-0 z-10 rounded-none',
             hasRealBlurhash
               ? 'animate-none bg-black/10 backdrop-blur-[2px] dark:bg-white/10'
-              : 'bg-accent/80'
+              // Neutral muted tone (not the near-white bg-accent) so a cell still
+              // loading during fast scroll reads as a placeholder, not a white gap.
+              : 'bg-muted'
           )}
         />
       )}
