@@ -6,6 +6,7 @@ import { useSwrHydrated } from '~/hooks/use-swr-hydrated.ts'
 import { useTranslations } from 'next-intl'
 import type { GalleryDisplayConfig, ImageType } from '~/types'
 import GalleryImage from '~/components/gallery/simple/gallery-image.tsx'
+import VirtualMasonry from '~/components/gallery/virtual-masonry.tsx'
 import InfiniteScroll from '~/components/ui/origin/infinite-scroll.tsx'
 import { useCallback, useEffect, useMemo, useRef, useState, useTransition } from 'react'
 import useSWR from 'swr'
@@ -57,6 +58,13 @@ export default function SimpleGallery(props: Readonly<ImageHandleProps>) {
     () => configData?.customIndexOriginEnable === true,
     [configData]
   )
+  // masonic render adapter (single column vertical feed). Memoized on the
+  // config flag so masonic keeps a stable render-component identity.
+  const SimpleRender = useMemo(() => {
+    return function SimpleRender({ data }: { index: number, data: ImageType, width: number }) {
+      return <GalleryImage photo={data} customIndexOriginEnable={customIndexOriginEnable} />
+    }
+  }, [customIndexOriginEnable])
   const t = useTranslations()
 
   // Debounce filter changes
@@ -99,18 +107,20 @@ export default function SimpleGallery(props: Readonly<ImageHandleProps>) {
   return (
     <>
       <InfiniteScroll
-        className="w-full max-w-3xl mx-auto px-4 space-y-8 sm:space-y-12"
+        className="w-full max-w-3xl mx-auto px-4"
         hasMore={size < (pageTotal ?? 0)}
         isLoading={isValidating}
         next={() => setSize(size + 1)}
       >
-        {dataList?.map((item: ImageType) => (
-          <GalleryImage
-            key={`${item.id}-${item.url}-${item.preview_url}-${customIndexOriginEnable ? 'origin' : 'preview'}`}
-            photo={item}
-            customIndexOriginEnable={customIndexOriginEnable}
+        {dataList.length > 0 && (
+          <VirtualMasonry
+            items={dataList}
+            render={SimpleRender}
+            columnCount={1}
+            columnGutter={40}
+            overscanBy={2}
           />
-        ))}
+        )}
         {dataList.length === 0 && !isValidating && (
           <div className="flex items-center justify-center my-4">
             {t('Tips.noImg')}

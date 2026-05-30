@@ -7,9 +7,36 @@ import { useTranslations } from 'next-intl'
 import type { ImageType } from '~/types'
 import { useState, useCallback, useEffect, useRef, useMemo, useTransition } from 'react'
 import MasonryPhotoItem from '~/components/gallery/masonry-photo-item'
+import VirtualMasonry from '~/components/gallery/virtual-masonry.tsx'
 import InfiniteScroll from '~/components/ui/origin/infinite-scroll.tsx'
 import FloatingFilterBall from '~/components/album/floating-filter-ball.tsx'
 import { Skeleton } from '~/components/ui/skeleton'
+
+// masonic render adapter: receives the column width and the item data, and
+// renders the shared masonry photo item sized to that column.
+function MasonryRender({ data, width }: { index: number, data: ImageType, width: number }) {
+  return <MasonryPhotoItem photo={data} width={width} />
+}
+
+// Responsive column count matching the previous Tailwind breakpoints
+// (columns-2 / sm:columns-3 / lg:columns-4 / xl:columns-5).
+function useResponsiveColumnCount(): number {
+  const [count, setCount] = useState(2)
+  useEffect(() => {
+    const compute = () => {
+      const w = window.innerWidth
+      if (w >= 1280) return 5
+      if (w >= 1024) return 4
+      if (w >= 640) return 3
+      return 2
+    }
+    const update = () => setCount(compute())
+    update()
+    window.addEventListener('resize', update)
+    return () => window.removeEventListener('resize', update)
+  }, [])
+  return count
+}
 
 const MASONRY_SKELETON_RATIOS = [
   '4 / 5',
@@ -83,6 +110,7 @@ export default function DefaultGallery(props : Readonly<ImageHandleProps>) {
   const dataList = useMemo(() => data?.flat() ?? [], [data])
   const showInitialSkeleton = dataList.length === 0 && isValidating
   const isPaginating = isValidating && dataList.length > 0
+  const columnCount = useResponsiveColumnCount()
   const t = useTranslations()
 
   // Reset pagination when debounced filters change - SWR key change will auto-refetch
@@ -134,13 +162,14 @@ export default function DefaultGallery(props : Readonly<ImageHandleProps>) {
         {showInitialSkeleton ? (
           <MasonrySkeletonGrid />
         ) : (
-          <div className="columns-2 gap-1 px-1 sm:columns-3 sm:px-2 lg:columns-4 xl:columns-5">
-            {dataList?.map((item: ImageType) => (
-              <div key={`${item.id}-${item.preview_url || item.url}`} className="mb-1 break-inside-avoid">
-                <MasonryPhotoItem photo={item} />
-              </div>
-            ))}
-          </div>
+          <VirtualMasonry
+            className="px-1 sm:px-2"
+            items={dataList}
+            render={MasonryRender}
+            columnGutter={4}
+            columnCount={columnCount}
+            overscanBy={2}
+          />
         )}
         {dataList.length === 0 && !isValidating && (
           <div className="flex items-center justify-center my-4">

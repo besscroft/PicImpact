@@ -9,7 +9,7 @@ import { useBlurImageDataUrl, DEFAULT_HASH } from '~/hooks/use-blurhash'
 import { Skeleton } from '~/components/ui/skeleton'
 import { useState } from 'react'
 
-export default function MasonryPhotoItem({ photo }: { photo: ImageType }) {
+export default function MasonryPhotoItem({ photo, width }: { photo: ImageType, width?: number }) {
   const router = useRouter()
   const dataURL = useBlurImageDataUrl(photo.blurhash)
   const preferredSrc = photo.preview_url || photo.url
@@ -21,13 +21,21 @@ export default function MasonryPhotoItem({ photo }: { photo: ImageType }) {
   const aspectRatio = photo.width > 0 && photo.height > 0 ? photo.width / photo.height : 1
   const isUsingPreview = !!photo.preview_url && imgSrc === photo.preview_url
   const hasRealBlurhash = !!photo.blurhash && photo.blurhash !== DEFAULT_HASH
+  // When rendered inside the virtualized masonry, masonic supplies the column
+  // width and measures item height. Deriving an explicit pixel height from the
+  // known aspect ratio lets masonic position items immediately and stably
+  // without waiting for the image to load. Outside masonic (no `width`), fall
+  // back to a pure aspect-ratio box.
+  const sizeStyle = typeof width === 'number'
+    ? { width, height: Math.round(width / aspectRatio) }
+    : { aspectRatio }
 
   return (
     <div
       role="link"
       tabIndex={0}
-      className="group relative cursor-pointer overflow-hidden rounded-sm"
-      style={{ aspectRatio, willChange: 'transform' }}
+      className="group relative cursor-pointer overflow-hidden rounded-sm [will-change:auto] hover:[will-change:transform]"
+      style={sizeStyle}
       onClick={() => router.push(`/preview/${photo.id}`)}
       onKeyDown={(e: React.KeyboardEvent) => {
         if (e.key === 'Enter' || e.key === ' ') {
@@ -47,7 +55,6 @@ export default function MasonryPhotoItem({ photo }: { photo: ImageType }) {
         />
       )}
       <Image
-        key={imgSrc}
         className={cn(
           'object-cover transition-transform duration-500 group-hover:scale-105',
           isLoading && !hasRealBlurhash && 'animate-pulse'
