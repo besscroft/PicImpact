@@ -29,6 +29,13 @@ interface VirtualMasonryProps<T extends VirtualMasonryItem> {
   maxColumnCount?: number
   className?: string
   overscanBy?: number
+  // ARIA role for the masonry container. masonic derives the item role from it
+  // ("list" → "listitem", "grid" → "gridcell"). Defaults to "list": a photo
+  // gallery is a list of links, and "grid" was invalid here because masonic
+  // nests gridcells directly under the grid with no intervening "row"
+  // (tripping aria-required-children / aria-required-parent). "list"/"listitem"
+  // is a valid parent/child pair with no row requirement.
+  role?: 'list' | 'grid'
 }
 
 function VirtualMasonryInner<T extends VirtualMasonryItem>({
@@ -43,11 +50,13 @@ function VirtualMasonryInner<T extends VirtualMasonryItem>({
   // scrolling doesn't outrun item mount + image load/decode (which left blank
   // cells, especially for slower-decoding AVIF).
   overscanBy = 5,
+  role = 'list',
 }: Readonly<VirtualMasonryProps<T>>) {
   return (
     <Masonry
       items={items}
       render={render}
+      role={role}
       columnGutter={columnGutter}
       columnWidth={columnWidth}
       columnCount={columnCount}
