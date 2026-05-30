@@ -8,6 +8,13 @@ import { useBlurImageDataUrl } from '~/hooks/use-blurhash'
 import { WebGLImageViewer } from '~/components/album/webgl-viewer'
 import type { WebGLImageViewerRef } from '~/components/album/webgl-viewer'
 import { isWebGLSupported } from '~/lib/utils/webgl'
+import { hasReadyVariants, makeVariantLoader } from '~/lib/image/loader'
+import { useAvifSupport } from '~/hooks/use-avif-support'
+
+// Width requested for the detail high-res view; the loader clamps it to the
+// largest generated tier (variants go up to 2560), so we never pull the
+// multi-MB original for in-page viewing.
+const DETAIL_HIGH_RES_WIDTH = 2560
 
 /**
  * 渐进式图片展示组件，支持 WebGL 高性能渲染
@@ -21,14 +28,25 @@ export default function ProgressiveImage(
 ) {
   const t = useTranslations()
 
-  const [isMobile] = useState(() => typeof window !== 'undefined' && window.innerWidth < 768)
   const [loadingProgress, setLoadingProgress] = useState(0)
-  const [isLoading, setIsLoading] = useState(!isMobile)
+  const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [highResImageUrl, setHighResImageUrl] = useState<string | null>(null)
   const [highResImageLoaded, setHighResImageLoaded] = useState(false)
   const [showFullScreenViewer, setShowFullScreenViewer] = useState(Boolean(props.showLightbox))
   const [webGLAvailable] = useState(() => isWebGLSupported())
+  const avifOk = useAvifSupport()
+
+  // High-res source for the viewer: the largest generated variant (≤2560) when
+  // available, else the original. Deliberately NOT the multi-MB original.
+  const highResSource = hasReadyVariants(props.imageKey, props.readyMaxWidth ?? 0, props.variantBaseUrl)
+    ? makeVariantLoader({
+        base: props.variantBaseUrl as string,
+        imageKey: props.imageKey as string,
+        readyMaxWidth: props.readyMaxWidth as number,
+        format: avifOk ? 'avif' : 'webp',
+      })({ src: props.imageKey as string, width: DETAIL_HIGH_RES_WIDTH })
+    : props.imageUrl
 
   const webglViewerRef = useRef<WebGLImageViewerRef | null>(null)
   useEffect(() => {
@@ -36,25 +54,36 @@ export default function ProgressiveImage(
       webglViewerRef.current?.destroy()
     }
   }, [])
+
+  // Load the high-res image ONLY when the lightbox is actually opened — never
+  // eagerly on mount. This stops the detail page from fetching a large image
+  // just for being opened (and re-fetching on every open/close re-mount).
   useEffect(() => {
-    setShowFullScreenViewer(Boolean(props.showLightbox))
-    // On mobile, load full-res only when lightbox is requested
-    if (isMobile && props.showLightbox && !highResImageUrl && !isLoading) {
-      loadHighResolutionImage()
+    if (props.showLightbox) {
+      setShowFullScreenViewer(true)
+      if (!highResImageUrl && !isLoading) {
+        loadHighResolutionImage()
+      }
     }
   }, [props.showLightbox])
 
+  // Revoke the object URL on unmount / source change.
   useEffect(() => {
-    // On mobile, defer full-res loading until user requests lightbox
-    if (!isMobile) {
-      loadHighResolutionImage()
-    }
     return () => {
       if (highResImageUrl) {
         URL.revokeObjectURL(highResImageUrl)
       }
     }
-  }, [props.imageUrl])
+  }, [highResSource])
+
+  // Open the full-screen viewer, loading the high-res image on demand.
+  const openFullScreen = () => {
+    setShowFullScreenViewer(true)
+    props.onShowLightboxChange?.(true)
+    if (!highResImageUrl && !isLoading) {
+      loadHighResolutionImage()
+    }
+  }
 
   const loadHighResolutionImage = () => {
     setIsLoading(true)
@@ -62,7 +91,7 @@ export default function ProgressiveImage(
     setError(null)
 
     const xhr = new XMLHttpRequest()
-    xhr.open('GET', props.imageUrl, true)
+    xhr.open('GET', highResSource, true)
     xhr.responseType = 'blob'
 
     xhr.onprogress = (e) => {
@@ -108,7 +137,7 @@ export default function ProgressiveImage(
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 1 }}
-          className="object-contain md:max-h-[90vh]"
+          className="object-contain md:max-h-[90vh] cursor-pointer"
           src={props.previewUrl}
           overrideSrc={props.previewUrl}
           placeholder="blur"
@@ -117,6 +146,7 @@ export default function ProgressiveImage(
           width={props.width}
           height={props.height}
           alt={props.alt || 'image'}
+          onClick={openFullScreen}
         />
         {/* 加载进度条 */}
         {isLoading && (
@@ -148,12 +178,7 @@ export default function ProgressiveImage(
               width={props.width}
               height={props.height}
               alt={props.alt || 'image'}
-              onClick={() => {
-                setShowFullScreenViewer(true)
-                if (props.onShowLightboxChange) {
-                  props.onShowLightboxChange(true)
-                }
-              }}
+              onClick={openFullScreen}
               onLoad={() => {
                 setHighResImageLoaded(true)
               }}

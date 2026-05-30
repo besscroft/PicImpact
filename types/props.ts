@@ -42,6 +42,12 @@ export type ProgressiveImageProps = {
   alt?: string,
   showLightbox?:boolean
   onShowLightboxChange?: (value: boolean) => void
+  // Variant fields so the high-res viewer can load the largest generated variant
+  // (e.g. 2560 avif/webp) instead of the multi-MB original. Empty/missing → falls
+  // back to imageUrl (the original).
+  imageKey?: string
+  readyMaxWidth?: number
+  variantBaseUrl?: string
 }
 
 export type LinkProps = {
