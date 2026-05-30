@@ -41,8 +41,8 @@ export async function fetchServerImagesListByAlbum(
   }
   // 如果没有提供 pageSize，从配置中获取
   if (!pageSize) {
-    const configPageSize = await fetchConfigValue('admin_images_per_page', '8')
-    pageSize = parseInt(configPageSize, 10) || 8
+    const configPageSize = await fetchConfigValue('admin_images_per_page', String(DEFAULT_SIZE))
+    pageSize = parseInt(configPageSize, 10) || DEFAULT_SIZE
   }
   
   if (album && album !== '') {
