@@ -137,9 +137,11 @@ export default function FloatingFilterBall({
   const ballRef = useRef<HTMLDivElement>(null)
 
   const hasActiveFilter = selectedCamera !== '' || selectedLens !== ''
-  // Gate the perpetual pulse loop: skip it for reduced-motion users and pause it
-  // whenever the popover is closed or the ball has scrolled offscreen.
-  const shouldPulse = hasActiveFilter && !prefersReducedMotion && isOpen && isVisible
+  // Pulse the active-filter indicator only when the panel is CLOSED — that's when
+  // the user most needs a reminder a filter is applied; once the panel is open the
+  // filters are visible so the pulse is redundant. Gated by reduced-motion and
+  // on-screen visibility so it is never a perpetual offscreen rAF loop.
+  const shouldPulse = hasActiveFilter && !prefersReducedMotion && !isOpen && isVisible
 
   // Load saved position on mount
   useEffect(() => {
@@ -326,9 +328,9 @@ export default function FloatingFilterBall({
         <SlidersHorizontal className="h-5 w-5 relative z-10" />
       </motion.div>
       
-      {/* Active filter indicator. The perpetual pulse (rAF loop) only runs when
-          motion is allowed, the popover is open, and the ball is onscreen —
-          otherwise it stays static. */}
+      {/* Active filter indicator. The pulse (rAF loop) only runs when motion is
+          allowed, the popover is closed (reminder cue), and the ball is onscreen —
+          otherwise it stays a static dot. */}
       {hasActiveFilter && (
         <motion.span
           className="absolute -top-1 -right-1 h-3 w-3 rounded-full bg-destructive"

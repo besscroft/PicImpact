@@ -41,6 +41,10 @@ export const DraggableCardBody = ({
     right: 0,
     bottom: 0,
   })
+  // Promote to a compositor layer only while the card is actually moving
+  // (dragging or tilting on hover). Polaroid cards are not virtualized, so a
+  // permanent `will-change` would create one idle compositor layer per card.
+  const [isInteracting, setIsInteracting] = useState(false)
 
   // physics biatch
   const velocityX = useVelocity(mouseX)
@@ -121,9 +125,14 @@ export const DraggableCardBody = ({
     mouseY.set(deltaY)
   }
 
+  const handleMouseEnter = () => {
+    setIsInteracting(true)
+  }
+
   const handleMouseLeave = () => {
     mouseX.set(0)
     mouseY.set(0)
+    setIsInteracting(false)
   }
 
   return (
@@ -134,9 +143,11 @@ export const DraggableCardBody = ({
       onMouseDown={onMouseDown}
       onDragStart={() => {
         document.body.style.cursor = 'grabbing'
+        setIsInteracting(true)
       }}
-      onDragEnd={(event, info) => {
+      onDragEnd={(_event, info) => {
         document.body.style.cursor = 'default'
+        setIsInteracting(false)
 
         if (tiltEnabled) {
           controls.start({
@@ -181,11 +192,12 @@ export const DraggableCardBody = ({
         rotateX: tiltEnabled ? rotateX : 0,
         rotateY: tiltEnabled ? rotateY : 0,
         opacity: tiltEnabled ? opacity : 1,
-        willChange: 'transform',
+        willChange: isInteracting ? 'transform' : undefined,
         ...style,
       }}
       animate={controls}
       whileHover={tiltEnabled ? { scale: 1.02 } : undefined}
+      onMouseEnter={tiltEnabled ? handleMouseEnter : undefined}
       onMouseMove={tiltEnabled ? handleMouseMove : undefined}
       onMouseLeave={tiltEnabled ? handleMouseLeave : undefined}
       className={cn(
