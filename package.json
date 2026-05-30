@@ -21,6 +21,7 @@
     "prisma:dev": "npx prisma migrate dev",
     "prisma:deploy": "npx prisma migrate deploy",
     "prisma:seed": "npx prisma db seed",
+    "preprocess:backfill": "tsx --conditions=react-server scripts/preprocess-backfill.ts",
     "prebuild": "npx prisma generate"
   },
   "prisma": {
