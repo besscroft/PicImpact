@@ -9,11 +9,10 @@ import type { ImageType } from '~/types'
  * 新增图片
  * @param image 图片数据
  */
-export async function insertImage(image: ImageType): Promise<string> {
+export async function insertImage(image: ImageType) {
   if (!image.sort || image.sort < 0) {
     image.sort = 0
   }
-  let createdId = ''
   await db.$transaction(async (tx) => {
     const resultRow = await tx.images.create({
       data: {
@@ -39,7 +38,6 @@ export async function insertImage(image: ImageType): Promise<string> {
     })
 
     if (resultRow) {
-      createdId = resultRow.id
       await tx.imagesAlbumsRelation.create({
         data: {
           imageId: resultRow.id,
@@ -50,7 +48,6 @@ export async function insertImage(image: ImageType): Promise<string> {
       throw new Error('事务处理失败！')
     }
   })
-  return createdId
 }
 
 /**

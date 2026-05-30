@@ -8,7 +8,6 @@ import {
   updateImageAlbum
 } from '~/server/db/operate/images'
 import { fetchCameraAndLensList } from '~/server/db/query/images'
-import { preprocessImageById } from '~/server/tasks/image-preprocess-service'
 import { Hono } from 'hono'
 import dayjs from 'dayjs'
 import customParseFormat from 'dayjs/plugin/customParseFormat'
@@ -40,14 +39,11 @@ app.post('/', async (c) => {
     if (body?.exif?.dateTime && !dayjs(body?.exif?.dateTime, 'YYYY:MM:DD HH:mm:ss', true).isValid()) {
       body.exif.dateTime = ''
     }
-    const newImageId = await insertImage(body)
-    // Auto-enqueue variant generation for the new upload (fire-and-forget;
-    // never blocks the response). No-op when the variant pipeline is
-    // unconfigured; on failure the image stays variants_ready=false and a
-    // backfill run covers it later.
-    if (newImageId) {
-      void preprocessImageById(newImageId).catch(() => {})
-    }
+    // New images are stored with variants_ready=false; the background
+    // preprocess ticker (see instrumentation.ts) picks them up asynchronously
+    // and generates variants via a tracked /admin/tasks run — no inline work
+    // on the upload request.
+    await insertImage(body)
     return okEmpty(c)
   } catch (e) {
     throw serverError('Failed', e)
