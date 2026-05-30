@@ -63,13 +63,9 @@ async function main() {
   }
 
   // Drain: each tick processes one batch and returns the active run summary.
-  let lastId: string | null = null
   for (;;) {
     const { activeRun } = await tickPreprocessTaskRuns()
     if (!activeRun) break
-    if (activeRun.id !== lastId) {
-      lastId = activeRun.id
-    }
     logProgress(activeRun)
     if (TERMINAL_STATUSES.has(activeRun.status)) break
   }
