@@ -85,6 +85,10 @@ async function main() {
     if (TERMINAL_STATUSES.has(activeRun.status)) break
 
     if (activeRun.processedCount === prevProcessed) {
+      // No progress: the run is likely held by another process whose lease has
+      // not expired. Back off (sleep) and bail after too many stalls, rather
+      // than spin. The sleep only applies here — while actively making
+      // progress we drain at full speed with no inter-batch delay.
       stalledTicks += 1
       if (stalledTicks >= MAX_STALLED_TICKS) {
         console.error(
@@ -95,12 +99,11 @@ async function main() {
         process.exitCode = 1
         break
       }
+      await sleep(TICK_INTERVAL_MS)
     } else {
       stalledTicks = 0
       prevProcessed = activeRun.processedCount
     }
-
-    await sleep(TICK_INTERVAL_MS)
   }
 
   // Report the final state of the most recent run.
