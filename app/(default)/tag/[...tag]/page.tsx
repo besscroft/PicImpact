@@ -1,5 +1,6 @@
 import type { ImageHandleProps } from '~/types/props'
 import { fetchClientImagesListByTag, fetchClientImagesPageTotalByTag } from '~/server/db/query/images'
+import { getDisplayConfig } from '~/server/actions/images'
 import TagGallery from '~/components/album/tag-gallery'
 
 import 'react-photo-album/masonry.css'
@@ -23,6 +24,7 @@ export default async function Label({params}: { params: any }) {
     args: 'getImages-client-tag',
     album: `${decodeURIComponent(tag)}`,
     totalHandle: getPageTotal,
+    configHandle: getDisplayConfig,
   }
 
   return (
