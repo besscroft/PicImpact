@@ -2,16 +2,15 @@
  * Client-side responsive variant URL builder for the gallery's custom
  * next/image loader.
  *
- * IMPORTANT: this MUST stay in sync with `server/lib/image-variants.ts`
- * (`VARIANT_TIER_WIDTHS` + `buildVariantKey`). That module is `server-only`
- * (it imports sharp), so the naming convention is mirrored here as the single
- * client-side source of truth. Any change to the tier ladder or the
- * `{baseKey}_{width}.{format}` key shape must be made in both files.
+ * The tier ladder and `{baseKey}_{width}.{format}` key shape come from the
+ * shared, client-safe `~/lib/image/variant-tiers` module (the single source of
+ * truth, also re-exported by the server-only `server/lib/image-variants.ts`),
+ * so there are no longer duplicated constants to keep in sync.
  */
 
-export const VARIANT_TIER_WIDTHS = [320, 480, 640, 800, 1080, 1280, 1920, 2560] as const
+import { VARIANT_TIER_WIDTHS, buildVariantKey, type VariantFormat } from '~/lib/image/variant-tiers'
 
-export type VariantFormat = 'avif' | 'webp'
+export type { VariantFormat }
 
 /**
  * Round a requested render width up to the nearest generated tier, clamped to
@@ -25,11 +24,6 @@ export function ceilToTier(width: number): number {
     }
   }
   return VARIANT_TIER_WIDTHS[VARIANT_TIER_WIDTHS.length - 1]
-}
-
-/** Variant object key `{baseKey}_{width}.{format}` — mirrors `buildVariantKey`. */
-export function buildVariantKey(baseKey: string, width: number, format: VariantFormat): string {
-  return `${baseKey}_${width}.${format}`
 }
 
 function joinUrl(base: string, key: string): string {
