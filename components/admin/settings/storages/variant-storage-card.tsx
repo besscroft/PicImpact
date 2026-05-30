@@ -47,11 +47,12 @@ export default function VariantStorageCard() {
     setSaving(true)
     try {
       const payload: VariantStorageInfo = { variantStorage: selection === OFF ? '' : selection }
-      await fetch('/api/v1/settings/variant-storage', {
+      const res = await fetch('/api/v1/settings/variant-storage', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
       })
+      if (!res.ok) throw new Error(`Request failed with status ${res.status}`)
       toast.success(t('Config.updateSuccess'))
       mutate()
     } catch {
