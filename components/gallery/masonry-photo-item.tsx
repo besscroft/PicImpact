@@ -8,19 +8,46 @@ import { Aperture, Timer, Focus, Disc3 } from 'lucide-react'
 import { useBlurImageDataUrl, DEFAULT_HASH } from '~/hooks/use-blurhash'
 import { Skeleton } from '~/components/ui/skeleton'
 import { useState } from 'react'
+import { hasReadyVariants, makeVariantLoader } from '~/lib/image/loader'
+import { useAvifSupport } from '~/hooks/use-avif-support'
 
-export default function MasonryPhotoItem({ photo, width }: { photo: ImageType, width?: number }) {
+export default function MasonryPhotoItem({ photo, width, variantBaseUrl = '' }: { photo: ImageType, width?: number, variantBaseUrl?: string }) {
   const router = useRouter()
   const dataURL = useBlurImageDataUrl(photo.blurhash)
-  const preferredSrc = photo.preview_url || photo.url
-  const [imgSrc, setImgSrc] = useState(preferredSrc)
+  const avifOk = useAvifSupport()
   const [isLoading, setIsLoading] = useState(true)
+  // If a (supposedly ready) variant fails to load, fall back down the ladder
+  // rather than retrying the variant forever.
+  const [variantFailed, setVariantFailed] = useState(false)
 
   const exif = photo.exif
   const hasExif = exif && (exif.focal_length || exif.f_number || exif.exposure_time || exif.iso_speed_rating)
   const aspectRatio = photo.width > 0 && photo.height > 0 ? photo.width / photo.height : 1
-  const isUsingPreview = !!photo.preview_url && imgSrc === photo.preview_url
   const hasRealBlurhash = !!photo.blurhash && photo.blurhash !== DEFAULT_HASH
+
+  // Image source ladder — the grid must NEVER load the full-resolution original
+  // (the multi-MB photos that tank scrolling). In order:
+  //   1. responsive variants via the custom CDN loader (bypasses /_next/image),
+  //   2. the small preview thumbnail (unoptimized — it is already sized),
+  //   3. nothing → the blurhash placeholder stays as the final visible state.
+  const variantReady = !variantFailed && hasReadyVariants(photo.image_key, photo.ready_max_width, variantBaseUrl)
+  const previewSrc = photo.preview_url || ''
+  const imageProps = variantReady
+    ? {
+        src: photo.image_key,
+        loader: makeVariantLoader({
+          base: variantBaseUrl,
+          imageKey: photo.image_key,
+          readyMaxWidth: photo.ready_max_width,
+          format: (avifOk ? 'avif' : 'webp') as 'avif' | 'webp',
+        }),
+      }
+    : previewSrc
+      ? { src: previewSrc, unoptimized: true }
+      : null
+  // No servable image (un-backfilled row without a preview, e.g. OpenList) →
+  // show the decoded blurhash itself instead of a perpetual loading skeleton.
+  const blurhashOnly = !imageProps && hasRealBlurhash
   // When rendered inside the virtualized masonry, masonic supplies the column
   // width and measures item height. Deriving an explicit pixel height from the
   // known aspect ratio lets masonic position items immediately and stably
@@ -44,7 +71,7 @@ export default function MasonryPhotoItem({ photo, width }: { photo: ImageType, w
         }
       }}
     >
-      {isLoading && (
+      {imageProps && isLoading && (
         <Skeleton
           className={cn(
             'absolute inset-0 z-10 rounded-none',
@@ -54,28 +81,40 @@ export default function MasonryPhotoItem({ photo, width }: { photo: ImageType, w
           )}
         />
       )}
-      <Image
-        className={cn(
-          'object-cover transition-transform duration-500 group-hover:scale-105',
-          isLoading && !hasRealBlurhash && 'animate-pulse'
-        )}
-        src={imgSrc}
-        alt={photo.detail || photo.title || ''}
-        fill
-        sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
-        loading="lazy"
-        unoptimized={isUsingPreview}
-        placeholder={hasRealBlurhash ? 'blur' : 'empty'}
-        blurDataURL={dataURL}
-        onLoad={() => setIsLoading(false)}
-        onError={() => {
-          if (photo.preview_url && imgSrc !== photo.url) {
-            setImgSrc(photo.url)
-            return
-          }
-          setIsLoading(false)
-        }}
-      />
+      {imageProps ? (
+        <Image
+          {...imageProps}
+          key={variantReady ? 'variant' : 'preview'}
+          className={cn(
+            'object-cover transition-transform duration-500 group-hover:scale-105',
+            isLoading && !hasRealBlurhash && 'animate-pulse'
+          )}
+          alt={photo.detail || photo.title || ''}
+          fill
+          sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
+          loading="lazy"
+          placeholder={hasRealBlurhash ? 'blur' : 'empty'}
+          blurDataURL={dataURL}
+          onLoad={() => setIsLoading(false)}
+          onError={() => {
+            // A ready variant failed → step down the ladder (preview/blurhash);
+            // never escalate to the full original in the grid.
+            if (variantReady) {
+              setVariantFailed(true)
+              return
+            }
+            setIsLoading(false)
+          }}
+        />
+      ) : blurhashOnly ? (
+        <div
+          aria-hidden
+          className="absolute inset-0 bg-cover bg-center"
+          style={{ backgroundImage: `url(${dataURL})` }}
+        />
+      ) : (
+        <Skeleton className="absolute inset-0 rounded-none bg-accent/80" />
+      )}
       {/* Hover gradient overlay */}
       <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
       {/* Hover content */}

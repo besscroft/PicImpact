@@ -3,20 +3,15 @@
 import type { ImageHandleProps } from '~/types/props.ts'
 import useSWRInfinite from 'swr/infinite'
 import useSWR from 'swr'
+import { useSwrHydrated } from '~/hooks/use-swr-hydrated.ts'
 import { useTranslations } from 'next-intl'
-import type { ImageType } from '~/types'
+import type { GalleryDisplayConfig, ImageType } from '~/types'
 import { useState, useCallback, useEffect, useRef, useMemo, useTransition } from 'react'
 import MasonryPhotoItem from '~/components/gallery/masonry-photo-item'
 import VirtualMasonry from '~/components/gallery/virtual-masonry.tsx'
 import InfiniteScroll from '~/components/ui/origin/infinite-scroll.tsx'
 import FloatingFilterBall from '~/components/album/floating-filter-ball.tsx'
 import { Skeleton } from '~/components/ui/skeleton'
-
-// masonic render adapter: receives the column width and the item data, and
-// renders the shared masonry photo item sized to that column.
-function MasonryRender({ data, width }: { index: number, data: ImageType, width: number }) {
-  return <MasonryPhotoItem photo={data} width={width} />
-}
 
 // Responsive column count matching the previous Tailwind breakpoints
 // (columns-2 / sm:columns-3 / lg:columns-4 / xl:columns-5).
@@ -106,12 +101,32 @@ export default function DefaultGallery(props : Readonly<ImageHandleProps>) {
     }
   )
 
+  // Public display config (carries the variant CDN base url, when configured).
+  const emptyConfig: GalleryDisplayConfig = {
+    customIndexDownloadEnable: false,
+    customIndexOriginEnable: false,
+  }
+  const { data: configData } = useSwrHydrated<GalleryDisplayConfig>({
+    handle: props.configHandle ?? (async () => emptyConfig),
+    args: 'system-config',
+  })
+  const variantBaseUrl = configData?.variantBaseUrl ?? ''
+
   // Memoize dataList to avoid unnecessary recalculations
   const dataList = useMemo(() => data?.flat() ?? [], [data])
   const showInitialSkeleton = dataList.length === 0 && isValidating
   const isPaginating = isValidating && dataList.length > 0
   const columnCount = useResponsiveColumnCount()
   const t = useTranslations()
+
+  // masonic render adapter: receives the column width and item data, renders the
+  // shared photo item sized to that column. Memoized on `variantBaseUrl` so
+  // masonic keeps a stable render-component identity (avoids remounting items).
+  const RenderItem = useMemo(() => {
+    return function RenderItem({ data, width }: { index: number, data: ImageType, width: number }) {
+      return <MasonryPhotoItem photo={data} width={width} variantBaseUrl={variantBaseUrl} />
+    }
+  }, [variantBaseUrl])
 
   // Reset pagination when debounced filters change - SWR key change will auto-refetch
   const prevFiltersRef = useRef({ camera: '', lens: '' })
@@ -165,7 +180,7 @@ export default function DefaultGallery(props : Readonly<ImageHandleProps>) {
           <VirtualMasonry
             className="px-1 sm:px-2"
             items={dataList}
-            render={MasonryRender}
+            render={RenderItem}
             columnGutter={4}
             columnCount={columnCount}
             overscanBy={2}

@@ -8,15 +8,26 @@ import { MotionImage } from '~/components/album/motion-image'
 import { Skeleton } from '~/components/ui/skeleton'
 import { useState } from 'react'
 import { Badge } from '~/components/ui/badge.tsx'
+import { hasReadyVariants, makeVariantLoader } from '~/lib/image/loader'
+import { useAvifSupport } from '~/hooks/use-avif-support'
 
 export default function GalleryImage({
   photo,
   customIndexOriginEnable,
+  variantBaseUrl = '',
 }: {
   photo: ImageType
   customIndexOriginEnable: boolean
+  variantBaseUrl?: string
 }) {
   const router = useRouter()
+  const avifOk = useAvifSupport()
+  const [variantFailed, setVariantFailed] = useState(false)
+  // When variants are ready they take precedence for in-feed display (small,
+  // fast, never the multi-MB original). The legacy preferred/fallback ladder
+  // (which honours the customIndexOriginEnable opt-in to show originals) only
+  // applies when no variant is available yet.
+  const variantReady = !variantFailed && hasReadyVariants(photo.image_key, photo.ready_max_width, variantBaseUrl)
   const preferredSrc = customIndexOriginEnable ? photo.url || photo.preview_url : photo.preview_url || photo.url
   const fallbackSrc = customIndexOriginEnable ? photo.preview_url || photo.url : photo.url || photo.preview_url
   const [imgSrc, setImgSrc] = useState(preferredSrc)
@@ -67,30 +78,56 @@ export default function GalleryImage({
             )}
           />
         )}
-        <MotionImage
-          key={imgSrc}
-          className={cn('w-full h-auto', isLoading && !hasRealBlurhash && 'animate-pulse')}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.5 }}
-          src={imgSrc}
-          overrideSrc={imgSrc}
-          alt={photo.title}
-          width={photo.width}
-          height={photo.height}
-          loading="lazy"
-          unoptimized={useUnoptimized}
-          placeholder={hasRealBlurhash ? 'blur' : 'empty'}
-          blurDataURL={dataURL}
-          onLoad={() => setIsLoading(false)}
-          onError={() => {
-            if (hasFallbackSrc && imgSrc !== fallbackSrc) {
-              setImgSrc(fallbackSrc)
-              return
-            }
-            setIsLoading(false)
-          }}
-        />
+        {variantReady ? (
+          <MotionImage
+            key="variant"
+            className={cn('w-full h-auto', isLoading && !hasRealBlurhash && 'animate-pulse')}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5 }}
+            src={photo.image_key}
+            alt={photo.title}
+            width={photo.width}
+            height={photo.height}
+            sizes="(min-width: 768px) 75vw, 100vw"
+            loading="lazy"
+            loader={makeVariantLoader({
+              base: variantBaseUrl,
+              imageKey: photo.image_key,
+              readyMaxWidth: photo.ready_max_width,
+              format: (avifOk ? 'avif' : 'webp') as 'avif' | 'webp',
+            })}
+            placeholder={hasRealBlurhash ? 'blur' : 'empty'}
+            blurDataURL={dataURL}
+            onLoad={() => setIsLoading(false)}
+            onError={() => setVariantFailed(true)}
+          />
+        ) : (
+          <MotionImage
+            key={imgSrc}
+            className={cn('w-full h-auto', isLoading && !hasRealBlurhash && 'animate-pulse')}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5 }}
+            src={imgSrc}
+            overrideSrc={imgSrc}
+            alt={photo.title}
+            width={photo.width}
+            height={photo.height}
+            loading="lazy"
+            unoptimized={useUnoptimized}
+            placeholder={hasRealBlurhash ? 'blur' : 'empty'}
+            blurDataURL={dataURL}
+            onLoad={() => setIsLoading(false)}
+            onError={() => {
+              if (hasFallbackSrc && imgSrc !== fallbackSrc) {
+                setImgSrc(fallbackSrc)
+                return
+              }
+              setIsLoading(false)
+            }}
+          />
+        )}
         {photo.type === 2 && (
           <div className="absolute top-2 left-2 p-5 rounded-full">
             <svg xmlns="http://www.w3.org/2000/svg" className="absolute bottom-3 right-3 text-white opacity-75 z-10"
