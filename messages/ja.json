@@ -378,6 +378,11 @@
     "inputAvatar": "アバターをアップロードしてください"
   },
   "Config": {
+    "variantStorageTitle": "バリアントストレージ",
+    "variantStorageDesc": "サムネイル / バリアント前処理パイプラインのアップロード先ストレージ。Open List は非対応です。",
+    "variantStorageOff": "無効",
+    "variantStorageHelper": "選択したバックエンドを下のタブで事前に設定してください。",
+    "variantStorageNotEnabled": "バリアントパイプラインは無効です — ギャラリーはプレビュー / blurhash にフォールバックします。",
     "accesskey_id": "Aliyun OSS / AWS S3 AccessKey_ID",
     "accesskey_secret": "Aliyun OSS / AWS S3 AccessKey_Secret",
     "region": "Aliyun OSS / AWS S3 Region、例：oss-cn-hongkong",

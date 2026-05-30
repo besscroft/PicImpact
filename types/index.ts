@@ -115,6 +115,14 @@ export type S3Info = {
   s3DirectDownload: boolean
 }
 
+/**
+ * Which storage backend the image preprocessing pipeline uploads variants to.
+ * Empty string disables the pipeline (gallery falls back to preview/blurhash).
+ */
+export type VariantStorageInfo = {
+  variantStorage: '' | 's3' | 'r2'
+}
+
 export type R2Info = {
   r2AccesskeyId: string
   r2AccesskeySecret: string

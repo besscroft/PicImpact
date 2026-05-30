@@ -378,6 +378,11 @@
     "inputAvatar": "請輸入新的頭像地址。"
   },
   "Config": {
+    "variantStorageTitle": "變體儲存",
+    "variantStorageDesc": "縮圖 / 變體預處理管線上傳的儲存後端。不支援 Open List。",
+    "variantStorageOff": "關閉",
+    "variantStorageHelper": "請先在下方對應分頁設定好該後端。",
+    "variantStorageNotEnabled": "變體管線未啟用 —— 畫廊回退到預覽圖 / 佔位圖。",
     "accesskey_id": "阿里 OSS / AWS S3 AccessKey_ID",
     "accesskey_secret": "阿里 OSS / AWS S3 AccessKey_Secret",
     "region": "阿里 OSS / AWS S3 Region 地域，如：oss-cn-hongkong",
