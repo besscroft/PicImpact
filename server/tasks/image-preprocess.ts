@@ -11,6 +11,7 @@ import {
   isMetadataTaskCancelledError,
   throwIfMetadataTaskCancelled,
 } from '~/server/tasks/metadata-refresh'
+import { buildOriginalPresignedUrl } from '~/server/lib/original-presign'
 import type { ResolvedVariantStorage } from '~/server/lib/variant-storage'
 import type { AdminTaskIssue, AdminTaskStage } from '~/types/admin-tasks'
 import { ADMIN_TASK_KEY_PREPROCESS_IMAGES } from '~/types/admin-tasks'
@@ -93,12 +94,18 @@ function variantObjectKey(storageFolder: string, imageKey: string, width: number
   return storageFolder ? `${storageFolder}/${key}` : key
 }
 
-async function fetchOriginal(image: PreprocessImage, signal: AbortSignal | undefined): Promise<Buffer> {
+async function fetchOriginal(image: PreprocessImage, storage: ResolvedVariantStorage, signal: AbortSignal | undefined): Promise<Buffer> {
   const fetchSignal = signal
     ? AbortSignal.any([signal, AbortSignal.timeout(FETCH_TIMEOUT_MS)])
     : AbortSignal.timeout(FETCH_TIMEOUT_MS)
 
-  const response = await fetch(image.url as string, { signal: fetchSignal, cache: 'no-store' })
+  // Originals commonly live in a private bucket, so a plain public
+  // fetch(image.url) is rejected with 403. Read the original through a
+  // credentialed presigned GET (same mechanism as the download route),
+  // resolving the key against the configured variant_storage backend — which,
+  // in a single-backend deployment, is also where the originals live.
+  const presignedUrl = await buildOriginalPresignedUrl(storage.backend, image.url as string)
+  const response = await fetch(presignedUrl, { signal: fetchSignal, cache: 'no-store' })
   if (!response.ok) {
     const error = new Error(`HTTP ${response.status}${response.statusText ? ` ${response.statusText}` : ''}`)
     ;(error as { httpStatus?: number }).httpStatus = response.status
@@ -140,7 +147,7 @@ export async function preprocessImage(
 
   let buffer: Buffer
   try {
-    buffer = await fetchOriginal(image, signal)
+    buffer = await fetchOriginal(image, storage, signal)
     throwIfMetadataTaskCancelled(signal)
   } catch (error) {
     if (signal?.aborted || isMetadataTaskCancelledError(error)) {
