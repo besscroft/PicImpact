@@ -100,7 +100,7 @@ export default function AlbumList(props : Readonly<HandleProps>) {
         <Card key={album.id} className="flex flex-col h-72 show-up-motion items-center gap-0 py-0">
           <div className="flex h-12 justify-start w-full p-2 space-x-2">
             <Badge aria-label={t('Album.albumName')}>{album.name}</Badge>
-            <Badge variant="secondary" aria-label={t('Album.router')}>{album.album_value}</Badge>
+            <Badge variant="secondary" aria-label={t('Album.router')}>{album.albumValue}</Badge>
           </div>
           <div className="flex justify-start w-full p-2 h-48">
             {album.detail || t('Album.noTips')}
@@ -166,7 +166,7 @@ export default function AlbumList(props : Readonly<HandleProps>) {
                   <div>
                     <p>{t('Album.albumId')}：{album.id}</p>
                     <p>{t('Album.albumName')}：{album.name}</p>
-                    <p>{t('Album.albumRouter')}：{album.album_value}</p>
+                    <p>{t('Album.albumRouter')}：{album.albumValue}</p>
                   </div>
                   <DialogFooter>
                     <Button

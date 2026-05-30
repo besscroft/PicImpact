@@ -3,6 +3,7 @@
 'use server'
 
 import { db } from '~/server/lib/db'
+import { toAlbum, toAlbumList } from '~/server/lib/model-transform'
 import type { AlbumType } from '~/types'
 
 /**
@@ -10,7 +11,7 @@ import type { AlbumType } from '~/types'
  * @returns {Promise<AlbumType[]>} 相册列表
  */
 export async function fetchAlbumsList(): Promise<AlbumType[]> {
-  return await db.albums.findMany({
+  const rows = await db.albums.findMany({
     where: {
       del: 0
     },
@@ -26,6 +27,7 @@ export async function fetchAlbumsList(): Promise<AlbumType[]> {
       }
     ]
   })
+  return toAlbumList(rows)
 }
 
 /**
@@ -33,7 +35,7 @@ export async function fetchAlbumsList(): Promise<AlbumType[]> {
  * @returns {Promise<AlbumType[]>} 相册列表
  */
 export async function fetchAlbumsShow(): Promise<AlbumType[]> {
-  return await db.albums.findMany({
+  const rows = await db.albums.findMany({
     where: {
       del: 0,
       show: 0,
@@ -47,18 +49,20 @@ export async function fetchAlbumsShow(): Promise<AlbumType[]> {
       }
     ]
   })
+  return toAlbumList(rows)
 }
 
 /**
  * 获取对应路由的相册信息
  * @param router 相册路由
  */
-export async function fetchAlbumByRouter(router: string): Promise<AlbumType> {
-  return await db.albums.findFirst({
+export async function fetchAlbumByRouter(router: string): Promise<AlbumType | null> {
+  const row = await db.albums.findFirst({
     where: {
       del: 0,
       show: 0,
       album_value: router
     },
   })
+  return row ? toAlbum(row) : null
 }

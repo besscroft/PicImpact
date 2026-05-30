@@ -125,7 +125,7 @@ export default function SimpleFileUpload() {
       id: imageId,
       album: album,
       url: url,
-      image_name: imageName,
+      imageName: imageName,
       title: title,
       preview_url: previewUrl,
       video_url: videoUrl,
@@ -284,7 +284,7 @@ export default function SimpleFileUpload() {
               <SelectGroup>
                 <SelectLabel>{t('Words.album')}</SelectLabel>
                 {albums?.map((album: AlbumType) => (
-                  <SelectItem key={album.album_value} value={album.album_value}>
+                  <SelectItem key={album.albumValue} value={album.albumValue}>
                     {album.name}
                   </SelectItem>
                 ))}

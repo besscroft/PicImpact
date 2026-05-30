@@ -118,7 +118,7 @@ export default function PreviewImageExif(props: Readonly<ImageDataProps>) {
             <div>
               <SectionTitle>{t('Exif.basicInfo')}</SectionTitle>
               <div className="space-y-1">
-                <Row label={t('Exif.filename')} value={props.data?.title || props.data?.image_name} />
+                <Row label={t('Exif.filename')} value={props.data?.title || props.data?.imageName} />
                 {dimensions && <Row label={t('Exif.dimensions')} value={dimensions} />}
                 {megaPixels && <Row label={t('Exif.pixels')} value={megaPixels} />}
                 <Row label={t('Exif.captureTime')} value={formattedDateTime} />

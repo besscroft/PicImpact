@@ -28,7 +28,7 @@ export default function DailySettings() {
   const [totalCount, setTotalCount] = useState('30')
   const [loading, setLoading] = useState(false)
   const [refreshing, setRefreshing] = useState(false)
-  const [albumWeights, setAlbumWeights] = useState<Array<{ id: string, name: string, album_value: string, daily_weight: number, photo_count: number }>>([])
+  const [albumWeights, setAlbumWeights] = useState<Array<{ id: string, name: string, albumValue: string, daily_weight: number, photo_count: number }>>([])
   const t = useTranslations()
 
   const { data: configData, isValidating: configValidating, isLoading: configLoading, mutate: mutateConfig } = useSWR<DailyConfig>('/api/v1/daily/config', fetcher)
@@ -44,7 +44,7 @@ export default function DailySettings() {
 
   useEffect(() => {
     if (albumsData) {
-      setAlbumWeights(albumsData.map((a: { id: string, name: string, album_value: string, daily_weight: number, photo_count: number }) => ({ ...a, daily_weight: Number(a.daily_weight) })))
+      setAlbumWeights(albumsData.map((a: { id: string, name: string, albumValue: string, daily_weight: number, photo_count: number }) => ({ ...a, daily_weight: Number(a.daily_weight) })))
     }
   }, [albumsData])
 

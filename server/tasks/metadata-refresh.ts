@@ -65,7 +65,7 @@ type CoordinateUpdateResult = {
 
 export type MetadataRefreshImage = {
   id: string
-  image_name: string | null
+  imageName: string | null
   title: string | null
   url: string | null
   exif: unknown
@@ -120,8 +120,8 @@ function nullableString(value: unknown) {
   return normalized || null
 }
 
-function pickImageTitle(image: Pick<MetadataRefreshImage, 'id' | 'title' | 'image_name'>) {
-  return cleanString(image.title) || cleanString(image.image_name) || image.id
+function pickImageTitle(image: Pick<MetadataRefreshImage, 'id' | 'title' | 'imageName'>) {
+  return cleanString(image.title) || cleanString(image.imageName) || image.id
 }
 
 function toErrorDetail(error: unknown) {

@@ -113,8 +113,8 @@ export default function PreviewImage(props: Readonly<PreviewImageHandleProps>) {
         return
       }
     }
-    if (props.data?.album_value) {
-      router.push(`${props.data.album_value}`)
+    if (props.data?.albumValue) {
+      router.push(`${props.data.albumValue}`)
     } else {
       router.push('/')
     }

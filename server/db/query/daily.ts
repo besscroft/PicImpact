@@ -4,6 +4,7 @@
 
 import { Prisma } from '@prisma/client'
 import { db } from '~/server/lib/db'
+import { mapRawImageRows } from '~/server/lib/model-transform'
 import type { ImageType } from '~/types'
 
 const DEFAULT_SIZE = 24
@@ -23,7 +24,7 @@ export async function fetchDailyImagesList(
   if (pageNum < 1) {
     pageNum = 1
   }
-  return await db.$queryRaw`
+  const rows = await db.$queryRaw<ImageType[]>`
     SELECT
         image.*
     FROM
@@ -35,6 +36,7 @@ export async function fetchDailyImagesList(
     ORDER BY image.daily_sort
     LIMIT ${DEFAULT_SIZE} OFFSET ${(pageNum - 1) * DEFAULT_SIZE}
   `
+  return mapRawImageRows(rows)
 }
 
 /**
@@ -87,7 +89,7 @@ export async function fetchDailyCameraAndLensList(): Promise<{ cameras: string[]
 export async function fetchAlbumsWithDailyWeight(): Promise<Array<{
   id: string
   name: string
-  album_value: string
+  albumValue: string
   daily_weight: number
   photo_count: number
 }>> {
@@ -95,7 +97,7 @@ export async function fetchAlbumsWithDailyWeight(): Promise<Array<{
     SELECT
         albums.id,
         albums.name,
-        albums.album_value,
+        albums.album_value AS "albumValue",
         albums.daily_weight,
         COALESCE(COUNT(image.id), 0)::INTEGER AS photo_count
     FROM

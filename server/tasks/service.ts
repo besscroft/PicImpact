@@ -272,8 +272,8 @@ function buildTaskScopeQuery(scope: AdminTaskScope) {
   }
 }
 
-function imageTitle(image: Pick<MetadataRefreshImage, 'id' | 'title' | 'image_name'>) {
-  return cleanString(image.title) || cleanString(image.image_name) || image.id
+function imageTitle(image: Pick<MetadataRefreshImage, 'id' | 'title' | 'imageName'>) {
+  return cleanString(image.title) || cleanString(image.imageName) || image.id
 }
 
 function createImageIssue(image: MetadataRefreshImage, input: IssueInput): AdminTaskIssue {
@@ -344,7 +344,7 @@ async function fetchImagesBatchForScope(scope: AdminTaskScope, nextCursor: strin
   return db.$queryRaw<MetadataRefreshImage[]>`
     SELECT DISTINCT ON (image.id)
       image.id,
-      image.image_name,
+      image.image_name AS "imageName",
       image.title,
       image.url,
       image.exif,

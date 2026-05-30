@@ -155,7 +155,7 @@ app.get('/:id/presigned', async (c) => {
 
   try {
     const { imageData, imageUrl } = await loadImageOrThrow(id)
-    const filename = deriveFilename(imageData.image_name, imageUrl)
+    const filename = deriveFilename(imageData.imageName, imageUrl)
     const url = await buildPresignedUrlForStorage(storage, imageUrl)
     c.header('Cache-Control', 'private, max-age=60')
     return ok(c, { url, filename: encodeURIComponent(filename) })
@@ -182,7 +182,7 @@ app.get('/:id', async (c) => {
 
   try {
     const { imageData, imageUrl } = await loadImageOrThrow(id)
-    const filename = deriveFilename(imageData.image_name, imageUrl)
+    const filename = deriveFilename(imageData.imageName, imageUrl)
 
     const response = await fetch(imageUrl)
     if (!response.ok) {

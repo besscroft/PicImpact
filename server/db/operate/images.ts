@@ -3,6 +3,10 @@
 'use server'
 
 import { db } from '~/server/lib/db'
+import {
+  toImagePrismaCreate,
+  toImagePrismaUpdate,
+} from '~/server/lib/model-transform'
 import type { ImageType } from '~/types'
 
 /**
@@ -15,26 +19,7 @@ export async function insertImage(image: ImageType) {
   }
   await db.$transaction(async (tx) => {
     const resultRow = await tx.images.create({
-      data: {
-        id: image.id,
-        image_name: image.image_name,
-        url: image.url,
-        title: image.title,
-        blurhash: image.blurhash,
-        preview_url: image.preview_url,
-        video_url: image.video_url,
-        exif: image.exif,
-        labels: image.labels,
-        width: image.width,
-        height: image.height,
-        detail: image.detail,
-        lat: String(image.lat),
-        lon: String(image.lon),
-        type: image.type,
-        show: 1,
-        sort: image.sort,
-        del: 0,
-      }
+      data: toImagePrismaCreate(image)
     })
 
     if (resultRow) {
@@ -114,24 +99,7 @@ export async function updateImage(image: ImageType) {
       where: {
         id: image.id
       },
-      data: {
-        url: image.url,
-        title: image.title,
-        preview_url: image.preview_url,
-        video_url: image.video_url,
-        blurhash: image.blurhash,
-        exif: image.exif,
-        labels: image.labels,
-        detail: image.detail,
-        sort: image.sort,
-        show: image.show,
-        show_on_mainpage: image.show_on_mainpage,
-        width: image.width,
-        height: image.height,
-        lat: image.lat,
-        lon: image.lon,
-        updatedAt: new Date(),
-      }
+      data: toImagePrismaUpdate(image)
     })
   })
 }

@@ -205,7 +205,7 @@ export default function ListProps(props : Readonly<ImageServerHandleProps>) {
                 <SelectLabel>{t('Words.album')}</SelectLabel>
                 <SelectItem className="cursor-pointer" value="all">{t('Words.all')}</SelectItem>
                 {albums?.map((album: AlbumType) => (
-                  <SelectItem className="cursor-pointer" key={album.album_value} value={album.album_value}>
+                  <SelectItem className="cursor-pointer" key={album.albumValue} value={album.albumValue}>
                     {album.name}
                   </SelectItem>
                 ))}
@@ -464,7 +464,7 @@ export default function ListProps(props : Readonly<ImageServerHandleProps>) {
                       className="cursor-pointer"
                       onClick={() => {
                         setImage(image)
-                        setImageAlbum(image.album_value)
+                        setImageAlbum(image.albumValue)
                       }}
                       aria-label={t('List.bindAlbum')}
                     >
