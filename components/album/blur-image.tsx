@@ -6,12 +6,38 @@ import { MotionImage } from '~/components/album/motion-image'
 import { Skeleton } from '~/components/ui/skeleton'
 import { useState } from 'react'
 import { cn } from '~/lib/utils'
+import { hasReadyVariants, makeVariantLoader } from '~/lib/image/loader'
+import { useAvifSupport } from '~/hooks/use-avif-support'
 
-export default function BlurImage({ photo, dataList }: { photo: any, dataList: any }) {
+export default function BlurImage({ photo }: { photo: any }) {
   const router = useRouter()
   const [isLoading, setIsLoading] = useState(true)
+  const avifOk = useAvifSupport()
+  const [variantFailed, setVariantFailed] = useState(false)
 
   const dataURL = useBlurImageDataUrl(photo.blurhash)
+  const hasRealBlurhash = !!photo.blurhash && photo.blurhash !== DEFAULT_HASH
+
+  // Variant ladder (same policy as the main gallery): responsive variant →
+  // preview thumbnail → blurhash. Never the full original in the tag grid.
+  const variantBaseUrl = photo.variantBaseUrl ?? ''
+  const variantReady = !variantFailed && hasReadyVariants(photo.image_key, photo.ready_max_width, variantBaseUrl)
+  const previewSrc = photo.preview_url || ''
+  const imageProps = variantReady
+    ? {
+        src: photo.image_key,
+        sizes: '(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw',
+        loader: makeVariantLoader({
+          base: variantBaseUrl,
+          imageKey: photo.image_key,
+          readyMaxWidth: photo.ready_max_width,
+          format: (avifOk ? 'avif' : 'webp') as 'avif' | 'webp',
+        }),
+      }
+    : previewSrc
+      ? { src: previewSrc, overrideSrc: previewSrc, unoptimized: true }
+      : null
+  const blurhashOnly = !imageProps && hasRealBlurhash
 
   return (
     <div
@@ -25,27 +51,45 @@ export default function BlurImage({ photo, dataList }: { photo: any, dataList: a
       }}
       className="relative inline-block select-none shadow-sm transition-transform duration-500 ease-out hover:scale-[1.02]">
       {
-        isLoading && (
+        imageProps && isLoading && (
           <Skeleton className="absolute inset-0 z-10 rounded-none" />
         )
       }
-      <MotionImage
-        className={cn('cursor-pointer', isLoading && 'animate-pulse')}
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.5 }}
-        src={photo.src}
-        overrideSrc={photo.src}
-        alt={photo.alt || 'Photo'}
-        width={photo.width}
-        height={photo.height}
-        loading="lazy"
-        unoptimized={!!photo.preview_url}
-        placeholder={(photo.blurhash === DEFAULT_HASH || !photo.blurhash) ? 'empty' : 'blur'}
-        blurDataURL={dataURL}
-        onClick={() => router.push(`/preview/${photo?.id}`)}
-        onLoad={() => setIsLoading(false)}
-      />
+      {imageProps ? (
+        <MotionImage
+          {...imageProps}
+          key={variantReady ? 'variant' : 'preview'}
+          className={cn('cursor-pointer', isLoading && 'animate-pulse')}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.5 }}
+          alt={photo.alt || 'Photo'}
+          width={photo.width}
+          height={photo.height}
+          loading="lazy"
+          placeholder={hasRealBlurhash ? 'blur' : 'empty'}
+          blurDataURL={dataURL}
+          onClick={() => router.push(`/preview/${photo?.id}`)}
+          onLoad={() => setIsLoading(false)}
+          onError={() => {
+            // A ready variant failed → fall to preview/blurhash, never the original.
+            if (variantReady) {
+              setVariantFailed(true)
+              return
+            }
+            setIsLoading(false)
+          }}
+        />
+      ) : blurhashOnly ? (
+        <div
+          aria-hidden
+          className="bg-cover bg-center"
+          style={{ backgroundImage: `url(${dataURL})`, width: photo.width, height: photo.height, maxWidth: '100%' }}
+          onClick={() => router.push(`/preview/${photo?.id}`)}
+        />
+      ) : (
+        <Skeleton style={{ width: photo.width, height: photo.height, maxWidth: '100%' }} className="rounded-none" />
+      )}
       {
         photo.type === 2 &&
         <div className="absolute top-2 left-2 p-5 rounded-full">
