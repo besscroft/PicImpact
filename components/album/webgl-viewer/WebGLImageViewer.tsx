@@ -147,6 +147,16 @@ export const WebGLImageViewer = ({
   })
   useEffect(() => {
     setUpWebGLEngine()
+    // Release the WebGL engine on unmount. Without this, every mount (each
+    // album → detail → zoom cycle) leaks a full WebGL context, its textures /
+    // buffers / program, the texture Web Worker, and ~9 canvas/window event
+    // listeners — browsers cap live WebGL contexts (~16) and silently drop the
+    // oldest once exceeded, so repeated cycles degrade sharply. destroy()
+    // already tears all of that down; it just was never being called.
+    return () => {
+      viewerRef.current?.destroy()
+      viewerRef.current = null
+    }
   }, [])
 
   const handleOutlineToggle = useCallback(
