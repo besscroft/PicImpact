@@ -562,7 +562,14 @@
     "detailDescription": "查看本次任务的范围、进度、结果统计、时间线和最近日志。",
     "detailEyebrow": "任务详情",
     "unfinished": "未结束",
-    "countsTitle": "结果统计"
+    "countsTitle": "结果统计",
+    "tabMetadata": "元数据",
+    "tabPreprocess": "变体预处理",
+    "preprocessForceLabel": "重新生成全部",
+    "preprocessForceHint": "重新处理全部图片，而不仅是缺少变体的图片。",
+    "preprocessScopeForce": "全部图片（强制）",
+    "preprocessScopeMissing": "缺少变体的图片",
+    "preprocessStorageMissing": "先在存储设置里选择变体存储后端后再试。"
   },
   "Backup": {
     "pageDescription": "导出和导入版本化的 PicImpact 业务备份包。备份会包含站点配置和业务数据，但不包含认证表和对象存储文件。",

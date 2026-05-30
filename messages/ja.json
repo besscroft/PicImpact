@@ -562,7 +562,14 @@
     "detailDescription": "この実行の対象範囲、進行状況、結果、タイムライン、最近のログを確認します。",
     "detailEyebrow": "実行詳細",
     "unfinished": "継続中",
-    "countsTitle": "結果"
+    "countsTitle": "結果",
+    "tabMetadata": "メタデータ",
+    "tabPreprocess": "バリアント前処理",
+    "preprocessForceLabel": "すべて再生成",
+    "preprocessForceHint": "バリアントが未生成の画像だけでなく、すべての画像を再処理します。",
+    "preprocessScopeForce": "すべての画像（強制）",
+    "preprocessScopeMissing": "バリアント未生成の画像",
+    "preprocessStorageMissing": "先にストレージ設定でバリアントストレージのバックエンドを選択してください。"
   },
   "Backup": {
     "pageDescription": "Export and import versioned PicImpact backups. The package includes site configuration and business data, but excludes auth tables and object storage files.",

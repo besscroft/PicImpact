@@ -562,7 +562,14 @@
     "detailDescription": "Inspect the scope, progress, outcome counts, timeline, and recent logs from this run.",
     "detailEyebrow": "Run details",
     "unfinished": "Still running",
-    "countsTitle": "Outcome counts"
+    "countsTitle": "Outcome counts",
+    "tabMetadata": "Metadata",
+    "tabPreprocess": "Variant preprocessing",
+    "preprocessForceLabel": "Regenerate all",
+    "preprocessForceHint": "Reprocess every image, not just those missing variants.",
+    "preprocessScopeForce": "All images (force)",
+    "preprocessScopeMissing": "Images missing variants",
+    "preprocessStorageMissing": "Select a variant storage backend in storage settings first."
   },
   "Backup": {
     "pageDescription": "Export and import versioned PicImpact business backups. Backups include all site configuration records and business data, but exclude authentication tables and object storage files.",

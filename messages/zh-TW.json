@@ -562,7 +562,14 @@
     "detailDescription": "查看本次任務的範圍、進度、結果統計、時間線和最近日誌。",
     "detailEyebrow": "任務詳情",
     "unfinished": "未結束",
-    "countsTitle": "結果統計"
+    "countsTitle": "結果統計",
+    "tabMetadata": "中繼資料",
+    "tabPreprocess": "變體預處理",
+    "preprocessForceLabel": "重新產生全部",
+    "preprocessForceHint": "重新處理全部圖片，而不僅是缺少變體的圖片。",
+    "preprocessScopeForce": "全部圖片（強制）",
+    "preprocessScopeMissing": "缺少變體的圖片",
+    "preprocessStorageMissing": "先在儲存設定裡選擇變體儲存後端後再試。"
   },
   "Backup": {
     "pageDescription": "Export and import versioned PicImpact backups. These packages include full site configuration and business data, but exclude auth tables and object storage files.",
