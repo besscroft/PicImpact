@@ -4,6 +4,7 @@ import { fetchClientImagesListByAlbum, fetchClientImagesPageTotalByAlbum } from 
 import { fetchConfigsByKeys, fetchConfigValue } from '~/server/db/query/configs'
 import { fetchDailyImagesList, fetchDailyImagesPageTotal } from '~/server/db/query/daily'
 import { checkAndRefreshDailyImages } from '~/server/db/operate/daily'
+import { getVariantBaseUrl } from '~/server/lib/variant-storage'
 import type { GalleryDisplayConfig, ImageType } from '~/types'
 
 export async function getImagesData(pageNum: number, album: string, camera?: string, lens?: string): Promise<ImageType[]> {
@@ -37,6 +38,7 @@ export async function getDisplayConfig(): Promise<GalleryDisplayConfig> {
     customTitle: get('custom_title') ?? undefined,
     customIndexDownloadEnable: get('custom_index_download_enable') === 'true',
     customIndexOriginEnable: get('custom_index_origin_enable') === 'true',
+    variantBaseUrl: await getVariantBaseUrl(),
   }
 }
 
@@ -46,6 +48,7 @@ export async function getAlbumDisplayConfig(): Promise<GalleryDisplayConfig> {
   return {
     customIndexDownloadEnable: get('custom_index_download_enable') === 'true',
     customIndexOriginEnable: false,
+    variantBaseUrl: await getVariantBaseUrl(),
   }
 }
 
