@@ -16,7 +16,10 @@ import type { ResolvedVariantStorage } from '~/server/lib/variant-storage'
 import type { AdminTaskIssue, AdminTaskStage } from '~/types/admin-tasks'
 import { ADMIN_TASK_KEY_PREPROCESS_IMAGES } from '~/types/admin-tasks'
 
-const FETCH_TIMEOUT_MS = 30_000
+// Originals can be 20MB+ and live behind slow object storage; 30s timed out on
+// the largest files during backfill. 60s gives slow large-original fetches more
+// headroom while still bounding a stuck request.
+const FETCH_TIMEOUT_MS = 60_000
 
 export type PreprocessImage = {
   id: string
