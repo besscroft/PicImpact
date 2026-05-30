@@ -38,7 +38,11 @@ function VirtualMasonryInner<T extends VirtualMasonryItem>({
   columnWidth,
   columnCount,
   maxColumnCount,
-  overscanBy = 2,
+  // Render this many viewport-heights of extra content beyond what's visible.
+  // A larger overscan preloads rows before they scroll into view, so fast
+  // scrolling doesn't outrun item mount + image load/decode (which left blank
+  // cells, especially for slower-decoding AVIF).
+  overscanBy = 5,
 }: Readonly<VirtualMasonryProps<T>>) {
   return (
     <Masonry

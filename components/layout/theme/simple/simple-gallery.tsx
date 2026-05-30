@@ -119,7 +119,7 @@ export default function SimpleGallery(props: Readonly<ImageHandleProps>) {
             render={SimpleRender}
             columnCount={1}
             columnGutter={40}
-            overscanBy={2}
+            overscanBy={5}
           />
         )}
         {dataList.length === 0 && !isValidating && (

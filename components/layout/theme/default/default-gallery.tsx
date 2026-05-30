@@ -183,7 +183,7 @@ export default function DefaultGallery(props : Readonly<ImageHandleProps>) {
             render={RenderItem}
             columnGutter={4}
             columnCount={columnCount}
-            overscanBy={2}
+            overscanBy={5}
           />
         )}
         {dataList.length === 0 && !isValidating && (
