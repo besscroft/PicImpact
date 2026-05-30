@@ -814,3 +814,35 @@ export async function tickPreprocessTaskRuns() {
   if (!activeRecord) return { activeRun: null }
   return { activeRun: toSummary(activeRecord) }
 }
+
+/**
+ * Best-effort variant generation for a single image, used to auto-process a
+ * freshly uploaded image without the batch run/cursor machinery (which a new
+ * insert could slip past). Intended to be fire-and-forget from the upload
+ * path: it never throws — if the variant pipeline is unconfigured, the image
+ * is gone, or generation/upload fails, it leaves the image `variants_ready=false`
+ * so a later backfill run picks it up. Re-processing is idempotent (variants are
+ * content-addressed), so overlapping with a backfill run is safe.
+ */
+export async function preprocessImageById(imageId: string): Promise<void> {
+  try {
+    const storage = await resolveVariantStorage()
+    if (!storage) return
+
+    const rows = await db.$queryRaw<PreprocessImage[]>`
+      SELECT image.id, image.image_name, image.title, image.url
+      FROM "public"."images" AS image
+      WHERE image.id = ${imageId} AND image.del = 0
+      LIMIT 1
+    `
+    const image = rows[0]
+    if (!image) return
+
+    const result = await preprocessImage(image, storage)
+    if (result.updates) {
+      await applyPreprocessUpdates(imageId, result.updates)
+    }
+  } catch (error) {
+    console.warn(`preprocessImageById(${imageId}) failed:`, error instanceof Error ? error.message : error)
+  }
+}
