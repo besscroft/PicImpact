@@ -69,6 +69,32 @@ export function tierWidthsForSource(sourceWidth: number): number[] {
   return tiers.length > 0 ? tiers : [sourceWidth]
 }
 
+/**
+ * Resolve an image's *displayed* dimensions from sharp metadata.
+ *
+ * sharp's `.metadata()` reports the stored (pre-rotation) width/height plus the
+ * EXIF `orientation` flag. For orientation 5-8 (transpose / rotate 90 / rotate
+ * 270 / transverse — very common on phone photos) the displayed image has its
+ * width and height swapped relative to storage. Anything that persists or lays
+ * out dimensions must use these oriented values so they match the
+ * EXIF-auto-oriented pixels (and the browser-reported dimensions stored for
+ * existing rows), avoiding portrait-as-landscape layout breakage.
+ *
+ * Returns `0` for any dimension sharp could not read.
+ */
+export function getOrientedDimensions(
+  metadata: { width?: number; height?: number; orientation?: number },
+): { width: number; height: number } {
+  const storedWidth = metadata.width ?? 0
+  const storedHeight = metadata.height ?? 0
+  const orientation = metadata.orientation ?? 1
+  const swap = orientation >= 5 && orientation <= 8
+  return {
+    width: swap ? storedHeight : storedWidth,
+    height: swap ? storedWidth : storedHeight,
+  }
+}
+
 export interface GeneratedVariant {
   width: number
   format: VariantFormat
@@ -108,23 +134,12 @@ export async function generateImageVariants(
 
   const metadata = await sharp(input, { limitInputPixels: MAX_INPUT_PIXELS, failOn: 'none' }).metadata()
 
-  const storedWidth = metadata.width ?? 0
-  const storedHeight = metadata.height ?? 0
-  if (storedWidth <= 0 || storedHeight <= 0) {
+  // The variants below are produced via `.rotate()` (EXIF auto-orientation), so
+  // report the oriented dimensions (see getOrientedDimensions).
+  const { width: sourceWidth, height: sourceHeight } = getOrientedDimensions(metadata)
+  if (sourceWidth <= 0 || sourceHeight <= 0) {
     throw new Error('Unable to read source image dimensions')
   }
-
-  // sharp's `.metadata()` reports the stored (pre-rotation) dimensions, while
-  // the variants below are produced via `.rotate()` (EXIF auto-orientation).
-  // For orientation 5-8 (transpose / rotate 90 / rotate 270 / transverse —
-  // very common on phone photos) the displayed image has width and height
-  // swapped. Report the oriented dimensions so they match both the generated
-  // variant pixels and the browser-reported dimensions stored for existing
-  // rows (avoiding portrait-as-landscape gallery layout breakage).
-  const orientation = metadata.orientation ?? 1
-  const swapDimensions = orientation >= 5 && orientation <= 8
-  const sourceWidth = swapDimensions ? storedHeight : storedWidth
-  const sourceHeight = swapDimensions ? storedWidth : storedHeight
 
   const blurhash = await generateThumbhash(input)
 

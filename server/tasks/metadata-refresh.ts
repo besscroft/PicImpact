@@ -8,6 +8,7 @@ import { DOMParser } from '@xmldom/xmldom'
 
 dayjs.extend(customParseFormat)
 
+import { getOrientedDimensions } from '~/server/lib/image-variants'
 import type { ExifType } from '~/types'
 import type { AdminTaskIssue, AdminTaskStage } from '~/types/admin-tasks'
 import { ADMIN_TASK_KEY_REFRESH_IMAGE_METADATA } from '~/types/admin-tasks'
@@ -448,11 +449,16 @@ export async function refreshImageMetadata(image: MetadataRefreshImage, signal?:
     const metadata = await sharp(buffer).metadata()
     throwIfMetadataTaskCancelled(signal)
 
-    if (metadata.width && metadata.width > 0) {
-      widthCandidate = metadata.width
+    // Use the EXIF-oriented dimensions so rotated images (orientation 5-8) get
+    // their displayed width/height persisted, matching what the browser stored
+    // on upload and what the variant pipeline generates. Reading the raw
+    // metadata here would write swapped dimensions for portrait phone photos.
+    const oriented = getOrientedDimensions(metadata)
+    if (oriented.width > 0) {
+      widthCandidate = oriented.width
     }
-    if (metadata.height && metadata.height > 0) {
-      heightCandidate = metadata.height
+    if (oriented.height > 0) {
+      heightCandidate = oriented.height
     }
   } catch (error) {
     if (signal?.aborted || isMetadataTaskCancelledError(error)) {
