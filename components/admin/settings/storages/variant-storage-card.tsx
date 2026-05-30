@@ -47,11 +47,17 @@ export default function VariantStorageCard() {
     setSaving(true)
     try {
       const payload: VariantStorageInfo = { variantStorage: selection === OFF ? '' : selection }
-      await fetch('/api/v1/settings/variant-storage', {
+      const res = await fetch('/api/v1/settings/variant-storage', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
       })
+      // fetch doesn't throw on 4xx/5xx, so check explicitly — otherwise a failed
+      // PUT would wrongly toast success and the admin would think the backend is
+      // set while variantBaseUrl stays empty and backfill can't run.
+      if (!res.ok) {
+        throw new Error(`Request failed: ${res.status}`)
+      }
       toast.success(t('Config.updateSuccess'))
       mutate()
     } catch {
