@@ -378,6 +378,11 @@
     "inputAvatar": "Please enter the avatar URL."
   },
   "Config": {
+    "variantStorageTitle": "Variant storage",
+    "variantStorageDesc": "Storage backend the thumbnail/variant preprocessing pipeline uploads to. Open List is not supported.",
+    "variantStorageOff": "Off",
+    "variantStorageHelper": "Make sure the selected backend is configured in its tab below.",
+    "variantStorageNotEnabled": "Variant pipeline disabled — the gallery falls back to preview/blurhash.",
     "accesskey_id": "Aliyun OSS / AWS S3 AccessKey_ID",
     "accesskey_secret": "Aliyun OSS / AWS S3 AccessKey_Secret",
     "region": "Aliyun OSS / AWS S3 Region, e.g., oss-cn-hongkong",

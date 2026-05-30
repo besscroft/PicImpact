@@ -8,6 +8,7 @@ import type {
   OpenListInfo,
   R2Info,
   S3Info,
+  VariantStorageInfo,
 } from '~/types'
 import { normalizeDefaultTheme } from '~/lib/utils/theme'
 
@@ -110,6 +111,11 @@ export function toOpenListInfo(configs: Config[]): OpenListInfo {
     openListUrl: str(configs, 'open_list_url'),
     openListToken: str(configs, 'open_list_token'),
   }
+}
+
+export function toVariantStorageInfo(configs: Config[]): VariantStorageInfo {
+  const value = str(configs, 'variant_storage')
+  return { variantStorage: value === 's3' || value === 'r2' ? value : '' }
 }
 
 export function toAdminConfig(configs: Config[]): AdminConfig {

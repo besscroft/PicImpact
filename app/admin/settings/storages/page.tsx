@@ -3,6 +3,7 @@
 import OpenListTabs from '~/components/admin/settings/storages/open-list-tabs.tsx'
 import S3Tabs from '~/components/admin/settings/storages/s3-tabs'
 import R2Tabs from '~/components/admin/settings/storages/r2-tabs'
+import VariantStorageCard from '~/components/admin/settings/storages/variant-storage-card'
 import {
   Tabs,
   TabsContent,
@@ -14,6 +15,8 @@ export default function Storages() {
 
   return (
     <div className="flex flex-col space-y-2 h-full flex-1">
+      {/* Global (cross-backend) choice of where the variant pipeline uploads. */}
+      <VariantStorageCard />
       <Tabs defaultValue="s3">
         <TabsList className="grid w-full grid-cols-3">
           <TabsTrigger value="s3">S3 API</TabsTrigger>

@@ -4,7 +4,7 @@
 
 import { db } from '~/server/lib/db'
 import { normalizeDefaultTheme } from '~/lib/utils/theme'
-import type { CustomInfo, R2Info, S3Info, OpenListInfo } from '~/types'
+import type { CustomInfo, R2Info, S3Info, OpenListInfo, VariantStorageInfo } from '~/types'
 
 // The configs table stores everything as text, so boolean values coming from
 // the API layer (real `boolean`) need to be serialised back to 'true' / 'false'
@@ -83,6 +83,19 @@ export async function updateOpenListConfig(configs: OpenListInfo) {
         updated_at = NOW()
     WHERE config_key IN ('open_list_url', 'open_list_token');
   `
+}
+
+/**
+ * 更新变体存储后端配置（预处理管线上传变体的目标：'' | 's3' | 'r2'）。
+ * upsert 以兼容尚未重新 seed 出 `variant_storage` 行的旧实例。
+ */
+export async function updateVariantStorageConfig(payload: VariantStorageInfo) {
+  const value = payload.variantStorage === 's3' || payload.variantStorage === 'r2' ? payload.variantStorage : ''
+  return await db.configs.upsert({
+    where: { config_key: 'variant_storage' },
+    update: { config_value: value, updatedAt: new Date() },
+    create: { config_key: 'variant_storage', config_value: value },
+  })
 }
 
 /**

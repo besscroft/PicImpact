@@ -2,15 +2,16 @@ import 'server-only'
 
 import { fetchConfigsByKeys } from '~/server/db/query/configs'
 import { Hono } from 'hono'
-import { updateOpenListConfig, updateCustomInfo, updateR2Config, updateS3Config } from '~/server/db/operate/configs'
+import { updateOpenListConfig, updateCustomInfo, updateR2Config, updateS3Config, updateVariantStorageConfig } from '~/server/db/operate/configs'
 import { normalizeDefaultTheme } from '~/lib/utils/theme'
 import {
   toAdminConfig,
   toCustomInfo,
   toR2Info,
   toS3Info,
+  toVariantStorageInfo,
 } from '~/server/lib/config-transform'
-import type { CustomInfo, OpenListInfo, R2Info, S3Info } from '~/types'
+import type { CustomInfo, OpenListInfo, R2Info, S3Info, VariantStorageInfo } from '~/types'
 import { ok, okEmpty } from '~/hono/_lib/response'
 import { serverError } from '~/hono/_lib/errors'
 
@@ -91,6 +92,25 @@ app.get('/admin-config', async (c) => {
     return ok(c, toAdminConfig(rows))
   } catch (error) {
     throw serverError('Failed to fetch admin config', error)
+  }
+})
+
+app.get('/variant-storage', async (c) => {
+  try {
+    const rows = await fetchConfigsByKeys(['variant_storage'])
+    return ok(c, toVariantStorageInfo(rows))
+  } catch (error) {
+    throw serverError('Failed to fetch variant storage info', error)
+  }
+})
+
+app.put('/variant-storage', async (c) => {
+  try {
+    const body = await c.req.json<VariantStorageInfo>()
+    await updateVariantStorageConfig(body)
+    return okEmpty(c)
+  } catch (e) {
+    throw serverError('Failed', e)
   }
 })
 
