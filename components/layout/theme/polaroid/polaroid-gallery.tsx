@@ -10,6 +10,8 @@ import Image from 'next/image'
 import { Skeleton } from '~/components/ui/skeleton'
 import { useBlurImageDataUrl } from '~/hooks/use-blurhash'
 import { cn } from '~/lib/utils'
+import { hasReadyVariants, makeVariantLoader } from '~/lib/image/loader'
+import { useAvifSupport } from '~/hooks/use-avif-support'
 
 /**
  * 拍立得照片卡片组件
@@ -20,15 +22,37 @@ const PolaroidCard = memo(function PolaroidCard({
   style,
   onMouseDown,
   zIndex,
+  variantBaseUrl = '',
 }: {
   item: ImageType
   style: React.CSSProperties
   onMouseDown: (id: string) => void
   zIndex: number
+  variantBaseUrl?: string
 }) {
   const [isLoading, setIsLoading] = useState(true)
-  const [imgSrc, setImgSrc] = useState(item.preview_url)
   const blurDataUrl = useBlurImageDataUrl(item.blurhash)
+  const avifOk = useAvifSupport()
+  const [variantFailed, setVariantFailed] = useState(false)
+
+  // Image source ladder (same policy as the other themes): responsive variant
+  // via the CDN loader → preview thumbnail → blurhash. NEVER the full original
+  // (removes the prior onError → item.url 20MB fallback).
+  const variantReady = !variantFailed && hasReadyVariants(item.image_key, item.ready_max_width, variantBaseUrl)
+  const previewSrc = item.preview_url || ''
+  const imageProps = variantReady
+    ? {
+        src: item.image_key,
+        loader: makeVariantLoader({
+          base: variantBaseUrl,
+          imageKey: item.image_key,
+          readyMaxWidth: item.ready_max_width,
+          format: (avifOk ? 'avif' : 'webp') as 'avif' | 'webp',
+        }),
+      }
+    : previewSrc
+      ? { src: previewSrc, unoptimized: true }
+      : null
 
   // 如果缺少宽高数据，则跳过渲染以规避报错
   if (!item.width || !item.height || item.width <= 0 || item.height <= 0) {
@@ -82,29 +106,41 @@ const PolaroidCard = memo(function PolaroidCard({
       <div 
         className="relative overflow-hidden bg-muted shrink-0 w-full h-full shadow-inner"
       >
-        {isLoading && (
+        {imageProps && isLoading && (
           <Skeleton className="absolute inset-0 z-20 rounded-none" />
         )}
-        <Image
-          src={imgSrc}
-          alt={item.title}
-          width={Math.round(imgWidth)}
-          height={Math.round(imgHeight)}
-          className={cn(
-            'pointer-events-none relative z-10 h-full w-full object-cover transition-opacity duration-500',
-            isLoading ? 'opacity-0' : 'opacity-100'
-          )}
-          placeholder="blur"
-          blurDataURL={blurDataUrl}
-          onLoad={() => setIsLoading(false)}
-          onError={() => {
-            if (imgSrc !== item.url) {
-              setImgSrc(item.url)
-            }
-          }}
-          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-          priority={false}
-        />
+        {imageProps ? (
+          <Image
+            {...imageProps}
+            key={variantReady ? 'variant' : 'preview'}
+            alt={item.title}
+            width={Math.round(imgWidth)}
+            height={Math.round(imgHeight)}
+            className={cn(
+              'pointer-events-none relative z-10 h-full w-full object-cover transition-opacity duration-500',
+              isLoading ? 'opacity-0' : 'opacity-100'
+            )}
+            placeholder="blur"
+            blurDataURL={blurDataUrl}
+            onLoad={() => setIsLoading(false)}
+            onError={() => {
+              // A ready variant failed → step down to preview/blurhash, never the original.
+              if (variantReady) {
+                setVariantFailed(true)
+                return
+              }
+              setIsLoading(false)
+            }}
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+            priority={false}
+          />
+        ) : (
+          <div
+            aria-hidden
+            className="pointer-events-none relative z-10 h-full w-full bg-cover bg-center"
+            style={{ backgroundImage: `url(${blurDataUrl})` }}
+          />
+        )}
       </div>
       {/* 标题区域：绝对定位在底部留白处，不影响相纸尺寸 */}
       <div 
@@ -134,6 +170,7 @@ export default function PolaroidGallery(props: Readonly<ImageHandleProps>) {
   })
 
   const customTitle = configData?.customTitle
+  const variantBaseUrl = configData?.variantBaseUrl ?? ''
 
   const { data } = useSWRInfinite((index) => {
     return [`client-${props.args}-${index}-${props.album}`, index]
@@ -192,6 +229,7 @@ export default function PolaroidGallery(props: Readonly<ImageHandleProps>) {
           style={currentPositions[item.id]}
           zIndex={cardZIndices[item.id] || 1}
           onMouseDown={handleCardClick}
+          variantBaseUrl={variantBaseUrl}
         />
       ))}
     </DraggableCardContainer>
