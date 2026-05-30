@@ -10,6 +10,7 @@ import {
   animate,
   useVelocity,
   useAnimationControls,
+  useReducedMotion,
 } from 'motion/react'
 import { useIsMobile } from '~/hooks/use-mobile'
 
@@ -25,6 +26,11 @@ export const DraggableCardBody = ({
   onMouseDown?: React.MouseEventHandler<HTMLDivElement>;
 }) => {
   const isMobile = useIsMobile()
+  const prefersReducedMotion = useReducedMotion()
+  // The 3D tilt + glare + per-pointer spring graph is only worth running for
+  // pointer users who haven't asked for reduced motion. On mobile or with
+  // reduced motion we keep the card draggable but drop the expensive tilt.
+  const tiltEnabled = !isMobile && !prefersReducedMotion
   const mouseX = useMotionValue(0)
   const mouseY = useMotionValue(0)
   const cardRef = useRef<HTMLDivElement>(null)
@@ -35,6 +41,10 @@ export const DraggableCardBody = ({
     right: 0,
     bottom: 0,
   })
+  // Promote to a compositor layer only while the card is actually moving
+  // (dragging or tilting on hover). Polaroid cards are not virtualized, so a
+  // permanent `will-change` would create one idle compositor layer per card.
+  const [isInteracting, setIsInteracting] = useState(false)
 
   // physics biatch
   const velocityX = useVelocity(mouseX)
@@ -98,7 +108,7 @@ export const DraggableCardBody = ({
   }, [])
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (isMobile) return
+    if (!tiltEnabled) return
     const { clientX, clientY } = e
     const { width, height, left, top } =
       cardRef.current?.getBoundingClientRect() ?? {
@@ -115,9 +125,14 @@ export const DraggableCardBody = ({
     mouseY.set(deltaY)
   }
 
+  const handleMouseEnter = () => {
+    setIsInteracting(true)
+  }
+
   const handleMouseLeave = () => {
     mouseX.set(0)
     mouseY.set(0)
+    setIsInteracting(false)
   }
 
   return (
@@ -128,18 +143,22 @@ export const DraggableCardBody = ({
       onMouseDown={onMouseDown}
       onDragStart={() => {
         document.body.style.cursor = 'grabbing'
+        setIsInteracting(true)
       }}
-      onDragEnd={(event, info) => {
+      onDragEnd={(_event, info) => {
         document.body.style.cursor = 'default'
+        setIsInteracting(false)
 
-        controls.start({
-          rotateX: 0,
-          rotateY: 0,
-          transition: {
-            type: 'spring',
-            ...springConfig,
-          },
-        })
+        if (tiltEnabled) {
+          controls.start({
+            rotateX: 0,
+            rotateY: 0,
+            transition: {
+              type: 'spring',
+              ...springConfig,
+            },
+          })
+        }
         const currentVelocityX = velocityX.get()
         const currentVelocityY = velocityY.get()
 
@@ -170,23 +189,27 @@ export const DraggableCardBody = ({
         })
       }}
       style={{
-        rotateX: isMobile ? 0 : rotateX,
-        rotateY: isMobile ? 0 : rotateY,
-        opacity: isMobile ? 1 : opacity,
-        willChange: 'transform',
+        rotateX: tiltEnabled ? rotateX : 0,
+        rotateY: tiltEnabled ? rotateY : 0,
+        opacity: tiltEnabled ? opacity : 1,
+        willChange: isInteracting ? 'transform' : undefined,
         ...style,
       }}
       animate={controls}
-      whileHover={isMobile ? undefined : { scale: 1.02 }}
-      onMouseMove={isMobile ? undefined : handleMouseMove}
-      onMouseLeave={isMobile ? undefined : handleMouseLeave}
+      whileHover={tiltEnabled ? { scale: 1.02 } : undefined}
+      onMouseEnter={tiltEnabled ? handleMouseEnter : undefined}
+      onMouseMove={tiltEnabled ? handleMouseMove : undefined}
+      onMouseLeave={tiltEnabled ? handleMouseLeave : undefined}
       className={cn(
-        'relative min-h-96 w-80 overflow-hidden rounded-md bg-neutral-100 p-6 shadow-2xl transform-3d dark:bg-neutral-900',
+        'relative min-h-96 w-80 overflow-hidden rounded-md bg-neutral-100 p-6 shadow-2xl dark:bg-neutral-900',
+        // transform-3d only matters while the tilt is active; dropping it avoids
+        // creating a useless 3D rendering context per card otherwise.
+        tiltEnabled && 'transform-3d',
         className,
       )}
     >
       {children}
-      {!isMobile && (
+      {tiltEnabled && (
         <motion.div
           style={{
             opacity: glareOpacity,

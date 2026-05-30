@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback, useRef } from 'react'
-import { motion, PanInfo, useMotionValue, useTransform, animate, useSpring } from 'motion/react'
+import { motion, PanInfo, useMotionValue, useTransform, animate, useSpring, useReducedMotion } from 'motion/react'
 import { useIsMobile } from '~/hooks/use-mobile'
 import { useTranslations } from 'next-intl'
 import { Popover, PopoverContent, PopoverTrigger } from '~/components/ui/popover'
@@ -98,9 +98,11 @@ export default function FloatingFilterBall({
 }: FloatingFilterBallProps) {
   const isMobile = useIsMobile()
   const t = useTranslations()
+  const prefersReducedMotion = useReducedMotion()
   const [isOpen, setIsOpen] = useState(false)
   const [isDragging, setIsDragging] = useState(false)
   const [isHydrated, setIsHydrated] = useState(false)
+  const [isVisible, setIsVisible] = useState(true)
   
   // Use motion values for smooth GPU-accelerated animations
   const x = useMotionValue(0)
@@ -119,15 +121,12 @@ export default function FloatingFilterBall({
   const glowOpacity = useMotionValue(0)
   const smoothGlow = useSpring(glowOpacity, { stiffness: 200, damping: 20 })
   
-  // Pre-compute transforms (must be called before any conditional returns)
-  const boxShadowTransform = useTransform(
-    smoothGlow,
-    [0, 1],
-    [
-      '0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)',
-      '0 0 20px 4px hsl(var(--primary) / 0.5), 0 0 40px 8px hsl(var(--primary) / 0.3), 0 8px 16px -4px rgb(0 0 0 / 0.2)'
-    ]
-  )
+  // Pre-compute transforms (must be called before any conditional returns).
+  // The glow is rendered as a pre-painted blurred LAYER behind the ball; we only
+  // animate its opacity/scale (compositor-friendly) instead of a box-shadow spring
+  // (box-shadow is not GPU-composited and repaints every frame).
+  const glowLayerScale = useTransform(smoothGlow, [0, 1], [0.9, 1.25])
+  const glowLayerOpacity = useTransform(smoothGlow, [0, 1], [0, 1])
   const glowRingScale = useTransform(smoothGlow, [0, 1], [1, 1.5])
   const glowRingOpacity = useTransform(smoothGlow, [0, 1], [0, 0.6])
   const iconRotate = useTransform(smoothGlow, [0, 1], [0, 180])
@@ -135,8 +134,14 @@ export default function FloatingFilterBall({
   // Store position in ref to avoid re-renders during drag
   const positionRef = useRef<Position>({ x: 0, y: 0 })
   const dragStartPos = useRef<Position>({ x: 0, y: 0 })
+  const ballRef = useRef<HTMLDivElement>(null)
 
   const hasActiveFilter = selectedCamera !== '' || selectedLens !== ''
+  // Pulse the active-filter indicator only when the panel is CLOSED — that's when
+  // the user most needs a reminder a filter is applied; once the panel is open the
+  // filters are visible so the pulse is redundant. Gated by reduced-motion and
+  // on-screen visibility so it is never a perpetual offscreen rAF loop.
+  const shouldPulse = hasActiveFilter && !prefersReducedMotion && !isOpen && isVisible
 
   // Load saved position on mount
   useEffect(() => {
@@ -169,6 +174,20 @@ export default function FloatingFilterBall({
       clearTimeout(resizeTimeout)
     }
   }, [isHydrated, x, y])
+
+  // Pause perpetual animations when the ball scrolls offscreen
+  useEffect(() => {
+    if (!isHydrated) return
+    const el = ballRef.current
+    if (!el || typeof IntersectionObserver === 'undefined') return
+
+    const observer = new IntersectionObserver(
+      ([entry]) => setIsVisible(entry.isIntersecting),
+      { threshold: 0 }
+    )
+    observer.observe(el)
+    return () => observer.disconnect()
+  }, [isHydrated])
 
   const handleDragStart = useCallback(() => {
     setIsDragging(true)
@@ -236,6 +255,7 @@ export default function FloatingFilterBall({
 
   const BallButton = (
     <motion.div
+      ref={ballRef}
       role="button"
       tabIndex={0}
       aria-label="Filter photos"
@@ -243,6 +263,7 @@ export default function FloatingFilterBall({
         'fixed z-50 flex items-center justify-center rounded-full',
         'bg-primary/90 text-primary-foreground backdrop-blur-sm',
         'cursor-grab active:cursor-grabbing',
+        'shadow-md',
         'hover:bg-primary',
         hasActiveFilter && 'ring-2 ring-offset-2 ring-primary'
       )}
@@ -256,7 +277,6 @@ export default function FloatingFilterBall({
         rotate: smoothRotate,
         scale: smoothScale,
         willChange: 'transform',
-        boxShadow: boxShadowTransform,
       }}
       drag
       dragMomentum={false}
@@ -270,15 +290,35 @@ export default function FloatingFilterBall({
         scale: { type: 'spring', stiffness: 400, damping: 25 },
       }}
     >
-      {/* Animated glow ring */}
+      {/* Pre-rendered glow LAYER (replaces the box-shadow spring).
+          Blurred once at mount; we animate only opacity/scale on the compositor.
+          Uses var(--primary) via color-mix because --primary is an OKLCH token
+          that hsl() cannot parse. */}
       <motion.div
-        className="absolute inset-0 rounded-full bg-primary/20"
+        aria-hidden
+        className="pointer-events-none absolute inset-0 rounded-full"
         style={{
-          scale: glowRingScale,
-          opacity: glowRingOpacity,
+          background: 'color-mix(in oklab, var(--primary) 70%, transparent)',
+          filter: 'blur(12px)',
+          scale: glowLayerScale,
+          opacity: glowLayerOpacity,
+          willChange: 'transform, opacity',
+          zIndex: -1,
         }}
       />
-      
+
+      {/* Animated glow ring */}
+      <motion.div
+        aria-hidden
+        className="absolute inset-0 rounded-full"
+        style={{
+          background: 'color-mix(in oklab, var(--primary) 20%, transparent)',
+          scale: glowRingScale,
+          opacity: glowRingOpacity,
+          willChange: 'transform, opacity',
+        }}
+      />
+
       {/* Icon with rotation animation */}
       <motion.div
         style={{
@@ -288,19 +328,22 @@ export default function FloatingFilterBall({
         <SlidersHorizontal className="h-5 w-5 relative z-10" />
       </motion.div>
       
-      {/* Active filter indicator with pulse */}
+      {/* Active filter indicator. The pulse (rAF loop) only runs when motion is
+          allowed, the popover is closed (reminder cue), and the ball is onscreen —
+          otherwise it stays a static dot. */}
       {hasActiveFilter && (
-        <motion.span 
+        <motion.span
           className="absolute -top-1 -right-1 h-3 w-3 rounded-full bg-destructive"
-          animate={{
-            scale: [1, 1.2, 1],
-            opacity: [1, 0.8, 1],
-          }}
-          transition={{
-            duration: 2,
-            repeat: Infinity,
-            ease: 'easeInOut',
-          }}
+          animate={
+            shouldPulse
+              ? { scale: [1, 1.2, 1], opacity: [1, 0.8, 1] }
+              : { scale: 1, opacity: 1 }
+          }
+          transition={
+            shouldPulse
+              ? { duration: 2, repeat: Infinity, ease: 'easeInOut' }
+              : { duration: 0.2 }
+          }
         />
       )}
     </motion.div>
