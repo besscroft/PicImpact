@@ -45,7 +45,10 @@ export default function TagGallery(props : Readonly<ImageHandleProps>) {
     handle: props.configHandle ?? (async () => emptyConfig),
     args: 'system-config',
   })
-  const variantBaseUrl = configData?.variantBaseUrl ?? ''
+  // Prefer the live config, but fall back to the server-passed base on the first
+  // render (before the config SWR resolves) so tag photos serve AVIF immediately
+  // instead of double-loading preview thumbnails.
+  const variantBaseUrl = configData?.variantBaseUrl ?? props.variantBaseUrl ?? ''
   const dataList = data?.flat() ?? []
   const t = useTranslations()
   const router = useRouter()
@@ -67,7 +70,10 @@ export default function TagGallery(props : Readonly<ImageHandleProps>) {
             }}
             photos={
               dataList?.map((item: ImageType) => ({
-                src: item.preview_url || item.url,
+                // Layout `src` only — the actual image is rendered by BlurImage
+                // via the variant ladder. Never reference the full-resolution
+                // original here (⑤: the tag grid must not load multi-MB originals).
+                src: item.preview_url || '',
                 alt: item.detail,
                 ...item,
                 variantBaseUrl,

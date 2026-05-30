@@ -58,7 +58,10 @@ export default function SimpleGallery(props: Readonly<ImageHandleProps>) {
     () => configData?.customIndexOriginEnable === true,
     [configData]
   )
-  const variantBaseUrl = configData?.variantBaseUrl ?? ''
+  // Prefer the live config, but fall back to the server-passed base on the first
+  // render (before the config SWR resolves) so the feed serves AVIF immediately
+  // instead of double-loading preview thumbnails.
+  const variantBaseUrl = configData?.variantBaseUrl ?? props.variantBaseUrl ?? ''
   // masonic render adapter (single column vertical feed). Memoized on the
   // config flags so masonic keeps a stable render-component identity.
   const SimpleRender = useMemo(() => {
