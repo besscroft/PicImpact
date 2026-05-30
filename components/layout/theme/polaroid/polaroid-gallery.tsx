@@ -173,7 +173,10 @@ export default function PolaroidGallery(props: Readonly<ImageHandleProps>) {
   })
 
   const customTitle = configData?.customTitle
-  const variantBaseUrl = configData?.variantBaseUrl ?? ''
+  // Prefer the live config, but fall back to the server-passed base on the first
+  // render (before the config SWR resolves) so cards serve AVIF immediately
+  // instead of double-loading preview thumbnails.
+  const variantBaseUrl = configData?.variantBaseUrl ?? props.variantBaseUrl ?? ''
 
   const { data } = useSWRInfinite((index) => {
     return [`client-${props.args}-${index}-${props.album}`, index]

@@ -24,6 +24,13 @@ export type ImageHandleProps = {
   album: string
   totalHandle: (album: string, camera?: string, lens?: string) => Promise<number>
   configHandle?: () => Promise<GalleryDisplayConfig>
+  // Variant CDN base resolved on the server (the same value `configHandle` will
+  // return). Passed so the gallery has it on the very first client render,
+  // before the client-side config SWR resolves — otherwise the grid briefly
+  // sees an empty base, falls back to requesting `preview_url` thumbnails, then
+  // swaps to AVIF once config arrives (a wasteful double-load that spiked mobile
+  // memory). With this, the first render already serves AVIF variants.
+  variantBaseUrl?: string
 }
 
 export type PreviewImageHandleProps = {

@@ -116,7 +116,10 @@ export default function DefaultGallery(props : Readonly<ImageHandleProps>) {
     handle: props.configHandle ?? (async () => emptyConfig),
     args: 'system-config',
   })
-  const variantBaseUrl = configData?.variantBaseUrl ?? ''
+  // Prefer the live config, but fall back to the server-passed base on the first
+  // render (before the config SWR resolves) so the grid serves AVIF immediately
+  // instead of double-loading preview thumbnails.
+  const variantBaseUrl = configData?.variantBaseUrl ?? props.variantBaseUrl ?? ''
 
   // Memoize dataList to avoid unnecessary recalculations
   const dataList = useMemo(() => data?.flat() ?? [], [data])
