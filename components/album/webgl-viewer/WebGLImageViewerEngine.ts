@@ -97,6 +97,7 @@ export class WebGLImageViewerEngine extends ImageViewerEngineBase {
   private currentQuality: 'high' | 'medium' | 'low' | 'unknown' = 'unknown'
   private isLoadingTexture = true
   private worker: Worker | null = null
+  private workerObjectUrl: string | null = null
   private textureWorkerInitialized = false
 
   private positionBuffer: WebGLBuffer | null = null
@@ -326,7 +327,10 @@ export class WebGLImageViewerEngine extends ImageViewerEngineBase {
   }
 
   private initWorker() {
-    this.worker = new Worker(URL.createObjectURL(new Blob([TextureWorkerSource])), {
+    // Keep the blob object URL so it can be revoked on destroy; created inline
+    // it would leak one URL mapping per engine instance.
+    this.workerObjectUrl = URL.createObjectURL(new Blob([TextureWorkerSource]))
+    this.worker = new Worker(this.workerObjectUrl, {
       name: 'texture-worker',
     })
 
@@ -958,6 +962,9 @@ export class WebGLImageViewerEngine extends ImageViewerEngineBase {
   }
 
   public destroy() {
+    // Halt the animation loop so no queued frame renders against the GL
+    // objects deleted below.
+    this.isAnimating = false
     window.removeEventListener('resize', this.boundResizeCanvas)
     this.canvas.removeEventListener('mousedown', this.boundHandleMouseDown)
     this.canvas.removeEventListener('mousemove', this.boundHandleMouseMove)
@@ -987,6 +994,12 @@ export class WebGLImageViewerEngine extends ImageViewerEngineBase {
     if (this.program) {
       this.gl.deleteProgram(this.program)
     }
+
+    // Force the WebGL context to be released immediately instead of waiting for
+    // lazy GC. Browsers cap live contexts (~16); under rapid mount/unmount
+    // cycles GC can't reclaim them fast enough, so without this the limit is
+    // still reached even when destroy() runs on every unmount.
+    this.gl.getExtension('WEBGL_lose_context')?.loseContext()
     if (this.resizeObserver) {
       this.resizeObserver.disconnect()
     }
@@ -997,6 +1010,11 @@ export class WebGLImageViewerEngine extends ImageViewerEngineBase {
     }
 
     this.worker?.terminate()
+    this.worker = null
+    if (this.workerObjectUrl) {
+      URL.revokeObjectURL(this.workerObjectUrl)
+      this.workerObjectUrl = null
+    }
   }
 
   private updateDebugInfo() {
