@@ -3,11 +3,9 @@ import 'server-only'
 import { Hono } from 'hono'
 import { HTTPException } from 'hono/http-exception'
 import { fetchConfigsByKeys } from '~/server/db/query/configs'
-import { getClient } from '~/server/lib/s3'
-import { getR2Client } from '~/server/lib/r2'
 import { fetchImageByIdAndAuth } from '~/server/db/query/images'
 import type { Config } from '~/types'
-import { generatePresignedUrl } from '~/server/lib/s3api'
+import { buildOriginalPresignedUrl } from '~/server/lib/original-presign'
 import { ok } from '~/hono/_lib/response'
 import { badRequest, notFound, serverError } from '~/hono/_lib/errors'
 
@@ -53,70 +51,6 @@ async function loadImageOrThrow(id: string) {
   return { imageData, imageUrl }
 }
 
-async function buildPresignedUrlForStorage(storage: string, imageUrl: string): Promise<string> {
-  let key: string
-  if (imageUrl.startsWith('http://') || imageUrl.startsWith('https://')) {
-    const urlMatch = imageUrl.match(/^https?:\/\/[^\/]+(\/.*)$/)
-    key = urlMatch ? urlMatch[1].slice(1) : imageUrl
-  } else {
-    key = imageUrl
-  }
-
-  switch (storage) {
-    case 's3': {
-      const folderConfigs = await fetchConfigsByKeys(['storage_folder'])
-      const s3StorageFolder = folderConfigs.find((item: Config) => item.config_key === 'storage_folder')?.config_value || ''
-      if (s3StorageFolder && key.startsWith(s3StorageFolder)) {
-        key = key.slice(s3StorageFolder.length)
-      }
-
-      const configs = await fetchConfigsByKeys([
-        'accesskey_id',
-        'accesskey_secret',
-        'region',
-        'endpoint',
-        'bucket',
-        'storage_folder',
-        'force_path_style',
-        's3_cdn',
-        's3_cdn_url',
-        's3_direct_download'
-      ])
-      const bucket = configs.find((item: Config) => item.config_key === 'bucket')?.config_value || ''
-      const storageFolder = configs.find((item: Config) => item.config_key === 'storage_folder')?.config_value || ''
-
-      const filePath = key.startsWith(storageFolder) ? key : `${storageFolder}${key}`
-      const client = getClient(configs)
-      return await generatePresignedUrl(client, bucket, filePath, '')
-    }
-    case 'r2': {
-      const folderConfigs = await fetchConfigsByKeys(['r2_storage_folder'])
-      const r2StorageFolder = folderConfigs.find((item: Config) => item.config_key === 'r2_storage_folder')?.config_value || ''
-      if (r2StorageFolder && key.startsWith(r2StorageFolder)) {
-        key = key.slice(r2StorageFolder.length)
-      }
-
-      const configs = await fetchConfigsByKeys([
-        'r2_accesskey_id',
-        'r2_accesskey_secret',
-        'r2_account_id',
-        'r2_bucket',
-        'r2_storage_folder',
-        'r2_public_domain',
-        'r2_direct_download'
-      ])
-      const bucket = configs.find((item: Config) => item.config_key === 'r2_bucket')?.config_value || ''
-      const storageFolder = configs.find((item: Config) => item.config_key === 'r2_storage_folder')?.config_value || ''
-
-      const filePath = key.startsWith(storageFolder) ? key : `${storageFolder}${key}`
-      const client = getR2Client(configs)
-      return await generatePresignedUrl(client, bucket, filePath, '')
-    }
-    default:
-      throw badRequest('Unsupported storage type')
-  }
-}
-
 /**
  * GET /api/public/download/config
  *
@@ -156,7 +90,7 @@ app.get('/:id/presigned', async (c) => {
   try {
     const { imageData, imageUrl } = await loadImageOrThrow(id)
     const filename = deriveFilename(imageData.image_name, imageUrl)
-    const url = await buildPresignedUrlForStorage(storage, imageUrl)
+    const url = await buildOriginalPresignedUrl(storage, imageUrl)
     c.header('Cache-Control', 'private, max-age=60')
     return ok(c, { url, filename: encodeURIComponent(filename) })
   } catch (e) {
