@@ -19,6 +19,7 @@
 import { db } from '~/server/lib/db'
 import {
   createPreprocessTaskRun,
+  getPreprocessTaskRunDetail,
   listPreprocessTaskRuns,
   tickPreprocessTaskRuns,
   type PreprocessTaskRunSummary,
@@ -26,6 +27,15 @@ import {
 import { normalizePreprocessTaskScope } from '~/types/admin-tasks'
 
 const TERMINAL_STATUSES = new Set(['succeeded', 'failed', 'cancelled'])
+const TICK_INTERVAL_MS = 1000
+// After this many consecutive no-progress ticks, assume the run is leased by
+// another (possibly dead) process whose lease has not expired, and bail rather
+// than spin forever.
+const MAX_STALLED_TICKS = 8
+
+function sleep(ms: number) {
+  return new Promise<void>((resolve) => setTimeout(resolve, ms))
+}
 
 function logProgress(run: PreprocessTaskRunSummary) {
   const { processedCount, totalCount, successCount, failedCount, status } = run
@@ -63,11 +73,34 @@ async function main() {
   }
 
   // Drain: each tick processes one batch and returns the active run summary.
+  // Sleep between ticks (avoid a hot loop) and bail if progress stalls — a
+  // stall means the run is leased by another process whose lease has not
+  // expired, so spinning would never make progress.
+  let prevProcessed = -1
+  let stalledTicks = 0
   for (;;) {
     const { activeRun } = await tickPreprocessTaskRuns()
     if (!activeRun) break
     logProgress(activeRun)
     if (TERMINAL_STATUSES.has(activeRun.status)) break
+
+    if (activeRun.processedCount === prevProcessed) {
+      stalledTicks += 1
+      if (stalledTicks >= MAX_STALLED_TICKS) {
+        console.error(
+          `No progress after ${MAX_STALLED_TICKS} attempts — the run is likely held by `
+          + 'another backfill process whose lease has not expired. Stop other backfill '
+          + 'processes and wait for the lease (~5 min) to expire, or cancel the run, then retry.',
+        )
+        process.exitCode = 1
+        break
+      }
+    } else {
+      stalledTicks = 0
+      prevProcessed = activeRun.processedCount
+    }
+
+    await sleep(TICK_INTERVAL_MS)
   }
 
   // Report the final state of the most recent run.
@@ -78,6 +111,22 @@ async function main() {
       `Done — ${finalRun.status}: ${finalRun.successCount} ok, `
       + `${finalRun.failedCount} failed, ${finalRun.processedCount}/${finalRun.totalCount} processed.`,
     )
+
+    // Surface why images failed (otherwise the only signal is the count, which
+    // forces digging through the DB / API to diagnose).
+    if (finalRun.failedCount > 0) {
+      const detail = await getPreprocessTaskRunDetail(finalRun.id)
+      if (detail && detail.recentIssues.length > 0) {
+        console.error('\nRecent failures:')
+        for (const issue of detail.recentIssues.slice(-5)) {
+          console.error(`  [${issue.stage}/${issue.code}] ${issue.summary}${issue.detail ? ` — ${issue.detail}` : ''}`)
+        }
+      }
+      if (detail?.lastError) {
+        console.error(`  lastError: ${detail.lastError.message}${detail.lastError.detail ? ` — ${detail.lastError.detail}` : ''}`)
+      }
+    }
+
     if (finalRun.status === 'failed') {
       process.exitCode = 1
     }
