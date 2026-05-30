@@ -3,6 +3,7 @@
 'use server'
 
 import { db } from '~/server/lib/db'
+import { revalidateAlbumsCache, revalidateGalleryCache } from '~/server/lib/cache'
 import type { ImageType } from '~/types'
 
 /**
@@ -48,6 +49,7 @@ export async function insertImage(image: ImageType) {
       throw new Error('事务处理失败！')
     }
   })
+  revalidateAlbumsCache()
 }
 
 /**
@@ -72,6 +74,7 @@ export async function deleteImage(id: string) {
       }
     })
   })
+  revalidateAlbumsCache()
 }
 
 /**
@@ -99,6 +102,7 @@ export async function deleteBatchImage(ids: string[]) {
       },
     })
   })
+  revalidateAlbumsCache()
 }
 
 /**
@@ -134,6 +138,7 @@ export async function updateImage(image: ImageType) {
       }
     })
   })
+  revalidateGalleryCache()
 }
 
 /**
@@ -142,7 +147,7 @@ export async function updateImage(image: ImageType) {
  * @param show 显示状态：0=显示，1=隐藏
  */
 export async function updateImageShow(id: string, show: number) {
-  return await db.images.update({
+  const result = await db.images.update({
     where: {
       id: id
     },
@@ -151,6 +156,8 @@ export async function updateImageShow(id: string, show: number) {
       updatedAt: new Date()
     }
   })
+  revalidateGalleryCache()
+  return result
 }
 
 /**
@@ -180,4 +187,5 @@ export async function updateImageAlbum(imageId: string, albumId: string) {
       }
     })
   })
+  revalidateAlbumsCache()
 }

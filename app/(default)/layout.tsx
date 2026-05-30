@@ -1,5 +1,4 @@
-import { fetchAlbumsShow } from '~/server/db/query/albums'
-import { fetchConfigsByKeys } from '~/server/db/query/configs'
+import { cachedAlbumsShow, cachedConfigsByKeys } from '~/server/lib/cache'
 import { toCustomInfo } from '~/server/lib/config-transform'
 import type { AlbumType } from '~/types'
 import type { AlbumDataProps } from '~/types/props'
@@ -13,12 +12,12 @@ export default async function DefaultLayout({
 }>) {
   const getData = async () => {
     'use server'
-    return await fetchAlbumsShow()
+    return await cachedAlbumsShow()
   }
 
   const getTitle = async () => {
     'use server'
-    const rows = await fetchConfigsByKeys(['custom_title'])
+    const rows = await cachedConfigsByKeys(['custom_title'])
     return toCustomInfo(rows).customTitle || 'PicImpact'
   }
 

@@ -3,6 +3,7 @@
 'use server'
 
 import { db } from '~/server/lib/db'
+import { revalidateConfigCache } from '~/server/lib/cache'
 import { normalizeDefaultTheme } from '~/lib/utils/theme'
 import type { CustomInfo, R2Info, S3Info, OpenListInfo, VariantStorageInfo } from '~/types'
 
@@ -25,7 +26,7 @@ export async function updateS3Config(configs: S3Info) {
   const forcePathStyle = toBoolString(configs.forcePathStyle)
   const s3Cdn = toBoolString(configs.s3Cdn)
   const s3DirectDownload = toBoolString(configs.s3DirectDownload)
-  return await db.$executeRaw`
+  const result = await db.$executeRaw`
     UPDATE "public"."configs"
     SET config_value = CASE
        WHEN config_key = 'accesskey_id' THEN ${configs.accesskeyId}
@@ -43,6 +44,8 @@ export async function updateS3Config(configs: S3Info) {
         updated_at = NOW()
     WHERE config_key IN ('accesskey_id', 'accesskey_secret', 'region', 'endpoint', 'bucket', 'storage_folder', 'force_path_style', 's3_cdn', 's3_cdn_url', 's3_direct_download');
   `
+  revalidateConfigCache()
+  return result
 }
 
 /**
@@ -51,7 +54,7 @@ export async function updateS3Config(configs: S3Info) {
  */
 export async function updateR2Config(configs: R2Info) {
   const r2DirectDownload = toBoolString(configs.r2DirectDownload)
-  return await db.$executeRaw`
+  const result = await db.$executeRaw`
     UPDATE "public"."configs"
     SET config_value = CASE
        WHEN config_key = 'r2_accesskey_id' THEN ${configs.r2AccesskeyId}
@@ -66,6 +69,8 @@ export async function updateR2Config(configs: R2Info) {
         updated_at = NOW()
     WHERE config_key IN ('r2_accesskey_id', 'r2_accesskey_secret', 'r2_account_id', 'r2_bucket', 'r2_storage_folder', 'r2_public_domain', 'r2_direct_download');
   `
+  revalidateConfigCache()
+  return result
 }
 
 /**
@@ -73,7 +78,7 @@ export async function updateR2Config(configs: R2Info) {
  * @param configs Open List 配置（camelCase, see {@link OpenListInfo}）
  */
 export async function updateOpenListConfig(configs: OpenListInfo) {
-  return await db.$executeRaw`
+  const result = await db.$executeRaw`
     UPDATE "public"."configs"
     SET config_value = CASE
        WHEN config_key = 'open_list_url' THEN ${configs.openListUrl}
@@ -83,6 +88,8 @@ export async function updateOpenListConfig(configs: OpenListInfo) {
         updated_at = NOW()
     WHERE config_key IN ('open_list_url', 'open_list_token');
   `
+  revalidateConfigCache()
+  return result
 }
 
 /**
@@ -91,11 +98,13 @@ export async function updateOpenListConfig(configs: OpenListInfo) {
  */
 export async function updateVariantStorageConfig(payload: VariantStorageInfo) {
   const value = payload.variantStorage === 's3' || payload.variantStorage === 'r2' ? payload.variantStorage : ''
-  return await db.configs.upsert({
+  const result = await db.configs.upsert({
     where: { config_key: 'variant_storage' },
     update: { config_value: value, updatedAt: new Date() },
     create: { config_key: 'variant_storage', config_value: value },
   })
+  revalidateConfigCache()
+  return result
 }
 
 /**
@@ -156,6 +165,8 @@ export async function updateCustomInfo(payload: CustomInfo) {
     updates.push(db.configs.update({ where: { config_key: 'preview_quality' }, data: { config_value: previewQuality.toString(), updatedAt: new Date() } }))
   }
 
-  return await db.$transaction(updates)
+  const result = await db.$transaction(updates)
+  revalidateConfigCache()
+  return result
 }
 

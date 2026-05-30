@@ -1,11 +1,11 @@
 import 'server-only'
 import RSS from 'rss'
-import { fetchConfigsByKeys } from '~/server/db/query/configs'
+import { cachedConfigsByKeys } from '~/server/lib/cache'
 import { toCustomInfo } from '~/server/lib/config-transform'
 import { getRSSImages } from '~/server/db/query/images'
 
 export async function GET(request: Request) {
-  const rows = await fetchConfigsByKeys([
+  const rows = await cachedConfigsByKeys([
     'custom_title',
     'custom_author',
     'rss_feed_id',

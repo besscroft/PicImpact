@@ -1,34 +1,40 @@
 'use server'
 
-import { fetchClientImagesListByAlbum, fetchClientImagesPageTotalByAlbum } from '~/server/db/query/images'
-import { fetchConfigsByKeys, fetchConfigValue } from '~/server/db/query/configs'
-import { fetchDailyImagesList, fetchDailyImagesPageTotal } from '~/server/db/query/daily'
+import { fetchConfigValue } from '~/server/db/query/configs'
 import { checkAndRefreshDailyImages } from '~/server/db/operate/daily'
-import { getVariantBaseUrl } from '~/server/lib/variant-storage'
+import {
+  cachedClientImagesListByAlbum,
+  cachedClientImagesPageTotalByAlbum,
+  cachedConfigsByKeys,
+  cachedConfigValue,
+  cachedDailyImagesList,
+  cachedDailyImagesPageTotal,
+  cachedVariantBaseUrl,
+} from '~/server/lib/cache'
 import type { GalleryDisplayConfig, ImageType } from '~/types'
 
 export async function getImagesData(pageNum: number, album: string, camera?: string, lens?: string): Promise<ImageType[]> {
   if (album === '/') {
-    const isDailyEnabled = await fetchConfigValue('daily_enabled', 'false')
+    const isDailyEnabled = await cachedConfigValue('daily_enabled', 'false')
     if (isDailyEnabled === 'true') {
-      return fetchDailyImagesList(pageNum, camera, lens)
+      return cachedDailyImagesList(pageNum, camera, lens)
     }
   }
-  return fetchClientImagesListByAlbum(pageNum, album, camera, lens)
+  return cachedClientImagesListByAlbum(pageNum, album, camera, lens)
 }
 
 export async function getImagesPageTotal(album: string, camera?: string, lens?: string): Promise<number> {
   if (album === '/') {
-    const isDailyEnabled = await fetchConfigValue('daily_enabled', 'false')
+    const isDailyEnabled = await cachedConfigValue('daily_enabled', 'false')
     if (isDailyEnabled === 'true') {
-      return fetchDailyImagesPageTotal(camera, lens)
+      return cachedDailyImagesPageTotal(camera, lens)
     }
   }
-  return fetchClientImagesPageTotalByAlbum(album, camera, lens)
+  return cachedClientImagesPageTotalByAlbum(album, camera, lens)
 }
 
 export async function getDisplayConfig(): Promise<GalleryDisplayConfig> {
-  const rows = await fetchConfigsByKeys([
+  const rows = await cachedConfigsByKeys([
     'custom_index_download_enable',
     'custom_index_origin_enable',
     'custom_title',
@@ -38,17 +44,17 @@ export async function getDisplayConfig(): Promise<GalleryDisplayConfig> {
     customTitle: get('custom_title') ?? undefined,
     customIndexDownloadEnable: get('custom_index_download_enable') === 'true',
     customIndexOriginEnable: get('custom_index_origin_enable') === 'true',
-    variantBaseUrl: await getVariantBaseUrl(),
+    variantBaseUrl: await cachedVariantBaseUrl(),
   }
 }
 
 export async function getAlbumDisplayConfig(): Promise<GalleryDisplayConfig> {
-  const rows = await fetchConfigsByKeys(['custom_index_download_enable'])
+  const rows = await cachedConfigsByKeys(['custom_index_download_enable'])
   const get = (key: string) => rows.find((item) => item.config_key === key)?.config_value
   return {
     customIndexDownloadEnable: get('custom_index_download_enable') === 'true',
     customIndexOriginEnable: false,
-    variantBaseUrl: await getVariantBaseUrl(),
+    variantBaseUrl: await cachedVariantBaseUrl(),
   }
 }
 

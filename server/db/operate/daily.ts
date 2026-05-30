@@ -4,6 +4,7 @@
 
 import { db } from '~/server/lib/db'
 import { fetchConfigsByKeys } from '~/server/db/query/configs'
+import { revalidateConfigCache, revalidateGalleryCache } from '~/server/lib/cache'
 import { toDailyConfig } from '~/server/lib/config-transform'
 
 /**
@@ -77,7 +78,11 @@ export async function updateDailyConfig(payload: {
       data: { config_value: dailyTotalCount.toString(), updatedAt: new Date() }
     }),
   ]
-  return await db.$transaction(updates)
+  const result = await db.$transaction(updates)
+  // daily_enabled flips the homepage between the daily view and the album list,
+  // and the count/interval change the daily list — bust config + gallery.
+  revalidateConfigCache()
+  return result
 }
 
 /**
@@ -92,5 +97,7 @@ export async function updateAlbumsDailyWeight(
       data: { daily_weight: album.dailyWeight, updatedAt: new Date() }
     })
   )
-  return await db.$transaction(updates)
+  const result = await db.$transaction(updates)
+  revalidateGalleryCache()
+  return result
 }

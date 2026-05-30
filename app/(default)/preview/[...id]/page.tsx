@@ -1,8 +1,7 @@
 import { fetchImageByIdAndAuth } from '~/server/db/query/images'
 import type { PreviewImageHandleProps } from '~/types/props'
 import PreviewImage from '~/components/album/preview-image'
-import { fetchConfigsByKeys } from '~/server/db/query/configs'
-import { getVariantBaseUrl } from '~/server/lib/variant-storage'
+import { cachedConfigsByKeys, cachedVariantBaseUrl } from '~/server/lib/cache'
 import type { GalleryDisplayConfig } from '~/types'
 import type { Metadata } from 'next/types'
 
@@ -53,12 +52,12 @@ export default async function PreView({params}: { params: any }) {
 
   const getConfig = async (): Promise<GalleryDisplayConfig> => {
     'use server'
-    const rows = await fetchConfigsByKeys(['custom_index_download_enable'])
+    const rows = await cachedConfigsByKeys(['custom_index_download_enable'])
     const value = rows.find((item) => item.config_key === 'custom_index_download_enable')?.config_value
     return {
       customIndexDownloadEnable: value === 'true',
       customIndexOriginEnable: false,
-      variantBaseUrl: await getVariantBaseUrl(),
+      variantBaseUrl: await cachedVariantBaseUrl(),
     }
   }
 
