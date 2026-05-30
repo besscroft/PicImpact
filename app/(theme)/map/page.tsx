@@ -1,12 +1,12 @@
 import { fetchMapImages } from '~/server/db/query/images'
 import { MapView } from '~/components/layout/theme/map/map-view'
-import { fetchConfigsByKeys } from '~/server/db/query/configs'
+import { cachedConfigsByKeys } from '~/server/lib/cache'
 import { toCustomInfo } from '~/server/lib/config-transform'
 
 export const dynamic = 'force-dynamic'
 
 export async function generateMetadata() {
-  const rows = await fetchConfigsByKeys(['custom_title'])
+  const rows = await cachedConfigsByKeys(['custom_title'])
   const siteTitle = toCustomInfo(rows).customTitle || 'PicImpact'
   return {
     title: `Map | ${siteTitle}`,

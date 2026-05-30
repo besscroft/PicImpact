@@ -7,7 +7,7 @@ import { ProgressBarProviders } from '~/app/providers/progress-bar-providers'
 import { ButtonStoreProvider } from '~/app/providers/button-store-providers'
 
 import '~/style/globals.css'
-import { fetchConfigsByKeys } from '~/server/db/query/configs'
+import { cachedConfigsByKeys } from '~/server/lib/cache'
 import { toCustomInfo } from '~/server/lib/config-transform'
 
 import { NextIntlClientProvider } from 'next-intl'
@@ -30,7 +30,7 @@ const sourceSans3 = Source_Sans_3({
 })
 
 export async function generateMetadata(): Promise<Metadata> {
-  const rows = await fetchConfigsByKeys([
+  const rows = await cachedConfigsByKeys([
     'custom_title',
     'custom_favicon_url',
     'custom_author',
@@ -87,7 +87,7 @@ export default async function RootLayout({
 
   const messages = await getMessages()
 
-  const rows = await fetchConfigsByKeys([
+  const rows = await cachedConfigsByKeys([
     'default_theme',
     'umami_analytics',
     'umami_host'

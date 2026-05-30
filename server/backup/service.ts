@@ -9,6 +9,7 @@ import {
 } from '~/types/backup'
 import { parseBackupEnvelope } from '~/server/backup/format-adapter'
 import { getBackupRepository } from '~/server/backup/repository'
+import { revalidateAllPublicCaches } from '~/server/lib/cache'
 
 const repository = getBackupRepository()
 
@@ -29,6 +30,10 @@ export async function previewBackupImport(input: unknown): Promise<BackupPreview
 export async function importBackupEnvelope(input: unknown): Promise<BackupImportResult> {
   const { envelope, preview } = parseBackupEnvelope(input)
   const result = await repository.importSnapshot(envelope.payload)
+
+  // Restore bulk-writes images/albums/configs outside the per-entity mutation
+  // paths, so bust every public cache so the restored data shows immediately.
+  revalidateAllPublicCaches()
 
   return {
     format: BACKUP_FORMAT,

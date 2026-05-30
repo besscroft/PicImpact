@@ -3,6 +3,7 @@
 'use server'
 
 import { db } from '~/server/lib/db'
+import { revalidateAlbumsCache } from '~/server/lib/cache'
 import type { AlbumType } from '~/types'
 
 /**
@@ -13,7 +14,7 @@ export async function insertAlbums(album: AlbumType) {
   if (!album.sort || album.sort < 0) {
     album.sort = 0
   }
-  return await db.albums.create({
+  const result = await db.albums.create({
     data: {
       name: album.name,
       album_value: album.album_value,
@@ -27,6 +28,8 @@ export async function insertAlbums(album: AlbumType) {
       random_show: album.random_show,
     }
   })
+  revalidateAlbumsCache()
+  return result
 }
 
 /**
@@ -34,7 +37,7 @@ export async function insertAlbums(album: AlbumType) {
  * @param id 相册 ID
  */
 export async function deleteAlbum(id: string) {
-  return await db.albums.update({
+  const result = await db.albums.update({
     where: {
       id: id
     },
@@ -43,6 +46,8 @@ export async function deleteAlbum(id: string) {
       updatedAt: new Date(),
     }
   })
+  revalidateAlbumsCache()
+  return result
 }
 
 /**
@@ -88,6 +93,7 @@ export async function updateAlbum(album: AlbumType) {
       }
     })
   })
+  revalidateAlbumsCache()
 }
 
 /**
@@ -96,7 +102,7 @@ export async function updateAlbum(album: AlbumType) {
  * @param show 显示状态：0=显示，1=隐藏
  */
 export async function updateAlbumShow(id: string, show: number) {
-  return await db.albums.update({
+  const result = await db.albums.update({
     where: {
       id: id
     },
@@ -105,4 +111,6 @@ export async function updateAlbumShow(id: string, show: number) {
       updatedAt: new Date()
     }
   })
+  revalidateAlbumsCache()
+  return result
 }

@@ -2,7 +2,7 @@ import { getImagesData, getImagesPageTotal, getAlbumDisplayConfig } from '~/serv
 import { getVariantBaseUrl } from '~/server/lib/variant-storage'
 import type { ImageHandleProps } from '~/types/props'
 import DefaultGallery from '~/components/layout/theme/default/default-gallery'
-import { fetchAlbumByRouter } from '~/server/db/query/albums'
+import { cachedAlbumByRouter } from '~/server/lib/cache'
 import 'react-photo-album/masonry.css'
 import type { AlbumType, ImageType } from '~/types'
 import SimpleGallery from '~/components/layout/theme/simple/simple-gallery'
@@ -17,7 +17,7 @@ export default async function Page({
 }) {
   const { album } = await params
 
-  const data: AlbumType = await fetchAlbumByRouter(`/${album}`)
+  const data: AlbumType = await cachedAlbumByRouter(`/${album}`)
 
   // Server-side data for the LCP preload hint: the album's first image and the
   // variant CDN base. Best-effort — a failure here must never break the page.

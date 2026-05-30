@@ -3,7 +3,7 @@ import type { ImageType } from '~/types'
 import { getImagesData, getImagesPageTotal, getDisplayConfig, initDailyIfNeeded } from '~/server/actions/images'
 import { getVariantBaseUrl } from '~/server/lib/variant-storage'
 import SimpleGallery from '~/components/layout/theme/simple/simple-gallery.tsx'
-import { fetchConfigsByKeys } from '~/server/db/query/configs'
+import { cachedConfigsByKeys } from '~/server/lib/cache'
 import { toCustomInfo } from '~/server/lib/config-transform'
 import DefaultGallery from '~/components/layout/theme/default/default-gallery.tsx'
 import PolaroidGallery from '~/components/layout/theme/polaroid/polaroid-gallery.tsx'
@@ -15,7 +15,7 @@ export default async function Home() {
 
   const getStyleConfig = async () => {
     'use server'
-    const rows = await fetchConfigsByKeys(['custom_index_style'])
+    const rows = await cachedConfigsByKeys(['custom_index_style'])
     return toCustomInfo(rows).customIndexStyle
   }
 
