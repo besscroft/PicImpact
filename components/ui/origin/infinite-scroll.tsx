@@ -9,6 +9,11 @@ interface InfiniteScrollProps {
     next: () => void
     children: React.ReactNode
     className?: string
+    // How far below the viewport (px) to start prefetching the next page. Larger
+    // = more aggressive lookahead so fast scrolling rarely waits at the bottom for
+    // the API (variants are AVIF/small, so prefetching ahead is cheap). Defaults
+    // to ~1.5 viewport heights, floored at 800px.
+    prefetchPx?: number
 }
 
 export default function InfiniteScroll({
@@ -17,60 +22,88 @@ export default function InfiniteScroll({
     next,
     children,
     className,
+    prefetchPx,
 }: InfiniteScrollProps) {
     const observerTarget = useRef<HTMLDivElement>(null)
-    // Keep the latest `next` in a ref so the observer never depends on the
-    // caller's closure identity (callers commonly pass a fresh closure every
-    // render, which previously tore down and recreated the observer each render).
+    // Latest `next` in a ref so the observer never depends on the caller's closure
+    // identity (callers commonly pass a fresh closure every render, which would
+    // otherwise tear down and recreate the observer each render).
     const nextRef = useRef(next)
-    // Re-entrancy guard: once an intersection triggers a load we must not fire
-    // `next()` again until new data has actually arrived (i.e. loading settles).
+    // Latest `hasMore` in a ref so the chain logic always reads the current value.
+    const hasMoreRef = useRef(hasMore)
+    // Re-entrancy guard: a single zone-entry requests only one page until the load
+    // settles; then chain-on-load decides whether to fetch the next.
     const loadingRef = useRef(isLoading)
     const requestedRef = useRef(false)
+    // Whether the sentinel is currently within the prefetch zone.
+    const intersectingRef = useRef(false)
 
-    // Keep the ref pointing at the latest callback without re-creating the
-    // observer (writing to a ref must happen in an effect, not during render).
+    // Keep the ref pointing at the latest callback without re-creating the observer
+    // (writing to a ref must happen in an effect, not during render).
     useEffect(() => {
         nextRef.current = next
     }, [next])
 
-    // Reset the in-flight guard whenever a load completes, so the next
-    // intersection is allowed to request another page.
+    // Request the next page if we're in the prefetch zone and idle. Reads only
+    // refs, so the (once-created) observer and the load-settle effect can both call
+    // it and always act on the current state.
+    const maybeLoadMore = () => {
+        if (
+            intersectingRef.current &&
+            hasMoreRef.current &&
+            !loadingRef.current &&
+            !requestedRef.current
+        ) {
+            requestedRef.current = true
+            nextRef.current()
+        }
+    }
+
+    // When a load settles, clear the guard and — if the sentinel is still within
+    // the prefetch zone — chain the next page. Faster scrolling keeps the sentinel
+    // in the zone longer, so more pages prefetch automatically (velocity-adaptive);
+    // it self-caps once enough content sits below the viewport to push the sentinel
+    // out of the zone.
     useEffect(() => {
+        loadingRef.current = isLoading
         if (!isLoading) {
             requestedRef.current = false
+            maybeLoadMore()
         }
-        loadingRef.current = isLoading
     }, [isLoading])
 
-    // Create the observer once. It only depends on `hasMore` so the sentinel is
-    // re-observed when there is more data to load, but it is immune to changes
-    // in `next`'s identity or to `isLoading` flapping (e.g. SWR keepPreviousData).
+    // Track hasMore and re-check when more data becomes available.
+    useEffect(() => {
+        hasMoreRef.current = hasMore
+        if (hasMore) {
+            maybeLoadMore()
+        }
+    }, [hasMore])
+
+    // Create the observer once. Immune to `next` / `isLoading` / `hasMore` identity
+    // churn (all read via refs). The large bottom `rootMargin` makes the sentinel
+    // intersect well before the actual bottom, so the next page is prefetched early.
     useEffect(() => {
         const target = observerTarget.current
         if (!target) {
             return
         }
 
+        const viewport = typeof window !== 'undefined' ? window.innerHeight : 800
+        const lookahead = prefetchPx ?? Math.max(800, Math.round(viewport * 1.5))
+
         const observer = new IntersectionObserver(
             (entries) => {
-                if (
-                    entries[0]?.isIntersecting &&
-                    hasMore &&
-                    !loadingRef.current &&
-                    !requestedRef.current
-                ) {
-                    requestedRef.current = true
-                    nextRef.current()
-                }
+                intersectingRef.current = entries[0]?.isIntersecting ?? false
+                maybeLoadMore()
             },
-            { threshold: 0, rootMargin: '200px 0px' }
+            { threshold: 0, rootMargin: `0px 0px ${lookahead}px 0px` }
         )
 
         observer.observe(target)
 
         return () => observer.disconnect()
-    }, [hasMore])
+    }, [prefetchPx])
 
     return (
         <div className={className}>
