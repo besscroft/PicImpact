@@ -106,15 +106,25 @@ export async function generateImageVariants(
 ): Promise<ImageVariantResult> {
   const { avifQuality = 50, webpQuality = 72, avifEffort = 4 } = opts
 
-  const metadata = await sharp(input, { limitInputPixels: MAX_INPUT_PIXELS, failOn: 'none' })
-    .rotate()
-    .metadata()
+  const metadata = await sharp(input, { limitInputPixels: MAX_INPUT_PIXELS, failOn: 'none' }).metadata()
 
-  const sourceWidth = metadata.width ?? 0
-  const sourceHeight = metadata.height ?? 0
-  if (sourceWidth <= 0 || sourceHeight <= 0) {
+  const storedWidth = metadata.width ?? 0
+  const storedHeight = metadata.height ?? 0
+  if (storedWidth <= 0 || storedHeight <= 0) {
     throw new Error('Unable to read source image dimensions')
   }
+
+  // sharp's `.metadata()` reports the stored (pre-rotation) dimensions, while
+  // the variants below are produced via `.rotate()` (EXIF auto-orientation).
+  // For orientation 5-8 (transpose / rotate 90 / rotate 270 / transverse —
+  // very common on phone photos) the displayed image has width and height
+  // swapped. Report the oriented dimensions so they match both the generated
+  // variant pixels and the browser-reported dimensions stored for existing
+  // rows (avoiding portrait-as-landscape gallery layout breakage).
+  const orientation = metadata.orientation ?? 1
+  const swapDimensions = orientation >= 5 && orientation <= 8
+  const sourceWidth = swapDimensions ? storedHeight : storedWidth
+  const sourceHeight = swapDimensions ? storedWidth : storedHeight
 
   const blurhash = await generateThumbhash(input)
 
