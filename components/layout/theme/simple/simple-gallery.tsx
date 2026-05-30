@@ -58,13 +58,14 @@ export default function SimpleGallery(props: Readonly<ImageHandleProps>) {
     () => configData?.customIndexOriginEnable === true,
     [configData]
   )
+  const variantBaseUrl = configData?.variantBaseUrl ?? ''
   // masonic render adapter (single column vertical feed). Memoized on the
-  // config flag so masonic keeps a stable render-component identity.
+  // config flags so masonic keeps a stable render-component identity.
   const SimpleRender = useMemo(() => {
     return function SimpleRender({ data }: { index: number, data: ImageType, width: number }) {
-      return <GalleryImage photo={data} customIndexOriginEnable={customIndexOriginEnable} />
+      return <GalleryImage photo={data} customIndexOriginEnable={customIndexOriginEnable} variantBaseUrl={variantBaseUrl} />
     }
-  }, [customIndexOriginEnable])
+  }, [customIndexOriginEnable, variantBaseUrl])
   const t = useTranslations()
 
   // Debounce filter changes

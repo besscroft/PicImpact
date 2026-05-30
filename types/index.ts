@@ -149,4 +149,10 @@ export type GalleryDisplayConfig = {
   customTitle?: string
   customIndexDownloadEnable: boolean
   customIndexOriginEnable: boolean
+  // Public root (no trailing slash, folder already included) for responsive
+  // image variants. Populated server-side from the configured variant storage
+  // backend. Empty/undefined → the gallery loader stays dormant and degrades to
+  // the preview thumbnail / blurhash placeholder (e.g. OpenList-backed images,
+  // or before the preprocessing backfill has run).
+  variantBaseUrl?: string
 }
