@@ -1,6 +1,27 @@
 ﻿export const ADMIN_TASK_KEY_REFRESH_IMAGE_METADATA = 'refresh-image-metadata' as const
+export const ADMIN_TASK_KEY_PREPROCESS_IMAGES = 'preprocess-images' as const
 
-export type AdminTaskKey = typeof ADMIN_TASK_KEY_REFRESH_IMAGE_METADATA
+export type AdminTaskKey =
+  | typeof ADMIN_TASK_KEY_REFRESH_IMAGE_METADATA
+  | typeof ADMIN_TASK_KEY_PREPROCESS_IMAGES
+
+/**
+ * Scope for the image-preprocessing task. `force: false` (default) only
+ * (re)generates variants for images whose `variants_ready` is still false
+ * (backfill + incremental); `force: true` reprocesses every image (e.g. after
+ * changing the tier ladder or encoder settings).
+ */
+export type PreprocessTaskScope = {
+  force: boolean
+}
+
+export function normalizePreprocessTaskScope(scope: unknown): PreprocessTaskScope {
+  if (!scope || typeof scope !== 'object' || Array.isArray(scope)) {
+    return { force: false }
+  }
+
+  return { force: (scope as Partial<PreprocessTaskScope>).force === true }
+}
 
 export const ADMIN_TASK_STATUSES = ['queued', 'running', 'cancelling', 'succeeded', 'failed', 'cancelled'] as const
 
