@@ -31,7 +31,7 @@ export default function Preferences() {
   const [umamiHost, setUmamiHost] = useState('')
   const [maxUploadFiles, setMaxUploadFiles] = useState('5')
   const [customIndexOriginEnable, setCustomIndexOriginEnable] = useState(false)
-  const [adminImagesPerPage, setAdminImagesPerPage] = useState('8')
+  const [adminImagesPerPage, setAdminImagesPerPage] = useState('24')
   const [defaultTheme, setDefaultTheme] = useState<'light' | 'dark' | 'system'>('light')
   const t = useTranslations()
 

@@ -74,7 +74,7 @@ export function toCustomInfo(configs: Config[]): CustomInfo {
     umamiAnalytics: str(configs, 'umami_analytics'),
     maxUploadFiles: int(configs, 'max_upload_files', 5),
     customIndexOriginEnable: bool(configs, 'custom_index_origin_enable'),
-    adminImagesPerPage: int(configs, 'admin_images_per_page', 8),
+    adminImagesPerPage: int(configs, 'admin_images_per_page', 24),
     defaultTheme: normalizeDefaultTheme(valueOf(configs, 'default_theme')),
   }
 }
@@ -120,7 +120,7 @@ export function toVariantStorageInfo(configs: Config[]): VariantStorageInfo {
 
 export function toAdminConfig(configs: Config[]): AdminConfig {
   return {
-    adminImagesPerPage: int(configs, 'admin_images_per_page', 8),
+    adminImagesPerPage: int(configs, 'admin_images_per_page', 24),
   }
 }
 
