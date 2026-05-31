@@ -191,8 +191,17 @@ export default function ProgressiveImage(
               }}
             />
           </Activity>
-          <Activity mode={showFullScreenViewer ? 'visible' : 'hidden'}>
-            {webGLAvailable ? <div
+          {/* Conditionally MOUNT the full-screen viewer rather than toggling an
+              <Activity> hidden/visible. <Activity> preserves the <canvas> DOM and
+              component state but runs the child's effect cleanup on hide — which
+              fires the WebGL engine's destroy()/loseContext(). Because the same
+              canvas is reused and `isInitialized` state is preserved, re-opening
+              never rebuilds the engine and lands on a permanently-lost context →
+              blank image + crash on the 2nd open. Mount/unmount gives every open a
+              fresh canvas + context (and destroy() on a discarded canvas stays
+              correct), fixing the crash while keeping the FU-13 leak fix intact. */}
+          {showFullScreenViewer && (
+            webGLAvailable ? <div
               className="fixed inset-0 z-[100] bg-background/95 flex items-center justify-center"
               onClick={(e) => {
                 // 点击背景关闭
@@ -283,8 +292,8 @@ export default function ProgressiveImage(
                 src={highResImageUrl}
                 alt={props.alt || 'image'}
               />
-            </div>}
-          </Activity>
+            </div>
+          )}
         </>
       ) : null}
 
