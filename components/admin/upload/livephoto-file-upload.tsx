@@ -52,6 +52,7 @@ export default function LivephotoFileUpload() {
   const [exif, setExif] = useState({} as ExifType)
   const [title, setTitle] = useState('')
   const [url, setUrl] = useState('')
+  const [imageName, setImageName] = useState('')
   const [previewUrl, setPreviewUrl] = useState('')
   const [videoUrl, setVideoUrl] = useState('')
   const [loading, setLoading] = useState(false)
@@ -124,6 +125,7 @@ export default function LivephotoFileUpload() {
         album: album,
         url: url,
         title: title,
+        image_name: imageName,
         preview_url: previewUrl,
         blurhash: hash,
         video_url: videoUrl,
@@ -167,6 +169,8 @@ export default function LivephotoFileUpload() {
     await loadExif(processedFile)
     setHash(await encodeBrowserThumbHash(processedFile))
     setUrl(res?.data?.url)
+    // Preserve the original uploaded filename for the download default name.
+    setImageName(processedFile.name)
   }
 
   async function onRequestVideoUpload(file: File) {
@@ -181,6 +185,7 @@ export default function LivephotoFileUpload() {
   async function onBeforeUpload(type: number) {
     if (type === 1) {
       setTitle('')
+      setImageName('')
       setPreviewUrl('')
       setVideoUrl('')
       setImageLabels([])
@@ -192,6 +197,7 @@ export default function LivephotoFileUpload() {
     setExif({} as ExifType)
     setHash('')
     setUrl('')
+    setImageName('')
     setTitle('')
     setDetail('')
     setWidth(0)

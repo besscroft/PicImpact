@@ -39,6 +39,14 @@ app.post('/', async (c) => {
     if (body?.exif?.dateTime && !dayjs(body?.exif?.dateTime, 'YYYY:MM:DD HH:mm:ss', true).isValid()) {
       body.exif.dateTime = ''
     }
+    // Reduce the preserved original filename to a bare basename (defense in
+    // depth — `File.name` from the client is already a basename, but strip any
+    // path separators so it stays safe as the download Content-Disposition
+    // value). Empty/whitespace falls back to null → download derives the name
+    // from the URL, i.e. the prior behaviour.
+    if (typeof body.image_name === 'string') {
+      body.image_name = body.image_name.split(/[\\/]/).pop()?.trim() || null
+    }
     // New images are stored with variants_ready=false; the background
     // preprocess ticker (see instrumentation.ts) picks them up asynchronously
     // and generates variants via a tracked /admin/tasks run — no inline work
