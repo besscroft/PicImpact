@@ -78,6 +78,11 @@ export default function MultipleFileUpload() {
             album: album,
             url: url,
             title: '',
+            // Preserve the original uploaded filename so downloads default to it
+            // instead of the randomized storage key. `file` here is the
+            // (post-HEIC-conversion) uploaded file, so its name matches the
+            // stored bytes (e.g. `foo.jpg` for a converted `foo.heic`).
+            image_name: file.name,
             preview_url: previewUrl,
             blurhash: hash,
             exif: exifObj,
