@@ -73,7 +73,7 @@ const drawHistogram = (canvas: HTMLCanvasElement, histogram: CompressedHistogram
   // 清空画布
   ctx.clearRect(0, 0, width, height)
 
-  // 找到最大值用于归一化
+  // 跨 4 个通道取全局最大值用于归一化。
   const maxVal = Math.max(...histogram.luminance, ...histogram.red, ...histogram.green, ...histogram.blue)
 
   if (maxVal === 0) return
@@ -115,7 +115,11 @@ const drawHistogram = (canvas: HTMLCanvasElement, histogram: CompressedHistogram
     const barWidth = chartWidth / data.length
 
     for (const [i, datum] of data.entries()) {
-      const barHeight = (datum / maxVal) * chartHeight
+      // sqrt 纵轴而不是线性：低调照片（纯黑背景）会在最暗 bin 堆一个巨大的 clipping
+      // 尖峰，线性归一化会把其余真实分布全压成看不见的平线（看着像空直方图）。sqrt
+      // 压缩动态范围——尖峰仍顶到顶、中间调重新可见，且保留「阴影占大头」的低调特征
+      //（log 会把中间调抬太高、反而像正常曝光）。datum ≤ maxVal 恒成立，无需 clamp。
+      const barHeight = (Math.sqrt(datum) / Math.sqrt(maxVal)) * chartHeight
       const x = padding + i * barWidth
       const y = height - padding - barHeight
 
