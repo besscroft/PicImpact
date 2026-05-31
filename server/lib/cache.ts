@@ -28,38 +28,52 @@ export const CACHE_TAG = {
 
 /**
  * On-demand `revalidateTag` is the primary freshness mechanism. This TTL is a
- * safety net so a missed invalidation self-heals, and it also bounds the lag
- * for the preprocess ticker's background `variants_ready` updates (which run
- * outside request scope and therefore cannot call `revalidateTag`).
+ * safety net so a missed invalidation self-heals. Albums and public config only
+ * change via admin writes (which call `revalidateTag` synchronously in request
+ * scope), so a long safety-net TTL is fine for them.
  */
 const REVALIDATE_SECONDS = 3600
+
+/**
+ * Image listings (the `gallery` tag) have an extra freshness source the others
+ * don't: the preprocess ticker flips `variants_ready` in the BACKGROUND, so it
+ * runs outside request scope and cannot call `revalidateTag` (Next throws
+ * "Invariant: static generation store missing" with no work store). That update
+ * is therefore only picked up when the cache entry expires, so the gallery TTL
+ * doubles as the upper bound on how long a freshly-processed image can keep
+ * showing its placeholder. Keep it short to bound that lag (≤60s) while still
+ * absorbing the bulk of repeat reads — page-1 first paint stays a cache hit for
+ * most requests within each window. Admin writes still bust this tag instantly
+ * via `revalidateGalleryCache`; this only governs the background-ticker gap.
+ */
+const GALLERY_REVALIDATE_SECONDS = 60
 
 export const cachedClientImagesListByAlbum = unstable_cache(
   (pageNum: number, album: string, camera?: string, lens?: string) =>
     fetchClientImagesListByAlbum(pageNum, album, camera, lens),
   ['public-client-images-list'],
-  { tags: [CACHE_TAG.gallery], revalidate: REVALIDATE_SECONDS },
+  { tags: [CACHE_TAG.gallery], revalidate: GALLERY_REVALIDATE_SECONDS },
 )
 
 export const cachedClientImagesPageTotalByAlbum = unstable_cache(
   (album: string, camera?: string, lens?: string) =>
     fetchClientImagesPageTotalByAlbum(album, camera, lens),
   ['public-client-images-total'],
-  { tags: [CACHE_TAG.gallery], revalidate: REVALIDATE_SECONDS },
+  { tags: [CACHE_TAG.gallery], revalidate: GALLERY_REVALIDATE_SECONDS },
 )
 
 export const cachedDailyImagesList = unstable_cache(
   (pageNum: number, camera?: string, lens?: string) =>
     fetchDailyImagesList(pageNum, camera, lens),
   ['public-daily-images-list'],
-  { tags: [CACHE_TAG.gallery], revalidate: REVALIDATE_SECONDS },
+  { tags: [CACHE_TAG.gallery], revalidate: GALLERY_REVALIDATE_SECONDS },
 )
 
 export const cachedDailyImagesPageTotal = unstable_cache(
   (camera?: string, lens?: string) =>
     fetchDailyImagesPageTotal(camera, lens),
   ['public-daily-images-total'],
-  { tags: [CACHE_TAG.gallery], revalidate: REVALIDATE_SECONDS },
+  { tags: [CACHE_TAG.gallery], revalidate: GALLERY_REVALIDATE_SECONDS },
 )
 
 export const cachedAlbumsShow = unstable_cache(
