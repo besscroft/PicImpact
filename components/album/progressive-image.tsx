@@ -34,6 +34,11 @@ export default function ProgressiveImage(
   const [highResImageUrl, setHighResImageUrl] = useState<string | null>(null)
   const [highResImageLoaded, setHighResImageLoaded] = useState(false)
   const [showFullScreenViewer, setShowFullScreenViewer] = useState(Boolean(props.showLightbox))
+  // Latches true on the first full-screen open and stays true so the WebGL
+  // viewer remains mounted across subsequent open/close (toggled only via CSS
+  // visibility) — preserving its context + zoom/pan state. Lazily gates the
+  // first mount so the engine isn't built until the user actually zooms.
+  const [hasOpenedFullScreen, setHasOpenedFullScreen] = useState(Boolean(props.showLightbox))
   const [webGLAvailable] = useState(() => isWebGLSupported())
   const avifOk = useAvifSupport()
 
@@ -68,6 +73,7 @@ export default function ProgressiveImage(
   useEffect(() => {
     if (props.showLightbox) {
       setShowFullScreenViewer(true)
+      setHasOpenedFullScreen(true)
       if (!highResImageUrl && !isLoading) {
         loadHighResolutionImage()
       }
@@ -86,6 +92,7 @@ export default function ProgressiveImage(
   // Open the full-screen viewer, loading the high-res image on demand.
   const openFullScreen = () => {
     setShowFullScreenViewer(true)
+    setHasOpenedFullScreen(true)
     props.onShowLightboxChange?.(true)
     if (!highResImageUrl && !isLoading) {
       loadHighResolutionImage()
@@ -191,18 +198,24 @@ export default function ProgressiveImage(
               }}
             />
           </Activity>
-          {/* Conditionally MOUNT the full-screen viewer rather than toggling an
-              <Activity> hidden/visible. <Activity> preserves the <canvas> DOM and
-              component state but runs the child's effect cleanup on hide — which
-              fires the WebGL engine's destroy()/loseContext(). Because the same
-              canvas is reused and `isInitialized` state is preserved, re-opening
-              never rebuilds the engine and lands on a permanently-lost context →
-              blank image + crash on the 2nd open. Mount/unmount gives every open a
-              fresh canvas + context (and destroy() on a discarded canvas stays
-              correct), fixing the crash while keeping the FU-13 leak fix intact. */}
-          {showFullScreenViewer && (
+          {/* Keep the full-screen viewer MOUNTED once it has been opened, and
+              toggle it with CSS visibility rather than <Activity> or conditional
+              mount/unmount. <Activity> runs the child's effect cleanup on hide
+              (firing the WebGL engine's destroy()/loseContext() on every close →
+              the 2nd-open crash); conditional unmount rebuilds the engine on every
+              open (losing zoom/pan state + paying the re-creation cost). Staying
+              mounted keeps one engine + WebGL context alive across open/close, so
+              zoom/pan state is preserved and the context is reused — and destroy()
+              only runs when ProgressiveImage itself unmounts (leaving the detail
+              page), which keeps the FU-13 leak fix. `visibility:hidden` (not
+              display:none) keeps the canvas sized so re-showing doesn't reset the
+              view, and pointer-events are disabled while hidden so the invisible
+              overlay never blocks the page. Mounted lazily on first open so the
+              engine isn't built until the user actually zooms. */}
+          {hasOpenedFullScreen && (
             webGLAvailable ? <div
               className="fixed inset-0 z-[100] bg-background/95 flex items-center justify-center"
+              style={{ visibility: showFullScreenViewer ? 'visible' : 'hidden', pointerEvents: showFullScreenViewer ? 'auto' : 'none' }}
               onClick={(e) => {
                 // 点击背景关闭
                 if (e.target === e.currentTarget) {
@@ -256,6 +269,7 @@ export default function ProgressiveImage(
               </div>
             </div> : <div
               className="fixed inset-0 z-[100] bg-background/95 flex items-center justify-center overflow-auto"
+              style={{ visibility: showFullScreenViewer ? 'visible' : 'hidden', pointerEvents: showFullScreenViewer ? 'auto' : 'none' }}
               onClick={(e) => {
                 if (e.target === e.currentTarget) {
                   handleCloseViewer()
