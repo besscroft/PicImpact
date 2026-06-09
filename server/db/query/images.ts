@@ -4,7 +4,7 @@
 
 import { Prisma } from '@prisma/client'
 import { db } from '~/server/lib/db'
-import type { ImageType } from '~/types'
+import type { AlbumNeighborWindow, ImageType } from '~/types'
 import { fetchConfigValue } from './configs'
 import { buildExifFilters, buildPagination, buildShowFilter, calcPageTotal } from './helpers'
 
@@ -279,6 +279,135 @@ export async function fetchClientImagesPageTotalByAlbum(
     ) AS unique_images;
   `
   return calcPageTotal(pageTotal[0].total, DEFAULT_SIZE)
+}
+
+/**
+ * Shape the raw window rows into an `AlbumNeighborWindow`, stripping the
+ * window-function helper columns (`rn`, `total`) the SQL carries.
+ */
+function shapeNeighborWindow(rows: any[], imageId: string): AlbumNeighborWindow {
+  if (!rows || rows.length === 0) {
+    return { images: [], currentIndex: -1, total: 0, hasPrev: false, hasNext: false }
+  }
+  const total = Number(rows[0].total)
+  const firstRn = Number(rows[0].rn)
+  const lastRn = Number(rows[rows.length - 1].rn)
+  const images = rows.map(({ rn, total: _total, ...image }) => image) as ImageType[]
+  return {
+    images,
+    currentIndex: images.findIndex((img) => img.id === imageId),
+    total,
+    hasPrev: firstRn > 1,
+    hasNext: lastRn < total,
+  }
+}
+
+/**
+ * Fetch a window of a gallery context's ordered images centered on `imageId`,
+ * for prev/next navigation on the photo detail page. Both detail render paths
+ * (intercepted modal + full page / deep link) use this single server contract
+ * so navigation stays consistent across filtered / direct / shared views.
+ *
+ * `album === '/'` is the home (main-page) feed; any other value is a concrete
+ * album. The ordering mirrors `fetchClientImagesListByAlbum` exactly — same
+ * `image.sort DESC, ...` / per-album `image_sorting` — so the navigation
+ * sequence matches the grid. (The home/daily feed is handled by the
+ * `getAlbumNeighborWindow` action, which mirrors `getImagesData`'s daily check.)
+ *
+ * One bounded round-trip: a window function ranks the context, then only rows
+ * within `radius` of the target are returned. Deliberately uncached, matching
+ * the uncached `fetchImageByIdAndAuth` the detail page already runs (a per-image
+ * cache key would add high cardinality for little gain).
+ *
+ * NOTE on `random_show` albums: navigation uses the album's DETERMINISTIC order.
+ * A server-side window cannot reproduce the per-request `Math.random()` shuffle
+ * the grid applies, so the order is best-effort (stable + navigable, but not
+ * matching a shuffled grid). Per product decision we do not seed/stabilise it.
+ */
+export async function fetchAlbumNeighborWindow(
+  imageId: string,
+  album: string,
+  radius: number = 10,
+  camera?: string,
+  lens?: string
+): Promise<AlbumNeighborWindow> {
+  if (!imageId || !album) {
+    return { images: [], currentIndex: -1, total: 0, hasPrev: false, hasNext: false }
+  }
+  const safeRadius = Math.max(0, Math.min(50, Number.isFinite(radius) ? Math.floor(radius) : 10))
+
+  // Home (main-page) feed: no album join, gated by show_on_mainpage. Mirrors
+  // the `album === '/'` branch of fetchClientImagesListByAlbum.
+  if (album === '/') {
+    const homeRows: any[] = await db.$queryRaw`
+      WITH ranked AS (
+        SELECT
+            image.*,
+            ROW_NUMBER() OVER (ORDER BY image.sort DESC, image.created_at DESC, image.updated_at DESC) AS rn,
+            COUNT(*) OVER () AS total
+        FROM
+            "public"."images" AS image
+        WHERE
+            image.del = 0
+        AND image.show = 0
+        AND image.show_on_mainpage = 0
+        ${buildExifFilters(camera, lens)}
+      ),
+      target AS (
+        SELECT rn AS target_rn FROM ranked WHERE id = ${imageId}
+      )
+      SELECT ranked.*
+      FROM ranked, target
+      WHERE ranked.rn BETWEEN target.target_rn - ${safeRadius} AND target.target_rn + ${safeRadius}
+      ORDER BY ranked.rn
+    `
+    return shapeNeighborWindow(homeRows, imageId)
+  }
+
+  const albumData = await db.albums.findFirst({
+    where: {
+      album_value: album
+    }
+  })
+  let orderBy = Prisma.sql(['image.sort DESC, image.created_at DESC, image.updated_at DESC'])
+  if (albumData && albumData.image_sorting && ALBUM_IMAGE_SORTING_ORDER[albumData.image_sorting]) {
+    orderBy = Prisma.sql([`image.sort DESC, ${ALBUM_IMAGE_SORTING_ORDER[albumData.image_sorting]}`])
+  }
+
+  const rows: any[] = await db.$queryRaw`
+    WITH ranked AS (
+      SELECT
+          image.*,
+          albums.name AS album_name,
+          albums.id AS album_value,
+          albums.license AS album_license,
+          albums.image_sorting AS album_image_sorting,
+          ROW_NUMBER() OVER (ORDER BY ${orderBy}) AS rn,
+          COUNT(*) OVER () AS total
+      FROM
+          "public"."images" AS image
+      INNER JOIN "public"."images_albums_relation" AS relation
+          ON image.id = relation."imageId"
+      INNER JOIN "public"."albums" AS albums
+          ON relation.album_value = albums.album_value
+      WHERE
+          image.del = 0
+      AND albums.del = 0
+      AND image.show = 0
+      AND albums.show = 0
+      AND albums.album_value = ${album}
+      ${buildExifFilters(camera, lens)}
+    ),
+    target AS (
+      SELECT rn AS target_rn FROM ranked WHERE id = ${imageId}
+    )
+    SELECT ranked.*
+    FROM ranked, target
+    WHERE ranked.rn BETWEEN target.target_rn - ${safeRadius} AND target.target_rn + ${safeRadius}
+    ORDER BY ranked.rn
+  `
+
+  return shapeNeighborWindow(rows, imageId)
 }
 
 /**
