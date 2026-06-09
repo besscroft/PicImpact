@@ -154,6 +154,17 @@ export default function PreviewImage(props: Readonly<PreviewImageHandleProps>) {
   // Exit transition: fade the detail view out, then navigate (deferred-nav), so
   // closing isn't a hard cut back to the grid.
   const [closing, setClosing] = useState(false)
+  // Mobile swipe-down-to-dismiss. dragY drives a translate on a wrapper that is
+  // an ancestor of the fixed zoom viewer, so the transform must be fully removed
+  // at rest (phase 'idle' → no transform) and only ever applied while !zoomed —
+  // otherwise it would give the fixed viewer a containing block and break its
+  // fullscreen positioning (same trap the close avoids).
+  const [dragY, setDragY] = useState(0)
+  const [dragPhase, setDragPhase] = useState<'idle' | 'dragging' | 'snapping'>('idle')
+  const dragYRef = useRef(0)
+  dragYRef.current = dragY
+  const dragStartRef = useRef<{ x: number; y: number } | null>(null)
+  const dragDirRef = useRef<null | 'v' | 'h'>(null)
 
   // Detail-view carousel: the image area is an embla carousel over the windowed
   // album slice. The metadata panel + zoom always follow `current` (the settled
@@ -295,6 +306,55 @@ export default function PreviewImage(props: Readonly<PreviewImageHandleProps>) {
     setClosing(true)
   }
 
+  // Swipe-down dismiss — handlers live on the image area only (never the
+  // scrollable metadata panel). The gate stays PASSIVE (never preventDefault /
+  // stopPropagation) and only claims the gesture once it is clearly vertical and
+  // downward, so embla keeps full ownership of horizontal swipes.
+  const DISMISS_THRESHOLD = 120
+  const onImagePointerDown = (e: React.PointerEvent) => {
+    if (e.pointerType !== 'touch' || lightboxPhoto) return
+    dragStartRef.current = { x: e.clientX, y: e.clientY }
+    dragDirRef.current = null
+  }
+  const onImagePointerMove = (e: React.PointerEvent) => {
+    const start = dragStartRef.current
+    if (!start || lightboxPhoto) return
+    const dx = e.clientX - start.x
+    const dy = e.clientY - start.y
+    if (dragDirRef.current === null && (Math.abs(dx) > 6 || Math.abs(dy) > 6)) {
+      dragDirRef.current = dy > 0 && Math.abs(dy) > Math.abs(dx) * 1.5 ? 'v' : 'h'
+      if (dragDirRef.current === 'v') {
+        setDragPhase('dragging')
+        // Capture so pointerup still lands here if the finger leaves the image —
+        // otherwise the drag (and its transform) could get stuck. Safe vs embla:
+        // it only fires once the gesture is already vertical, which embla ignores.
+        try { (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId) } catch {}
+      }
+    }
+    if (dragDirRef.current === 'v') setDragY(Math.max(0, dy))
+  }
+  const endImageDrag = () => {
+    if (dragDirRef.current === 'v') {
+      if (dragYRef.current > DISMISS_THRESHOLD) {
+        // Clear the drag transform immediately — the close fade is driven by the
+        // inner motion.div's opacity, not this wrapper — so a transform can never
+        // outlive the gesture and strand the (session-mounted) fixed zoom viewer.
+        setDragPhase('idle')
+        setDragY(0)
+        handleClose()
+      } else if (dragYRef.current > 0) {
+        setDragPhase('snapping')
+        setDragY(0)
+      } else {
+        // No displacement to animate back: a no-op setDragY(0) fires no
+        // transitionend, so go straight to idle or the transform would stick.
+        setDragPhase('idle')
+      }
+    }
+    dragStartRef.current = null
+    dragDirRef.current = null
+  }
+
   const handleDownload = async () => {
     setDownload(true)
     try {
@@ -369,6 +429,21 @@ export default function PreviewImage(props: Readonly<PreviewImageHandleProps>) {
   }
 
   return (
+    <div
+      className="h-full"
+      style={dragPhase === 'idle' ? undefined : {
+        transform: `translateY(${dragY}px)`,
+        transition: dragPhase === 'snapping' ? 'transform 0.25s ease-out, opacity 0.25s ease-out' : 'none',
+        opacity: 1 - Math.min(dragY / 500, 0.4),
+      }}
+      onTransitionEnd={(e) => {
+        // Only our own transform settling — ignore transitionend bubbling up from
+        // the many child hover transitions, which would reset the phase early.
+        if (e.target === e.currentTarget && e.propertyName === 'transform' && dragPhase === 'snapping') {
+          setDragPhase('idle')
+        }
+      }}
+    >
     <motion.div
       className="flex flex-col overflow-y-auto scrollbar-hide h-full rounded-none! max-w-none gap-0 p-2"
       animate={{ opacity: closing ? 0 : 1 }}
@@ -377,7 +452,13 @@ export default function PreviewImage(props: Readonly<PreviewImageHandleProps>) {
     >
       <TransitionOverlay />
       <div className="relative h-full flex flex-col space-y-2 sm:grid sm:gap-4 sm:grid-cols-3 w-full">
-        <div className="show-up-motion relative sm:col-span-2 sm:flex sm:justify-center sm:max-h-[90vh] select-none">
+        <div
+          className="show-up-motion relative sm:col-span-2 sm:flex sm:justify-center sm:max-h-[90vh] select-none"
+          onPointerDown={onImagePointerDown}
+          onPointerMove={onImagePointerMove}
+          onPointerUp={endImageDrag}
+          onPointerCancel={endImageDrag}
+        >
           <div className="overflow-hidden w-full" ref={emblaRef}>
             <div className="flex h-full">
               {photos.map((photo, i) => {
@@ -758,5 +839,6 @@ export default function PreviewImage(props: Readonly<PreviewImageHandleProps>) {
         </ScrollArea>
       </div>
     </motion.div>
+    </div>
   )
 }
