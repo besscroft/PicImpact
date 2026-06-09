@@ -2,6 +2,7 @@ import { fetchImageByIdAndAuth } from '~/server/db/query/images'
 import type { PreviewImageHandleProps } from '~/types/props'
 import PreviewImage from '~/components/album/preview-image'
 import { cachedConfigsByKeys, cachedVariantBaseUrl } from '~/server/lib/cache'
+import { getAlbumNeighborWindow } from '~/server/actions/images'
 import type { GalleryDisplayConfig } from '~/types'
 import type { Metadata } from 'next/types'
 
@@ -63,11 +64,18 @@ export default async function PreView({params}: { params: any }) {
 
   const imageData = await getData(id)
 
+  // Server-resolve the album neighbor window so the detail view opens straight
+  // into an in-place prev/next carousel (no extra round-trip). Best-effort.
+  const initialWindow = imageData?.album_value
+    ? await getAlbumNeighborWindow(id, imageData.album_value).catch(() => null)
+    : null
+
   const props: PreviewImageHandleProps = {
     data: imageData,
     args: 'getImages-client-preview',
     id: id,
     configHandle: getConfig,
+    initialWindow,
   }
 
   return (

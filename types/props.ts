@@ -1,6 +1,6 @@
 // 业务专用类型
 
-import { AlbumType, GalleryDisplayConfig, ImageType } from '~/types/index'
+import { AlbumNeighborWindow, AlbumType, GalleryDisplayConfig, ImageType } from '~/types/index'
 
 export type AlbumDataProps = {
   data: AlbumType[]
@@ -38,6 +38,10 @@ export type PreviewImageHandleProps = {
   args: string
   id: string
   configHandle?: () => Promise<GalleryDisplayConfig>
+  // Server-resolved neighbor window centered on `data`, so the detail view can
+  // render an in-place prev/next carousel over the album without an extra
+  // round-trip on open. Best-effort — falls back to a single-photo sequence.
+  initialWindow?: AlbumNeighborWindow | null
 }
 
 export type ProgressiveImageProps = {
