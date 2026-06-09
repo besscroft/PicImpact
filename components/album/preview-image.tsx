@@ -1,6 +1,6 @@
 'use client'
 
-import type { GalleryDisplayConfig } from '~/types'
+import type { GalleryDisplayConfig, ImageType } from '~/types'
 import type { PreviewImageHandleProps } from '~/types/props'
 import LivePhoto from '~/components/album/live-photo'
 import { toast } from 'sonner'
@@ -86,6 +86,57 @@ function PlaceholderSlide({ blurhash, width, height }: { blurhash: string; width
         backgroundPosition: 'center',
       }}
     />
+  )
+}
+
+// Decoded-blurhash fallback for a strip thumbnail with no preview url.
+function ThumbBlur({ blurhash }: { blurhash: string }) {
+  const url = useBlurImageDataUrl(blurhash)
+  return <div className="h-full w-full bg-cover bg-center" style={{ backgroundImage: url ? `url(${url})` : undefined }} />
+}
+
+// Bottom thumbnail strip — a horizontally scrollable row over the album window,
+// the active photo ringed and auto-centered. Clicking jumps the carousel there.
+// Plain <img>/blurhash only (no WebGL), and it reuses the same windowed `photos`
+// the carousel already holds, so it adds no fetches.
+function ThumbnailStrip({ photos, activeIndex, onSelect }: { photos: ImageType[]; activeIndex: number; onSelect: (i: number) => void }) {
+  const ref = useRef<HTMLDivElement>(null)
+  useEffect(() => {
+    const el = ref.current?.querySelector<HTMLElement>('[data-active="true"]')
+    el?.scrollIntoView({ inline: 'center', block: 'nearest', behavior: 'smooth' })
+  }, [activeIndex])
+  return (
+    <div className="pointer-events-none absolute inset-x-0 bottom-2 z-20 flex justify-center px-2">
+      <div
+        ref={ref}
+        className="pointer-events-auto flex max-w-full gap-1.5 overflow-x-auto rounded-xl bg-background/60 p-1.5 backdrop-blur-md scrollbar-hide"
+      >
+        {photos.map((p, i) => {
+          const active = i === activeIndex
+          return (
+            <button
+              key={p.id}
+              type="button"
+              data-active={active}
+              aria-current={active}
+              aria-label={`View photo ${i + 1}`}
+              onClick={() => onSelect(i)}
+              className={cn(
+                'relative size-12 shrink-0 overflow-hidden rounded-md transition-all',
+                active ? 'opacity-100 ring-2 ring-primary' : 'opacity-50 hover:opacity-90',
+              )}
+            >
+              {p.preview_url ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={p.preview_url} alt="" loading="lazy" draggable={false} className="h-full w-full object-cover" />
+              ) : (
+                <ThumbBlur blurhash={p.blurhash} />
+              )}
+            </button>
+          )
+        })}
+      </div>
+    </div>
   )
 }
 
@@ -374,8 +425,15 @@ export default function PreviewImage(props: Readonly<PreviewImageHandleProps>) {
               <ChevronRightIcon size={22} />
             </button>
           )}
+          {photos.length > 1 && !lightboxPhoto && (
+            <ThumbnailStrip
+              photos={photos}
+              activeIndex={index}
+              onSelect={(i) => emblaApi?.scrollTo(i)}
+            />
+          )}
         </div>
-        
+
         {/* Right side panel with all EXIF info */}
         <ScrollArea className="sm:max-h-[90vh]">
           <div className="flex w-full flex-col space-y-6 pr-4">
