@@ -21,7 +21,12 @@ import { CopyIcon } from '~/components/icons/copy'
 import { RefreshCWIcon } from '~/components/icons/refresh-cw'
 import { cn } from '~/lib/utils'
 import { useSwrHydrated } from '~/hooks/use-swr-hydrated'
-import { useMemo, useState } from 'react'
+import { usePhotoSequence } from '~/hooks/use-photo-sequence'
+import { useBlurImageDataUrl } from '~/hooks/use-blurhash'
+import useEmblaCarousel from 'embla-carousel-react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { ChevronLeftIcon } from '~/components/icons/chevron-left'
+import { ChevronRightIcon } from '~/components/icons/chevron-right'
 import { ExpandIcon } from '~/components/icons/expand'
 import { useTranslations } from 'next-intl'
 import ProgressiveImage from '~/components/album/progressive-image.tsx'
@@ -63,11 +68,100 @@ function SectionTitle({ children }: { children: React.ReactNode }) {
   )
 }
 
+// Off-budget carousel slides (beyond the load radius) render only the decoded
+// blurhash at the photo's aspect ratio — no variant request — so a large album
+// never fans out into dozens of concurrent image loads.
+function PlaceholderSlide({ blurhash, width, height }: { blurhash: string; width?: number; height?: number }) {
+  const dataUrl = useBlurImageDataUrl(blurhash)
+  return (
+    <div
+      aria-hidden
+      className="w-full sm:max-h-[90vh]"
+      style={{
+        aspectRatio: width && height ? `${width} / ${height}` : undefined,
+        backgroundImage: dataUrl ? `url(${dataUrl})` : undefined,
+        backgroundSize: 'contain',
+        backgroundRepeat: 'no-repeat',
+        backgroundPosition: 'center',
+      }}
+    />
+  )
+}
+
 export default function PreviewImage(props: Readonly<PreviewImageHandleProps>) {
   const router = useRouter()
   const t = useTranslations()
-  const { data: download = false, mutate: setDownload } = useSWR(['masonry/download', props.data?.url ?? ''], null)
+  const { photos, index, current, hasPrev, hasNext, setIndex } = usePhotoSequence({
+    album: props.data?.album_value,
+    initialWindow: props.initialWindow,
+    fallback: props.data,
+  })
+  const { data: download = false, mutate: setDownload } = useSWR(['masonry/download', current?.url ?? ''], null)
   const [lightboxPhoto, setLightboxPhoto] = useState<boolean>(false)
+
+  // Detail-view carousel: the image area is an embla carousel over the windowed
+  // album slice. The metadata panel + zoom always follow `current` (the settled
+  // slide). Drag is disabled while zoomed so the WebGL viewer owns the gesture.
+  const [emblaRef, emblaApi] = useEmblaCarousel({ loop: false, align: 'center', startIndex: index, watchDrag: !lightboxPhoto })
+  // Only neighbors within this radius render their image (variant); farther
+  // slides stay blurhash placeholders. This *is* the adjacent-prefetch budget —
+  // tighter on mobile to cap memory (see the AVIF double-load fix).
+  const [loadRadius, setLoadRadius] = useState(2)
+  const indexRef = useRef(index)
+  indexRef.current = index
+  const lastSettledRef = useRef(index)
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+    const mq = window.matchMedia('(max-width: 640px)')
+    const apply = () => setLoadRadius(mq.matches ? 1 : 2)
+    apply()
+    mq.addEventListener('change', apply)
+    return () => mq.removeEventListener('change', apply)
+  }, [])
+
+  // The settled slide is the source of truth: sync the index, drop any open zoom,
+  // and shallow-update the URL (history.replaceState — no server re-render) so
+  // every photo is shareable/back-navigable. Ignore no-op settles from reInit
+  // (same index) so paging in more photos / toggling zoom never self-closes.
+  const onSettle = useCallback(() => {
+    if (!emblaApi) return
+    const i = emblaApi.selectedScrollSnap()
+    if (i === lastSettledRef.current) return
+    lastSettledRef.current = i
+    setIndex(i)
+    setLightboxPhoto(false)
+    const photo = photos[i]
+    if (photo && typeof window !== 'undefined') {
+      window.history.replaceState(window.history.state, '', `/preview/${photo.id}`)
+    }
+  }, [emblaApi, photos, setIndex])
+
+  useEffect(() => {
+    if (!emblaApi) return
+    emblaApi.on('settle', onSettle)
+    return () => { emblaApi.off('settle', onSettle) }
+  }, [emblaApi, onSettle])
+
+  // Re-measure + re-center when the window pages in more photos (prepend shifts
+  // the index) or when zoom toggles drag. `index` is read fresh via ref so a
+  // user swipe is never fought by a reInit.
+  useEffect(() => {
+    if (!emblaApi) return
+    lastSettledRef.current = indexRef.current
+    emblaApi.reInit({ loop: false, align: 'center', startIndex: indexRef.current, watchDrag: !lightboxPhoto })
+  }, [emblaApi, photos.length, lightboxPhoto])
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+    const onKey = (e: KeyboardEvent) => {
+      if (lightboxPhoto) return
+      if (e.key === 'ArrowLeft') emblaApi?.scrollPrev()
+      else if (e.key === 'ArrowRight') emblaApi?.scrollNext()
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [emblaApi, lightboxPhoto])
 
   const exifIconClass = 'text-muted-foreground hover:text-primary transition-colors'
   const badgeIconClass = 'shrink-0 text-primary/60'
@@ -83,28 +177,28 @@ export default function PreviewImage(props: Readonly<PreviewImageHandleProps>) {
 
   // Format date time
   const formattedDateTime = useMemo(() => {
-    if (!props.data?.exif?.dateTime) return null
-    const parsed = dayjs(props.data.exif.dateTime, 'YYYY:MM:DD HH:mm:ss')
-    return parsed.isValid() ? parsed.format('YYYY-MM-DD HH:mm:ss') : props.data.exif.dateTime
-  }, [props.data?.exif?.dateTime])
+    if (!current?.exif?.dateTime) return null
+    const parsed = dayjs(current.exif.dateTime, 'YYYY:MM:DD HH:mm:ss')
+    return parsed.isValid() ? parsed.format('YYYY-MM-DD HH:mm:ss') : current.exif.dateTime
+  }, [current?.exif?.dateTime])
 
   // Calculate file info
   const dimensions = useMemo(() => {
-    if (props.data?.width && props.data?.height) {
-      return `${props.data.width} × ${props.data.height}`
+    if (current?.width && current?.height) {
+      return `${current.width} × ${current.height}`
     }
     return null
-  }, [props.data?.width, props.data?.height])
+  }, [current?.width, current?.height])
 
   const megaPixels = useMemo(() => {
-    if (props.data?.width && props.data?.height) {
-      return `${((props.data.width * props.data.height) / 1_000_000).toFixed(1)} MP`
+    if (current?.width && current?.height) {
+      return `${((current.width * current.height) / 1_000_000).toFixed(1)} MP`
     }
     return null
-  }, [props.data?.width, props.data?.height])
+  }, [current?.width, current?.height])
 
   // Image URL for tone analysis and histogram
-  const imageUrl = props.data?.preview_url || props.data?.url || ''
+  const imageUrl = current?.preview_url || current?.url || ''
 
   const handleClose = () => {
     if (window != undefined) {
@@ -113,8 +207,8 @@ export default function PreviewImage(props: Readonly<PreviewImageHandleProps>) {
         return
       }
     }
-    if (props.data?.album_value) {
-      router.push(`${props.data.album_value}`)
+    if (current?.album_value) {
+      router.push(`${current.album_value}`)
     } else {
       router.push('/')
     }
@@ -124,14 +218,14 @@ export default function PreviewImage(props: Readonly<PreviewImageHandleProps>) {
     setDownload(true)
     try {
       let msg = t('Tips.downloadStart')
-      if (props.data?.album_license != null) {
-        msg += t('Tips.downloadLicense', { license: props.data.album_license })
+      if (current?.album_license != null) {
+        msg += t('Tips.downloadLicense', { license: current.album_license })
       }
 
       toast.warning(msg, { duration: 1500 })
 
       // 获取存储类型
-      const storageType = props.data?.url?.includes('s3') ? 's3' : 'r2'
+      const storageType = current?.url?.includes('s3') ? 's3' : 'r2'
 
       // 读取直接下载配置，决定走二进制 blob 端点还是 presigned URL 端点
       const flagsResponse = await fetch('/api/public/download/config')
@@ -145,7 +239,7 @@ export default function PreviewImage(props: Readonly<PreviewImageHandleProps>) {
 
       if (directDownload) {
         // 直接下载模式：从 presigned 端点拿到 URL 后由浏览器拉对象存储
-        const presignedResponse = await fetch(`/api/public/download/${props.id}/presigned?storage=${storageType}`)
+        const presignedResponse = await fetch(`/api/public/download/${current?.id}/presigned?storage=${storageType}`)
         if (!presignedResponse.ok) throw new Error('presigned request failed')
         const presignedJson = await presignedResponse.json()
         const data = presignedJson?.data
@@ -156,7 +250,7 @@ export default function PreviewImage(props: Readonly<PreviewImageHandleProps>) {
         blob = await objectResponse.blob()
       } else {
         // 代理下载模式：服务端返回二进制 blob，文件名从 Content-Disposition 取
-        const binaryResponse = await fetch(`/api/public/download/${props.id}?storage=${storageType}`)
+        const binaryResponse = await fetch(`/api/public/download/${current?.id}?storage=${storageType}`)
         if (!binaryResponse.ok) throw new Error('download request failed')
         const contentDisposition = binaryResponse.headers.get('content-disposition')
         let parsedFilename = 'download'
@@ -185,7 +279,7 @@ export default function PreviewImage(props: Readonly<PreviewImageHandleProps>) {
     }
   }
 
-  if (!props.data) {
+  if (!current) {
     return (
       <div className="flex items-center justify-center h-full">
         <p className="text-muted-foreground">{t('Tips.loading')}</p>
@@ -196,28 +290,68 @@ export default function PreviewImage(props: Readonly<PreviewImageHandleProps>) {
   return (
     <div className="flex flex-col overflow-y-auto scrollbar-hide h-full rounded-none! max-w-none gap-0 p-2">
       <div className="relative h-full flex flex-col space-y-2 sm:grid sm:gap-4 sm:grid-cols-3 w-full">
-        <div className="show-up-motion sm:col-span-2 sm:flex sm:justify-center sm:max-h-[90vh] select-none">
-          {
-            props.data.type === 1 ?
-              <ProgressiveImage
-                imageUrl={props.data.url}
-                previewUrl={props.data.preview_url}
-                alt={props.data.title}
-                height={props.data.height}
-                width={props.data.width}
-                blurhash={props.data.blurhash}
-                imageKey={props.data.image_key}
-                readyMaxWidth={props.data.ready_max_width}
-                variantBaseUrl={configData?.variantBaseUrl ?? ''}
-                showLightbox={lightboxPhoto}
-                onShowLightboxChange={(value)=>setLightboxPhoto(value)}
-              />
-              : <LivePhoto
-                url={props.data.preview_url || props.data.url}
-                videoUrl={props.data.video_url}
-                className="md:h-[90vh] md:max-h-[90vh]"
-              />
-          }
+        <div className="show-up-motion relative sm:col-span-2 sm:flex sm:justify-center sm:max-h-[90vh] select-none">
+          <div className="overflow-hidden w-full" ref={emblaRef}>
+            <div className="flex h-full">
+              {photos.map((photo, i) => {
+                const near = Math.abs(i - index) <= loadRadius
+                const isCurrent = i === index
+                return (
+                  <div
+                    key={photo.id}
+                    className="relative flex min-w-0 shrink-0 grow-0 basis-full items-center justify-center sm:max-h-[90vh]"
+                  >
+                    {near ? (
+                      photo.type === 1 ? (
+                        <ProgressiveImage
+                          key={photo.id}
+                          imageUrl={photo.url}
+                          previewUrl={photo.preview_url}
+                          alt={photo.title}
+                          height={photo.height}
+                          width={photo.width}
+                          blurhash={photo.blurhash}
+                          imageKey={photo.image_key}
+                          readyMaxWidth={photo.ready_max_width}
+                          variantBaseUrl={configData?.variantBaseUrl ?? ''}
+                          showLightbox={isCurrent && lightboxPhoto}
+                          onShowLightboxChange={isCurrent ? ((value) => setLightboxPhoto(value)) : undefined}
+                        />
+                      ) : (
+                        <LivePhoto
+                          url={photo.preview_url || photo.url}
+                          videoUrl={photo.video_url}
+                          className="md:h-[90vh] md:max-h-[90vh]"
+                        />
+                      )
+                    ) : (
+                      <PlaceholderSlide blurhash={photo.blurhash} width={photo.width} height={photo.height} />
+                    )}
+                  </div>
+                )
+              })}
+            </div>
+          </div>
+          {hasPrev && (
+            <button
+              type="button"
+              onClick={() => emblaApi?.scrollPrev()}
+              aria-label="Previous photo"
+              className="absolute left-2 top-1/2 z-30 hidden size-10 -translate-y-1/2 items-center justify-center rounded-full bg-black/30 text-white backdrop-blur transition-opacity hover:bg-black/50 sm:flex"
+            >
+              <ChevronLeftIcon size={22} />
+            </button>
+          )}
+          {hasNext && (
+            <button
+              type="button"
+              onClick={() => emblaApi?.scrollNext()}
+              aria-label="Next photo"
+              className="absolute right-2 top-1/2 z-30 hidden size-10 -translate-y-1/2 items-center justify-center rounded-full bg-black/30 text-white backdrop-blur transition-opacity hover:bg-black/50 sm:flex"
+            >
+              <ChevronRightIcon size={22} />
+            </button>
+          )}
         </div>
         
         {/* Right side panel with all EXIF info */}
@@ -225,7 +359,7 @@ export default function PreviewImage(props: Readonly<PreviewImageHandleProps>) {
           <div className="flex w-full flex-col space-y-6 pr-4">
             {/* Header with title and close button */}
             <div className="flex items-center justify-between">
-              <div className="flex-1 font-display font-semibold text-lg">{props.data?.title}</div>
+              <div className="flex-1 font-display font-semibold text-lg">{current?.title}</div>
               <AnimatedIconTrigger>
                 {({ iconRef, triggerProps }) => (
                   <button
@@ -249,11 +383,11 @@ export default function PreviewImage(props: Readonly<PreviewImageHandleProps>) {
                     className="inline-flex items-center justify-center cursor-pointer"
                     onClick={async () => {
                       try {
-                        const url = props.data?.url
+                        const url = current?.url
                         await navigator.clipboard.writeText(url)
                         let msg = t('Tips.copyImageSuccess')
-                        if (props.data?.album_license != null) {
-                          msg = t('Tips.downloadLicense', { license: props.data?.album_license })
+                        if (current?.album_license != null) {
+                          msg = t('Tips.downloadLicense', { license: current?.album_license })
                         }
                         toast.success(msg, { duration: 1500 })
                       } catch {
@@ -277,7 +411,7 @@ export default function PreviewImage(props: Readonly<PreviewImageHandleProps>) {
                     className="inline-flex items-center justify-center cursor-pointer"
                     onClick={async () => {
                       try {
-                        const url = window.location.origin + '/preview/' + props.id
+                        const url = window.location.origin + '/preview/' + current.id
                         await navigator.clipboard.writeText(url)
                         toast.success(t('Tips.copyShareSuccess'), { duration: 500 })
                       } catch {
@@ -349,40 +483,40 @@ export default function PreviewImage(props: Readonly<PreviewImageHandleProps>) {
                 {dimensions && <Row label={t('Exif.dimensions')} value={dimensions} />}
                 {megaPixels && <Row label={t('Exif.pixels')} value={megaPixels} />}
                 <Row label={t('Exif.captureTime')} value={formattedDateTime} />
-                {props.data?.exif?.color_space && (
-                  <Row label={t('Exif.colorSpace')} value={props.data.exif.color_space} />
+                {current?.exif?.color_space && (
+                  <Row label={t('Exif.colorSpace')} value={current.exif.color_space} />
                 )}
               </div>
             </div>
 
             {/* Capture Parameters - Badge style */}
-            {(props.data?.exif?.focal_length || props.data?.exif?.f_number || 
-              props.data?.exif?.exposure_time || props.data?.exif?.iso_speed_rating) && (
+            {(current?.exif?.focal_length || current?.exif?.f_number || 
+              current?.exif?.exposure_time || current?.exif?.iso_speed_rating) && (
               <div>
                 <SectionTitle>{t('Exif.captureParams')}</SectionTitle>
                 <div className="grid grid-cols-2 gap-2">
-                  {props.data?.exif?.focal_length && (
+                  {current?.exif?.focal_length && (
                     <ParamBadge 
                       icon={<CrosshairIcon className={badgeIconClass} size={14} />}
-                      value={props.data.exif.focal_length}
+                      value={current.exif.focal_length}
                     />
                   )}
-                  {props.data?.exif?.f_number && (
+                  {current?.exif?.f_number && (
                     <ParamBadge 
                       icon={<ApertureIcon className={badgeIconClass} size={14} />}
-                      value={props.data.exif.f_number}
+                      value={current.exif.f_number}
                     />
                   )}
-                  {props.data?.exif?.exposure_time && (
+                  {current?.exif?.exposure_time && (
                     <ParamBadge 
                       icon={<TimerIcon className={badgeIconClass} size={14} />}
-                      value={props.data.exif.exposure_time}
+                      value={current.exif.exposure_time}
                     />
                   )}
-                  {props.data?.exif?.iso_speed_rating && (
+                  {current?.exif?.iso_speed_rating && (
                     <ParamBadge 
                       icon={<GaugeIcon className={badgeIconClass} size={14} />}
-                      value={`ISO ${props.data.exif.iso_speed_rating}`}
+                      value={`ISO ${current.exif.iso_speed_rating}`}
                     />
                   )}
                 </div>
@@ -406,49 +540,49 @@ export default function PreviewImage(props: Readonly<PreviewImageHandleProps>) {
             )}
 
             {/* Device Information */}
-            {(props.data?.exif?.make || props.data?.exif?.model || props.data?.exif?.lens_model) && (
+            {(current?.exif?.make || current?.exif?.model || current?.exif?.lens_model) && (
               <div>
                 <SectionTitle>{t('Exif.deviceInfo')}</SectionTitle>
                 <div className="space-y-1.5">
-                  {props.data?.exif?.make && props.data?.exif?.model && (
+                  {current?.exif?.make && current?.exif?.model && (
                     <div className="flex items-center gap-2">
                       <CameraIcon className={badgeIconClass} size={14} />
                       <span className="text-sm text-foreground">
-                        {`${props.data.exif.make} ${props.data.exif.model}`}
+                        {`${current.exif.make} ${current.exif.model}`}
                       </span>
                     </div>
                   )}
-                  {props.data?.exif?.lens_model && (
+                  {current?.exif?.lens_model && (
                     <div className="flex items-center gap-2">
                       <TelescopeIcon className={badgeIconClass} size={14} />
                       <span className="text-sm text-foreground">
-                        {props.data.exif.lens_model}
+                        {current.exif.lens_model}
                       </span>
                     </div>
                   )}
-                  {props.data?.exif?.focal_length && (
-                    <Row label={t('Exif.focalLength')} value={props.data.exif.focal_length} />
+                  {current?.exif?.focal_length && (
+                    <Row label={t('Exif.focalLength')} value={current.exif.focal_length} />
                   )}
                 </div>
               </div>
             )}
 
             {/* Capture Mode */}
-            {(props.data?.exif?.exposure_mode || props.data?.exif?.exposure_program ||
-              props.data?.exif?.white_balance) && (
+            {(current?.exif?.exposure_mode || current?.exif?.exposure_program ||
+              current?.exif?.white_balance) && (
               <div>
                 <SectionTitle>{t('Exif.captureMode')}</SectionTitle>
                 <div className="space-y-1">
-                  {props.data?.exif?.exposure_program && (
-                    <Row label={t('Exif.exposureProgram')} value={props.data.exif.exposure_program} />
+                  {current?.exif?.exposure_program && (
+                    <Row label={t('Exif.exposureProgram')} value={current.exif.exposure_program} />
                   )}
-                  <Row label={t('Exif.exposureMode')} value={props.data?.exif?.exposure_mode} />
-                  <Row label={t('Exif.whiteBalance')} value={props.data?.exif?.white_balance} />
-                  {props.data?.exif?.color_space && (
+                  <Row label={t('Exif.exposureMode')} value={current?.exif?.exposure_mode} />
+                  <Row label={t('Exif.whiteBalance')} value={current?.exif?.white_balance} />
+                  {current?.exif?.color_space && (
                     <div className="flex items-center gap-2">
                       <FlaskIcon className={badgeIconClass} size={14} />
                       <span className="text-sm text-foreground">
-                        {props.data.exif.color_space}
+                        {current.exif.color_space}
                       </span>
                     </div>
                   )}
@@ -457,26 +591,26 @@ export default function PreviewImage(props: Readonly<PreviewImageHandleProps>) {
             )}
 
             {/* Technical Parameters */}
-            {(props.data?.exif?.bits || props.data?.exif?.cfa_pattern) && (
+            {(current?.exif?.bits || current?.exif?.cfa_pattern) && (
               <div>
                 <SectionTitle>{t('Exif.technicalParams')}</SectionTitle>
                 <div className="space-y-1">
-                  {props.data?.exif?.bits && (
-                    <Row label={t('Exif.bitDepth')} value={props.data.exif.bits} />
+                  {current?.exif?.bits && (
+                    <Row label={t('Exif.bitDepth')} value={current.exif.bits} />
                   )}
-                  {props.data?.exif?.cfa_pattern && (
-                    <Row label={t('Exif.cfaPattern')} value={props.data.exif.cfa_pattern} />
+                  {current?.exif?.cfa_pattern && (
+                    <Row label={t('Exif.cfaPattern')} value={current.exif.cfa_pattern} />
                   )}
                 </div>
               </div>
             )}
 
             {/* Labels/Tags */}
-            {props.data?.labels && props.data.labels.length > 0 && (
+            {current?.labels && current.labels.length > 0 && (
               <div>
                 <SectionTitle>{t('Exif.tags')}</SectionTitle>
                 <div className="flex flex-wrap gap-1.5">
-                  {props.data.labels.map((tag: string) => (
+                  {current.labels.map((tag: string) => (
                     <Badge
                       variant="secondary"
                       className="cursor-pointer border-primary/15 bg-primary/10 text-foreground hover:bg-primary/20 transition-colors"
@@ -491,12 +625,12 @@ export default function PreviewImage(props: Readonly<PreviewImageHandleProps>) {
             )}
 
             {/* Description */}
-            {props.data?.detail && (
+            {current?.detail && (
               <div>
                 <div className="flex items-start gap-2">
                   <LanguagesIcon className={badgeIconClass} size={14} />
                   <p className="text-sm text-foreground text-wrap">
-                    {props.data.detail}
+                    {current.detail}
                   </p>
                 </div>
               </div>
@@ -510,7 +644,7 @@ export default function PreviewImage(props: Readonly<PreviewImageHandleProps>) {
                     className="flex items-center space-x-1 text-sm text-muted-foreground transition-colors hover:text-primary"
                     onClick={async () => {
                       try {
-                        const exif = JSON.stringify(props.data?.exif, null, 2)
+                        const exif = JSON.stringify(current?.exif, null, 2)
                         await navigator.clipboard.writeText(exif)
                         toast.success(t('Exif.copySuccess'), { duration: 1500 })
                       } catch {
