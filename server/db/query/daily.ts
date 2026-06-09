@@ -4,7 +4,7 @@
 
 import { Prisma } from '@prisma/client'
 import { db } from '~/server/lib/db'
-import type { ImageType } from '~/types'
+import type { AlbumNeighborWindow, ImageType } from '~/types'
 
 const DEFAULT_SIZE = 24
 
@@ -35,6 +35,62 @@ export async function fetchDailyImagesList(
     ORDER BY image.daily_sort
     LIMIT ${DEFAULT_SIZE} OFFSET ${(pageNum - 1) * DEFAULT_SIZE}
   `
+}
+
+/**
+ * Fetch a window of the daily feed's ordered images centered on `imageId`, for
+ * prev/next navigation on the photo detail page when the home feed is in daily
+ * mode. Mirrors `fetchDailyImagesList`'s `ORDER BY image.daily_sort` so the
+ * sequence matches the daily grid. Bounded single round-trip; uncached, like
+ * `fetchAlbumNeighborWindow`.
+ */
+export async function fetchDailyNeighborWindow(
+  imageId: string,
+  radius: number = 10,
+  camera?: string,
+  lens?: string
+): Promise<AlbumNeighborWindow> {
+  if (!imageId) {
+    return { images: [], currentIndex: -1, total: 0, hasPrev: false, hasNext: false }
+  }
+  const safeRadius = Math.max(0, Math.min(50, Number.isFinite(radius) ? Math.floor(radius) : 10))
+
+  const rows: any[] = await db.$queryRaw`
+    WITH ranked AS (
+      SELECT
+          image.*,
+          ROW_NUMBER() OVER (ORDER BY image.daily_sort) AS rn,
+          COUNT(*) OVER () AS total
+      FROM
+          "public"."daily_images" AS image
+      WHERE
+          1 = 1
+      ${camera ? Prisma.sql`AND COALESCE(image.exif->>'model', 'Unknown') = ${camera}` : Prisma.empty}
+      ${lens ? Prisma.sql`AND COALESCE(image.exif->>'lens_model', 'Unknown') = ${lens}` : Prisma.empty}
+    ),
+    target AS (
+      SELECT rn AS target_rn FROM ranked WHERE id = ${imageId}
+    )
+    SELECT ranked.*
+    FROM ranked, target
+    WHERE ranked.rn BETWEEN target.target_rn - ${safeRadius} AND target.target_rn + ${safeRadius}
+    ORDER BY ranked.rn
+  `
+
+  if (!rows || rows.length === 0) {
+    return { images: [], currentIndex: -1, total: 0, hasPrev: false, hasNext: false }
+  }
+  const total = Number(rows[0].total)
+  const firstRn = Number(rows[0].rn)
+  const lastRn = Number(rows[rows.length - 1].rn)
+  const images = rows.map(({ rn, total: _total, ...image }) => image) as ImageType[]
+  return {
+    images,
+    currentIndex: images.findIndex((img) => img.id === imageId),
+    total,
+    hasPrev: firstRn > 1,
+    hasNext: lastRn < total,
+  }
 }
 
 /**

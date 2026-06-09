@@ -63,6 +63,23 @@ export type ImageType = {
 }
 
 /**
+ * A bounded slice of a gallery context's ordered images centered on one target
+ * image, powering prev/next navigation in the photo detail view.
+ */
+export type AlbumNeighborWindow = {
+  /** Up to (2 * radius + 1) images, in gallery order, centered on the target. */
+  images: ImageType[];
+  /** 0-based index of the target image within `images`; -1 if not found. */
+  currentIndex: number;
+  /** Total images in the context (after the same show/del/exif filters). */
+  total: number;
+  /** Whether an image exists before the first returned image. */
+  hasPrev: boolean;
+  /** Whether an image exists after the last returned image. */
+  hasNext: boolean;
+}
+
+/**
  * @deprecated Use the dedicated config-shape types below (`CustomInfo`, `S3Info`,
  * `R2Info`, `OpenListInfo`, `AdminConfig`, `DailyConfig`). This raw row shape is
  * still consumed by the storage client builders (`getClient`, `getR2Client`) and
