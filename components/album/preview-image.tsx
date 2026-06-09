@@ -109,7 +109,15 @@ export default function PreviewImage(props: Readonly<PreviewImageHandleProps>) {
   const [loadRadius, setLoadRadius] = useState(2)
   const indexRef = useRef(index)
   indexRef.current = index
+  const photosRef = useRef(photos)
+  photosRef.current = photos
+  const currentIdRef = useRef(current?.id)
+  currentIdRef.current = current?.id
   const lastSettledRef = useRef(index)
+  // Distinguishes our own reInit-driven settles (re-center only) from genuine
+  // user navigation (sync index + drop zoom + write URL), so paging in photos
+  // or toggling zoom never self-closes the viewer or rewrites the URL.
+  const programmaticRef = useRef(false)
 
   useEffect(() => {
     if (typeof window === 'undefined') return
@@ -127,15 +135,21 @@ export default function PreviewImage(props: Readonly<PreviewImageHandleProps>) {
   const onSettle = useCallback(() => {
     if (!emblaApi) return
     const i = emblaApi.selectedScrollSnap()
+    // A settle emitted by our own reInit: re-center bookkeeping only.
+    if (programmaticRef.current) {
+      programmaticRef.current = false
+      lastSettledRef.current = i
+      return
+    }
     if (i === lastSettledRef.current) return
     lastSettledRef.current = i
     setIndex(i)
     setLightboxPhoto(false)
-    const photo = photos[i]
+    const photo = photosRef.current[i]
     if (photo && typeof window !== 'undefined') {
       window.history.replaceState(window.history.state, '', `/preview/${photo.id}`)
     }
-  }, [emblaApi, photos, setIndex])
+  }, [emblaApi, setIndex])
 
   useEffect(() => {
     if (!emblaApi) return
@@ -148,8 +162,13 @@ export default function PreviewImage(props: Readonly<PreviewImageHandleProps>) {
   // user swipe is never fought by a reInit.
   useEffect(() => {
     if (!emblaApi) return
-    lastSettledRef.current = indexRef.current
-    emblaApi.reInit({ loop: false, align: 'center', startIndex: indexRef.current, watchDrag: !lightboxPhoto })
+    // Re-center on the current photo's *identity*, not a cached index — a
+    // prepend shifts every index, but findIndex keeps the same photo centered.
+    const found = currentIdRef.current ? photosRef.current.findIndex((p) => p.id === currentIdRef.current) : -1
+    const startIndex = found >= 0 ? found : indexRef.current
+    lastSettledRef.current = startIndex
+    programmaticRef.current = true
+    emblaApi.reInit({ loop: false, align: 'center', startIndex, watchDrag: !lightboxPhoto })
   }, [emblaApi, photos.length, lightboxPhoto])
 
   useEffect(() => {

@@ -44,6 +44,9 @@ export function usePhotoSequence({
   const [moreBefore, setMoreBefore] = useState(seeded ? initialWindow!.hasPrev : false)
   const [moreAfter, setMoreAfter] = useState(seeded ? initialWindow!.hasNext : false)
   const loadingRef = useRef(false)
+  const mountedRef = useRef(true)
+
+  useEffect(() => () => { mountedRef.current = false }, [])
 
   const extend = useCallback(async (i: number) => {
     if (loadingRef.current || !album || photos.length === 0) return
@@ -55,23 +58,22 @@ export function usePhotoSequence({
     try {
       const anchorId = nearStart ? photos[0].id : photos[photos.length - 1].id
       const w = await getAlbumNeighborWindow(anchorId, album)
-      if (w?.images?.length) {
-        const have = new Set(photos.map((p) => p.id))
-        const fresh = w.images.filter((p) => !have.has(p.id))
-        if (nearStart) {
-          if (fresh.length > 0) {
-            setPhotos((prev) => [...fresh, ...prev])
-            setIndexState((idx) => idx + fresh.length)
-          }
-          setMoreBefore(w.hasPrev)
-        } else {
-          if (fresh.length > 0) setPhotos((prev) => [...prev, ...fresh])
-          setMoreAfter(w.hasNext)
+      // The preview may have been closed while the request was in flight.
+      if (!mountedRef.current) return
+      const have = new Set(photos.map((p) => p.id))
+      const fresh = w?.images?.filter((p) => !have.has(p.id)) ?? []
+      if (nearStart) {
+        if (fresh.length > 0) {
+          setPhotos((prev) => [...fresh, ...prev])
+          setIndexState((idx) => idx + fresh.length)
         }
+        // No *new* photos this direction (empty window or a fully-overlapping
+        // one) → treat the edge as exhausted, otherwise the extend effect keeps
+        // re-firing the same overlapping fetch in a tight loop.
+        setMoreBefore(fresh.length > 0 ? Boolean(w?.hasPrev) : false)
       } else {
-        // No images came back for this edge → nothing more that direction.
-        if (nearStart) setMoreBefore(false)
-        else setMoreAfter(false)
+        if (fresh.length > 0) setPhotos((prev) => [...prev, ...fresh])
+        setMoreAfter(fresh.length > 0 ? Boolean(w?.hasNext) : false)
       }
     } catch {
       // Best-effort: keep the current window; the user can still browse it.
