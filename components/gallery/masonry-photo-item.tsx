@@ -7,16 +7,20 @@ import type { ImageType } from '~/types'
 import { Aperture, Timer, Focus, Disc3 } from 'lucide-react'
 import { useBlurImageDataUrl, DEFAULT_HASH } from '~/hooks/use-blurhash'
 import { Skeleton } from '~/components/ui/skeleton'
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { hasReadyVariants, makeVariantLoader } from '~/lib/image/loader'
 import { useAvifSupport } from '~/hooks/use-avif-support'
 import { DEFAULT_GRID_SIZES } from '~/lib/image/grid-image-sizes'
+import { useTransitionStore } from '~/stores/transition-store'
 
 export default function MasonryPhotoItem({ photo, width, variantBaseUrl = '', priority = false }: { photo: ImageType, width?: number, variantBaseUrl?: string, priority?: boolean }) {
   const router = useRouter()
   const dataURL = useBlurImageDataUrl(photo.blurhash)
   const avifOk = useAvifSupport()
   const [isLoading, setIsLoading] = useState(true)
+  const wrapperRef = useRef<HTMLDivElement>(null)
+  const imgRef = useRef<HTMLImageElement>(null)
+  const setTransitionSource = useTransitionStore((s) => s.setSource)
   // If a (supposedly ready) variant fails to load, fall back down the ladder
   // rather than retrying the variant forever.
   const [variantFailed, setVariantFailed] = useState(false)
@@ -58,17 +62,39 @@ export default function MasonryPhotoItem({ photo, width, variantBaseUrl = '', pr
     ? { width, height: Math.round(width / aspectRatio) }
     : { aspectRatio }
 
+  // Capture the thumbnail's screen rect + the exact pixels it is currently
+  // showing, so the detail view can fly this element from here into place
+  // (shared-element FLIP). Best-effort: if anything is missing the detail view
+  // just opens without the transition.
+  const openDetail = () => {
+    const el = wrapperRef.current
+    if (el) {
+      const r = el.getBoundingClientRect()
+      const src = imgRef.current?.currentSrc || imgRef.current?.src || dataURL
+      if (r.width > 0 && r.height > 0 && src) {
+        setTransitionSource({
+          id: photo.id,
+          rect: { top: r.top, left: r.left, width: r.width, height: r.height },
+          src,
+          aspect: aspectRatio,
+        })
+      }
+    }
+    router.push(`/preview/${photo.id}`)
+  }
+
   return (
     <div
+      ref={wrapperRef}
       role="link"
       tabIndex={0}
       className="group relative cursor-pointer overflow-hidden rounded-sm [will-change:auto] hover:[will-change:transform]"
       style={sizeStyle}
-      onClick={() => router.push(`/preview/${photo.id}`)}
+      onClick={openDetail}
       onKeyDown={(e: React.KeyboardEvent) => {
         if (e.key === 'Enter' || e.key === ' ') {
           e.preventDefault()
-          router.push(`/preview/${photo.id}`)
+          openDetail()
         }
       }}
     >
@@ -87,6 +113,7 @@ export default function MasonryPhotoItem({ photo, width, variantBaseUrl = '', pr
       {imageProps ? (
         <Image
           {...imageProps}
+          ref={imgRef}
           key={variantReady ? 'variant' : 'preview'}
           className={cn(
             'object-cover transition-transform duration-500 group-hover:scale-105',
