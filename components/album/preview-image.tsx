@@ -30,6 +30,7 @@ import { ChevronRightIcon } from '~/components/icons/chevron-right'
 import { ExpandIcon } from '~/components/icons/expand'
 import { useTranslations } from 'next-intl'
 import ProgressiveImage from '~/components/album/progressive-image.tsx'
+import TransitionOverlay from '~/components/album/transition-overlay'
 import ToneAnalysis from '~/components/album/tone-analysis'
 import HistogramChart from '~/components/album/histogram-chart'
 import { Separator } from '~/components/ui/separator'
@@ -308,6 +309,7 @@ export default function PreviewImage(props: Readonly<PreviewImageHandleProps>) {
 
   return (
     <div className="flex flex-col overflow-y-auto scrollbar-hide h-full rounded-none! max-w-none gap-0 p-2">
+      <TransitionOverlay />
       <div className="relative h-full flex flex-col space-y-2 sm:grid sm:gap-4 sm:grid-cols-3 w-full">
         <div className="show-up-motion relative sm:col-span-2 sm:flex sm:justify-center sm:max-h-[90vh] select-none">
           <div className="overflow-hidden w-full" ref={emblaRef}>
@@ -318,6 +320,7 @@ export default function PreviewImage(props: Readonly<PreviewImageHandleProps>) {
                 return (
                   <div
                     key={photo.id}
+                    data-flip-target={isCurrent ? '' : undefined}
                     className="relative flex min-w-0 shrink-0 grow-0 basis-full items-center justify-center sm:max-h-[90vh]"
                   >
                     {near ? (
