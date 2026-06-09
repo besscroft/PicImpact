@@ -31,6 +31,7 @@ import { ExpandIcon } from '~/components/icons/expand'
 import { useTranslations } from 'next-intl'
 import ProgressiveImage from '~/components/album/progressive-image.tsx'
 import TransitionOverlay from '~/components/album/transition-overlay'
+import { motion } from 'motion/react'
 import ToneAnalysis from '~/components/album/tone-analysis'
 import HistogramChart from '~/components/album/histogram-chart'
 import { Separator } from '~/components/ui/separator'
@@ -150,6 +151,9 @@ export default function PreviewImage(props: Readonly<PreviewImageHandleProps>) {
   })
   const { data: download = false, mutate: setDownload } = useSWR(['masonry/download', current?.url ?? ''], null)
   const [lightboxPhoto, setLightboxPhoto] = useState<boolean>(false)
+  // Exit transition: fade the detail view out, then navigate (deferred-nav), so
+  // closing isn't a hard cut back to the grid.
+  const [closing, setClosing] = useState(false)
 
   // Detail-view carousel: the image area is an embla carousel over the windowed
   // album slice. The metadata panel + zoom always follow `current` (the settled
@@ -271,7 +275,7 @@ export default function PreviewImage(props: Readonly<PreviewImageHandleProps>) {
   // Image URL for tone analysis and histogram
   const imageUrl = current?.preview_url || current?.url || ''
 
-  const handleClose = () => {
+  const navigateAway = () => {
     if (window != undefined) {
       if (window.history.length > 1) {
         router.back()
@@ -283,6 +287,12 @@ export default function PreviewImage(props: Readonly<PreviewImageHandleProps>) {
     } else {
       router.push('/')
     }
+  }
+
+  // Trigger the exit fade; the actual navigation runs when it completes.
+  const handleClose = () => {
+    if (closing) return
+    setClosing(true)
   }
 
   const handleDownload = async () => {
@@ -359,7 +369,12 @@ export default function PreviewImage(props: Readonly<PreviewImageHandleProps>) {
   }
 
   return (
-    <div className="flex flex-col overflow-y-auto scrollbar-hide h-full rounded-none! max-w-none gap-0 p-2">
+    <motion.div
+      className="flex flex-col overflow-y-auto scrollbar-hide h-full rounded-none! max-w-none gap-0 p-2"
+      animate={{ opacity: closing ? 0 : 1 }}
+      transition={{ duration: 0.2, ease: 'easeOut' }}
+      onAnimationComplete={() => { if (closing) navigateAway() }}
+    >
       <TransitionOverlay />
       <div className="relative h-full flex flex-col space-y-2 sm:grid sm:gap-4 sm:grid-cols-3 w-full">
         <div className="show-up-motion relative sm:col-span-2 sm:flex sm:justify-center sm:max-h-[90vh] select-none">
@@ -742,6 +757,6 @@ export default function PreviewImage(props: Readonly<PreviewImageHandleProps>) {
           </div>
         </ScrollArea>
       </div>
-    </div>
+    </motion.div>
   )
 }
