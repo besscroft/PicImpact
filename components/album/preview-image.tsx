@@ -203,10 +203,6 @@ export default function PreviewImage(props: Readonly<PreviewImageHandleProps>) {
   const currentIdRef = useRef(current?.id)
   currentIdRef.current = current?.id
   const lastSettledRef = useRef(index)
-  // Distinguishes our own reInit-driven settles (re-center only) from genuine
-  // user navigation (sync index + drop zoom + write URL), so paging in photos
-  // or toggling zoom never self-closes the viewer or rewrites the URL.
-  const programmaticRef = useRef(false)
 
   useEffect(() => {
     if (typeof window === 'undefined') return
@@ -224,12 +220,11 @@ export default function PreviewImage(props: Readonly<PreviewImageHandleProps>) {
   const onSettle = useCallback(() => {
     if (!emblaApi) return
     const i = emblaApi.selectedScrollSnap()
-    // A settle emitted by our own reInit: re-center bookkeeping only.
-    if (programmaticRef.current) {
-      programmaticRef.current = false
-      lastSettledRef.current = i
-      return
-    }
+    // A reInit settles at the index we just stored in lastSettledRef (the current
+    // photo), so it lands here as a no-op. Only a genuine user settle to a new
+    // slide gets past this to sync index / drop zoom / write the URL. (We rely on
+    // lastSettledRef, NOT a "programmatic" flag — a flag could stick if a reInit
+    // emitted no settle and then swallow the user's next real navigation.)
     if (i === lastSettledRef.current) return
     lastSettledRef.current = i
     setIndex(i)
@@ -256,7 +251,6 @@ export default function PreviewImage(props: Readonly<PreviewImageHandleProps>) {
     const found = currentIdRef.current ? photosRef.current.findIndex((p) => p.id === currentIdRef.current) : -1
     const startIndex = found >= 0 ? found : indexRef.current
     lastSettledRef.current = startIndex
-    programmaticRef.current = true
     emblaApi.reInit({ loop: false, align: 'center', startIndex, watchDrag: !lightboxPhoto })
   }, [emblaApi, photos.length, lightboxPhoto])
 
