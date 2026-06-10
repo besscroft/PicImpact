@@ -23,6 +23,8 @@ import { cn } from '~/lib/utils'
 import { useSwrHydrated } from '~/hooks/use-swr-hydrated'
 import { usePhotoSequence } from '~/hooks/use-photo-sequence'
 import { useBlurImageDataUrl } from '~/hooks/use-blurhash'
+import { hasReadyVariants, makeVariantLoader } from '~/lib/image/loader'
+import { useAvifSupport } from '~/hooks/use-avif-support'
 import useEmblaCarousel from 'embla-carousel-react'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { ChevronLeftIcon } from '~/components/icons/chevron-left'
@@ -90,18 +92,36 @@ function PlaceholderSlide({ blurhash, width, height }: { blurhash: string; width
   )
 }
 
-// Decoded-blurhash fallback for a strip thumbnail with no preview url.
-function ThumbBlur({ blurhash }: { blurhash: string }) {
-  const url = useBlurImageDataUrl(blurhash)
-  return <div className="h-full w-full bg-cover bg-center" style={{ backgroundImage: url ? `url(${url})` : undefined }} />
+// One strip thumbnail. Smallest variant tier (320, via width 96) for a 48px
+// cell — NOT the full-resolution preview_url (decoding ~30MP per thumbnail on
+// open was the detail-view jank). Cascade follows blur-image.tsx: variant →
+// decoded blurhash; onError steps down to blurhash, never up to the original.
+function StripThumb({ photo, variantBaseUrl, avifOk }: { photo: ImageType; variantBaseUrl: string; avifOk: boolean }) {
+  const [failed, setFailed] = useState(false)
+  const blur = useBlurImageDataUrl(photo.blurhash)
+  const ready = !failed && hasReadyVariants(photo.image_key, photo.ready_max_width, variantBaseUrl)
+  if (ready) {
+    const src = makeVariantLoader({
+      base: variantBaseUrl,
+      imageKey: photo.image_key,
+      readyMaxWidth: photo.ready_max_width,
+      format: avifOk ? 'avif' : 'webp',
+    })({ src: photo.image_key, width: 96 })
+    return (
+      // eslint-disable-next-line @next/next/no-img-element
+      <img src={src} alt="" loading="lazy" draggable={false} className="h-full w-full object-cover" onError={() => setFailed(true)} />
+    )
+  }
+  return <div aria-hidden className="h-full w-full bg-cover bg-center" style={{ backgroundImage: blur ? `url(${blur})` : undefined }} />
 }
 
 // Bottom thumbnail strip — a horizontally scrollable row over the album window,
 // the active photo ringed and auto-centered. Clicking jumps the carousel there.
 // Plain <img>/blurhash only (no WebGL), and it reuses the same windowed `photos`
 // the carousel already holds, so it adds no fetches.
-function ThumbnailStrip({ photos, activeIndex, onSelect }: { photos: ImageType[]; activeIndex: number; onSelect: (i: number) => void }) {
+function ThumbnailStrip({ photos, activeIndex, variantBaseUrl, onSelect }: { photos: ImageType[]; activeIndex: number; variantBaseUrl: string; onSelect: (i: number) => void }) {
   const ref = useRef<HTMLDivElement>(null)
+  const avifOk = useAvifSupport()
   useEffect(() => {
     // Defer the scroll past the commit so reading layout doesn't force a
     // synchronous reflow on every switch; 'auto' (instant) keeps the active
@@ -134,12 +154,7 @@ function ThumbnailStrip({ photos, activeIndex, onSelect }: { photos: ImageType[]
                 active ? 'opacity-100 ring-2 ring-primary' : 'opacity-50 hover:opacity-90',
               )}
             >
-              {p.preview_url ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img src={p.preview_url} alt="" loading="lazy" draggable={false} className="h-full w-full object-cover" />
-              ) : (
-                <ThumbBlur blurhash={p.blurhash} />
-              )}
+              <StripThumb photo={p} variantBaseUrl={variantBaseUrl} avifOk={avifOk} />
             </button>
           )
         })}
@@ -482,6 +497,7 @@ export default function PreviewImage(props: Readonly<PreviewImageHandleProps>) {
             <ThumbnailStrip
               photos={photos}
               activeIndex={index}
+              variantBaseUrl={configData?.variantBaseUrl ?? ''}
               onSelect={(i) => emblaApi?.scrollTo(i)}
             />
           )}
