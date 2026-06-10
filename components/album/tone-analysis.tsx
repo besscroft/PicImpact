@@ -95,6 +95,10 @@ interface ToneAnalysisProps {
   className?: string
 }
 
+// Memoize tone analysis per image url for the session — the in-place detail
+// switch would otherwise re-fetch + re-decode + re-scan on every revisit.
+const toneCache = new Map<string, ToneAnalysisData>()
+
 export default function ToneAnalysis({ imageUrl, className = '' }: Readonly<ToneAnalysisProps>) {
   const [toneData, setToneData] = useState<ToneAnalysisData | null>(null)
   const [loading, setLoading] = useState(true)
@@ -109,9 +113,17 @@ export default function ToneAnalysis({ imageUrl, className = '' }: Readonly<Tone
       return
     }
 
-    setLoading(true)
     setError(false)
     setNeedsCors(false)
+
+    const cached = toneCache.get(imageUrl)
+    if (cached) {
+      setToneData(cached)
+      setLoading(false)
+      return
+    }
+
+    setLoading(true)
 
     // 检查是否为同源 URL
     const isSameOrigin = (() => {
@@ -128,9 +140,8 @@ export default function ToneAnalysis({ imageUrl, className = '' }: Readonly<Tone
     if (!isSameOrigin) {
       img.crossOrigin = 'anonymous'
     }
-    // 添加时间戳绕过缓存，确保获取带 CORS 头的新响应
-    const urlWithCache = isSameOrigin ? imageUrl : `${imageUrl}${imageUrl.includes('?') ? '&' : '?'}_t=${Date.now()}`
-    img.src = urlWithCache
+    // Use the url as-is so the browser cache is reused (no per-switch re-fetch).
+    img.src = imageUrl
 
     img.onload = () => {
       const canvas = document.createElement('canvas')
@@ -154,6 +165,7 @@ export default function ToneAnalysis({ imageUrl, className = '' }: Readonly<Tone
       try {
         const imageData = ctx.getImageData(0, 0, scaledWidth, scaledHeight)
         const analysis = analyzeTone(imageData)
+        toneCache.set(imageUrl, analysis)
         setToneData(analysis)
       } catch (e) {
         console.error('Error analyzing tone:', e)

@@ -103,8 +103,14 @@ function ThumbBlur({ blurhash }: { blurhash: string }) {
 function ThumbnailStrip({ photos, activeIndex, onSelect }: { photos: ImageType[]; activeIndex: number; onSelect: (i: number) => void }) {
   const ref = useRef<HTMLDivElement>(null)
   useEffect(() => {
-    const el = ref.current?.querySelector<HTMLElement>('[data-active="true"]')
-    el?.scrollIntoView({ inline: 'center', block: 'nearest', behavior: 'smooth' })
+    // Defer the scroll past the commit so reading layout doesn't force a
+    // synchronous reflow on every switch; 'auto' (instant) keeps the active
+    // thumbnail centered without a per-switch smooth-scroll animation.
+    const raf = requestAnimationFrame(() => {
+      ref.current?.querySelector<HTMLElement>('[data-active="true"]')
+        ?.scrollIntoView({ inline: 'center', block: 'nearest', behavior: 'auto' })
+    })
+    return () => cancelAnimationFrame(raf)
   }, [activeIndex])
   return (
     <div className="pointer-events-none absolute inset-x-0 bottom-2 z-20 flex justify-center px-2">
@@ -122,6 +128,7 @@ function ThumbnailStrip({ photos, activeIndex, onSelect }: { photos: ImageType[]
               aria-current={active}
               aria-label={`View photo ${i + 1}`}
               onClick={() => onSelect(i)}
+              style={{ contentVisibility: 'auto', containIntrinsicSize: '48px 48px' } as React.CSSProperties}
               className={cn(
                 'relative size-12 shrink-0 overflow-hidden rounded-md transition-all',
                 active ? 'opacity-100 ring-2 ring-primary' : 'opacity-50 hover:opacity-90',
@@ -286,6 +293,18 @@ export default function PreviewImage(props: Readonly<PreviewImageHandleProps>) {
   // Image URL for tone analysis and histogram
   const imageUrl = current?.preview_url || current?.url || ''
 
+  // Debounce the histogram/tone source: those run an image-load + getImageData +
+  // full-pixel scan, wasteful to fire for every photo flashed past during fast
+  // switching. Initialised to the opened photo (so it shows immediately on open,
+  // no pop-in), then only updated once switching settles for a short idle — so a
+  // fast swipe through 10 photos analyses just the one you stop on.
+  const [deferredImageUrl, setDeferredImageUrl] = useState(imageUrl)
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+    const id = window.setTimeout(() => setDeferredImageUrl(imageUrl), 220)
+    return () => window.clearTimeout(id)
+  }, [imageUrl])
+
   const navigateAway = () => {
     if (window != undefined) {
       if (window.history.length > 1) {
@@ -425,7 +444,14 @@ export default function PreviewImage(props: Readonly<PreviewImageHandleProps>) {
                         />
                       )
                     ) : (
-                      <PlaceholderSlide blurhash={photo.blurhash} width={photo.width} height={photo.height} />
+                      // Only decode the real blurhash for slides near the current one;
+                      // farther off-screen slides pass '' (→ one shared cached default
+                      // decode) so opening a large album doesn't decode ~20 thumbhashes.
+                      <PlaceholderSlide
+                        blurhash={Math.abs(i - index) <= loadRadius + 2 ? photo.blurhash : ''}
+                        width={photo.width}
+                        height={photo.height}
+                      />
                     )}
                   </div>
                 )
@@ -631,18 +657,18 @@ export default function PreviewImage(props: Readonly<PreviewImageHandleProps>) {
             )}
 
             {/* Tone Analysis */}
-            {imageUrl && (
+            {deferredImageUrl && (
               <div>
                 <SectionTitle>{t('Exif.toneAnalysis')}</SectionTitle>
-                <ToneAnalysis imageUrl={imageUrl} />
+                <ToneAnalysis imageUrl={deferredImageUrl} />
               </div>
             )}
 
             {/* Histogram */}
-            {imageUrl && (
+            {deferredImageUrl && (
               <div>
                 <SectionTitle>{t('Exif.histogram')}</SectionTitle>
-                <HistogramChart imageUrl={imageUrl} />
+                <HistogramChart imageUrl={deferredImageUrl} />
               </div>
             )}
 

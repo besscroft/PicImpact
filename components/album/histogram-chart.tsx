@@ -11,6 +11,12 @@ interface CompressedHistogramData {
   luminance: number[]
 }
 
+// Memoize computed histograms per image url for the session. The detail view now
+// switches photos in place, so without this every revisit re-fetches + re-decodes
+// + re-scans pixels. Keyed by the exact url (so a different variant tier / photo
+// invalidates correctly).
+const histogramCache = new Map<string, CompressedHistogramData>()
+
 interface HistogramData {
   red: number[]
   green: number[]
@@ -199,9 +205,18 @@ export default function HistogramChart({ imageUrl, className = '' }: Readonly<Hi
       return
     }
 
-    setLoading(true)
     setError(false)
     setNeedsCors(false)
+
+    // Already computed this image in-session → reuse, no fetch/decode/scan.
+    const cached = histogramCache.get(imageUrl)
+    if (cached) {
+      setHistogram(cached)
+      setLoading(false)
+      return
+    }
+
+    setLoading(true)
 
     // 检查是否为同源 URL
     const isSameOrigin = (() => {
@@ -218,9 +233,10 @@ export default function HistogramChart({ imageUrl, className = '' }: Readonly<Hi
     if (!isSameOrigin) {
       img.crossOrigin = 'anonymous'
     }
-    // 添加时间戳绕过缓存，确保获取带 CORS 头的新响应
-    const urlWithCache = isSameOrigin ? imageUrl : `${imageUrl}${imageUrl.includes('?') ? '&' : '?'}_t=${Date.now()}`
-    img.src = urlWithCache
+    // Use the url as-is so the browser cache is reused (cross-origin CORS requests
+    // are cached separately from the grid's non-CORS <img>, so this still gets a
+    // CORS-readable response — without re-fetching the preview on every switch).
+    img.src = imageUrl
 
     img.onload = () => {
       const canvas = document.createElement('canvas')
@@ -244,6 +260,7 @@ export default function HistogramChart({ imageUrl, className = '' }: Readonly<Hi
       try {
         const imageData = ctx.getImageData(0, 0, scaledWidth, scaledHeight)
         const calculatedHistogram = calculateHistogram(imageData)
+        histogramCache.set(imageUrl, calculatedHistogram)
         setHistogram(calculatedHistogram)
       } catch (e) {
         console.error('Error calculating histogram:', e)
