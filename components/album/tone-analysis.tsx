@@ -97,6 +97,8 @@ interface ToneAnalysisProps {
 
 // Memoize tone analysis per image url for the session — the in-place detail
 // switch would otherwise re-fetch + re-decode + re-scan on every revisit.
+// Bounded LRU (Map insertion order = LRU; re-set on hit keeps hot entries).
+const TONE_CACHE_LIMIT = 256
 const toneCache = new Map<string, ToneAnalysisData>()
 
 export default function ToneAnalysis({ imageUrl, className = '' }: Readonly<ToneAnalysisProps>) {
@@ -118,6 +120,8 @@ export default function ToneAnalysis({ imageUrl, className = '' }: Readonly<Tone
 
     const cached = toneCache.get(imageUrl)
     if (cached) {
+      toneCache.delete(imageUrl)
+      toneCache.set(imageUrl, cached) // mark most-recently-used
       setToneData(cached)
       setLoading(false)
       return
@@ -166,6 +170,9 @@ export default function ToneAnalysis({ imageUrl, className = '' }: Readonly<Tone
         const imageData = ctx.getImageData(0, 0, scaledWidth, scaledHeight)
         const analysis = analyzeTone(imageData)
         toneCache.set(imageUrl, analysis)
+        if (toneCache.size > TONE_CACHE_LIMIT) {
+          toneCache.delete(toneCache.keys().next().value as string)
+        }
         setToneData(analysis)
       } catch (e) {
         console.error('Error analyzing tone:', e)

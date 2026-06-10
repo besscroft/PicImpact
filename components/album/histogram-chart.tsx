@@ -14,7 +14,9 @@ interface CompressedHistogramData {
 // Memoize computed histograms per image url for the session. The detail view now
 // switches photos in place, so without this every revisit re-fetches + re-decodes
 // + re-scans pixels. Keyed by the exact url (so a different variant tier / photo
-// invalidates correctly).
+// invalidates correctly). Bounded LRU so a long browsing session can't grow it
+// without limit (Map insertion order = LRU; re-set on hit keeps hot entries).
+const HISTOGRAM_CACHE_LIMIT = 256
 const histogramCache = new Map<string, CompressedHistogramData>()
 
 interface HistogramData {
@@ -211,6 +213,8 @@ export default function HistogramChart({ imageUrl, className = '' }: Readonly<Hi
     // Already computed this image in-session → reuse, no fetch/decode/scan.
     const cached = histogramCache.get(imageUrl)
     if (cached) {
+      histogramCache.delete(imageUrl)
+      histogramCache.set(imageUrl, cached) // mark most-recently-used
       setHistogram(cached)
       setLoading(false)
       return
@@ -261,6 +265,9 @@ export default function HistogramChart({ imageUrl, className = '' }: Readonly<Hi
         const imageData = ctx.getImageData(0, 0, scaledWidth, scaledHeight)
         const calculatedHistogram = calculateHistogram(imageData)
         histogramCache.set(imageUrl, calculatedHistogram)
+        if (histogramCache.size > HISTOGRAM_CACHE_LIMIT) {
+          histogramCache.delete(histogramCache.keys().next().value as string)
+        }
         setHistogram(calculatedHistogram)
       } catch (e) {
         console.error('Error calculating histogram:', e)
