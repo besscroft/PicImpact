@@ -40,6 +40,9 @@ export default function ProgressiveImage(
   // first mount so the engine isn't built until the user actually zooms.
   const [hasOpenedFullScreen, setHasOpenedFullScreen] = useState(Boolean(props.showLightbox))
   const [webGLAvailable] = useState(() => isWebGLSupported())
+  // If the inline preview variant fails to load, step down to preview_url —
+  // never escalate to the full original (blur-image.tsx policy).
+  const [previewVariantFailed, setPreviewVariantFailed] = useState(false)
   const avifOk = useAvifSupport()
 
   // High-res source for the full-screen zoom viewer: the ORIGINAL, full-
@@ -59,6 +62,24 @@ export default function ProgressiveImage(
       })({ src: props.imageKey as string, width: DETAIL_HIGH_RES_WIDTH })
     : ''
   const highResSource = props.imageUrl || variantHighResSource
+
+  // Inline (non-zoom) preview source: a display-sized variant (~1280) rather than
+  // the raw preview_url. On this deployment preview compression is disabled, so
+  // preview_url is the full-resolution (~30MP) image — decoding one per visible
+  // slide/switch was the detail-view jank. 1280 is capped well below the 2560
+  // zoom tier (the zoom path above still loads the original for pixel-peeping),
+  // and a fixed width avoids next/image DPR pushing retina screens up to 2560.
+  // Falls back to preview_url only when the photo has no generated variants.
+  const INLINE_PREVIEW_WIDTH = 1280
+  const previewVariantReady = !previewVariantFailed && hasReadyVariants(props.imageKey, props.readyMaxWidth ?? 0, props.variantBaseUrl)
+  const previewDisplaySource = previewVariantReady
+    ? makeVariantLoader({
+        base: props.variantBaseUrl as string,
+        imageKey: props.imageKey as string,
+        readyMaxWidth: props.readyMaxWidth as number,
+        format: avifOk ? 'avif' : 'webp',
+      })({ src: props.imageKey as string, width: INLINE_PREVIEW_WIDTH })
+    : props.previewUrl
 
   const webglViewerRef = useRef<WebGLImageViewerRef | null>(null)
   useEffect(() => {
@@ -152,8 +173,8 @@ export default function ProgressiveImage(
           animate={{ opacity: 1 }}
           transition={{ duration: 1 }}
           className="object-contain md:max-h-[90vh] cursor-pointer"
-          src={props.previewUrl}
-          overrideSrc={props.previewUrl}
+          src={previewDisplaySource}
+          overrideSrc={previewDisplaySource}
           placeholder="blur"
           unoptimized
           blurDataURL={dataURL}
@@ -161,6 +182,10 @@ export default function ProgressiveImage(
           height={props.height}
           alt={props.alt || 'image'}
           onClick={openFullScreen}
+          onError={() => {
+            // Inline variant failed → drop to preview_url; never the original.
+            if (previewVariantReady) setPreviewVariantFailed(true)
+          }}
         />
         {/* 加载进度条 */}
         {isLoading && (
