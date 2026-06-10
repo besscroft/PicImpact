@@ -71,6 +71,12 @@ export class WebGLImageViewerEngine extends ImageViewerEngineBase {
   private lastTouchY = 0
 
   private isAnimating = false
+  // Guards `destroy()` against re-entry. The viewer can be torn down via more
+  // than one path (React unmount on slide-out, and the LRU cap unmounting a
+  // backgrounded zoom viewer), and StrictMode can double-invoke cleanup, so
+  // destroy() must be safe to call repeatedly without acting on already-freed
+  // GL objects.
+  private isDestroyed = false
   private animationStartTime = 0
   private animationDuration = 300
   private startScale = 1
@@ -962,6 +968,12 @@ export class WebGLImageViewerEngine extends ImageViewerEngineBase {
   }
 
   public destroy() {
+    // Idempotent: a second call (double teardown path / StrictMode) is a no-op
+    // rather than re-deleting freed GL objects or re-terminating the worker.
+    if (this.isDestroyed) {
+      return
+    }
+    this.isDestroyed = true
     // Halt the animation loop so no queued frame renders against the GL
     // objects deleted below.
     this.isAnimating = false
