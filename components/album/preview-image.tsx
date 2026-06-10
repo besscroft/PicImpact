@@ -472,9 +472,9 @@ export default function PreviewImage(props: Readonly<PreviewImageHandleProps>) {
               type="button"
               onClick={() => emblaApi?.scrollPrev()}
               aria-label="Previous photo"
-              className="absolute left-2 top-1/2 z-30 hidden size-10 -translate-y-1/2 items-center justify-center rounded-full bg-black/30 text-white backdrop-blur transition-opacity hover:bg-black/50 sm:flex"
+              className="absolute left-2 top-1/2 z-30 hidden backdrop-blur text-gray-300 rounded-full items-center justify-center sm:flex"
             >
-              <ChevronLeftIcon size={22} />
+              <ChevronLeftIcon className='!bg-transparent hover:!bg-transparent' size={22} />
             </button>
           )}
           {hasNext && (
@@ -482,9 +482,9 @@ export default function PreviewImage(props: Readonly<PreviewImageHandleProps>) {
               type="button"
               onClick={() => emblaApi?.scrollNext()}
               aria-label="Next photo"
-              className="absolute right-2 top-1/2 z-30 hidden size-10 -translate-y-1/2 items-center justify-center rounded-full bg-black/30 text-white backdrop-blur transition-opacity hover:bg-black/50 sm:flex"
+              className="absolute right-2 top-1/2 z-30 hidden backdrop-blur text-gray-300 rounded-full items-center justify-center sm:flex"
             >
-              <ChevronRightIcon size={22} />
+              <ChevronRightIcon className='!bg-transparent hover:!bg-transparent' size={22} />
             </button>
           )}
           {photos.length > 1 && !lightboxPhoto && (
