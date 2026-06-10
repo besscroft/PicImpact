@@ -151,6 +151,17 @@ export default function PreviewImage(props: Readonly<PreviewImageHandleProps>) {
   })
   const { data: download = false, mutate: setDownload } = useSWR(['masonry/download', current?.url ?? ''], null)
   const [lightboxPhoto, setLightboxPhoto] = useState<boolean>(false)
+  // GL-context LRU: ids of recently-zoomed photos whose WebGL viewer stays
+  // mounted (hard cap 3). Opening zoom bumps a photo to the front; one that falls
+  // off the tail gets keepViewerMounted=false → its viewer unmounts and releases
+  // its GL context. The current photo is always most-recently-opened (front), so
+  // it is never evicted. This caps live contexts at ≤3 — well under the browser
+  // limit — on top of the ±loadRadius unmount that already bounds them.
+  const VIEWER_LRU_CAP = 3
+  const [zoomLru, setZoomLru] = useState<string[]>([])
+  const bumpZoomLru = useCallback((id: string) => {
+    setZoomLru((prev) => [id, ...prev.filter((x) => x !== id)].slice(0, VIEWER_LRU_CAP))
+  }, [])
   // Exit transition: fade the detail view out, then navigate (deferred-nav), so
   // closing isn't a hard cut back to the grid.
   const [closing, setClosing] = useState(false)
@@ -402,8 +413,9 @@ export default function PreviewImage(props: Readonly<PreviewImageHandleProps>) {
                           imageKey={photo.image_key}
                           readyMaxWidth={photo.ready_max_width}
                           variantBaseUrl={configData?.variantBaseUrl ?? ''}
+                          keepViewerMounted={zoomLru.includes(photo.id)}
                           showLightbox={isCurrent && lightboxPhoto}
-                          onShowLightboxChange={isCurrent ? ((value) => setLightboxPhoto(value)) : undefined}
+                          onShowLightboxChange={isCurrent ? ((value) => { setLightboxPhoto(value); if (value) bumpZoomLru(photo.id) }) : undefined}
                         />
                       ) : (
                         <LivePhoto

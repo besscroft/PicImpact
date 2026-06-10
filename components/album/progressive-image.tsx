@@ -212,7 +212,7 @@ export default function ProgressiveImage(
               view, and pointer-events are disabled while hidden so the invisible
               overlay never blocks the page. Mounted lazily on first open so the
               engine isn't built until the user actually zooms. */}
-          {hasOpenedFullScreen && (
+          {hasOpenedFullScreen && props.keepViewerMounted !== false && (
             webGLAvailable ? <div
               className="fixed inset-0 z-[100] bg-background/95 flex items-center justify-center"
               style={{ visibility: showFullScreenViewer ? 'visible' : 'hidden', pointerEvents: showFullScreenViewer ? 'auto' : 'none' }}
