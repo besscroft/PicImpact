@@ -4,6 +4,9 @@ on:
   push:
     tags:
       - 'v*'
+  # Manual deploy of the current main: build and push the `:latest` image on
+  # demand (defaults to the main branch) without having to cut a `v*` tag.
+  workflow_dispatch:
 
 jobs:
   build:
@@ -12,9 +15,6 @@ jobs:
     steps:
       - name: Checkout PicImpact
         uses: actions/checkout@v4
-      - name: Get Version
-        id: get_version
-        run: echo ::set-output name=VERSION::${GITHUB_REF#refs/tags/}
       - name: Login to Docker Hub
         uses: docker/login-action@v3
         with:
