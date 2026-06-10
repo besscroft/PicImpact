@@ -4,6 +4,9 @@ on:
   push:
     tags:
       - 'v*'
+  # Manual deploy: build and push `:latest` from the chosen branch (default main)
+  # without cutting a tag, so the current main can be redeployed on demand.
+  workflow_dispatch:
 
 jobs:
   build:
