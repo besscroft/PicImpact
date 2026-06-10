@@ -59,6 +59,13 @@ export type ProgressiveImageProps = {
   imageKey?: string
   readyMaxWidth?: number
   variantBaseUrl?: string
+  // LRU eviction signal from the carousel. When it flips to false the kept-mounted
+  // WebGL viewer is *unmounted*, which runs WebGLImageViewer's existing
+  // destroy-on-unmount (loseContext) — reusing the verified #510 lifecycle rather
+  // than imperatively destroying a still-mounted engine (which would strand
+  // isInitialized=true over a dead context and re-trigger the #510 crash). So the
+  // count of live GL contexts stays hard-capped. Defaults to kept-mounted.
+  keepViewerMounted?: boolean
 }
 
 export type LinkProps = {

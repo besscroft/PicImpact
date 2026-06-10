@@ -1,6 +1,6 @@
 'use client'
 
-import type { GalleryDisplayConfig } from '~/types'
+import type { GalleryDisplayConfig, ImageType } from '~/types'
 import type { PreviewImageHandleProps } from '~/types/props'
 import LivePhoto from '~/components/album/live-photo'
 import { toast } from 'sonner'
@@ -31,6 +31,7 @@ import { ExpandIcon } from '~/components/icons/expand'
 import { useTranslations } from 'next-intl'
 import ProgressiveImage from '~/components/album/progressive-image.tsx'
 import TransitionOverlay from '~/components/album/transition-overlay'
+import { motion } from 'motion/react'
 import ToneAnalysis from '~/components/album/tone-analysis'
 import HistogramChart from '~/components/album/histogram-chart'
 import { Separator } from '~/components/ui/separator'
@@ -89,6 +90,57 @@ function PlaceholderSlide({ blurhash, width, height }: { blurhash: string; width
   )
 }
 
+// Decoded-blurhash fallback for a strip thumbnail with no preview url.
+function ThumbBlur({ blurhash }: { blurhash: string }) {
+  const url = useBlurImageDataUrl(blurhash)
+  return <div className="h-full w-full bg-cover bg-center" style={{ backgroundImage: url ? `url(${url})` : undefined }} />
+}
+
+// Bottom thumbnail strip — a horizontally scrollable row over the album window,
+// the active photo ringed and auto-centered. Clicking jumps the carousel there.
+// Plain <img>/blurhash only (no WebGL), and it reuses the same windowed `photos`
+// the carousel already holds, so it adds no fetches.
+function ThumbnailStrip({ photos, activeIndex, onSelect }: { photos: ImageType[]; activeIndex: number; onSelect: (i: number) => void }) {
+  const ref = useRef<HTMLDivElement>(null)
+  useEffect(() => {
+    const el = ref.current?.querySelector<HTMLElement>('[data-active="true"]')
+    el?.scrollIntoView({ inline: 'center', block: 'nearest', behavior: 'smooth' })
+  }, [activeIndex])
+  return (
+    <div className="pointer-events-none absolute inset-x-0 bottom-2 z-20 flex justify-center px-2">
+      <div
+        ref={ref}
+        className="pointer-events-auto flex max-w-full gap-1.5 overflow-x-auto rounded-xl bg-background/60 p-1.5 backdrop-blur-md scrollbar-hide"
+      >
+        {photos.map((p, i) => {
+          const active = i === activeIndex
+          return (
+            <button
+              key={p.id}
+              type="button"
+              data-active={active}
+              aria-current={active}
+              aria-label={`View photo ${i + 1}`}
+              onClick={() => onSelect(i)}
+              className={cn(
+                'relative size-12 shrink-0 overflow-hidden rounded-md transition-all',
+                active ? 'opacity-100 ring-2 ring-primary' : 'opacity-50 hover:opacity-90',
+              )}
+            >
+              {p.preview_url ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={p.preview_url} alt="" loading="lazy" draggable={false} className="h-full w-full object-cover" />
+              ) : (
+                <ThumbBlur blurhash={p.blurhash} />
+              )}
+            </button>
+          )
+        })}
+      </div>
+    </div>
+  )
+}
+
 export default function PreviewImage(props: Readonly<PreviewImageHandleProps>) {
   const router = useRouter()
   const t = useTranslations()
@@ -99,6 +151,20 @@ export default function PreviewImage(props: Readonly<PreviewImageHandleProps>) {
   })
   const { data: download = false, mutate: setDownload } = useSWR(['masonry/download', current?.url ?? ''], null)
   const [lightboxPhoto, setLightboxPhoto] = useState<boolean>(false)
+  // GL-context LRU: ids of recently-zoomed photos whose WebGL viewer stays
+  // mounted (hard cap 3). Opening zoom bumps a photo to the front; one that falls
+  // off the tail gets keepViewerMounted=false → its viewer unmounts and releases
+  // its GL context. The current photo is always most-recently-opened (front), so
+  // it is never evicted. This caps live contexts at ≤3 — well under the browser
+  // limit — on top of the ±loadRadius unmount that already bounds them.
+  const VIEWER_LRU_CAP = 3
+  const [zoomLru, setZoomLru] = useState<string[]>([])
+  const bumpZoomLru = useCallback((id: string) => {
+    setZoomLru((prev) => [id, ...prev.filter((x) => x !== id)].slice(0, VIEWER_LRU_CAP))
+  }, [])
+  // Exit transition: fade the detail view out, then navigate (deferred-nav), so
+  // closing isn't a hard cut back to the grid.
+  const [closing, setClosing] = useState(false)
 
   // Detail-view carousel: the image area is an embla carousel over the windowed
   // album slice. The metadata panel + zoom always follow `current` (the settled
@@ -220,7 +286,7 @@ export default function PreviewImage(props: Readonly<PreviewImageHandleProps>) {
   // Image URL for tone analysis and histogram
   const imageUrl = current?.preview_url || current?.url || ''
 
-  const handleClose = () => {
+  const navigateAway = () => {
     if (window != undefined) {
       if (window.history.length > 1) {
         router.back()
@@ -232,6 +298,12 @@ export default function PreviewImage(props: Readonly<PreviewImageHandleProps>) {
     } else {
       router.push('/')
     }
+  }
+
+  // Trigger the exit fade; the actual navigation runs when it completes.
+  const handleClose = () => {
+    if (closing) return
+    setClosing(true)
   }
 
   const handleDownload = async () => {
@@ -308,7 +380,12 @@ export default function PreviewImage(props: Readonly<PreviewImageHandleProps>) {
   }
 
   return (
-    <div className="flex flex-col overflow-y-auto scrollbar-hide h-full rounded-none! max-w-none gap-0 p-2">
+    <motion.div
+      className="flex flex-col overflow-y-auto scrollbar-hide h-full rounded-none! max-w-none gap-0 p-2"
+      animate={{ opacity: closing ? 0 : 1 }}
+      transition={{ duration: 0.2, ease: 'easeOut' }}
+      onAnimationComplete={() => { if (closing) navigateAway() }}
+    >
       <TransitionOverlay />
       <div className="relative h-full flex flex-col space-y-2 sm:grid sm:gap-4 sm:grid-cols-3 w-full">
         <div className="show-up-motion relative sm:col-span-2 sm:flex sm:justify-center sm:max-h-[90vh] select-none">
@@ -336,8 +413,9 @@ export default function PreviewImage(props: Readonly<PreviewImageHandleProps>) {
                           imageKey={photo.image_key}
                           readyMaxWidth={photo.ready_max_width}
                           variantBaseUrl={configData?.variantBaseUrl ?? ''}
+                          keepViewerMounted={zoomLru.includes(photo.id)}
                           showLightbox={isCurrent && lightboxPhoto}
-                          onShowLightboxChange={isCurrent ? ((value) => setLightboxPhoto(value)) : undefined}
+                          onShowLightboxChange={isCurrent ? ((value) => { setLightboxPhoto(value); if (value) bumpZoomLru(photo.id) }) : undefined}
                         />
                       ) : (
                         <LivePhoto
@@ -374,8 +452,15 @@ export default function PreviewImage(props: Readonly<PreviewImageHandleProps>) {
               <ChevronRightIcon size={22} />
             </button>
           )}
+          {photos.length > 1 && !lightboxPhoto && (
+            <ThumbnailStrip
+              photos={photos}
+              activeIndex={index}
+              onSelect={(i) => emblaApi?.scrollTo(i)}
+            />
+          )}
         </div>
-        
+
         {/* Right side panel with all EXIF info */}
         <ScrollArea className="sm:max-h-[90vh]">
           <div className="flex w-full flex-col space-y-6 pr-4">
@@ -684,6 +769,6 @@ export default function PreviewImage(props: Readonly<PreviewImageHandleProps>) {
           </div>
         </ScrollArea>
       </div>
-    </div>
+    </motion.div>
   )
 }
