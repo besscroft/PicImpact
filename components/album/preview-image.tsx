@@ -181,7 +181,8 @@ export default function PreviewImage(props: Readonly<PreviewImageHandleProps>) {
   // limit — on top of the ±loadRadius unmount that already bounds them.
   const VIEWER_LRU_CAP = 3
   const [zoomLru, setZoomLru] = useState<string[]>([])
-  const bumpZoomLru = useCallback((id: string) => {
+  const bumpZoomLru = useCallback((id: string | undefined) => {
+    if (!id) return
     setZoomLru((prev) => [id, ...prev.filter((x) => x !== id)].slice(0, VIEWER_LRU_CAP))
   }, [])
   // Exit transition: fade the detail view out, then navigate (deferred-nav), so
@@ -441,7 +442,7 @@ export default function PreviewImage(props: Readonly<PreviewImageHandleProps>) {
                           imageKey={photo.image_key}
                           readyMaxWidth={photo.ready_max_width}
                           variantBaseUrl={configData?.variantBaseUrl ?? ''}
-                          keepViewerMounted={zoomLru.includes(photo.id)}
+                          keepViewerMounted={zoomLru.includes(photo.id) || (isCurrent && lightboxPhoto)}
                           showLightbox={isCurrent && lightboxPhoto}
                           onShowLightboxChange={isCurrent ? ((value) => { setLightboxPhoto(value); if (value) bumpZoomLru(photo.id) }) : undefined}
                         />
@@ -604,6 +605,9 @@ export default function PreviewImage(props: Readonly<PreviewImageHandleProps>) {
                     className="inline-flex items-center justify-center cursor-pointer"
                     onClick={() => {
                       setLightboxPhoto(true)
+                      // Mirror the image-click path: register the viewer in the LRU so
+                      // the mount-gate (keepViewerMounted) actually mounts it.
+                      bumpZoomLru(current?.id)
                     }}
                     {...mergeAnimatedTriggerProps({}, triggerProps)}
                   >
