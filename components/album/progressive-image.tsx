@@ -2,6 +2,7 @@
 
 import type { ProgressiveImageProps } from '~/types/props.ts'
 import { useEffect, useState, useRef, Activity } from 'react'
+import { createPortal } from 'react-dom'
 import { useTranslations } from 'next-intl'
 import { MotionImage } from '~/components/album/motion-image'
 import { useBlurImageDataUrl } from '~/hooks/use-blurhash'
@@ -237,7 +238,17 @@ export default function ProgressiveImage(
               view, and pointer-events are disabled while hidden so the invisible
               overlay never blocks the page. Mounted lazily on first open so the
               engine isn't built until the user actually zooms. */}
-          {hasOpenedFullScreen && props.keepViewerMounted !== false && (
+          {/* Portal the fullscreen viewer to <body>. In the @modal route the
+              detail lives inside Radix DialogContent, which is `position:fixed`
+              with `translate(-50%,-50%)` — a transformed ancestor becomes the
+              containing block for `position:fixed` descendants, so the viewer's
+              `inset-0` would map to the dialog box (shifted/clipped → blank)
+              instead of the viewport. Portaling to body escapes that transform so
+              the viewer covers the real viewport. (The full-page route has no such
+              ancestor, which is why it worked there.) The modal already sets
+              `onInteractOutside=preventDefault` + `modal={false}`, so viewer
+              interaction outside DialogContent doesn't dismiss the dialog. */}
+          {hasOpenedFullScreen && props.keepViewerMounted !== false && typeof document !== 'undefined' && createPortal((
             webGLAvailable ? <div
               className="fixed inset-0 z-[100] bg-background/95 flex items-center justify-center"
               style={{ visibility: showFullScreenViewer ? 'visible' : 'hidden', pointerEvents: showFullScreenViewer ? 'auto' : 'none' }}
@@ -332,7 +343,7 @@ export default function ProgressiveImage(
                 alt={props.alt || 'image'}
               />
             </div>
-          )}
+          ), document.body)}
         </>
       ) : null}
 
