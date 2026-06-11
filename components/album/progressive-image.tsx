@@ -192,6 +192,14 @@ export default function ProgressiveImage(
           animate={{ opacity: 1 }}
           transition={{ duration: 0.15 }}
           className="object-contain w-full sm:h-full cursor-pointer"
+          // next/image derives the blur placeholder's `background-size` from
+          // `style.objectFit` (get-img-props: `backgroundSize = imgStyle.objectFit`),
+          // NOT from the className. Without this it defaults to `cover`, so the blur
+          // fills the now-fixed 90vh box while the real image letterboxes via
+          // object-contain — a visible "blur fills → image shrinks" jump at load
+          // (worst for portraits). Setting objectFit here makes the blur letterbox
+          // the same way → blur and image share one box → smooth load.
+          style={{ objectFit: 'contain' }}
           src={previewDisplaySource}
           overrideSrc={previewDisplaySource}
           placeholder="blur"
