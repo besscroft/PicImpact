@@ -174,17 +174,18 @@ export default function ProgressiveImage(
   }
 
   return (
-    <div className="relative">
+    // `sm:h-full` is REQUIRED here, not just on the <img>. The image elements
+    // below use `sm:h-full` (height:100%) so they stay a constant height (=the
+    // fixed #533 slide box) and letterbox via object-contain instead of resizing
+    // per aspect ratio. But height:100% only resolves if EVERY ancestor up to the
+    // fixed-height slide also has a definite height — this wrapper sits between the
+    // slide and the <img>, so without `sm:h-full` it collapses to height:auto and
+    // the <img>'s `h-full` falls back to the image's content height (≈607px for a
+    // landscape, ≈1366px for a portrait → the element resizes/overflows on every
+    // switch = the flicker). `sm:` matches the slide/container breakpoint; mobile
+    // (<sm) stays content-sized.
+    <div className="relative sm:h-full">
       {/* 预览图 - 在高清图未加载完成时显示 */}
-      {/* Pin the image element to the (fixed-height, #533) slide box with
-          `sm:h-full w-full object-contain` instead of `md:max-h-[90vh]`. The
-          latter lets the <img> element itself size to the image's contained
-          height — ~90vh for a portrait but much shorter for a landscape — so the
-          element resized on every aspect-changing switch (810↔~607px) and the
-          photo visibly jumped/flickered inside the otherwise-fixed container.
-          h-full makes the element always equal the container height and lets
-          object-contain letterbox within it → no per-switch resize. `sm:` aligns
-          with the container's breakpoint (#533); mobile stays content-sized. */}
       <Activity mode={highResImageLoaded ? 'hidden' : 'visible'}>
         <MotionImage
           initial={{ opacity: 0 }}
