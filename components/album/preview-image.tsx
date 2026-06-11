@@ -299,8 +299,23 @@ export default function PreviewImage(props: Readonly<PreviewImageHandleProps>) {
     return null
   }, [current?.width, current?.height])
 
-  // Image URL for tone analysis and histogram
-  const imageUrl = current?.preview_url || current?.url || ''
+  // Histogram/tone source: the same display-sized variant the current slide has
+  // already loaded (≈1280, browser-cached → no extra fetch) instead of the raw
+  // full-resolution `preview_url`. preview compression is off on this deployment,
+  // so preview_url is the ~30MP original — pointing histogram/tone at it made
+  // every switch RE-FETCH + RE-DECODE a 30MP image (the panel "flicker"). The
+  // histogram/tone scale to ~300px, so a 1280 variant is more than enough. Falls
+  // back to preview_url only when the photo has no generated variants.
+  const histAvifOk = useAvifSupport()
+  const histVariantBase = configData?.variantBaseUrl ?? ''
+  const imageUrl = current && hasReadyVariants(current.image_key, current.ready_max_width, histVariantBase)
+    ? makeVariantLoader({
+        base: histVariantBase,
+        imageKey: current.image_key,
+        readyMaxWidth: current.ready_max_width,
+        format: histAvifOk ? 'avif' : 'webp',
+      })({ src: current.image_key, width: 1280 })
+    : (current?.preview_url || current?.url || '')
 
   // Debounce the histogram/tone source: those run an image-load + getImageData +
   // full-pixel scan, wasteful to fire for every photo flashed past during fast

@@ -374,7 +374,11 @@ export default function HistogramChart({ imageUrl, className = '' }: Readonly<Hi
 
   return (
     <div className={cn('relative w-full h-32 group', className)}>
-      {loading && (
+      {/* Only show the loading overlay on the very first computation. On a photo
+          switch we keep the previous histogram canvas visible and let the spring
+          animation morph to the new one — flashing this backdrop-blur spinner on
+          every switch was the panel "flicker". */}
+      {loading && !histogram && (
         <div className="absolute inset-0 z-10 flex items-center justify-center rounded-sm bg-overlay backdrop-blur-xl">
           <div className="animate-spin text-xl text-foreground/70">⟳</div>
         </div>
@@ -398,7 +402,9 @@ export default function HistogramChart({ imageUrl, className = '' }: Readonly<Hi
           ref={canvasRef}
           className={cn(
             'h-full w-full rounded-sm ring-1 ring-white/10 backdrop-blur-xl transition-all duration-200 group-hover:ring-white/20',
-            loading && 'opacity-30',
+            // Dim only during the first load (no prior canvas). On a switch the
+            // previous histogram stays fully visible until the new one morphs in.
+            loading && !histogram && 'opacity-30',
           )}
         />
       )}

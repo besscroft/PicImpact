@@ -1,12 +1,20 @@
 'use client'
 
 import type { ProgressiveImageProps } from '~/types/props.ts'
-import { useEffect, useState, useRef, Activity } from 'react'
+import { useEffect, useState, useRef, Activity, memo } from 'react'
 import { createPortal } from 'react-dom'
 import { useTranslations } from 'next-intl'
 import { MotionImage } from '~/components/album/motion-image'
 import { useBlurImageDataUrl } from '~/hooks/use-blurhash'
 import { WebGLImageViewer } from '~/components/album/webgl-viewer'
+
+// Memoized so the high-res XHR's loadingProgress ticks (which re-render
+// ProgressiveImage many times during a multi-MB load) don't re-render the WebGL
+// viewer — its props (src/dimensions) are stable until the image actually loads,
+// so without this the viewer re-rendered on every progress tick = the zoom
+// "flicker during loading". Only mount/unmount (the #510 destroy lifecycle) and
+// a real src change re-touch it.
+const MemoWebGLImageViewer = memo(WebGLImageViewer)
 import type { WebGLImageViewerRef } from '~/components/album/webgl-viewer'
 import { isWebGLSupported } from '~/lib/utils/webgl'
 import { hasReadyVariants, makeVariantLoader } from '~/lib/image/loader'
@@ -289,7 +297,7 @@ export default function ProgressiveImage(
 
               {/* WebGL 图片查看器 */}
               <div className="w-full h-full">
-                <WebGLImageViewer
+                <MemoWebGLImageViewer
                   ref={webglViewerRef}
                   src={highResImageUrl}
                   width={props.width}
