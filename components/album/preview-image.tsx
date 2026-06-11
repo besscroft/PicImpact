@@ -431,8 +431,12 @@ export default function PreviewImage(props: Readonly<PreviewImageHandleProps>) {
     >
       <TransitionOverlay />
       <div className="relative h-full flex flex-col space-y-2 sm:grid sm:gap-4 sm:grid-cols-3 w-full">
-        <div className="show-up-motion relative sm:col-span-2 sm:flex sm:justify-center sm:max-h-[90vh] select-none">
-          <div className="overflow-hidden w-full" ref={emblaRef}>
+        {/* Fixed 90vh height on desktop (not max-h) so the image area never
+            resizes to each photo's aspect ratio — different aspects letterbox
+            within a constant box instead of changing the row height on every
+            switch (that height jump was the remaining "flicker"). CLS≈0. */}
+        <div className="show-up-motion relative sm:col-span-2 sm:flex sm:justify-center sm:h-[90vh] select-none">
+          <div className="overflow-hidden w-full sm:h-full" ref={emblaRef}>
             <div className="flex h-full">
               {photos.map((photo, i) => {
                 const near = Math.abs(i - index) <= loadRadius
@@ -441,7 +445,7 @@ export default function PreviewImage(props: Readonly<PreviewImageHandleProps>) {
                   <div
                     key={photo.id}
                     data-flip-target={isCurrent ? '' : undefined}
-                    className="relative flex min-w-0 shrink-0 grow-0 basis-full items-center justify-center sm:max-h-[90vh]"
+                    className="relative flex min-w-0 shrink-0 grow-0 basis-full items-center justify-center sm:h-full"
                   >
                     {near ? (
                       photo.type === 1 ? (
