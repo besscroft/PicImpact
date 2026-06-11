@@ -176,12 +176,21 @@ export default function ProgressiveImage(
   return (
     <div className="relative">
       {/* 预览图 - 在高清图未加载完成时显示 */}
+      {/* Pin the image element to the (fixed-height, #533) slide box with
+          `sm:h-full w-full object-contain` instead of `md:max-h-[90vh]`. The
+          latter lets the <img> element itself size to the image's contained
+          height — ~90vh for a portrait but much shorter for a landscape — so the
+          element resized on every aspect-changing switch (810↔~607px) and the
+          photo visibly jumped/flickered inside the otherwise-fixed container.
+          h-full makes the element always equal the container height and lets
+          object-contain letterbox within it → no per-switch resize. `sm:` aligns
+          with the container's breakpoint (#533); mobile stays content-sized. */}
       <Activity mode={highResImageLoaded ? 'hidden' : 'visible'}>
         <MotionImage
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ duration: 1 }}
-          className="object-contain md:max-h-[90vh] cursor-pointer"
+          transition={{ duration: 0.15 }}
+          className="object-contain w-full sm:h-full cursor-pointer"
           src={previewDisplaySource}
           overrideSrc={previewDisplaySource}
           placeholder="blur"
@@ -221,7 +230,7 @@ export default function ProgressiveImage(
         <>
           <Activity mode={highResImageLoaded && !showFullScreenViewer ? 'visible' : 'hidden'}>
             <img
-              className="object-contain md:max-h-[90vh] cursor-pointer"
+              className="object-contain w-full sm:h-full cursor-pointer"
               src={highResImageUrl}
               width={props.width}
               height={props.height}
