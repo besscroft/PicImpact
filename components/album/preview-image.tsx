@@ -441,7 +441,7 @@ export default function PreviewImage(props: Readonly<PreviewImageHandleProps>) {
                           imageKey={photo.image_key}
                           readyMaxWidth={photo.ready_max_width}
                           variantBaseUrl={configData?.variantBaseUrl ?? ''}
-                          keepViewerMounted={zoomLru.includes(photo.id)}
+                          keepViewerMounted={zoomLru.includes(photo.id) || (isCurrent && lightboxPhoto)}
                           showLightbox={isCurrent && lightboxPhoto}
                           onShowLightboxChange={isCurrent ? ((value) => { setLightboxPhoto(value); if (value) bumpZoomLru(photo.id) }) : undefined}
                         />
@@ -604,6 +604,10 @@ export default function PreviewImage(props: Readonly<PreviewImageHandleProps>) {
                     className="inline-flex items-center justify-center cursor-pointer"
                     onClick={() => {
                       setLightboxPhoto(true)
+                      // Keep this photo's WebGL viewer mounted (same as the
+                      // in-image zoom path) so the LRU mount-gate doesn't leave
+                      // it unmounted -> blank fullscreen.
+                      if (current?.id) bumpZoomLru(current.id)
                     }}
                     {...mergeAnimatedTriggerProps({}, triggerProps)}
                   >
