@@ -60,9 +60,6 @@ export default function BlurImage({ photo }: { photo: any }) {
           {...imageProps}
           key={variantReady ? 'variant' : 'preview'}
           className={cn('cursor-pointer', isLoading && 'animate-pulse')}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.5 }}
           alt={photo.alt || 'Photo'}
           width={photo.width}
           height={photo.height}

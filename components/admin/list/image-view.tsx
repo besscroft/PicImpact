@@ -42,9 +42,6 @@ export default function ImageView() {
         <div className="mt-4 space-y-2">
           {imageViewData?.type === 1 ?
             <MotionImage
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 1 }}
               className="cursor-pointer"
               src={imageViewData.preview_url || imageViewData.url}
               overrideSrc={imageViewData.preview_url || imageViewData.url}
