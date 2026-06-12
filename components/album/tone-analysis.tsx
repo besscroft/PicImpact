@@ -217,7 +217,12 @@ export default function ToneAnalysis({ imageUrl, className = '' }: Readonly<Tone
     return labels[type]
   }
 
-  if (loading) {
+  // Only show the spinner on the very first analysis. On a photo switch we keep
+  // the previous tone values rendered until the new ones are computed — collapsing
+  // to this short spinner on every switch shrank the section and shifted the whole
+  // info panel's layout (the rows below jumped up then back) = the panel "flicker"
+  // on switch. Mirrors the histogram chart, which keeps its previous canvas.
+  if (loading && !toneData) {
     return (
       <div className={cn('flex items-center justify-center py-2', className)}>
         <div className="animate-spin text-sm text-muted-foreground">⟳</div>
