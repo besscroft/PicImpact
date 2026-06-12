@@ -5,6 +5,7 @@ import route from '~/hono'
 import download from '~/hono/open/download'
 import images from '~/hono/open/images'
 import cameraLens from '~/hono/open/camera-lens'
+import version from '~/hono/open/version'
 
 const app = new Hono().basePath('/api')
 
@@ -13,6 +14,7 @@ app.route('/v1', route)
 app.route('/public/download', download)
 app.route('/public/images', images)
 app.route('/public/camera-lens', cameraLens)
+app.route('/public/version', version)
 app.notFound((c) => {
   return c.text('not found', 404)
 })
