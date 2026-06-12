@@ -169,9 +169,6 @@ export default function ProgressiveImage(
       {/* 预览图 - 在高清图未加载完成时显示 */}
       <Activity mode={highResImageLoaded ? 'hidden' : 'visible'}>
         <MotionImage
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 1 }}
           className="object-contain md:max-h-[90vh] cursor-pointer"
           src={previewDisplaySource}
           overrideSrc={previewDisplaySource}
