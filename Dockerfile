@@ -51,6 +51,11 @@ WORKDIR /app
 
 ENV NODE_ENV=production
 
+# Git commit this image was built from, passed by the build workflow. Exposed at
+# runtime via GET /api/public/version so a deploy's running commit is verifiable.
+ARG BUILD_SHA=unknown
+ENV BUILD_SHA=${BUILD_SHA}
+
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
 
