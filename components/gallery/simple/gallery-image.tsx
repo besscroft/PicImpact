@@ -85,9 +85,6 @@ export default function GalleryImage({
           <MotionImage
             key="variant"
             className={cn('w-full h-auto', isLoading && !hasRealBlurhash && 'animate-pulse')}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.5 }}
             src={photo.image_key}
             alt={photo.title}
             width={photo.width}
@@ -109,9 +106,6 @@ export default function GalleryImage({
           <MotionImage
             key={imgSrc}
             className={cn('w-full h-auto', isLoading && !hasRealBlurhash && 'animate-pulse')}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.5 }}
             src={imgSrc}
             overrideSrc={imgSrc}
             alt={photo.title}
