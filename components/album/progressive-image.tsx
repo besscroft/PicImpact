@@ -174,11 +174,27 @@ export default function ProgressiveImage(
   }
 
   return (
-    <div className="relative">
+    // `sm:h-full` is REQUIRED here, not just on the <img>. The images below use
+    // `sm:h-full` (height:100%) so they stay a constant height (= the fixed #533
+    // slide box) and letterbox via object-contain instead of resizing per aspect
+    // ratio. height:100% only resolves if EVERY ancestor up to the fixed-height
+    // slide also has a definite height — this wrapper sits between the slide and
+    // the <img>, so without `sm:h-full` it collapses to height:auto and the
+    // <img>'s `h-full` falls back to the image's content height (≈607px landscape,
+    // ≈1366px portrait → resizes/overflows on every switch = the flicker). `sm:`
+    // matches the slide/container breakpoint; mobile (<sm) stays content-sized.
+    <div className="relative sm:h-full">
       {/* 预览图 - 在高清图未加载完成时显示 */}
       <Activity mode={highResImageLoaded ? 'hidden' : 'visible'}>
         <MotionImage
-          className="object-contain md:max-h-[90vh] cursor-pointer"
+          className="object-contain w-full sm:h-full cursor-pointer"
+          // next/image derives the blur placeholder's `background-size` from
+          // `style.objectFit` (get-img-props: `backgroundSize = imgStyle.objectFit`),
+          // NOT the className. Without this it defaults to `cover`, so the blur fills
+          // the fixed 90vh box while the real image letterboxes via object-contain —
+          // a visible "blur fills → image shrinks" jump at load (worst for portraits).
+          // Setting objectFit here makes the blur letterbox the same way → smooth load.
+          style={{ objectFit: 'contain' }}
           src={previewDisplaySource}
           overrideSrc={previewDisplaySource}
           placeholder="blur"
@@ -218,7 +234,7 @@ export default function ProgressiveImage(
         <>
           <Activity mode={highResImageLoaded && !showFullScreenViewer ? 'visible' : 'hidden'}>
             <img
-              className="object-contain md:max-h-[90vh] cursor-pointer"
+              className="object-contain w-full sm:h-full cursor-pointer"
               src={highResImageUrl}
               width={props.width}
               height={props.height}
