@@ -17,7 +17,12 @@ export const auth = betterAuth({
     updateAge: 60 * 60 * 24,
     cookieCache: {
       enabled: true,
-      maxAge: 30 * 60 // Cache duration in seconds
+      // Short TTL so a sign-out / ban propagates quickly across replicas. The
+      // signed cookie cache is per-instance in-memory state, so a longer TTL
+      // would let a revoked session keep validating on a replica that still
+      // holds the cached cookie until it expires. 60s bounds that lag while
+      // still absorbing the bulk of repeat reads. Cache duration in seconds.
+      maxAge: 60
     }
   },
   plugins: [
