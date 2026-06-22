@@ -2,6 +2,12 @@ import 'server-only'
 
 import { db } from '~/server/lib/db'
 
+// NOTE: this only sweeps `next_cache_entries`. The `next_cache_tags` table is
+// intentionally not swept because the tag set is a small fixed enum
+// (CACHE_TAG.gallery/albums/config in server/lib/cache.ts), so it can't grow. If
+// unbounded tags are ever passed to `revalidateTag` (e.g. a per-image tag),
+// next_cache_tags would need its own sweep — revisit this then.
+//
 // Cached keys are deterministic (unstable_cache key + args), and active entries
 // are rewritten well within their TTL (gallery ≤60s, albums/config ≤1h), so the
 // entries table is naturally bounded by the number of distinct queries. This

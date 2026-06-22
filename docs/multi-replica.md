@@ -60,10 +60,13 @@ pod) and set `PREPROCESS_TICKER_ENABLED=false` on the rest.
 
 ## 2. Database connections
 
-Each replica opens its own Prisma connection pool. With N replicas the total
-connection count is roughly `N × pool_size`. Make sure your PostgreSQL
-`max_connections` covers that, or put a pooler such as PgBouncer (transaction
-mode) in front of the database.
+Each replica opens its own Prisma connection pool, plus the cache handler (§4)
+adds its own small pool (max 4) and one persistent `LISTEN` client — roughly
+`+5` connections per replica on top of Prisma. With N replicas the total is
+about `N × (prisma_pool + 5)`. Make sure your PostgreSQL `max_connections`
+covers that, or put a pooler such as PgBouncer (transaction mode) in front of
+the database — note the handler's `LISTEN` connection must use a direct
+(non-transaction-pooled) URL via `DIRECT_URL`, see §4.
 
 ## 3. Session revocation latency
 
