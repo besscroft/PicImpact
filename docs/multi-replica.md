@@ -112,8 +112,10 @@ endpoint (§1), so it does not run as a per-replica timer.
 
 ## 5. In-flight task cancellation
 
-Cancelling a running preprocess/metadata task signals the replica that owns the
-run. If the cancel request lands on a different replica, it is still recorded, and
-the running replica stops at the next lease checkpoint (within the lease window).
-For rare admin actions this lag is acceptable; a fully cross-replica cancel signal
-is a planned follow-up.
+Cancelling a running preprocess/metadata task is cross-replica safe. The cancel
+endpoint flips the run's row to `status = 'cancelling'` in the database (an atomic
+UPDATE visible to all replicas), and the replica actually running the task
+re-reads that status at its per-image checkpoint and stops — so cancellation takes
+effect within roughly one item's processing time, regardless of which replica
+received the cancel request. (If the cancel lands on the same replica that's
+running the task, an in-process abort also interrupts it immediately.)
