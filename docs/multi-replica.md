@@ -73,21 +73,39 @@ TTL is 60s, so a sign-out or session revocation propagates to every replica
 within ~60s. Lower it further in `server/auth/index.ts` (`session.cookieCache.maxAge`)
 if you need faster propagation.
 
-## 4. Public data cache (current behavior)
+## 4. Public data cache (shared across replicas)
 
 The public read paths (gallery listings, album nav, public config) are cached
-with Next.js' Data Cache and invalidated on admin writes via `revalidateTag`.
-That cache is **per-replica in-memory** by default, so a `revalidateTag` call only
-busts the cache on the replica that handled the write. Other replicas pick up the
-change when their cache entry's safety-net TTL expires:
+with Next.js' Data Cache (`unstable_cache` in `server/lib/cache.ts`) and
+invalidated on admin writes via `revalidateTag`. To make that invalidation work
+across replicas, the Data Cache is routed through a PostgreSQL-backed cache
+handler (`server/lib/pg-cache-handler.cjs`, wired in `next.config.mjs`):
 
-- gallery listings: ~60s
-- album nav / public config: ~1h (admin writes still bust them instantly on the
-  writing replica; the TTL only bounds cross-replica propagation)
+- Cached values and per-tag invalidation timestamps live in Postgres
+  (`next_cache_entries` / `next_cache_tags`, created automatically), shared by all
+  replicas. Each replica also keeps a small bounded in-memory L1 for hot reads.
+- An admin write calls `revalidateTag` on one replica, which records the
+  invalidation in Postgres and broadcasts it via `LISTEN/NOTIFY`; every replica's
+  next read of an affected entry recomputes — so admin changes are visible across
+  all replicas effectively immediately.
+- The tag state is **Postgres-authoritative**: each replica refreshes it from
+  Postgres on a short interval and on (re)connect, so a missed `NOTIFY` (e.g. a
+  replica restart, or a connection behind a transaction-mode pooler that can't
+  `LISTEN`) self-heals within ~1s rather than requiring a restart.
+- The per-entry safety-net TTLs still apply (gallery ~60s, album/config ~1h) as a
+  backstop and to bound the background preprocess ticker's `variants_ready` gap.
 
-If you need instant cross-replica consistency for admin changes, a shared
-PostgreSQL-backed cache handler is the planned next step (it routes the Data Cache
-through Postgres + `LISTEN/NOTIFY` so an invalidation on one replica is seen by all).
+Relevant environment:
+
+- The handler uses `DATABASE_URL` for reads/writes and `DIRECT_URL` (when set) for
+  the `LISTEN` connection, since `LISTEN` needs a persistent session that a
+  transaction-mode pooler would drop. If only `DATABASE_URL` is set and it points
+  at such a pooler, instant `NOTIFY` is skipped and propagation falls back to the
+  ~1s Postgres refresh — still correct, just not instant.
+- Set `CACHE_HANDLER_DEBUG=true` to log handler get/set/invalidation activity.
+
+The long-unused-entry sweep is driven by the same single cron as the tick
+endpoint (§1), so it does not run as a per-replica timer.
 
 ## 5. In-flight task cancellation
 
