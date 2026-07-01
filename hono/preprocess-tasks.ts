@@ -14,7 +14,6 @@ import {
   tickPreprocessTaskRuns,
 } from '~/server/tasks/image-preprocess-service'
 import { ADMIN_TASK_KEY_PREPROCESS_IMAGES, normalizePreprocessTaskScope } from '~/types/admin-tasks'
-import { cleanupStaleCacheEntries } from '~/server/lib/cache-cleanup'
 import { ok } from '~/hono/_lib/response'
 import { badRequest, conflict, notFound, serverError, unauthorized } from '~/hono/_lib/errors'
 
@@ -162,9 +161,6 @@ app.post('/tick', async (c) => {
   assertTickAuthorized(c.req.header(TICK_SECRET_HEADER))
   try {
     const data = await tickPreprocessTaskRuns()
-    // Piggyback the shared cache-entry sweep on the same single cron that drives
-    // the preprocess tick, so it never runs as a per-replica timer. Best-effort.
-    await cleanupStaleCacheEntries()
     return ok(c, data)
   } catch (error) {
     console.error('Preprocess task tick failed:', error)

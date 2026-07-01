@@ -14,13 +14,6 @@ let nextConfig = {
     },
   },
   serverExternalPackages: ['pg'],
-  // Route the Data Cache (unstable_cache in server/lib/cache.ts) through a
-  // PostgreSQL-backed handler so tag invalidation propagates across replicas
-  // (see docs/multi-replica.md). cacheMaxMemorySize: 0 disables Next's own
-  // per-instance in-memory cache in front of the handler — the handler keeps
-  // its own bounded module-level L1 and Postgres is the shared source of truth.
-  cacheHandler: new URL('./server/lib/pg-cache-handler.cjs', import.meta.url).pathname,
-  cacheMaxMemorySize: 0,
   typescript: {
     ignoreBuildErrors: true,
   },
