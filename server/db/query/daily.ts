@@ -23,7 +23,7 @@ export async function fetchDailyImagesList(
   if (pageNum < 1) {
     pageNum = 1
   }
-  return await db.$queryRaw`
+  const rows: any[] = await db.$queryRaw`
     SELECT
         image.*
     FROM
@@ -35,6 +35,12 @@ export async function fetchDailyImagesList(
     ORDER BY image.daily_sort
     LIMIT ${DEFAULT_SIZE} OFFSET ${(pageNum - 1) * DEFAULT_SIZE}
   `
+  // daily_sort 是 daily_images 物化视图的 ROW_NUMBER() 列，PostgreSQL 把它声明为
+  // bigint，pg 驱动会解析成 JS BigInt。该字段只参与 ORDER BY，不对外暴露；但
+  // unstable_cache 缓存结果时会 JSON.stringify，BigInt 会直接抛
+  // "Do not know how to serialize a BigInt"（见 fetchDailyNeighborWindow 的同款
+  // rn/total 处理），所以在出口处剥掉。
+  return rows.map(({ daily_sort: _dailySort, ...image }) => image) as ImageType[]
 }
 
 /**
