@@ -111,16 +111,46 @@ export const cachedVariantBaseUrl = unstable_cache(
 )
 
 /**
+ * Immediately, hard-expire a public cache tag on an admin write.
+ *
+ * We pass `{ expire: 0 }`, NOT the `'max'` profile, on purpose. The two forms
+ * are NOT equivalent — this is the difference between "the new album shows up
+ * now" and "...in up to an hour":
+ *
+ *  - `revalidateTag(tag, 'max')` is stale-while-revalidate. Next resolves the
+ *    `'max'` cacheLife to `{ expire: 31536000 }` (one year) and tells the cache
+ *    handler to expire the tag a YEAR from now — `file-system-cache` computes
+ *    `expired = now + expire * 1000`. `areTagsExpired` only treats an entry as
+ *    expired once `expiredAt <= now`, so the tag is merely marked *stale*, never
+ *    hard-expired. A hot entry (e.g. the home page album nav) keeps being served
+ *    and is only refreshed by its own `unstable_cache` TTL — for albums/config
+ *    that's `REVALIDATE_SECONDS` (1h). That is why a newly created album did not
+ *    appear on the home page in real time.
+ *  - `{ expire: 0 }` sets `expired = now` → immediate hard expiration → the next
+ *    read misses and refetches. This is what on-demand invalidation needs.
+ *
+ * (`updateTag` is also immediate, but it throws outside a Server Action; our
+ * writes run inside the Hono route handler at `app/api/[[...route]]/route.ts`,
+ * so it is not usable here. The single-argument `revalidateTag(tag)` is also
+ * immediate but is deprecated and logs a warning on every call.)
+ *
+ * MUST be called from a request scope (Server Action or Route Handler) — never
+ * during render.
+ */
+function expireTag(tag: string) {
+  revalidateTag(tag, { expire: 0 })
+}
+
+/**
  * Invalidate cached image listings. Call from any write that changes what the
  * gallery shows: image create / update / delete / show-hide / sort.
  *
- * MUST be called from a request scope (Server Action or Route Handler) — never
- * during render. The daily materialized-view refresh deliberately does NOT call
- * this, because it can run during page render via `initDailyIfNeeded`; daily
- * freshness is covered by the TTL instead.
+ * The daily materialized-view refresh deliberately does NOT call this, because
+ * it can run during page render via `initDailyIfNeeded`; daily freshness is
+ * covered by the TTL instead.
  */
 export function revalidateGalleryCache() {
-  revalidateTag(CACHE_TAG.gallery, 'max')
+  expireTag(CACHE_TAG.gallery)
 }
 
 /**
@@ -128,8 +158,8 @@ export function revalidateGalleryCache() {
  * busts gallery listings, since album changes affect which images are shown.
  */
 export function revalidateAlbumsCache() {
-  revalidateTag(CACHE_TAG.albums, 'max')
-  revalidateTag(CACHE_TAG.gallery, 'max')
+  expireTag(CACHE_TAG.albums)
+  expireTag(CACHE_TAG.gallery)
 }
 
 /**
@@ -137,8 +167,8 @@ export function revalidateAlbumsCache() {
  * gallery listings, since some settings change them (page size, daily toggle).
  */
 export function revalidateConfigCache() {
-  revalidateTag(CACHE_TAG.config, 'max')
-  revalidateTag(CACHE_TAG.gallery, 'max')
+  expireTag(CACHE_TAG.config)
+  expireTag(CACHE_TAG.gallery)
 }
 
 /**
@@ -146,7 +176,7 @@ export function revalidateConfigCache() {
  * bypass the per-entity mutation paths above (e.g. backup restore).
  */
 export function revalidateAllPublicCaches() {
-  revalidateTag(CACHE_TAG.gallery, 'max')
-  revalidateTag(CACHE_TAG.albums, 'max')
-  revalidateTag(CACHE_TAG.config, 'max')
+  expireTag(CACHE_TAG.gallery)
+  expireTag(CACHE_TAG.albums)
+  expireTag(CACHE_TAG.config)
 }
