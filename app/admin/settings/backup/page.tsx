@@ -247,7 +247,7 @@ export default function BackupSettingsPage() {
       </Alert>
 
       <div className="grid gap-6 xl:grid-cols-[minmax(0,0.88fr)_minmax(0,1.12fr)]">
-        <Card className="border-border/70 bg-card/95 shadow-[0_18px_50px_rgba(90,56,25,0.08)]">
+        <Card className="border-border/70 bg-card/95">
           <CardHeader>
             <CardTitle>{t('exportTitle')}</CardTitle>
             <CardDescription>{t('exportDescription')}</CardDescription>
@@ -285,7 +285,7 @@ export default function BackupSettingsPage() {
           </CardFooter>
         </Card>
 
-        <Card className="border-border/70 bg-card/95 shadow-[0_18px_50px_rgba(90,56,25,0.08)]">
+        <Card className="border-border/70 bg-card/95">
           <CardHeader>
             <CardTitle>{t('importTitle')}</CardTitle>
             <CardDescription>{t('importDescription')}</CardDescription>
@@ -306,7 +306,7 @@ export default function BackupSettingsPage() {
                 toast.error(t('fileRejected'))
               }}
             >
-              <FileUploadDropzone className="rounded-2xl border-dashed border-border/70 bg-[radial-gradient(circle_at_top,rgba(203,168,124,0.16),transparent_55%),linear-gradient(180deg,rgba(255,251,246,0.95),rgba(255,255,255,0.92))] px-6 py-10 text-center dark:bg-[radial-gradient(circle_at_top,rgba(203,168,124,0.16),transparent_55%),linear-gradient(180deg,rgba(38,32,28,0.96),rgba(24,21,19,0.92))]">
+              <FileUploadDropzone className="rounded-xl border-dashed border-border/70 bg-background/50 px-6 py-10 text-center">
                 <div className="mx-auto flex max-w-lg flex-col items-center gap-3">
                   <div className="rounded-full border border-border/70 bg-background/80 p-3 shadow-sm">
                     <FileJson className="size-5 text-foreground/80" />
@@ -357,7 +357,7 @@ export default function BackupSettingsPage() {
       </div>
 
       {previewData && (
-        <Card className="border-border/70 bg-card/95 shadow-[0_18px_50px_rgba(90,56,25,0.08)]">
+        <Card className="border-border/70 bg-card/95">
           <CardHeader>
             <div className="flex flex-wrap items-center gap-3">
               <CardTitle>{t('previewTitle')}</CardTitle>
@@ -433,7 +433,7 @@ export default function BackupSettingsPage() {
       )}
 
       {importResult && (
-        <Card className="border-border/70 bg-card/95 shadow-[0_18px_50px_rgba(90,56,25,0.08)]">
+        <Card className="border-border/70 bg-card/95">
           <CardHeader>
             <div className="flex items-center gap-3">
               <CheckCircle2 className="size-5 text-emerald-600" />

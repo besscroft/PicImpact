@@ -7,7 +7,7 @@ export interface Contributor {
 export async function fetchContributors(
   repoOwner: string,
   repoName: string,
-): Promise<Contributor[]> {
+): Promise<Contributor[] | null> {
   const headers = new Headers()
   if (process.env.GITHUB_TOKEN)
     headers.set('Authorization', `Bearer ${process.env.GITHUB_TOKEN}`)
@@ -21,6 +21,13 @@ export async function fetchContributors(
   )
 
   if (!response.ok) {
+    const isRateLimited =
+      response.status === 429 ||
+      response.headers.get('x-ratelimit-remaining') === '0' ||
+      response.statusText.toLowerCase().includes('rate limit')
+
+    if (isRateLimited) return null
+
     throw new Error(`Failed to fetch contributors: ${response.statusText}`)
   }
 

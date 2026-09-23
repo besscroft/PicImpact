@@ -22,10 +22,14 @@ export default async function About() {
         />
       </Link>
       <span className="select-none">PicImpact 是一个支持自部署的摄影作品展示网站，基于 Next.js + Hono.js 开发。</span>
-      <div className="grid grid-cols-1 gap-2 md:grid-cols-2 md:gap-4 lg:grid-cols-3 lg:gap-6 xl:grid-cols-4 xl:gap-8">
-        {
-          contributors.map((item: any) => {
-            return (
+      {contributors === null ? (
+        <p className="text-sm text-muted-foreground">
+          暂时无法加载贡献者信息，请稍后再试。
+        </p>
+      ) : (
+        <div className="grid grid-cols-1 gap-2 md:grid-cols-2 md:gap-4 lg:grid-cols-3 lg:gap-6 xl:grid-cols-4 xl:gap-8">
+          {
+            contributors.map((item: any) => (
               <div
                 key={item.login}
                 className="select-none border border-foreground/20 flex flex-col items-start w-full mx-auto p-4 relative"
@@ -49,10 +53,10 @@ export default async function About() {
                   </p>
                 </Link>
               </div>
-            )
-          })
-        }
-      </div>
+            ))
+          }
+        </div>
+      )}
     </div>
   )
 }

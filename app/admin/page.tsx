@@ -30,11 +30,10 @@ function DashboardPanel({
   return (
     <section
       className={cn(
-        'show-up-motion relative overflow-hidden rounded-[1.75rem] border border-border/70 bg-card/80 shadow-sm backdrop-blur-sm',
+        'show-up-motion relative rounded-xl border border-border bg-card',
         className
       )}
     >
-      <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary/40 to-transparent" />
       {children}
     </section>
   )
@@ -74,12 +73,10 @@ function StatCard({
   value: string
 }) {
   return (
-    <div className="flex h-full flex-col justify-between rounded-[1.2rem] border border-border/70 bg-background/70 p-3 sm:p-3.5">
+    <div className="flex h-full flex-col justify-between border-b border-border/70 px-2 py-3 sm:p-3.5">
       <div className="flex items-start justify-between gap-3">
-        <p className="text-[0.62rem] uppercase tracking-[0.16em] text-muted-foreground">{label}</p>
-        <div className="flex size-7 items-center justify-center rounded-full bg-primary/10 text-primary">
-          <Icon className="size-3.5" />
-        </div>
+        <p className="text-xs font-medium text-muted-foreground">{label}</p>
+        <Icon className="size-4 text-muted-foreground" />
       </div>
       <p className="mt-2.5 font-display text-[1.95rem] leading-none tracking-tight text-foreground sm:text-[2.1rem]">
         {value}
@@ -102,12 +99,10 @@ function CoverageCard({
   icon: LucideIcon
 }) {
   return (
-    <div className="flex h-full flex-col rounded-[1.1rem] bg-background/55 px-3 py-3 sm:px-3.5">
+    <div className="flex h-full flex-col px-2 py-3 sm:px-3.5">
       <div className="flex items-start justify-between gap-3">
-        <p className="text-[0.68rem] uppercase tracking-[0.14em] text-muted-foreground">{label}</p>
-        <div className="flex size-7 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
-          <Icon className="size-3.5" />
-        </div>
+        <p className="text-xs font-medium text-muted-foreground">{label}</p>
+        <Icon className="size-4 shrink-0 text-muted-foreground" />
       </div>
 
       <p className="mt-2 font-display text-[1.75rem] leading-none tracking-tight text-foreground sm:text-[1.9rem]">
@@ -146,9 +141,9 @@ function EquipmentCard({
   maxCount: number
 }) {
   return (
-    <div className="rounded-[1.2rem] border border-border/70 bg-background/70 p-4 sm:p-5">
+    <div className="rounded-lg border border-border/70 bg-background/70 p-4 sm:p-5">
       <div className="flex items-start gap-4">
-        <div className="flex size-9 shrink-0 items-center justify-center rounded-full bg-primary/10 font-medium text-primary">
+        <div className="flex size-9 shrink-0 items-center justify-center rounded-full bg-secondary font-medium text-secondary-foreground">
           {rank}
         </div>
         <div className="min-w-0 flex-1">
@@ -235,14 +230,8 @@ export default async function Admin() {
   const equipmentMax = dashboard.equipmentBreakdown[0]?.count || 1
 
   return (
-    <div className="relative overflow-hidden px-1 py-2 sm:px-2">
-      <div className="pointer-events-none absolute inset-0 overflow-hidden">
-        <div className="absolute -left-12 top-24 h-56 w-56 rounded-full bg-primary/8 blur-3xl" />
-        <div className="absolute right-[-5rem] top-0 h-72 w-72 rounded-full bg-secondary blur-3xl" />
-        <div className="absolute bottom-8 left-1/3 h-48 w-48 rounded-full bg-primary/6 blur-3xl" />
-      </div>
-
-      <div className="relative space-y-6">
+    <div className="px-1 py-2 sm:px-2">
+      <div className="space-y-6">
         <div className="grid gap-6 xl:grid-cols-[minmax(0,1.55fr)_minmax(25rem,1fr)] xl:items-stretch">
           <DashboardPanel className="hidden flex-col px-5 py-5 sm:flex sm:px-6 sm:py-6">
             <SectionHeading
@@ -344,7 +333,7 @@ export default async function Admin() {
 
               <div className="flex h-full flex-col pt-1">
                 <div className="flex items-center gap-3">
-                  <p className="text-[0.68rem] uppercase tracking-[0.18em] text-muted-foreground">
+                  <p className="text-xs font-medium text-muted-foreground">
                     {t('Dashboard.coverageTitle')}
                   </p>
                   <div className="h-px flex-1 bg-border/70" />
