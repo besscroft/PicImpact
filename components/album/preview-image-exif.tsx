@@ -51,7 +51,7 @@ function ParamBadge({ icon, value }: { icon: React.ReactNode; value: string }) {
 // Section title component
 function SectionTitle({ children }: { children: React.ReactNode }) {
   return (
-    <h4 className="mb-2 text-xs font-semibold uppercase tracking-wider text-primary/70">
+    <h4 className="mb-2 text-sm font-semibold text-foreground">
       {children}
     </h4>
   )

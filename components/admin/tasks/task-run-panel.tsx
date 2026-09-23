@@ -31,7 +31,7 @@ const HISTORY_RECENT_LIMIT = 10
 const HISTORY_VISIBLE_ROWS = 3
 const HISTORY_CARD_MIN_HEIGHT_REM = 10.75
 const HISTORY_SCROLL_MAX_HEIGHT = `${HISTORY_VISIBLE_ROWS * HISTORY_CARD_MIN_HEIGHT_REM}rem`
-const panelClass = 'show-up-motion relative overflow-hidden rounded-[1.7rem] border border-border/70 bg-card/82 shadow-sm backdrop-blur-sm'
+const panelClass = 'show-up-motion relative rounded-xl border border-border bg-card'
 
 export function statusClass(status: AdminTaskStatus) {
   switch (status) {
@@ -150,7 +150,7 @@ function DetailSkeleton() {
     <div className='animate-pulse space-y-5'>
       <div className='grid gap-5 xl:grid-cols-[minmax(0,0.84fr)_minmax(0,1.16fr)] xl:items-start'>
         <div className='space-y-5'>
-          <section className='rounded-[1.45rem] border border-border/70 bg-background/62 p-4 sm:p-5'>
+          <section className='rounded-xl border border-border/70 bg-background/62 p-4 sm:p-5'>
             <div className='h-4 w-28 rounded-full bg-border/55' />
             <div className='mt-4 grid gap-3 sm:grid-cols-2'>
               <div className='h-20 rounded-[1.15rem] bg-background/75' />
@@ -159,12 +159,12 @@ function DetailSkeleton() {
               <div className='h-20 rounded-[1.15rem] bg-background/75' />
             </div>
           </section>
-          <section className='rounded-[1.45rem] border border-border/70 bg-background/62 p-4 sm:p-5'>
+          <section className='rounded-xl border border-border/70 bg-background/62 p-4 sm:p-5'>
             <div className='h-4 w-24 rounded-full bg-border/55' />
             <div className='mt-4 h-24 rounded-[1.15rem] bg-background/75' />
           </section>
         </div>
-        <section className='rounded-[1.45rem] border border-border/70 bg-background/62 p-4 sm:p-5'>
+        <section className='rounded-xl border border-border/70 bg-background/62 p-4 sm:p-5'>
           <div className='h-4 w-24 rounded-full bg-border/55' />
           <div className='mt-4 space-y-3'>
             <div className='h-32 rounded-[1.15rem] bg-background/75' />
@@ -188,7 +188,7 @@ function ErrorDetailCard({
   fallback: string
 }) {
   return (
-    <section className='rounded-[1.45rem] border border-rose-400/35 bg-rose-500/10 p-4 sm:p-5 text-rose-700 dark:text-rose-300'>
+    <section className='rounded-xl border border-rose-400/35 bg-rose-500/10 p-4 sm:p-5 text-rose-700 dark:text-rose-300'>
       <div className='flex items-center gap-2'>
         <TriangleAlert className='size-4' />
         <h3 className='font-medium'>{title}</h3>
@@ -429,16 +429,9 @@ export default function TaskRunPanel<Scope>({ config }: { config: TaskRunPanelCo
   const detailBooting = Boolean(selectedRunId) && detailLoading && !selectedRunDetail
   return (
     <>
-      <div className='relative overflow-hidden px-1 py-2 sm:px-2'>
-        <div className='pointer-events-none absolute inset-0 overflow-hidden'>
-          <div className='absolute -left-10 top-8 h-48 w-48 rounded-full bg-primary/10 blur-3xl' />
-          <div className='absolute right-[-4rem] top-16 h-64 w-64 rounded-full bg-secondary blur-3xl' />
-          <div className='absolute bottom-6 left-1/3 h-44 w-44 rounded-full bg-primary/8 blur-3xl' />
-        </div>
-
-        <div className='relative space-y-6'>
+      <div className='px-1 py-2 sm:px-2'>
+        <div className='space-y-6'>
           <section className={cn(panelClass, 'px-5 py-4 sm:px-6 sm:py-5')}>
-            <div className='pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary/50 to-transparent' />
             <div className='flex flex-col gap-4'>
               <div className={cn('flex flex-col gap-3 xl:flex-row xl:items-center xl:justify-between', !activeRun && 'hidden')}>
                 {activeRun ? (
@@ -473,10 +466,10 @@ export default function TaskRunPanel<Scope>({ config }: { config: TaskRunPanelCo
               >
                 {activeRun ? (
                   <div className='space-y-4 xl:border-r xl:border-border/55 xl:pr-5'>
-                    <div className='grid gap-3 rounded-[1.35rem] border border-border/70 bg-background/62 p-4'>
+                    <div className='grid gap-3 rounded-xl border border-border/70 bg-background/62 p-4'>
                       <div className='grid gap-3 sm:grid-cols-[auto_minmax(0,1fr)] sm:items-end'>
                         <div>
-                          <p className='text-[0.68rem] uppercase tracking-[0.16em] text-muted-foreground'>
+                          <p className='text-xs font-medium text-muted-foreground'>
                             {t('progressLabel')}
                           </p>
                           <p className='mt-1.5 font-display text-[2.15rem] leading-none tracking-tight text-foreground sm:text-[2.45rem]'>
@@ -484,16 +477,16 @@ export default function TaskRunPanel<Scope>({ config }: { config: TaskRunPanelCo
                           </p>
                         </div>
                         <div className='grid gap-2 text-sm leading-6 text-muted-foreground sm:grid-cols-3'>
-                          <div className='rounded-[0.95rem] bg-background/78 px-3 py-2.5'>
-                            <p className='text-[0.68rem] uppercase tracking-[0.14em] text-muted-foreground'>{t('matchedCount')}</p>
+                          <div className='px-3 py-2.5'>
+                            <p className='text-xs font-medium text-muted-foreground'>{t('matchedCount')}</p>
                             <p className='mt-1 text-base font-medium text-foreground'>{numberFormatter.format(activeRun.totalCount)}</p>
                           </div>
-                          <div className='rounded-[0.95rem] bg-background/78 px-3 py-2.5'>
-                            <p className='text-[0.68rem] uppercase tracking-[0.14em] text-muted-foreground'>{t('processedLabel')}</p>
+                          <div className='px-3 py-2.5'>
+                            <p className='text-xs font-medium text-muted-foreground'>{t('processedLabel')}</p>
                             <p className='mt-1 text-base font-medium text-foreground'>{numberFormatter.format(activeRun.processedCount)}</p>
                           </div>
-                          <div className='rounded-[0.95rem] bg-background/78 px-3 py-2.5'>
-                            <p className='text-[0.68rem] uppercase tracking-[0.14em] text-muted-foreground'>{t('startedAtLabel')}</p>
+                          <div className='px-3 py-2.5'>
+                            <p className='text-xs font-medium text-muted-foreground'>{t('startedAtLabel')}</p>
                             <p className='mt-1 text-base font-medium text-foreground'>
                               {formatDate(activeRun.startedAt || activeRun.createdAt, dateFormatter, t('notAvailable'))}
                             </p>
@@ -658,16 +651,11 @@ export default function TaskRunPanel<Scope>({ config }: { config: TaskRunPanelCo
         {selectedRunId ? (
           <DialogContent className='grid h-[min(92dvh,56rem)] max-h-[calc(100dvh-1.5rem)] grid-rows-[auto_minmax(0,1fr)] overflow-hidden border-border/70 bg-background/95 p-0 shadow-[0_24px_80px_rgba(90,56,25,0.18)] sm:max-w-[56rem]'>
             <div className='relative grid h-full min-h-0 grid-rows-[auto_minmax(0,1fr)] overflow-hidden'>
-              <div className='pointer-events-none absolute inset-0 overflow-hidden'>
-                <div className='absolute -left-6 top-4 h-28 w-28 rounded-full bg-primary/8 blur-3xl' />
-                <div className='absolute right-[-2rem] top-0 h-36 w-36 rounded-full bg-secondary/70 blur-3xl' />
-              </div>
-
               <DialogHeader className='relative gap-4 border-b border-border/60 px-5 py-5 text-left sm:px-6'>
                 {selectedRun ? (
                   <>
                     <div className='space-y-2'>
-                      <p className='text-[0.68rem] uppercase tracking-[0.22em] text-primary/75'>{t('detailEyebrow')}</p>
+                      <p className='text-xs font-medium text-muted-foreground'>{t('detailEyebrow')}</p>
                       <DialogTitle className='font-display text-[1.45rem] leading-none text-foreground sm:text-[1.7rem]'>{labelForRunScope(selectedRun.scope)}</DialogTitle>
                       <DialogDescription className='max-w-2xl text-sm leading-6 text-muted-foreground'>{t('detailDescription')}</DialogDescription>
                     </div>
@@ -696,12 +684,12 @@ export default function TaskRunPanel<Scope>({ config }: { config: TaskRunPanelCo
               <ScrollArea className='min-h-0'>
                 <div className='space-y-5 px-5 py-5 sm:px-6 sm:py-6'>
                   {selectedRun ? (
-                    <section className='rounded-[1.6rem] border border-border/70 bg-background/68 p-4 sm:p-5'>
+                    <section className='rounded-xl border border-border/70 bg-background/68 p-4 sm:p-5'>
                       <div className='grid gap-4 lg:grid-cols-[minmax(0,1.2fr)_minmax(15rem,0.8fr)] lg:items-end'>
                         <div className='space-y-4'>
                           <div className='flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between'>
                             <div>
-                              <p className='text-[0.68rem] uppercase tracking-[0.16em] text-muted-foreground'>{t('progressLabel')}</p>
+                              <p className='text-xs font-medium text-muted-foreground'>{t('progressLabel')}</p>
                               <p className='mt-2 font-display text-[3rem] leading-none tracking-tight text-foreground sm:text-[3.5rem]'>{progressOf(selectedRun)}%</p>
                             </div>
                             <div className='space-y-1 text-sm leading-6 text-muted-foreground sm:text-right'>
@@ -713,15 +701,15 @@ export default function TaskRunPanel<Scope>({ config }: { config: TaskRunPanelCo
                         </div>
 
                         <div className='grid gap-3 sm:grid-cols-3 lg:grid-cols-1 xl:grid-cols-3'>
-                          <div className='rounded-[1.2rem] border border-border/60 bg-emerald-500/8 px-4 py-3 text-emerald-700 dark:text-emerald-300'>
+                          <div className='rounded-lg border border-border/60 bg-emerald-500/8 px-4 py-3 text-emerald-700 dark:text-emerald-300'>
                             <p className='text-[0.68rem] uppercase tracking-[0.14em] text-muted-foreground'>{t('successLabel')}</p>
                             <p className='mt-2 font-display text-[1.9rem] leading-none tracking-tight'>{numberFormatter.format(selectedRun.successCount)}</p>
                           </div>
-                          <div className='rounded-[1.2rem] border border-border/60 bg-amber-500/10 px-4 py-3 text-amber-700 dark:text-amber-300'>
+                          <div className='rounded-lg border border-border/60 bg-amber-500/10 px-4 py-3 text-amber-700 dark:text-amber-300'>
                             <p className='text-[0.68rem] uppercase tracking-[0.14em] text-muted-foreground'>{t('skippedLabel')}</p>
                             <p className='mt-2 font-display text-[1.9rem] leading-none tracking-tight'>{numberFormatter.format(selectedRun.skippedCount)}</p>
                           </div>
-                          <div className='rounded-[1.2rem] border border-border/60 bg-rose-500/10 px-4 py-3 text-rose-700 dark:text-rose-300'>
+                          <div className='rounded-lg border border-border/60 bg-rose-500/10 px-4 py-3 text-rose-700 dark:text-rose-300'>
                             <p className='text-[0.68rem] uppercase tracking-[0.14em] text-muted-foreground'>{t('failedLabel')}</p>
                             <p className='mt-2 font-display text-[1.9rem] leading-none tracking-tight'>{numberFormatter.format(selectedRun.failedCount)}</p>
                           </div>
@@ -729,7 +717,7 @@ export default function TaskRunPanel<Scope>({ config }: { config: TaskRunPanelCo
                       </div>
                     </section>
                   ) : (
-                    <section className='rounded-[1.6rem] border border-border/70 bg-background/68 p-4 sm:p-5'>
+                    <section className='rounded-xl border border-border/70 bg-background/68 p-4 sm:p-5'>
                       <div className='animate-pulse space-y-4'>
                         <div className='h-4 w-24 rounded-full bg-border/55' />
                         <div className='h-12 w-32 rounded-full bg-border/60' />
