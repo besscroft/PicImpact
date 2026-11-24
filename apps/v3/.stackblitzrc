@@ -1,0 +1,4 @@
+{
+  "installDependencies": true,
+  "startCommand": "pnpm --filter @picimpact/v3 run dev:server"
+}

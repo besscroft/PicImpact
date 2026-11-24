@@ -1,24 +1,38 @@
+# Dependencies and package-manager artifacts
 node_modules
-*.log
+.pnpm-store
+
+# Build output and caches
 dist
+dist-ssr
 .output
-.idea/
-.vercel/
-**/skills/**
-skills-lock.json
+build
+.next
+**/.next
+/out
+coverage
 tsconfig.tsbuildinfo
-.claude/
-# next.js
-/.next/
-/out/
+**/tsconfig.tsbuildinfo
 
-# production
-/build
+# Logs
+*.log
+pnpm-debug.log*
 
-# local env files
+# Local environment files
 .env
+.env.*
+!.env.example
+*.local
 
-# nextjs --experimental-https cert file
-certificates
+# Editor and local tooling
+.idea/
 .vscode/
 .cursor/
+.claude/
+.codex/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+.DS_Store

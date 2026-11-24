@@ -1,4 +1,7 @@
-# PicImpact
+# PicImpact v3 (Archived)
+
+> Archived on November 24, 2026. Keep this application as historical
+> reference; do not add new features here.
 
 Self-deployable photography portfolio website built with Next.js 16 + Hono.js + PostgreSQL.
 
