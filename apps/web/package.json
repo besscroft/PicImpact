@@ -1,0 +1,46 @@
+{
+  "name": "@picimpact/web",
+  "version": "4.0.0",
+  "private": true,
+  "description": "PicImpact v4 web application built with Solid 2, Hono and Drizzle.",
+  "type": "module",
+  "scripts": {
+    "dev": "vp dev --host 0.0.0.0",
+    "dev:worker": "wrangler dev src/server/worker.ts",
+    "build": "vp build --outDir dist/client && vp build --config vite.server.config.ts --outDir dist/server",
+    "start": "node dist/server/server.js",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "typecheck": "tsc --noEmit",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "tsx src/server/db/migrate.ts"
+  },
+  "dependencies": {
+    "@aws-sdk/client-s3": "3.1177.0",
+    "@better-auth/drizzle-adapter": "1.7.28",
+    "@cloudflare/workers-types": "5.20261124.1",
+    "@hono/node-server": "2.1.11",
+    "@neondatabase/serverless": "1.2.1",
+    "@solidjs/web": "2.0.3",
+    "@ui-sdk/core": "0.1.0-beta.16",
+    "@ui-sdk/solid": "0.1.0-beta.16",
+    "better-auth": "1.7.28",
+    "drizzle-orm": "0.45.4",
+    "hono": "4.13.21",
+    "motion": "14.14.0",
+    "pg": "8.23.1",
+    "solid-js": "2.0.3",
+    "zod": "4.6.7"
+  },
+  "devDependencies": {
+    "@solidjs/vite-plugin": "3.0.1",
+    "@types/node": "catalog:",
+    "@types/pg": "8.23.1",
+    "drizzle-kit": "0.31.11",
+    "tsx": "4.23.15",
+    "typescript": "catalog:",
+    "vite": "catalog:",
+    "vitest": "5.1.1",
+    "wrangler": "4.167.0"
+  }
+}

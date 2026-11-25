@@ -1,0 +1,15 @@
+name = "picimpact-web"
+main = "src/server/worker.ts"
+compatibility_date = "2026-11-25"
+
+[assets]
+directory = "./dist/client"
+binding = "ASSETS"
+
+[vars]
+BETTER_AUTH_URL = "https://example.com"
+
+# Configure an R2 binding in the deployment environment:
+# [[r2_buckets]]
+# binding = "R2"
+# bucket_name = "picimpact"

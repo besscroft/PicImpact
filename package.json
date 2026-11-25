@@ -1,11 +1,21 @@
 {
   "name": "picimpact",
-  "version": "0.0.0",
+  "version": "4.0.0",
   "private": true,
   "type": "module",
   "scripts": {
     "check": "vp check",
-    "ready": "vp check"
+    "ready": "vp check",
+    "web:dev": "pnpm --filter @picimpact/web dev",
+    "web:dev:worker": "pnpm --filter @picimpact/web dev:worker",
+    "web:build": "pnpm --filter @picimpact/web build",
+    "web:start": "pnpm --filter @picimpact/web start",
+    "web:test": "pnpm --filter @picimpact/web test",
+    "web:test:watch": "pnpm --filter @picimpact/web test:watch",
+    "web:typecheck": "pnpm --filter @picimpact/web typecheck",
+    "web:check": "pnpm run web:typecheck && pnpm run web:test",
+    "web:db:generate": "pnpm --filter @picimpact/web db:generate",
+    "web:db:migrate": "pnpm --filter @picimpact/web db:migrate"
   },
   "devDependencies": {
     "vite-plus": "catalog:"
