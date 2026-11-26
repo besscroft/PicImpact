@@ -4,6 +4,7 @@ import { z } from "zod";
 import { type Context, type Next } from "hono";
 
 import { BackupValidationError, parseBackupEnvelope } from "./backup/format";
+import type { BackupJsonValue } from "./backup/types";
 import type { ObjectStorage } from "./storage";
 import type { ResolvedStorage } from "./storage-config";
 import type { PicImpactStore } from "./store";
@@ -37,6 +38,19 @@ const photoInputSchema = z.object({
   sort: z.number().int().optional(),
   del: z.number().int().optional(),
 });
+const photoUpdateSchema = photoInputSchema.omit({ id: true }).partial();
+
+const albumBindSchema = z.object({
+  album_value: z.string().min(1),
+});
+
+const albumShowSchema = z.object({
+  show: z.number().int().min(0).max(1),
+});
+
+const batchDeleteSchema = z.object({
+  ids: z.array(z.string().min(1)).min(1),
+});
 
 const albumInputSchema = z.object({
   album_value: z.string().min(1),
@@ -52,11 +66,28 @@ const albumInputSchema = z.object({
   del: z.number().int().optional(),
 });
 
-const configInputSchema = z.object({
-  config_key: z.string().min(1),
-  config_value: z.string().nullable().optional(),
-  detail: z.string().nullable().optional(),
-});
+const STORAGE_CONFIG_KEYS = [
+  "storage.driver",
+  "storage.endpoint",
+  "storage.region",
+  "storage.bucket",
+  "storage.access_key_id",
+  "storage.secret_access_key",
+  "storage.public_url",
+  "storage.max_upload_bytes",
+  "storage.storage_folder",
+  "storage.r2.account_id",
+  "storage.r2.access_key_id",
+  "storage.r2.secret_access_key",
+  "storage.r2.bucket",
+  "storage.r2.storage_folder",
+  "storage.r2.public_url",
+] as const;
+
+const STORAGE_CONFIG_KEY_SET = new Set<string>(STORAGE_CONFIG_KEYS);
+
+// 按提交的键部分更新：S3 / R2 / 驱动面板各自只保存自己的字段。
+const storageConfigSchema = z.record(z.string(), z.string());
 
 function jsonError(message: string, status = 400, details?: unknown) {
   return {
@@ -96,6 +127,7 @@ export function createApp(options: {
     options.storageResolver?.() ?? {
       storage: options.storage ?? null,
       maxUploadBytes: options.maxUploadBytes ?? 25 * 1024 * 1024,
+      storageFolder: "",
     };
   app.use(
     "/api/*",
@@ -132,8 +164,12 @@ export function createApp(options: {
   app.use("/api/albums/*", requireAuth);
   app.use("/api/config", requireAuth);
   app.use("/api/config/*", requireAuth);
+  app.use("/api/storage-config", requireAuth);
+  app.use("/api/storage-config/*", requireAuth);
   app.use("/api/backup", requireAuth);
   app.use("/api/backup/*", requireAuth);
+  app.use("/api/admin", requireAuth);
+  app.use("/api/admin/*", requireAuth);
 
   app.get("/api/session", async (c) => {
     if (!options.auth) {
@@ -156,19 +192,111 @@ export function createApp(options: {
     }),
   );
 
-  app.get("/api/photos", async (c) =>
+  app.get("/api/public/albums", async (c) =>
     c.json({
-      data: await options.store.listImages(),
+      data: await options.store.listPublicAlbums(),
     }),
   );
+
+  app.get("/api/public/images", async (c) => {
+    const page = Number(c.req.query("page") ?? 1);
+    const pageSize = Number(c.req.query("pageSize") ?? c.req.query("limit") ?? 24);
+    const album = c.req.query("album") ?? "/";
+    return c.json(await options.store.listPublicImages({ album, page, pageSize }));
+  });
+
+  app.get("/api/public/images/:id", async (c) => {
+    const id = c.req.param("id");
+    const image = await options.store.getPublicImage(id);
+    if (!image) return c.json(jsonError("Image not found", 404), 404);
+    const neighbors = await options.store.getPublicImageNeighbors(id, image.album_value ?? "/");
+    return c.json({ data: image, neighbors });
+  });
+
+  app.get("/api/admin/dashboard", async (c) =>
+    c.json({
+      data: await options.store.getDashboard(),
+    }),
+  );
+
+  app.get("/api/photos", async (c) => {
+    const query = c.req.query();
+    const page = await options.store.listAdminImages({
+      album: query.album,
+      show: query.show === undefined || query.show === "" ? undefined : Number(query.show),
+      camera: query.camera,
+      lens: query.lens,
+      page: query.page ? Number(query.page) : undefined,
+      pageSize: query.pageSize ? Number(query.pageSize) : undefined,
+    });
+    return c.json({
+      data: page.data,
+      page: page.page,
+      pageSize: page.pageSize,
+      total: page.total,
+      pages: page.pages,
+    });
+  });
+
+  app.get("/api/photos/camera-lens-list", async (c) => {
+    const images = await options.store.listImages();
+    const cameras = new Set<string>();
+    const lenses = new Set<string>();
+    for (const image of images) {
+      if (image.del !== 0) continue;
+      const exif =
+        image.exif && typeof image.exif === "object" && !Array.isArray(image.exif)
+          ? (image.exif as Record<string, unknown>)
+          : null;
+      const model = typeof exif?.model === "string" && exif.model.trim() ? exif.model.trim() : null;
+      const lensModel =
+        typeof exif?.lens_model === "string" && exif.lens_model.trim() ? exif.lens_model.trim() : null;
+      if (model) cameras.add(model);
+      if (lensModel) lenses.add(lensModel);
+    }
+    return c.json({
+      data: { cameras: [...cameras].sort(), lenses: [...lenses].sort() },
+    });
+  });
+
+  app.post("/api/photos/batch-delete", async (c) => {
+    const input = parseBody(batchDeleteSchema, await c.req.json().catch(() => null));
+    const deleted = await options.store.deleteImages(input.ids);
+    return c.json({ data: { deleted } });
+  });
 
   app.post("/api/photos", async (c) => {
     const input = parseBody(photoInputSchema, await c.req.json().catch(() => null));
     return c.json({ data: await options.store.upsertImage(input) }, 201);
   });
 
+  app.put("/api/photos/:id", async (c) => {
+    const id = c.req.param("id");
+    const existing = (await options.store.listImages()).find((photo) => photo.id === id);
+    if (!existing) return c.json(jsonError("Image not found", 404), 404);
+    const input = parseBody(photoUpdateSchema, await c.req.json().catch(() => null));
+    return c.json({ data: await options.store.upsertImage({ ...existing, ...input, id }) });
+  });
+
+  app.put("/api/photos/:id/album", async (c) => {
+    const id = c.req.param("id");
+    const existing = (await options.store.listImages()).find(
+      (photo) => photo.id === id && photo.del === 0,
+    );
+    if (!existing) return c.json(jsonError("Image not found", 404), 404);
+    const input = parseBody(albumBindSchema, await c.req.json().catch(() => null));
+    await options.store.setImageAlbum(id, input.album_value);
+    return c.json({ data: { updated: true } });
+  });
+
+  app.delete("/api/photos/:id", async (c) => {
+    const deleted = await options.store.deleteImage(c.req.param("id"));
+    if (!deleted) return c.json(jsonError("Image not found", 404), 404);
+    return c.json({ data: { deleted: true } });
+  });
+
   app.post("/api/photos/upload", async (c) => {
-    const { storage, maxUploadBytes } = await resolveStorage();
+    const { storage, maxUploadBytes, storageFolder } = await resolveStorage();
     if (!storage) {
       return c.json(jsonError("Object storage is not configured", 503), 503);
     }
@@ -183,7 +311,7 @@ export function createApp(options: {
     if (!file.type.startsWith("image/") && !file.type.startsWith("video/")) {
       return c.json(jsonError("Only image and video files are supported"), 400);
     }
-    const key = createUploadKey(file.name);
+    const key = createUploadKey(file.name, undefined, storageFolder);
     const body = await file.arrayBuffer();
     await storage.put({
       key,
@@ -193,17 +321,44 @@ export function createApp(options: {
     });
     const origin = new URL(c.req.url).origin;
     const url = storage.url(key, origin);
+
+    // Optional compressed preview image produced on the client (v3 behavior).
+    let previewUrl = url;
+    const previewFile = formData?.get("preview");
+    if (previewFile instanceof File && previewFile.size > 0 && previewFile.size <= maxUploadBytes) {
+      const previewKey = createUploadKey(previewFile.name, "preview", storageFolder);
+      await storage.put({
+        key: previewKey,
+        body: await previewFile.arrayBuffer(),
+        contentType: previewFile.type || "image/webp",
+        contentLength: previewFile.size,
+      });
+      previewUrl = storage.url(previewKey, origin);
+    }
+
+    const isVideo = file.type.startsWith("video/");
     const photo = await options.store.upsertImage({
       id: crypto.randomUUID(),
       image_name: file.name,
       url,
-      preview_url: url,
-      video_url: file.type.startsWith("video/") ? url : null,
+      preview_url: previewUrl,
+      video_url: isVideo ? url : null,
       image_key: key,
-      type: file.type.startsWith("video/") ? 2 : 1,
+      type: isVideo ? 2 : 1,
       title: stringField(formData?.get("title")),
       detail: stringField(formData?.get("detail")),
+      width: numberField(formData?.get("width")) ?? 0,
+      height: numberField(formData?.get("height")) ?? 0,
+      lat: stringField(formData?.get("lat")),
+      lon: stringField(formData?.get("lon")),
+      blurhash: stringField(formData?.get("blurhash")),
+      exif: jsonField(formData?.get("exif")) as BackupJsonValue | null,
+      labels: jsonField(formData?.get("labels")) as BackupJsonValue | null,
     });
+    const album = stringField(formData?.get("album"));
+    if (album) {
+      await options.store.setImageAlbum(photo.id, album);
+    }
     return c.json({ data: photo, object: { key, url, contentType: file.type } }, 201);
   });
 
@@ -227,13 +382,40 @@ export function createApp(options: {
 
   app.get("/api/albums", async (c) =>
     c.json({
-      data: await options.store.listAlbums(),
+      data: await options.store.listAdminAlbums(),
     }),
   );
 
   app.post("/api/albums", async (c) => {
     const input = parseBody(albumInputSchema, await c.req.json().catch(() => null));
+    if (!input.album_value.startsWith("/")) {
+      return c.json(jsonError("The route must start with /"), 400);
+    }
     return c.json({ data: await options.store.upsertAlbum(input) }, 201);
+  });
+
+  app.put("/api/albums/:id", async (c) => {
+    const id = c.req.param("id");
+    const input = parseBody(albumInputSchema, await c.req.json().catch(() => null));
+    if (!input.album_value.startsWith("/")) {
+      return c.json(jsonError("The route must start with /"), 400);
+    }
+    const album = await options.store.updateAlbum(id, input);
+    if (!album) return c.json(jsonError("Album not found", 404), 404);
+    return c.json({ data: album });
+  });
+
+  app.put("/api/albums/:id/show", async (c) => {
+    const id = c.req.param("id");
+    const input = parseBody(albumShowSchema, await c.req.json().catch(() => null));
+    await options.store.updateAlbumShow(id, input.show);
+    return c.json({ data: { updated: true } });
+  });
+
+  app.delete("/api/albums/:id", async (c) => {
+    const deleted = await options.store.deleteAlbum(c.req.param("id"));
+    if (!deleted) return c.json(jsonError("Album not found", 404), 404);
+    return c.json({ data: { deleted: true } });
   });
 
   app.get("/api/config", async (c) =>
@@ -242,9 +424,29 @@ export function createApp(options: {
     }),
   );
 
-  app.put("/api/config", async (c) => {
-    const input = parseBody(configInputSchema, await c.req.json().catch(() => null));
-    return c.json({ data: await options.store.upsertConfig(input) });
+  app.get("/api/storage-config", async (c) => {
+    const configs = await options.store.listConfigs();
+    const values = new Map(configs.map((row) => [row.config_key, row.config_value ?? ""]));
+    const data = Object.fromEntries(
+      STORAGE_CONFIG_KEYS.map((key) => [key, values.get(key) ?? ""]),
+    );
+    return c.json({ data });
+  });
+
+  app.put("/api/storage-config", async (c) => {
+    const input = parseBody(storageConfigSchema, await c.req.json().catch(() => null));
+    const saved = await Promise.all(
+      Object.entries(input)
+        .filter(([key]) => STORAGE_CONFIG_KEY_SET.has(key))
+        .map(([key, value]) => {
+          const trimmed = value.trim();
+          return options.store.upsertConfig({
+            config_key: key,
+            config_value: trimmed ? trimmed : null,
+          });
+        }),
+    );
+    return c.json({ data: saved });
   });
 
   app.get("/api/backup/export", async () => {
@@ -298,12 +500,29 @@ function stringField(value: FormDataEntryValue | null | undefined) {
   return typeof value === "string" && value.trim() ? value.trim() : null;
 }
 
-function createUploadKey(fileName: string) {
+function numberField(value: FormDataEntryValue | null | undefined) {
+  if (typeof value !== "string" || !value.trim()) return null;
+  const parsed = Number(value);
+  return Number.isFinite(parsed) ? parsed : null;
+}
+
+function jsonField(value: FormDataEntryValue | null | undefined) {
+  if (typeof value !== "string" || !value.trim()) return null;
+  try {
+    return JSON.parse(value) as unknown;
+  } catch {
+    return null;
+  }
+}
+
+function createUploadKey(fileName: string, kind?: "preview", folderPrefix?: string) {
   const safeName =
     fileName
       .normalize("NFKD")
       .replace(/[^\w.-]+/g, "-")
       .replace(/^-+|-+$/g, "")
       .slice(0, 100) || "upload";
-  return `photos/${new Date().toISOString().slice(0, 10)}/${crypto.randomUUID()}-${safeName}`;
+  const prefix = kind === "preview" ? "photos/preview" : "photos";
+  const path = `${prefix}/${new Date().toISOString().slice(0, 10)}/${crypto.randomUUID()}-${safeName}`;
+  return folderPrefix ? `${folderPrefix}/${path}` : path;
 }

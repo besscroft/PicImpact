@@ -3,6 +3,7 @@ import { serveStatic } from "@hono/node-server/serve-static";
 
 import { createApp } from "./app";
 import { createAuth } from "./auth";
+import { createLocalDb } from "./db/local";
 import { createNeonDb } from "./db";
 import { createStore } from "./store";
 import { createStorageResolver } from "./storage-config";
@@ -11,7 +12,9 @@ import { S3ObjectStorage } from "./storage-s3";
 const env = {
   DATABASE_URL: process.env.DATABASE_URL,
 };
-const store = createStore(env);
+const store = createStore(env, {
+  createLocalDb: (databaseUrl) => createLocalDb(databaseUrl),
+});
 const auth = env.DATABASE_URL
   ? createAuth(createNeonDb(env.DATABASE_URL), {
       baseURL: process.env.BETTER_AUTH_URL,
@@ -26,7 +29,16 @@ const app = createApp({
   }),
 });
 
-app.get("*", serveStatic({ root: "./dist/client" }));
+app.get("*", (c, next) => {
+  if (c.req.path.startsWith("/api/")) return next();
+  if (c.req.path !== "/" && c.req.path.includes(".")) {
+    return serveStatic({ root: "./dist/client" })(c, next);
+  }
+  return serveStatic({
+    root: "./dist/client",
+    rewriteRequestPath: () => "/index.html",
+  })(c, next);
+});
 
 if (process.env.NODE_ENV !== "test") {
   serve(

@@ -18,32 +18,6 @@ export interface ObjectStorage {
   url(key: string, requestOrigin: string): string;
 }
 
-export class MemoryObjectStorage implements ObjectStorage {
-  private readonly objects = new Map<string, StoredObject>();
-
-  async put(input: StoragePutInput) {
-    const body = input.body instanceof Uint8Array ? input.body : new Uint8Array(input.body);
-    this.objects.set(input.key, {
-      body: new Uint8Array(body),
-      contentType: input.contentType,
-    });
-  }
-
-  async get(key: string) {
-    const object = this.objects.get(key);
-    return object
-      ? {
-          body: new Uint8Array(object.body),
-          contentType: object.contentType,
-        }
-      : null;
-  }
-
-  url(key: string, requestOrigin: string) {
-    return `${requestOrigin}/api/storage/${encodePath(key)}`;
-  }
-}
-
 export class R2ObjectStorage implements ObjectStorage {
   constructor(
     private readonly bucket: R2Bucket,

@@ -21,9 +21,7 @@ pnpm install
 pnpm --filter @picimpact/web dev
 ```
 
-Without `DATABASE_URL`, the app uses an in-memory store so the UI and API can
-be explored immediately. Set `DATABASE_URL` to use the Drizzle PostgreSQL
-store.
+`DATABASE_URL` is required — the app always uses the Drizzle PostgreSQL store.
 
 ## PostgreSQL
 
@@ -54,16 +52,15 @@ sign-in and account sign-up at the same entry point.
 ## Uploads
 
 - Storage settings live in the `configs` table, not environment variables.
-  Configure `storage.driver` as `memory`, `s3`, or `r2`, then add the
+  Configure `storage.driver` as `s3` or `r2`, then add the
   corresponding `storage.*` keys from the configuration UI/API.
 - Cloudflare Workers support both the `R2` binding (`storage.driver=r2`) and
   S3-compatible endpoints (`storage.driver=s3`) through a Web Crypto SigV4
   adapter.
 - Docker/Node supports the same S3-compatible endpoints with the Node S3
   adapter.
-- With no storage config, a process-local memory adapter keeps local
-  development usable. It is not persistent and should not be used in
-  production.
+- With no storage config, uploads are disabled (the upload endpoint returns
+  503) until object storage is configured.
 
 The upload endpoint is `POST /api/photos/upload` with a multipart `file` field.
 The supported storage keys are `storage.driver`, `storage.endpoint`,

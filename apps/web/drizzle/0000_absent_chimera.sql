@@ -103,12 +103,12 @@ CREATE TABLE "verification" (
 	"updatedAt" timestamp DEFAULT now() NOT NULL
 );
 --> statement-breakpoint
+CREATE UNIQUE INDEX "albums_album_value_idx" ON "albums" USING btree ("album_value");--> statement-breakpoint
 ALTER TABLE "account" ADD CONSTRAINT "account_userId_user_id_fk" FOREIGN KEY ("userId") REFERENCES "public"."user"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "images_albums_relation" ADD CONSTRAINT "images_albums_relation_imageId_images_id_fk" FOREIGN KEY ("imageId") REFERENCES "public"."images"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "images_albums_relation" ADD CONSTRAINT "images_albums_relation_album_value_albums_album_value_fk" FOREIGN KEY ("album_value") REFERENCES "public"."albums"("album_value") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "session" ADD CONSTRAINT "session_userId_user_id_fk" FOREIGN KEY ("userId") REFERENCES "public"."user"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 CREATE INDEX "account_user_id_idx" ON "account" USING btree ("userId");--> statement-breakpoint
-CREATE UNIQUE INDEX "albums_album_value_idx" ON "albums" USING btree ("album_value");--> statement-breakpoint
 CREATE UNIQUE INDEX "configs_config_key_idx" ON "configs" USING btree ("config_key");--> statement-breakpoint
 CREATE INDEX "images_variants_ready_del_idx" ON "images" USING btree ("variants_ready","del");--> statement-breakpoint
 CREATE UNIQUE INDEX "session_token_idx" ON "session" USING btree ("token");--> statement-breakpoint
