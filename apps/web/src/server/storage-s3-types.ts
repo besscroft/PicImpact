@@ -4,5 +4,6 @@ export type S3StorageOptions = {
   bucket: string;
   accessKeyId: string;
   secretAccessKey: string;
+  forcePathStyle?: boolean;
   publicUrl?: string;
 };

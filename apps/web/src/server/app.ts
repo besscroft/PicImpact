@@ -3,10 +3,11 @@ import { cors } from "hono/cors";
 import { z } from "zod";
 import { type Context, type Next } from "hono";
 
+import { isStorageProvider, type StorageProvider } from "../storage-provider";
 import { BackupValidationError, parseBackupEnvelope } from "./backup/format";
 import type { BackupJsonValue } from "./backup/types";
-import type { ObjectStorage } from "./storage";
-import type { ResolvedStorage } from "./storage-config";
+import { encodePath, StorageWriteDeniedError, type ObjectStorage } from "./storage";
+import type { StorageResolver } from "./storage-config";
 import type { PicImpactStore } from "./store";
 import { exportBackup, importBackup } from "./store";
 
@@ -67,14 +68,13 @@ const albumInputSchema = z.object({
 });
 
 const STORAGE_CONFIG_KEYS = [
-  "storage.driver",
   "storage.endpoint",
   "storage.region",
   "storage.bucket",
   "storage.access_key_id",
   "storage.secret_access_key",
+  "storage.force_path_style",
   "storage.public_url",
-  "storage.max_upload_bytes",
   "storage.storage_folder",
   "storage.r2.account_id",
   "storage.r2.access_key_id",
@@ -86,7 +86,6 @@ const STORAGE_CONFIG_KEYS = [
 
 const STORAGE_CONFIG_KEY_SET = new Set<string>(STORAGE_CONFIG_KEYS);
 
-// 按提交的键部分更新：S3 / R2 / 驱动面板各自只保存自己的字段。
 const storageConfigSchema = z.record(z.string(), z.string());
 
 function jsonError(message: string, status = 400, details?: unknown) {
@@ -120,11 +119,11 @@ export function createApp(options: {
   auth?: AuthHandler;
   storage?: ObjectStorage;
   maxUploadBytes?: number;
-  storageResolver?: () => Promise<ResolvedStorage>;
+  storageResolver?: StorageResolver;
 }) {
   const app = new Hono();
-  const resolveStorage = async () =>
-    options.storageResolver?.() ?? {
+  const resolveStorage: StorageResolver = async (provider) =>
+    options.storageResolver?.(provider) ?? {
       storage: options.storage ?? null,
       maxUploadBytes: options.maxUploadBytes ?? 25 * 1024 * 1024,
       storageFolder: "",
@@ -296,14 +295,18 @@ export function createApp(options: {
   });
 
   app.post("/api/photos/upload", async (c) => {
-    const { storage, maxUploadBytes, storageFolder } = await resolveStorage();
-    if (!storage) {
-      return c.json(jsonError("Object storage is not configured", 503), 503);
-    }
     const formData = await c.req.raw.formData().catch(() => null);
     const file = formData?.get("file");
     if (!(file instanceof File)) {
       return c.json(jsonError("Upload a file in the `file` field"), 400);
+    }
+    const selection = formData?.get("storage") ?? undefined;
+    if (selection !== undefined && !isStorageProvider(selection)) {
+      return c.json(jsonError("不支持所选的存储类型"), 400);
+    }
+    const { storage, maxUploadBytes, storageFolder } = await resolveStorage(selection);
+    if (!storage) {
+      return c.json(jsonError(selection ? "所选存储尚未配置，请在存储配置中设置后重试。" : "Object storage is not configured", 503), 503);
     }
     if (file.size <= 0 || file.size > maxUploadBytes) {
       return c.json(jsonError(`File size must be between 1 and ${maxUploadBytes} bytes`), 400);
@@ -320,7 +323,7 @@ export function createApp(options: {
       contentLength: file.size,
     });
     const origin = new URL(c.req.url).origin;
-    const url = storage.url(key, origin);
+    const url = uploadObjectUrl(storage, key, origin, selection);
 
     // Optional compressed preview image produced on the client (v3 behavior).
     let previewUrl = url;
@@ -333,7 +336,7 @@ export function createApp(options: {
         contentType: previewFile.type || "image/webp",
         contentLength: previewFile.size,
       });
-      previewUrl = storage.url(previewKey, origin);
+      previewUrl = uploadObjectUrl(storage, previewKey, origin, selection);
     }
 
     const isVideo = file.type.startsWith("video/");
@@ -363,7 +366,11 @@ export function createApp(options: {
   });
 
   app.get("/api/storage/*", async (c) => {
-    const { storage } = await resolveStorage();
+    const selection = c.req.query("storage");
+    if (selection !== undefined && !isStorageProvider(selection)) {
+      return c.json(jsonError("Unsupported storage type"), 400);
+    }
+    const { storage } = await resolveStorage(selection);
     if (!storage) return c.json(jsonError("Object storage is not configured", 503), 503);
     const path = new URL(c.req.url).pathname.replace(/^\/api\/storage\//, "");
     const key = path
@@ -490,6 +497,9 @@ export function createApp(options: {
     if (error instanceof HTTPInputError) {
       return c.json(jsonError(error.message, 400, error.details), 400);
     }
+    if (error instanceof StorageWriteDeniedError) {
+      return c.json(jsonError(error.message, 502), 502);
+    }
     console.error(error);
     return c.json(jsonError("Internal server error", 500), 500);
   });
@@ -513,6 +523,13 @@ function jsonField(value: FormDataEntryValue | null | undefined) {
   } catch {
     return null;
   }
+}
+
+function uploadObjectUrl(storage: ObjectStorage, key: string, origin: string, provider?: StorageProvider) {
+  const url = storage.url(key, origin);
+  return provider && url === `${origin}/api/storage/${encodePath(key)}`
+    ? `${url}?storage=${provider}`
+    : url;
 }
 
 function createUploadKey(fileName: string, kind?: "preview", folderPrefix?: string) {

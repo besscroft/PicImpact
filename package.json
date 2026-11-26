@@ -6,7 +6,7 @@
   "scripts": {
     "check": "vp check",
     "ready": "vp check",
-    "web:dev": "pnpm --filter @picimpact/web dev",
+    "web:dev": "pnpm run web:db:migrate && pnpm --filter @picimpact/web dev",
     "web:dev:worker": "pnpm --filter @picimpact/web dev:worker",
     "web:build": "pnpm --filter @picimpact/web build",
     "web:start": "pnpm --filter @picimpact/web start",

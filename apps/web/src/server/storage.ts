@@ -18,6 +18,13 @@ export interface ObjectStorage {
   url(key: string, requestOrigin: string): string;
 }
 
+export class StorageWriteDeniedError extends Error {
+  constructor() {
+    super("对象存储拒绝写入，请检查 S3/R2 凭证、存储桶及写入权限。");
+    this.name = "StorageWriteDeniedError";
+  }
+}
+
 export class R2ObjectStorage implements ObjectStorage {
   constructor(
     private readonly bucket: R2Bucket,

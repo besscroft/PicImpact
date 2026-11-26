@@ -1,10 +1,14 @@
-import { describe, expect, it, vi } from "vite-plus/test";
+import { afterEach, describe, expect, it, vi } from "vite-plus/test";
 
 import { createApp } from "../src/server/app";
 import { MemoryObjectStorage, MemoryPicImpactStore } from "./helpers";
 import { schema } from "../src/server/db/schema";
 import { createStorageResolver } from "../src/server/storage-config";
 import { S3FetchObjectStorage } from "../src/server/storage-s3-fetch";
+
+afterEach(() => {
+  vi.unstubAllGlobals();
+});
 
 describe("PicImpact web API", () => {
   it("serves the public homepage feed and albums without admin auth", async () => {
@@ -300,20 +304,38 @@ describe("PicImpact web API", () => {
         "storage.bucket": "picimpact",
         "storage.access_key_id": "key",
         "storage.secret_access_key": "secret",
+        "storage.force_path_style": "false",
         "storage.public_url": "",
         "storage.max_upload_bytes": "",
       }),
     });
     expect(save.status).toBe(200);
 
+    const storageConfig = await app.request("http://localhost/api/storage-config");
+    const configBody = await storageConfig.json() as { data: Record<string, string> };
+    expect(configBody).toMatchObject({
+      data: { "storage.force_path_style": "false" },
+    });
+    expect(configBody.data).not.toHaveProperty(["storage.driver"]);
+    expect(configBody.data).not.toHaveProperty(["storage.max_upload_bytes"]);
+
     const list = await app.request("http://localhost/api/config");
     expect(await list.json()).toEqual({
       data: expect.arrayContaining([
         expect.objectContaining({
-          config_key: "storage.driver",
-          config_value: "s3",
+          config_key: "storage.bucket",
+          config_value: "picimpact",
         }),
       ]),
+    });
+
+    await app.request("/api/storage-config", {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ "storage.r2.bucket": "r2-photos" }),
+    });
+    expect(await (await app.request("/api/storage-config")).json()).toMatchObject({
+      data: { "storage.bucket": "picimpact", "storage.r2.bucket": "r2-photos" },
     });
 
     const genericWrite = await app.request("http://localhost/api/config", {
@@ -386,6 +408,61 @@ describe("PicImpact web API", () => {
     expect(stored.status).toBe(200);
     expect(stored.headers.get("content-type")).toBe("image/jpeg");
     expect(new Uint8Array(await stored.arrayBuffer())).toEqual(new Uint8Array([1, 2, 3]));
+  });
+
+  it("uploads to the chosen provider and reads new and legacy links independently", async () => {
+    const store = new MemoryPicImpactStore();
+    for (const [key, value] of Object.entries({
+      "storage.driver": "r2",
+      "storage.bucket": "s3-bucket",
+      "storage.access_key_id": "access",
+      "storage.secret_access_key": "secret",
+      "storage.storage_folder": "s3-folder",
+      "storage.r2.account_id": "account",
+      "storage.r2.access_key_id": "access",
+      "storage.r2.secret_access_key": "secret",
+      "storage.r2.bucket": "r2-bucket",
+      "storage.r2.storage_folder": "r2-folder",
+    })) {
+      await store.upsertConfig({ config_key: key, config_value: value });
+    }
+    const s3 = new MemoryObjectStorage();
+    const r2 = new MemoryObjectStorage();
+    await r2.put({ key: "legacy/photo.jpg", body: new Uint8Array([42]), contentLength: 1, contentType: "image/jpeg" });
+    const app = createApp({
+      store,
+      storageResolver: createStorageResolver(store, {
+        createS3: ({ bucket }) => bucket === "s3-bucket" ? s3 : r2,
+      }),
+    });
+
+    for (const [provider, target, other] of [["s3", s3, r2], ["r2", r2, s3]] as const) {
+      const body = new FormData();
+      body.set("file", new File([provider], "photo.jpg", { type: "image/jpeg" }));
+      body.set("preview", new File(["preview"], "photo.webp", { type: "image/webp" }));
+      body.set("storage", provider);
+      const response = await app.request("/api/photos/upload", { method: "POST", body });
+      expect(response.status).toBe(201);
+      const { data, object } = await response.json() as {
+        data: { preview_url: string };
+        object: { key: string; url: string };
+      };
+      expect(object.key).toMatch(new RegExp(`^${provider}-folder/photos/`));
+      expect(await target.get(object.key)).not.toBeNull();
+      expect(await other.get(object.key)).toBeNull();
+      expect(new URL(object.url).searchParams.get("storage")).toBe(provider);
+      expect(new URL(data.preview_url).searchParams.get("storage")).toBe(provider);
+      expect(await (await app.request(object.url)).text()).toBe(provider);
+      expect(await (await app.request(data.preview_url)).text()).toBe("preview");
+    }
+
+    const legacy = await app.request("/api/storage/legacy/photo.jpg");
+    expect(new Uint8Array(await legacy.arrayBuffer())).toEqual(new Uint8Array([42]));
+
+    const invalid = new FormData();
+    invalid.set("storage", "unknown");
+    invalid.set("file", new File(["invalid"], "photo.jpg", { type: "image/jpeg" }));
+    expect((await app.request("/api/photos/upload", { method: "POST", body: invalid })).status).toBe(400);
   });
 
   it("requires a Better Auth session when auth is configured", async () => {
@@ -473,9 +550,89 @@ describe("PicImpact web API", () => {
     const [, init] = fetchMock.mock.calls[0] as [RequestInfo | URL, RequestInit];
     expect(init.method).toBe("PUT");
     expect(new Headers(init.headers).get("authorization")).toMatch(
-      /^AWS4-HMAC-SHA256 Credential=access\/\d{8}\/auto\/s3\/aws4_request/,
+      /^AWS4-HMAC-SHA256 Credential=access\/\d{8}\/auto\/s3\/aws4_request, SignedHeaders=content-type;host;x-amz-content-sha256;x-amz-date, Signature=[a-f0-9]{64}$/,
     );
     expect(new Headers(init.headers).get("x-amz-content-sha256")).toBeTruthy();
-    vi.unstubAllGlobals();
+  });
+
+  it("uses an S3 endpoint hostname and honors virtual-hosted addressing", async () => {
+    const store = new MemoryPicImpactStore();
+    const app = createApp({
+      store,
+      storageResolver: createStorageResolver(store, {
+        createS3: (options) => new S3FetchObjectStorage(options),
+      }),
+    });
+    const fetchMock = vi.fn().mockImplementation(() => new Response(null, { status: 200 }));
+    vi.stubGlobal("fetch", fetchMock);
+    for (const [key, value] of Object.entries({
+      "storage.driver": "s3",
+      "storage.endpoint": "s3.example.test",
+      "storage.region": "us-east-1",
+      "storage.bucket": "picimpact",
+      "storage.access_key_id": "access",
+      "storage.secret_access_key": "secret",
+      "storage.force_path_style": "false",
+      "storage.storage_folder": "/gallery/uploads/",
+    })) {
+      await store.upsertConfig({ config_key: key, config_value: value });
+    }
+    const form = new FormData();
+    form.set("file", new File(["original"], "sample.jpg", { type: "image/jpeg" }));
+    form.set("preview", new File(["preview"], "sample.webp", { type: "image/webp" }));
+
+    const upload = await app.request("http://localhost/api/photos/upload", {
+      method: "POST",
+      body: form,
+    });
+
+    expect(upload.status).toBe(201);
+    expect(fetchMock.mock.calls.map(([url]) => String(url))).toEqual([
+      expect.stringMatching(/^https:\/\/picimpact\.s3\.example\.test\/gallery\/uploads\/photos\/.*-sample\.jpg$/),
+      expect.stringMatching(/^https:\/\/picimpact\.s3\.example\.test\/gallery\/uploads\/photos\/preview\/.*-sample\.webp$/),
+    ]);
+  });
+
+  it("uploads to the configured R2 account and uses its public domain for both files", async () => {
+    const store = new MemoryPicImpactStore();
+    const app = createApp({
+      store,
+      storageResolver: createStorageResolver(store, {
+        createS3: (options) => new S3FetchObjectStorage(options),
+      }),
+    });
+    const fetchMock = vi.fn().mockImplementation(() => new Response(null, { status: 200 }));
+    vi.stubGlobal("fetch", fetchMock);
+    for (const [key, value] of Object.entries({
+      "storage.driver": "r2",
+      "storage.r2.account_id": "example-account",
+      "storage.r2.bucket": "picimpact",
+      "storage.r2.access_key_id": "access",
+      "storage.r2.secret_access_key": "secret",
+      "storage.r2.storage_folder": "/gallery/",
+      "storage.r2.public_url": "images.example.test/",
+    })) {
+      await store.upsertConfig({ config_key: key, config_value: value });
+    }
+    const form = new FormData();
+    form.set("file", new File(["original"], "sample.jpg", { type: "image/jpeg" }));
+    form.set("preview", new File(["preview"], "sample.webp", { type: "image/webp" }));
+
+    const upload = await app.request("http://localhost/api/photos/upload", {
+      method: "POST",
+      body: form,
+    });
+
+    expect(upload.status).toBe(201);
+    expect(await upload.json()).toMatchObject({
+      data: {
+        url: expect.stringMatching(/^https:\/\/images\.example\.test\/gallery\/photos\/.*-sample\.jpg$/),
+        preview_url: expect.stringMatching(/^https:\/\/images\.example\.test\/gallery\/photos\/preview\/.*-sample\.webp$/),
+      },
+    });
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+    expect(String(fetchMock.mock.calls[0][0])).toMatch(
+      /^https:\/\/example-account\.r2\.cloudflarestorage\.com\/picimpact\/gallery\/photos\//,
+    );
   });
 });

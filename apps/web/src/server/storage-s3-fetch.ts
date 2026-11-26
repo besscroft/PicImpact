@@ -1,5 +1,5 @@
 import type { ObjectStorage, StoragePutInput, StoredObject } from "./storage";
-import { encodePath } from "./storage";
+import { encodePath, StorageWriteDeniedError } from "./storage";
 import type { S3StorageOptions } from "./storage-s3-types";
 
 export class S3FetchObjectStorage implements ObjectStorage {
@@ -8,6 +8,9 @@ export class S3FetchObjectStorage implements ObjectStorage {
   async put(input: StoragePutInput) {
     const body = input.body instanceof Uint8Array ? input.body : new Uint8Array(input.body);
     const response = await this.request("PUT", input.key, body, input.contentType);
+    if (response.status === 401 || response.status === 403) {
+      throw new StorageWriteDeniedError();
+    }
     if (!response.ok) {
       throw new Error(`S3 upload failed with status ${response.status}`);
     }
@@ -38,12 +41,15 @@ export class S3FetchObjectStorage implements ObjectStorage {
     contentType?: string,
   ) {
     const endpoint = new URL(
-      this.options.endpoint ?? `https://s3.${this.options.region}.amazonaws.com`,
+      this.options.endpoint ?? `https://s3.${this.options.region}.${this.options.region.startsWith("cn-") ? "amazonaws.com.cn" : "amazonaws.com"}`,
     );
-    const canonicalUri = `${trimSlash(endpoint.pathname)}/${encodeSegment(
-      this.options.bucket,
-    )}/${key.split("/").map(encodeSegment).join("/")}`;
-    endpoint.pathname = canonicalUri.startsWith("/") ? canonicalUri : `/${canonicalUri}`;
+    const { bucket } = this.options;
+    const pathStyle = this.options.forcePathStyle ?? Boolean(this.options.endpoint);
+    const virtualHost = !pathStyle && /^[a-z0-9][a-z0-9-]{1,61}[a-z0-9]$/.test(bucket) &&
+      !endpoint.hostname.startsWith("[") && !/^\d+\.\d+\.\d+\.\d+$/.test(endpoint.hostname);
+    if (virtualHost) endpoint.hostname = `${bucket}.${endpoint.hostname}`;
+    const bucketPath = virtualHost ? "" : `/${encodeSegment(bucket)}`;
+    endpoint.pathname = `${trimSlash(endpoint.pathname)}${bucketPath}/${key.split("/").map(encodeSegment).join("/")}`;
 
     const payload = body ?? new Uint8Array();
     const payloadHash = await sha256Hex(payload);
@@ -82,12 +88,11 @@ export class S3FetchObjectStorage implements ObjectStorage {
       this.options.region,
     );
     const signature = toHex(await hmac(signingKey, stringToSign));
-    const authorization = [
-      "AWS4-HMAC-SHA256",
+    const authorization = "AWS4-HMAC-SHA256 " + [
       `Credential=${this.options.accessKeyId}/${credentialScope}`,
       `SignedHeaders=${signedHeaders}`,
       `Signature=${signature}`,
-    ].join(" ");
+    ].join(", ");
     const headers = new Headers({
       Authorization: authorization,
       "x-amz-content-sha256": payloadHash,
