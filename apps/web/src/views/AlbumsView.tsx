@@ -1,5 +1,13 @@
 import { Button } from "@ui-sdk/solid/button";
 import {
+  AlertDialog,
+  AlertDialogBackdrop,
+  AlertDialogClose,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogTitle,
+} from "@ui-sdk/solid/alert-dialog";
+import {
   SegmentedControl,
   SegmentedControlIndicator,
   SegmentedControlItem,
@@ -7,10 +15,27 @@ import {
 import { Switch, SwitchThumb } from "@ui-sdk/solid/switch";
 import { For, Show, createEffect, createMemo, createSignal, onCleanup } from "solid-js";
 
-import { EmptyState, SwitchRow, albumHref } from "../admin/shared";
+import {
+  EmptyState,
+  SwitchRow,
+  albumHref,
+  btnDanger,
+  btnOutline,
+  btnPrimary,
+  cardCls,
+  dialogBackdropCls,
+  errorBanner,
+  fieldCls,
+  focusRing,
+  inputCls,
+  labelCls,
+  badgeSecondary,
+  selectCls,
+  switchCls,
+  switchThumbCls,
+} from "../admin/shared";
 import type { AdminPhotoPage, Album } from "../types";
 import { getAlbumWorkspace, type AlbumFilter } from "./album-workspace";
-import "./album-workspace.css";
 
 const THEME_OPTIONS = [
   { value: "0", label: "默认样式" },
@@ -30,6 +55,8 @@ const FILTERS: { value: AlbumFilter; label: string }[] = [
   { value: "public", label: "公开" },
   { value: "hidden", label: "隐藏" },
 ];
+
+const textActionCls = `inline-flex min-h-[30px] cursor-pointer items-center bg-transparent px-0 py-0.5 text-[0.82rem] transition-colors hover:underline hover:underline-offset-4 disabled:pointer-events-none disabled:opacity-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring ${focusRing}`;
 
 export function AlbumsView(props: {
   albums: Album[];
@@ -153,20 +180,22 @@ export function AlbumsView(props: {
   }
 
   return (
-    <section class="album-workspace" aria-label="相册管理">
+    <section class="@container flex min-h-full flex-col" aria-label="相册管理">
       <Show when={error() && !deleting()}>
-        <p class="error-banner" role="alert">
+        <p class={`${errorBanner} mb-3`} role="alert">
           {error()}
         </p>
       </Show>
-      <p class="album-announcement" role="status">
-        {notice()}
-      </p>
-      <div class="album-desk">
-        <section class="album-register" aria-label="相册列表" ref={list}>
-          <div class="album-register-header">
+      <Show when={notice()}>
+        <p class="mb-3 text-sm text-foreground" role="status">
+          {notice()}
+        </p>
+      </Show>
+      <div class="grid flex-1 grid-cols-[minmax(0,1.7fr)_minmax(0,1fr)] gap-4 @max-[680px]:grid-cols-1 @max-[680px]:content-start">
+        <section class={`${cardCls} flex min-w-0 flex-col overflow-clip`} aria-label="相册列表" ref={list}>
+          <div class="flex flex-wrap items-center justify-between gap-2 border-b border-border px-3.5 py-2.5 @max-[350px]:grid @max-[350px]:grid-cols-1">
             <SegmentedControl
-              class="album-filters"
+              class="relative inline-flex isolate gap-0.5 rounded-lg border border-border bg-muted p-1 data-disabled:opacity-[0.62]"
               aria-label="前台展示筛选"
               value={filter()}
               disabled={busy()}
@@ -177,17 +206,31 @@ export function AlbumsView(props: {
               <SegmentedControlIndicator />
               <For each={FILTERS}>
                 {(item) => (
-                  <SegmentedControlItem value={item.value}>{item.label}</SegmentedControlItem>
+                  <SegmentedControlItem
+                    class="min-h-7 cursor-pointer rounded-md border-0 bg-transparent px-3 py-1 text-[0.8rem] font-medium text-muted-foreground transition-colors hover:text-foreground focus-visible:border-ring focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-ring/50 data-checked:text-foreground"
+                    value={item.value}
+                  >
+                    {item.label}
+                  </SegmentedControlItem>
                 )}
               </For>
             </SegmentedControl>
-            <label class="album-search">
-              <svg viewBox="0 0 24 24" aria-hidden="true">
+            <label class="flex min-w-[142px] flex-[0_1_194px] items-center gap-1.5 rounded-lg border border-input px-2 text-muted-foreground transition-colors focus-within:border-ring focus-within:ring-3 focus-within:ring-ring/50">
+              <svg
+                class="size-4 flex-none"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.8"
+                stroke-linecap="round"
+                aria-hidden="true"
+              >
                 <circle cx="11" cy="11" r="6" />
                 <path d="m16 16 4 4" />
               </svg>
               <input
                 type="search"
+                class="w-full min-w-0 border-0 bg-transparent py-0.5 text-[0.8rem] text-foreground outline-none placeholder:text-muted-foreground"
                 aria-label="搜索名称或路径"
                 placeholder="搜索名称或路径"
                 value={query()}
@@ -209,23 +252,34 @@ export function AlbumsView(props: {
               />
             }
           >
-            <div class="album-table-scroll">
-              <table class="album-register-table">
+            <div class="max-h-[min(52vh,520px)] overflow-auto @max-[680px]:max-h-[min(42vh,440px)]">
+              <table class="w-full table-fixed border-separate border-spacing-0 text-left">
                 <thead>
                   <tr>
-                    <th scope="col">相册名</th>
-                    <th scope="col">路径</th>
-                    <th scope="col">主题</th>
-                    <th scope="col">公开状态</th>
+                    <th scope="col" class="sticky top-0 z-[1] border-b border-border bg-muted/50 px-3 py-2 text-left text-xs font-medium text-muted-foreground">
+                      相册名
+                    </th>
+                    <th scope="col" class="sticky top-0 z-[1] w-[28%] border-b border-border bg-muted/50 px-3 py-2 text-left text-xs font-medium text-muted-foreground">
+                      路径
+                    </th>
+                    <th scope="col" class="sticky top-0 z-[1] w-32 border-b border-border bg-muted/50 px-3 py-2 text-left text-xs font-medium text-muted-foreground">
+                      主题
+                    </th>
+                    <th scope="col" class="sticky top-0 z-[1] w-[108px] border-b border-border bg-muted/50 px-2.5 py-2 text-left text-xs font-medium text-muted-foreground @max-[350px]:w-[75px] @max-[350px]:px-1">
+                      公开状态
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
                   <For each={workspace().rows}>
                     {(album) => (
-                      <tr data-current={workspace().selected?.id === album.id ? "" : undefined}>
+                      <tr
+                        class="transition-colors hover:bg-muted/50 data-current:bg-sidebar-accent data-current:shadow-[inset_2px_0_0_var(--primary)]"
+                        data-current={workspace().selected?.id === album.id ? "" : undefined}
+                      >
                         <td>
                           <button
-                            class="album-select"
+                            class="grid min-h-14 w-full cursor-pointer content-center gap-0.5 px-3 py-2 text-left text-[0.9rem] font-semibold text-foreground focus-visible:relative focus-visible:z-[1] focus-visible:outline-2 focus-visible:outline-offset-[-3px] focus-visible:outline-ring"
                             type="button"
                             aria-current={
                               workspace().selected?.id === album.id ? "true" : undefined
@@ -233,14 +287,14 @@ export function AlbumsView(props: {
                             disabled={busy()}
                             onClick={() => selectAlbum(album)}
                           >
-                            <span>{album.name}</span>
+                            <span class="[overflow-wrap:anywhere]">{album.name}</span>
                           </button>
                         </td>
-                        <td class="album-meta-cell">
-                          <span class="album-path">{albumHref(album.album_value)}</span>
+                        <td class="border-b border-border px-3 py-2 text-[0.82rem] text-muted-foreground">
+                          <span class="font-mono text-xs [overflow-wrap:anywhere]">{albumHref(album.album_value)}</span>
                         </td>
-                        <td class="album-meta-cell">
-                          <span class="album-theme-chip">
+                        <td class="border-b border-border px-3 py-2 text-[0.82rem] text-muted-foreground">
+                          <span class={`${badgeSecondary} max-w-full truncate`}>
                             {THEME_OPTIONS.find((item) => item.value === album.theme)?.label ??
                               "默认样式"}
                           </span>
@@ -259,7 +313,7 @@ export function AlbumsView(props: {
               </table>
             </div>
           </Show>
-          <footer class="album-table-footer">
+          <footer class="mt-auto flex items-center justify-between gap-2 px-3.5 py-2.5 text-xs text-muted-foreground">
             <span>
               {workspace().rows.length === props.albums.length
                 ? `共 ${props.albums.length} 个相册`
@@ -268,14 +322,19 @@ export function AlbumsView(props: {
             <span>按相册顺序排列</span>
           </footer>
         </section>
-        <aside class="album-inspector" aria-label="相册详情" tabindex={-1} ref={inspector}>
+        <aside
+          class={`${cardCls} flex min-w-0 flex-col focus-visible:outline-none`}
+          aria-label="相册详情"
+          tabindex={-1}
+          ref={inspector}
+        >
           <Show
             when={editor()}
             keyed
             fallback={
               <Show
                 when={workspace().selected}
-                fallback={<p class="album-inspector-empty">相册详情将在这里显示。</p>}
+                fallback={<p class="p-4.5 text-[0.85rem] text-muted-foreground">相册详情将在这里显示。</p>}
               >
                 {(album) => (
                   <AlbumDetails
@@ -327,9 +386,15 @@ export function AlbumsView(props: {
 }
 
 function AlbumStatus(props: { album: Album }) {
+  const isPublic = () => props.album.show === 0;
   return (
-    <span class="album-status" data-public={props.album.show === 0 ? "" : undefined}>
-      {props.album.show === 0 ? "公开" : "隐藏"}
+    <span
+      class={`inline-flex items-center gap-1.5 text-xs ${
+        isPublic() ? "text-foreground" : "text-muted-foreground"
+      }`}
+    >
+      <span class={`size-1.5 rounded-full border border-current ${isPublic() ? "bg-current" : ""}`} />
+      {isPublic() ? "公开" : "隐藏"}
     </span>
   );
 }
@@ -337,11 +402,18 @@ function AlbumStatus(props: { album: Album }) {
 function AlbumStatusToggle(props: { album: Album; busy: boolean; onToggle: () => void }) {
   const isPublic = () => props.album.show === 0;
   return (
-    <label class="album-status-toggle">
-      <Switch checked={isPublic()} disabled={props.busy} onCheckedChange={() => props.onToggle()}>
-        <SwitchThumb />
+    <label class="inline-flex items-center gap-2 text-xs">
+      <Switch
+        class={switchCls}
+        checked={isPublic()}
+        disabled={props.busy}
+        onCheckedChange={() => props.onToggle()}
+      >
+        <SwitchThumb class={switchThumbCls} />
       </Switch>
-      <span>{isPublic() ? "公开" : "隐藏"}</span>
+      <span class={isPublic() ? "text-foreground" : "text-muted-foreground"}>
+        {isPublic() ? "公开" : "隐藏"}
+      </span>
     </label>
   );
 }
@@ -380,37 +452,43 @@ function AlbumDetails(props: {
 
   return (
     <>
-      <header class="album-identity">
-        <div class="album-identity-label">
+      <header class="border-b border-border px-4 py-3.5">
+        <div class="mb-1.5 flex items-center justify-between gap-2 text-xs text-muted-foreground">
           <span>相册详情</span>
           <AlbumStatus album={props.album} />
         </div>
-        <h2>{props.album.name}</h2>
-        <p class="album-path">{albumHref(props.album.album_value)}</p>
+        <h2 class="m-0 text-xl leading-tight font-semibold text-foreground [overflow-wrap:anywhere]">
+          {props.album.name}
+        </h2>
+        <p class="mt-1 mb-0 font-mono text-xs text-muted-foreground [overflow-wrap:anywhere]">
+          {albumHref(props.album.album_value)}
+        </p>
       </header>
       <Show when={!previewFailed() && preview()}>
         {(photo) => (
           <img
-            class="album-preview"
+            class="mx-4 mt-3 block h-[108px] w-[calc(100%-32px)] rounded-md object-cover"
             src={photo().url}
             alt={photo().alt}
             onError={() => setPreviewFailed(true)}
           />
         )}
       </Show>
-      <section class="album-field-block">
-        <h3>简介</h3>
-        <p>{props.album.detail || "暂无简介"}</p>
+      <section class="grid gap-1.5 border-b border-border px-4 py-3">
+        <h3 class="m-0 text-[0.86rem] font-semibold text-foreground">简介</h3>
+        <p class="m-0 text-[0.82rem] leading-relaxed text-muted-foreground [overflow-wrap:anywhere]">
+          {props.album.detail || "暂无简介"}
+        </p>
       </section>
-      <section class="album-field-block">
-        <h3>前台展示</h3>
-        <dl>
-          <div>
-            <dt>显示状态</dt>
-            <dd>
+      <section class="grid gap-1.5 border-b border-border px-4 py-3">
+        <h3 class="m-0 text-[0.86rem] font-semibold text-foreground">前台展示</h3>
+        <dl class="m-0 grid gap-1.5 text-[0.81rem]">
+          <div class="grid grid-cols-[auto_minmax(0,1fr)] items-center gap-2">
+            <dt class="text-muted-foreground">显示状态</dt>
+            <dd class="m-0 text-right [overflow-wrap:anywhere]">
               <button
                 type="button"
-                class="album-text-action"
+                class={textActionCls}
                 disabled={props.busy}
                 onClick={props.onToggle}
               >
@@ -418,41 +496,41 @@ function AlbumDetails(props: {
               </button>
             </dd>
           </div>
-          <div>
-            <dt>相册顺序</dt>
-            <dd class="album-number">{props.album.sort}</dd>
+          <div class="grid grid-cols-[auto_minmax(0,1fr)] items-center gap-2">
+            <dt class="text-muted-foreground">相册顺序</dt>
+            <dd class="m-0 text-right tabular-nums [overflow-wrap:anywhere]">{props.album.sort}</dd>
           </div>
-          <div>
-            <dt>相册主题</dt>
-            <dd>
+          <div class="grid grid-cols-[auto_minmax(0,1fr)] items-center gap-2">
+            <dt class="text-muted-foreground">相册主题</dt>
+            <dd class="m-0 text-right [overflow-wrap:anywhere]">
               {THEME_OPTIONS.find((item) => item.value === props.album.theme)?.label ?? "默认样式"}
             </dd>
           </div>
         </dl>
       </section>
-      <section class="album-field-block">
-        <h3>图片设置</h3>
-        <dl>
-          <div>
-            <dt>图片排序</dt>
-            <dd>
+      <section class="grid gap-1.5 border-b border-border px-4 py-3">
+        <h3 class="m-0 text-[0.86rem] font-semibold text-foreground">图片设置</h3>
+        <dl class="m-0 grid gap-1.5 text-[0.81rem]">
+          <div class="grid grid-cols-[auto_minmax(0,1fr)] items-center gap-2">
+            <dt class="text-muted-foreground">图片排序</dt>
+            <dd class="m-0 text-right [overflow-wrap:anywhere]">
               {IMAGE_SORTING_OPTIONS.find((item) => item.value === props.album.image_sorting)
                 ?.label ?? "未设置"}
             </dd>
           </div>
-          <div>
-            <dt>随机排序</dt>
-            <dd>{props.album.random_show === 0 ? "开启" : "关闭"}</dd>
+          <div class="grid grid-cols-[auto_minmax(0,1fr)] items-center gap-2">
+            <dt class="text-muted-foreground">随机排序</dt>
+            <dd class="m-0 text-right [overflow-wrap:anywhere]">{props.album.random_show === 0 ? "开启" : "关闭"}</dd>
           </div>
-          <div>
-            <dt>许可协议</dt>
-            <dd>{props.album.license || "未设置"}</dd>
+          <div class="grid grid-cols-[auto_minmax(0,1fr)] items-center gap-2">
+            <dt class="text-muted-foreground">许可协议</dt>
+            <dd class="m-0 text-right [overflow-wrap:anywhere]">{props.album.license || "未设置"}</dd>
           </div>
         </dl>
       </section>
-      <footer class="album-panel-actions">
+      <footer class="mt-auto flex flex-wrap items-center justify-end gap-2 px-4 py-3">
         <button
-          class="album-text-action album-delete"
+          class={`${textActionCls} mr-auto text-muted-foreground hover:text-destructive hover:no-underline`}
           type="button"
           disabled={props.busy}
           onClick={props.onDelete}
@@ -460,7 +538,7 @@ function AlbumDetails(props: {
           删除相册
         </button>
         <button
-          class="secondary-button album-edit"
+          class={`${btnOutline} album-edit`}
           type="button"
           disabled={props.busy}
           onClick={props.onEdit}
@@ -479,55 +557,50 @@ function DeleteAlbumDialog(props: {
   onClose: () => void;
   onConfirm: () => Promise<void>;
 }) {
-  let dialog!: HTMLDialogElement;
-  createEffect(
-    () => true,
-    () => dialog.showModal(),
-  );
-
   return (
-    <dialog
-      class="album-delete-dialog"
-      aria-labelledby="album-delete-title"
-      aria-describedby="album-delete-description"
-      ref={dialog}
-      onCancel={(event) => {
-        event.preventDefault();
-        if (!props.pending) props.onClose();
+    <AlertDialog
+      defaultOpen
+      onOpenChange={(open) => {
+        if (!open) props.onClose();
       }}
     >
-      <header class="album-identity">
-        <h2 id="album-delete-title">删除相册</h2>
-      </header>
-      <div class="album-delete-description" id="album-delete-description">
-        <p>「{props.album.name}」将从相册列表和前台移除。相册内的图片仍会保留。</p>
-        <p class="album-path">{albumHref(props.album.album_value)}</p>
-      </div>
-      <Show when={props.error}>
-        <p class="error-banner album-form-error" role="alert">
-          {props.error}
-        </p>
-      </Show>
-      <footer class="album-panel-actions">
-        <button
-          class="secondary-button"
-          type="button"
-          autofocus
-          disabled={props.pending}
-          onClick={props.onClose}
-        >
-          取消
-        </button>
-        <Button
-          class="album-danger-button"
-          type="button"
-          disabled={props.pending}
-          onClick={props.onConfirm}
-        >
-          {props.pending ? "删除中…" : "确认删除"}
-        </Button>
-      </footer>
-    </dialog>
+      <AlertDialogBackdrop class={dialogBackdropCls} />
+      <AlertDialogContent
+        class={`${cardCls} fixed left-1/2 top-1/2 z-50 flex max-h-[88dvh] w-[min(420px,calc(100%-24px))] -translate-x-1/2 -translate-y-1/2 flex-col p-0`}
+        aria-labelledby="album-delete-title"
+        aria-describedby="album-delete-description"
+      >
+        <header class="border-b border-border px-4 py-3.5">
+          <AlertDialogTitle
+            id="album-delete-title"
+            class="m-0 text-lg font-semibold tracking-tight text-foreground"
+          >
+            删除相册
+          </AlertDialogTitle>
+        </header>
+        <div class="grid gap-2 px-4 py-4 text-[0.88rem] leading-relaxed text-foreground [overflow-wrap:anywhere]">
+          <AlertDialogDescription id="album-delete-description" class="m-0">
+            「{props.album.name}」将从相册列表和前台移除。相册内的图片仍会保留。
+          </AlertDialogDescription>
+          <p class="m-0 font-mono text-xs text-muted-foreground [overflow-wrap:anywhere]">
+            {albumHref(props.album.album_value)}
+          </p>
+        </div>
+        <Show when={props.error}>
+          <p class={`${errorBanner} mx-4`} role="alert">
+            {props.error}
+          </p>
+        </Show>
+        <footer class="flex flex-wrap items-center justify-end gap-2 px-4 pb-4 pt-3">
+          <AlertDialogClose class={btnOutline} disabled={props.pending}>
+            取消
+          </AlertDialogClose>
+          <Button class={btnDanger} type="button" disabled={props.pending} onClick={props.onConfirm}>
+            {props.pending ? "删除中…" : "确认删除"}
+          </Button>
+        </footer>
+      </AlertDialogContent>
+    </AlertDialog>
   );
 }
 
@@ -610,68 +683,83 @@ function AlbumEditor(props: {
   }
 
   return (
-    <form class="album-editor" onSubmit={submit}>
-      <header class="album-identity">
-        <h2>{props.album ? "编辑相册" : "新建相册"}</h2>
+    <form class="flex min-h-0 flex-1 flex-col" onSubmit={submit}>
+      <header class="border-b border-border px-4 py-3.5">
+        <h2 class="m-0 text-xl leading-tight font-semibold text-foreground">
+          {props.album ? "编辑相册" : "新建相册"}
+        </h2>
       </header>
-      <fieldset class="album-fields" disabled={pending()}>
-        <label>
+      <fieldset
+        class="m-0 grid grid-cols-2 gap-3 border-0 border-b border-border p-3.5 @max-[350px]:grid-cols-1"
+        disabled={pending()}
+      >
+        <label class={`${fieldCls} ${labelCls}`}>
           名称
           <input
             ref={nameInput}
+            class={inputCls}
             type="text"
             value={name()}
             placeholder="请输入相册名称"
             onInput={(event) => setName(event.currentTarget.value)}
           />
         </label>
-        <label>
+        <label class={`${fieldCls} ${labelCls}`}>
           前台路径
           <input
+            class={inputCls}
             type="text"
             value={albumValue()}
             placeholder="/travel，必须以 / 开头"
             onInput={(event) => setAlbumValue(event.currentTarget.value)}
           />
         </label>
-        <label class="span-2">
+        <label class={`${fieldCls} ${labelCls} col-span-full`}>
           简介
           <input
+            class={inputCls}
             type="text"
             value={detail()}
             placeholder="请输入相册详情"
             onInput={(event) => setDetail(event.currentTarget.value)}
           />
         </label>
-        <label>
+        <label class={`${fieldCls} ${labelCls}`}>
           相册顺序
           <input
+            class={inputCls}
             type="number"
             value={sort()}
             placeholder="0"
             onInput={(event) => setSort(Number(event.currentTarget.value))}
           />
         </label>
-        <label>
+        <label class={`${fieldCls} ${labelCls}`}>
           许可协议
           <input
+            class={inputCls}
             type="text"
             value={license()}
             placeholder="如 CC-BY-NC-ND，可选"
             onInput={(event) => setLicense(event.currentTarget.value)}
           />
         </label>
-        <label>
+        <label class={`${fieldCls} ${labelCls}`}>
           相册主题
-          <select value={theme()} onChange={(event) => setTheme(event.currentTarget.value)}>
+          <select
+            class={selectCls}
+            value={theme()}
+            onChange={(event) => setTheme(event.currentTarget.value)}
+          >
             <For each={THEME_OPTIONS}>
               {(option) => <option value={option.value}>{option.label}</option>}
             </For>
           </select>
         </label>
-        <label>
+        <label class={`${fieldCls} ${labelCls}`}>
           图片排序规则
           <select
+            class={selectCls}
             value={imageSorting()}
             onChange={(event) => setImageSorting(Number(event.currentTarget.value))}
           >
@@ -680,10 +768,10 @@ function AlbumEditor(props: {
             </For>
           </select>
         </label>
-        <div class="span-2">
+        <div class="col-span-full">
           <SwitchRow label="在前台公开" checked={show()} onChange={setShow} />
         </div>
-        <div class="span-2">
+        <div class="col-span-full">
           <SwitchRow
             label="随机排序"
             detail="开启后相册内图片将随机展示"
@@ -693,15 +781,15 @@ function AlbumEditor(props: {
         </div>
       </fieldset>
       <Show when={error()}>
-        <div class="error-banner album-form-error" role="alert">
+        <div class={`${errorBanner} mx-4 mt-3`} role="alert">
           {error()}
         </div>
       </Show>
-      <footer class="album-panel-actions">
-        <Button class="secondary-button" type="button" disabled={pending()} onClick={props.onClose}>
+      <footer class="mt-auto flex flex-wrap items-center justify-end gap-2 px-4 py-3">
+        <Button class={btnOutline} type="button" disabled={pending()} onClick={props.onClose}>
           取消
         </Button>
-        <Button class="primary-button" type="submit" disabled={pending()}>
+        <Button class={btnPrimary} type="submit" disabled={pending()}>
           {pending() ? "保存中…" : "保存相册"}
         </Button>
       </footer>

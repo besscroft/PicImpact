@@ -8,6 +8,14 @@ import {
   readImageSize,
   type ExifInfo,
 } from "../photo-client";
+import {
+  badgeCls,
+  badgeDestructive,
+  badgeSecondary,
+  inputCls,
+  rowAction,
+  selectCls,
+} from "../admin/shared";
 import { isStorageProvider, STORAGE_PROVIDERS, type StorageProvider } from "../storage-provider";
 import type { Album } from "../types";
 
@@ -63,6 +71,12 @@ const STATUS_LABEL: Record<UploadStatus, string> = {
   done: "已上传",
   error: "失败",
 };
+
+function uploadStatusCls(status: UploadStatus) {
+  if (status === "error") return badgeDestructive;
+  if (status === "done") return badgeSecondary;
+  return `${badgeCls} border border-border text-muted-foreground`;
+}
 
 function formatSize(bytes: number) {
   if (bytes >= 1024 * 1024) return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
@@ -374,15 +388,15 @@ export function UploadView(props: {
   });
 
   return (
-    <section class="content-grid upload-view">
-      <div class="upload-layout">
-        <div class="upload-side">
-          <div class="upload-config">
-          <div class="upload-config-row">
-            <label class="upload-config-field">
+    <section class="grid gap-3.5">
+      <div class="grid grid-cols-2 items-start gap-3.5 max-[767px]:grid-cols-1">
+        <div class="grid min-w-0 content-start gap-3.5">
+          <div class="grid gap-3.5 rounded-xl bg-secondary p-3.5">
+          <div class="grid grid-cols-2 gap-3 max-[767px]:grid-cols-1">
+            <label class="grid gap-1.5 text-sm font-medium text-foreground">
               存储位置
               <select
-                class="filter-select"
+                class={selectCls}
                 value={storage()}
                 disabled={running()}
                 onChange={(event) => {
@@ -395,10 +409,10 @@ export function UploadView(props: {
                 </For>
               </select>
             </label>
-            <label class="upload-config-field">
+            <label class="grid gap-1.5 text-sm font-medium text-foreground">
               相册
               <select
-                class="filter-select"
+                class={selectCls}
                 value={album()}
                 onChange={(event) => setAlbum(event.currentTarget.value)}
               >
@@ -409,20 +423,20 @@ export function UploadView(props: {
               </select>
             </label>
           </div>
-          <label class="upload-config-field">
+          <label class="grid gap-1.5 text-sm font-medium text-foreground">
             标题（可选）
             <input
-              class="upload-config-input"
+              class={inputCls}
               type="text"
               value={title()}
               placeholder="应用到本次所有上传"
               onInput={(event) => setTitle(event.currentTarget.value)}
             />
           </label>
-          <label class="upload-config-field">
+          <label class="grid gap-1.5 text-sm font-medium text-foreground">
             描述（可选）
             <textarea
-              class="upload-config-input upload-config-textarea"
+              class={`${inputCls} h-auto resize-none overflow-hidden py-2 leading-4`}
               rows={1}
               value={detail()}
               placeholder="应用到本次所有上传"
@@ -438,22 +452,27 @@ export function UploadView(props: {
           </div>
 
           <Show when={selectedItem()}>
-            <div class="upload-details">
-              <div class="upload-details-head">
-                <div class="upload-thumb">
+            <div class="grid gap-3 rounded-xl bg-secondary p-3.5">
+              <div class="flex min-w-0 items-center gap-2.5">
+                <div class="grid size-14 flex-none place-items-center overflow-hidden rounded-lg border border-border bg-card">
                   <Show
                     when={selectedItem()!.previewUrl}
-                    fallback={<span class="upload-thumb-fallback">视频</span>}
+                    fallback={<span class="text-xs text-muted-foreground">视频</span>}
                   >
-                    <img src={selectedItem()!.previewUrl ?? ""} alt="" />
+                    <img class="size-full object-cover" src={selectedItem()!.previewUrl ?? ""} alt="" />
                   </Show>
                 </div>
-                <strong title={selectedItem()!.file.name}>{selectedItem()!.file.name}</strong>
+                <strong
+                  class="min-w-0 truncate text-sm font-medium text-foreground"
+                  title={selectedItem()!.file.name}
+                >
+                  {selectedItem()!.file.name}
+                </strong>
               </div>
-              <dl class="upload-details-list">
-                <div>
-                  <dt>尺寸</dt>
-                  <dd>
+              <dl class="m-0 grid gap-1.5 text-[0.78rem]">
+                <div class="flex justify-between gap-3">
+                  <dt class="flex-none text-muted-foreground">尺寸</dt>
+                  <dd class="m-0 text-right text-foreground [overflow-wrap:anywhere]">
                     {selectedItem()!.width
                       ? `${selectedItem()!.width} × ${selectedItem()!.height}`
                       : selectedItem()!.file.type.startsWith("video/")
@@ -461,26 +480,32 @@ export function UploadView(props: {
                         : "解析中…"}
                   </dd>
                 </div>
-                <div>
-                  <dt>大小</dt>
-                  <dd>{formatSize(selectedItem()!.file.size)}</dd>
+                <div class="flex justify-between gap-3">
+                  <dt class="flex-none text-muted-foreground">大小</dt>
+                  <dd class="m-0 text-right text-foreground [overflow-wrap:anywhere]">
+                    {formatSize(selectedItem()!.file.size)}
+                  </dd>
                 </div>
-                <div>
-                  <dt>类型</dt>
-                  <dd>{selectedItem()!.file.type || "未知"}</dd>
+                <div class="flex justify-between gap-3">
+                  <dt class="flex-none text-muted-foreground">类型</dt>
+                  <dd class="m-0 text-right text-foreground [overflow-wrap:anywhere]">
+                    {selectedItem()!.file.type || "未知"}
+                  </dd>
                 </div>
                 <For each={exifEntries(selectedItem()!.exif)}>
                   {(entry) => (
-                    <div>
-                      <dt>{entry.label}</dt>
-                      <dd>{entry.value}</dd>
+                    <div class="flex justify-between gap-3">
+                      <dt class="flex-none text-muted-foreground">{entry.label}</dt>
+                      <dd class="m-0 text-right text-foreground [overflow-wrap:anywhere]">
+                        {entry.value}
+                      </dd>
                     </div>
                   )}
                 </For>
                 <Show when={selectedItem()!.gpsLat && selectedItem()!.gpsLon}>
-                  <div>
-                    <dt>位置</dt>
-                    <dd>
+                  <div class="flex justify-between gap-3">
+                    <dt class="flex-none text-muted-foreground">位置</dt>
+                    <dd class="m-0 text-right text-foreground [overflow-wrap:anywhere]">
                       {selectedItem()!.gpsLat}, {selectedItem()!.gpsLon}
                     </dd>
                   </div>
@@ -490,9 +515,11 @@ export function UploadView(props: {
           </Show>
         </div>
 
-        <div class="upload-main">
+        <div class="grid content-start gap-3.5">
             <div
-          class={`upload-dropzone${dragOver() ? " dragover" : ""}${album() ? "" : " disabled"}`}
+          class={`grid min-h-[180px] place-items-center gap-2 rounded-xl border border-dashed p-6 text-center text-sm transition-colors focus-visible:border-ring focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-ring/50 ${
+            album() ? "cursor-pointer border-input text-muted-foreground hover:bg-muted/50" : "cursor-not-allowed border-input text-muted-foreground opacity-60"
+          } ${dragOver() ? "border-ring bg-muted/50" : ""}`}
           role="button"
           tabindex="0"
           aria-disabled={album() ? undefined : "true"}
@@ -545,6 +572,7 @@ export function UploadView(props: {
             }}
           />
           <svg
+            class="size-[34px] text-muted-foreground"
             viewBox="0 0 24 24"
             fill="none"
             stroke="currentColor"
@@ -557,31 +585,35 @@ export function UploadView(props: {
             <path d="m7 8 5-5 5 5" />
             <path d="M4.5 15a4.5 4.5 0 0 0 4 4.5h7a4.5 4.5 0 0 0 4-4.5" />
           </svg>
-          <p>{album() ? "拖拽文件到这里，或点击选择文件（可多选）" : "请先选择相册，再上传文件"}</p>
-          <small>支持图片与视频；选择后自动上传到对象存储，点击「保存」后入库。</small>
+          <p class="m-0 text-[0.88rem] text-foreground">
+            {album() ? "拖拽文件到这里，或点击选择文件（可多选）" : "请先选择相册，再上传文件"}
+          </p>
+          <small class="text-xs">支持图片与视频；选择后自动上传到对象存储，点击「保存」后入库。</small>
         </div>
 
         <Show when={items().length > 0}>
-          <div class="upload-summary">
+          <div class="flex flex-wrap items-center justify-between gap-2.5 text-[0.8rem] text-muted-foreground">
             <span>
               共 {items().length} 个 · 待上传 {pendingCount()} · 已上传 {doneCount()} · 失败{" "}
               {errorCount()}
               {running() ? " · 上传中…" : ""}
             </span>
-            <div class="upload-summary-actions">
+            <div class="flex items-center gap-2">
               <Show when={doneCount() > 0}>
-                <button class="row-action" type="button" onClick={clearDone}>
+                <button class={rowAction} type="button" onClick={clearDone}>
                   清空已上传
                 </button>
               </Show>
             </div>
           </div>
 
-          <div class="upload-queue">
+          <div class="grid gap-2.5">
             <For each={items()}>
               {(item) => (
                 <div
-                  class={`upload-item ${item.status}${selectedItem()?.id === item.id ? " selected" : ""}`}
+                  class={`flex cursor-pointer items-center gap-3 rounded-lg border bg-card px-3 py-2.5 transition-colors focus-visible:border-ring focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-ring/50 ${
+                    selectedItem()?.id === item.id ? "border-ring" : "border-border"
+                  }`}
                   role="button"
                   tabindex="0"
                   onClick={() => setSelectedId(item.id)}
@@ -592,49 +624,51 @@ export function UploadView(props: {
                     }
                   }}
                 >
-                  <div class="upload-thumb">
+                  <div class="grid size-14 flex-none place-items-center overflow-hidden rounded-lg border border-border bg-secondary">
                     <Show
                       when={item.previewUrl}
-                      fallback={<span class="upload-thumb-fallback">视频</span>}
+                      fallback={<span class="text-xs text-muted-foreground">视频</span>}
                     >
-                      <img src={item.previewUrl ?? ""} alt="" />
+                      <img class="size-full object-cover" src={item.previewUrl ?? ""} alt="" />
                     </Show>
                   </div>
-                  <div class="upload-meta">
-                    <strong title={item.file.name}>{item.file.name}</strong>
-                    <span>
+                  <div class="grid min-w-0 flex-1 gap-0.5">
+                    <strong class="truncate text-sm font-medium text-foreground" title={item.file.name}>
+                      {item.file.name}
+                    </strong>
+                    <span class="text-xs text-muted-foreground">
                       {formatSize(item.file.size)}
                       <Show when={item.status === "done" && item.degraded}> · 未生成预览图</Show>
                       <Show when={item.error}> · {item.error}</Show>
                     </span>
                     <Show when={item.status === "uploading"}>
                       <div
-                        class="upload-progress"
+                        class="h-1 w-full overflow-hidden rounded-full bg-muted"
                         role="progressbar"
                         aria-valuemin={0}
                         aria-valuemax={100}
                         aria-valuenow={item.progress}
                       >
                         <div
-                          class="upload-progress-fill"
+                          class="h-full rounded-full bg-primary transition-[width] duration-150"
                           style={{ width: `${item.progress}%` }}
                         />
                       </div>
                     </Show>
                   </div>
-                  <span class={`upload-status ${item.status}`}>
+                  <span class={uploadStatusCls(item.status)}>
                     {item.status === "uploading"
                       ? `上传中 ${item.progress}%`
                       : STATUS_LABEL[item.status]}
                   </span>
-                  <div class="upload-item-actions">
+                  <div class="flex flex-none items-center gap-1.5">
                     <Show when={item.status === "error"}>
-                      <button class="row-action" type="button" onClick={() => retry(item.id)}>
+                      <button class={rowAction} type="button" onClick={() => retry(item.id)}>
                         重试
                       </button>
                     </Show>
                     <button
-                      class="row-action"
+                      class={rowAction}
                       type="button"
                       aria-label="移除"
                       disabled={item.status === "processing" || item.status === "uploading"}

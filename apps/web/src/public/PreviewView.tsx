@@ -4,6 +4,10 @@ import { LoadingState, albumHref, exifField, labelsOf } from "../admin/shared";
 import { getJson } from "../api";
 import type { Photo, PublicImageDetail } from "../types";
 
+const accentCls = "text-[#6b8f1d]";
+const lineCls = "border-[rgba(42,51,40,0.14)]";
+const mutedCls = "text-[#6e7a68]";
+
 export function PublicPreview(props: { id: string }) {
   const [detail, setDetail] = createSignal<PublicImageDetail | null>(null);
   const [loading, setLoading] = createSignal(true);
@@ -131,21 +135,24 @@ export function PublicPreview(props: { id: string }) {
   };
 
   return (
-    <div class="preview-shell">
-      <header class="preview-topbar">
+    <div class="min-h-dvh bg-[#f4f6ee] text-[#2a3328] [font-family:'LXGW_Neo_XiHei','Noto_Sans_SC',system-ui,sans-serif]">
+      <header
+        class={`flex min-h-12 items-center justify-between border-b ${lineCls} px-[4vw] ${mutedCls} max-[760px]:px-[5vw]`}
+      >
         <a
-          class="preview-close"
+          class={`inline-flex cursor-pointer items-center gap-2 border-0 bg-none p-0 text-[0.78rem] no-underline transition-colors hover:text-[#6b8f1d] ${accentCls}`}
           href={albumHref(detail()?.data.album_value ?? "/")}
           aria-label="返回图库"
         >
-          × <span>返回图库</span>
+          <span class="text-[1.45rem] leading-none">× </span>
+          <span class="max-[760px]:hidden">返回图库</span>
         </a>
-        <span class="preview-counter">
+        <span class="max-w-[40vw] truncate text-[0.78rem] text-[#2a3328]">
           {detail()?.data.album_name ?? "Photo"}
         </span>
         <Show when={detail()?.data.url}>
           <button
-            class="preview-download"
+            class="cursor-pointer border-0 bg-none p-0 font-[inherit] text-[0.78rem] text-inherit transition-colors hover:text-[#6b8f1d] disabled:cursor-default disabled:opacity-60"
             type="button"
             disabled={downloading()}
             onClick={() => void handleDownload()}
@@ -154,22 +161,29 @@ export function PublicPreview(props: { id: string }) {
           </button>
         </Show>
         <Show when={downloadError()}>
-          <span class="upload-message" role="alert">
+          <span class={`text-[0.74rem] ${accentCls}`} role="alert">
             {downloadError()}
           </span>
         </Show>
         <Show when={detail()?.data.album_license}>
-          {(license) => <span class="preview-license">{license()}</span>}
+          {(license) => (
+            <span class="max-w-[40vw] truncate text-[0.72rem] text-[#6b7261]">{license()}</span>
+          )}
         </Show>
       </header>
       <Show when={loading()}>
         <LoadingState />
       </Show>
       <Show when={!loading() && error()}>
-        <div class="preview-error">
-          <h1>找不到这张照片</h1>
-          <p>{error()}</p>
-          <a class="primary-button" href="/">
+        <div class="grid min-h-[calc(100dvh-48px)] content-center place-items-center gap-3 text-center">
+          <h1 class="m-0 text-[clamp(2rem,5vw,3.75rem)] font-semibold leading-none tracking-[-0.06em] text-[#1d241a]">
+            找不到这张照片
+          </h1>
+          <p class={`m-0 ${mutedCls}`}>{error()}</p>
+          <a
+            class="inline-flex cursor-pointer items-center rounded-full bg-[#6b8f1d] px-[17px] py-2.5 text-[#f6faec] transition-transform hover:-translate-y-px active:scale-[0.98]"
+            href="/"
+          >
             返回图库
           </a>
         </div>
@@ -179,13 +193,15 @@ export function PublicPreview(props: { id: string }) {
           const current = () => payload().data;
           const source = () => current().preview_url || current().url;
           return (
-            <main class="preview-layout">
-              <section class="preview-stage">
+            <main
+              class={`grid min-h-[calc(100dvh-48px)] grid-cols-[minmax(0,2fr)_minmax(280px,1fr)] max-[1100px]:grid-cols-[minmax(0,1fr)_320px] max-[760px]:block`}
+            >
+              <section class="relative grid min-h-[90vh] place-items-center px-[6vw] py-[34px] max-[760px]:min-h-[56dvh] max-[760px]:px-[5vw] max-[760px]:py-[18px]">
                 <Show
                   when={current().type !== 2}
                   fallback={
                     <video
-                      class="preview-media"
+                      class="block h-[90vh] w-full object-contain max-[760px]:h-[56dvh]"
                       src={current().video_url ?? current().url ?? ""}
                       poster={current().preview_url ?? undefined}
                       controls
@@ -195,9 +211,16 @@ export function PublicPreview(props: { id: string }) {
                     />
                   }
                 >
-                  <Show when={source()} fallback={<div class="preview-no-image">NO IMAGE</div>}>
+                  <Show
+                    when={source()}
+                    fallback={
+                      <div class="grid h-full min-h-[150px] w-full place-items-center text-[0.62rem] tracking-[0.12em]">
+                        NO IMAGE
+                      </div>
+                    }
+                  >
                     <img
-                      class="preview-media"
+                      class="block h-[90vh] w-full object-contain max-[760px]:h-[56dvh]"
                       src={source() ?? ""}
                       alt={current().title ?? current().image_name ?? ""}
                     />
@@ -206,7 +229,7 @@ export function PublicPreview(props: { id: string }) {
                 <Show when={payload().neighbors.previous}>
                   {(previous) => (
                     <a
-                      class="preview-arrow previous"
+                      class={`absolute top-1/2 grid size-11 -translate-y-1/2 place-items-center rounded-full border bg-white/80 text-3xl leading-none no-underline backdrop-blur-[10px] transition-colors hover:border-[rgba(107,143,29,0.6)] hover:text-[#6b8f1d] ${lineCls} left-[22px] max-[760px]:left-3 max-[760px]:size-9`}
                       href={`/preview/${encodeURIComponent(previous().id)}`}
                       aria-label="上一张"
                     >
@@ -217,7 +240,7 @@ export function PublicPreview(props: { id: string }) {
                 <Show when={payload().neighbors.next}>
                   {(next) => (
                     <a
-                      class="preview-arrow next"
+                      class={`absolute top-1/2 grid size-11 -translate-y-1/2 place-items-center rounded-full border bg-white/80 text-3xl leading-none no-underline backdrop-blur-[10px] transition-colors hover:border-[rgba(107,143,29,0.6)] hover:text-[#6b8f1d] ${lineCls} right-[22px] max-[760px]:right-3 max-[760px]:size-9`}
                       href={`/preview/${encodeURIComponent(next().id)}`}
                       aria-label="下一张"
                     >
@@ -226,13 +249,17 @@ export function PublicPreview(props: { id: string }) {
                   )}
                 </Show>
               </section>
-              <aside class="preview-inspector">
-                <div class="eyebrow">PHOTO / DETAIL</div>
-                <h1>{current().title || current().image_name || "未命名照片"}</h1>
+              <aside
+                class={`grid content-start gap-[22px] max-h-[90vh] overflow-y-auto border-l px-[34px] pt-[58px] pb-12 ${lineCls} max-[760px]:min-h-auto max-[760px]:border-l-0 max-[760px]:border-t max-[760px]:px-[5vw] max-[760px]:pt-[30px] max-[760px]:pb-[52px]`}
+              >
+                <div class="mb-2 text-[0.72rem] tracking-[0.08em] uppercase">PHOTO / DETAIL</div>
+                <h1 class="m-0 text-[clamp(1.7rem,3vw,2.8rem)] font-semibold leading-none tracking-[-0.06em] text-[#1d241a]">
+                  {current().title || current().image_name || "未命名照片"}
+                </h1>
                 <Show when={current().detail}>
-                  <p class="preview-detail">{current().detail}</p>
+                  <p class={`m-0 text-[0.9rem] leading-[1.7] ${mutedCls}`}>{current().detail}</p>
                 </Show>
-                <div class="preview-facts">
+                <div class={`grid gap-px border-y ${lineCls}`}>
                   <PreviewFact label="尺寸" value={`${current().width} × ${current().height}`} />
                   <PreviewFact label="相册" value={current().album_name ?? "首页"} />
                   <PreviewFact label="相机" value={exifField(current(), "make", "model")} />
@@ -243,15 +270,21 @@ export function PublicPreview(props: { id: string }) {
                   <PreviewFact label="焦段" value={exifField(current(), "focal_length")} />
                 </div>
                 <Show when={labelsOf(current()).length > 0}>
-                  <div class="preview-tags">
-                    <span class="fact-label">标签</span>
-                    <div>
-                      <For each={labelsOf(current())}>{(label) => <span>{label}</span>}</For>
+                  <div class="grid gap-2">
+                    <span class="text-[0.74rem] text-[#6e7a68]">标签</span>
+                    <div class="flex flex-wrap gap-1.5">
+                      <For each={labelsOf(current())}>
+                        {(label) => (
+                          <span class={`rounded-full border px-2 py-1 text-[0.7rem] ${lineCls} ${accentCls}`}>
+                            {label}
+                          </span>
+                        )}
+                      </For>
                     </div>
                   </div>
                 </Show>
                 <button
-                  class="copy-link"
+                  class={`w-fit cursor-pointer border-0 bg-transparent p-0 text-[0.76rem] transition-colors hover:text-[#6b8f1d] ${mutedCls}`}
                   type="button"
                   onClick={() => {
                     void navigator.clipboard?.writeText(window.location.href);
@@ -271,9 +304,9 @@ export function PublicPreview(props: { id: string }) {
 function PreviewFact(props: { label: string; value: string | null }) {
   return (
     <Show when={props.value}>
-      <div class="preview-fact">
-        <span>{props.label}</span>
-        <strong>{props.value}</strong>
+      <div class={`flex justify-between gap-4 border-b border-[rgba(42,51,40,0.08)] py-2.5 last:border-b-0`}>
+        <span class="text-[0.74rem] text-[#6e7a68]">{props.label}</span>
+        <strong class="text-right text-[0.8rem] font-medium text-[#2a3328]">{props.value}</strong>
       </div>
     </Show>
   );

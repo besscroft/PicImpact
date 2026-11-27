@@ -1,4 +1,11 @@
 import { Button } from "@ui-sdk/solid/button";
+import {
+  Dialog,
+  DialogBackdrop,
+  DialogClose,
+  DialogContent,
+  DialogTitle,
+} from "@ui-sdk/solid/dialog";
 import { For, Show, createEffect, createSignal } from "solid-js";
 
 import {
@@ -8,8 +15,27 @@ import {
   PHOTO_PAGE_SIZE,
   SwitchRow,
   TagInput,
+  badgeSecondary,
+  btnPrimary,
+  cardCls,
+  dialogBackdropCls,
+  dialogBodyCls,
+  dialogContentCls,
+  dialogFooterCls,
+  dialogHeadingCls,
+  dialogTitleCls,
+  errorBanner,
+  exifCellCls,
+  exifTableCls,
   exifValue,
   formatExifDateTime,
+  fieldCls,
+  inputCls,
+  labelCls,
+  metaCls,
+  rowAction,
+  selectAutoCls,
+  selectCls,
 } from "../admin/shared";
 import { getJson } from "../api";
 import type { AdminPhotoPage, Album, Photo } from "../types";
@@ -155,9 +181,9 @@ export function PhotosView(props: { albums: Album[]; onChanged: () => Promise<vo
   const pages = () => Math.max(1, pageData()?.pages ?? 1);
 
   return (
-    <section class="content-grid">
-      <div class="filter-bar">
-        <div class="filter-group">
+    <section class="grid gap-5">
+      <div class="flex flex-wrap items-center justify-between gap-2.5">
+        <div class="flex flex-wrap gap-2">
           <FilterSelect
             value={album()}
             placeholder="全部相册"
@@ -198,30 +224,30 @@ export function PhotosView(props: { albums: Album[]; onChanged: () => Promise<vo
             }}
           />
         </div>
-        <div class="filter-actions">
+        <div class="flex gap-2">
           <button
-            class="row-action"
+            class={rowAction}
             type="button"
             disabled={listLoading() || total() === 0}
             onClick={() => setBatchOpen(true)}
           >
             批量删除
           </button>
-          <button class="row-action" type="button" disabled={listLoading()} onClick={reload}>
+          <button class={rowAction} type="button" disabled={listLoading()} onClick={reload}>
             刷新
           </button>
         </div>
       </div>
 
       <Show when={listError()}>
-        <div class="error-banner" role="alert">
+        <div class={errorBanner} role="alert">
           {listError()}
         </div>
       </Show>
 
       <Show
         when={!listLoading()}
-        fallback={<div class="list-status">加载中…</div>}
+        fallback={<div class="rounded-xl border border-dashed border-input p-10 text-center text-sm text-muted-foreground">加载中…</div>}
       >
         <Show
           when={total() > 0}
@@ -232,14 +258,14 @@ export function PhotosView(props: { albums: Album[]; onChanged: () => Promise<vo
             />
           }
         >
-          <div class="photo-grid">
+          <div class="grid grid-cols-[repeat(auto-fill,minmax(240px,1fr))] gap-3.5">
             <For each={pageData()?.data ?? []}>
               {(photo) => (
-                <article class="photo-card">
-                  <div class="photo-card-head">
-                    <span class="card-badge">{photo.album_name || "未分组"}</span>
+                <article class={`${cardCls} flex flex-col overflow-hidden`}>
+                  <div class="flex items-center justify-between gap-2 border-b border-border px-2.5 py-2">
+                    <span class={`${badgeSecondary} truncate`}>{photo.album_name || "未分组"}</span>
                     <button
-                      class="row-action"
+                      class={rowAction}
                       type="button"
                       aria-label="查看图片"
                       onClick={() => setViewing(photo)}
@@ -248,26 +274,26 @@ export function PhotosView(props: { albums: Album[]; onChanged: () => Promise<vo
                     </button>
                   </div>
                   <button
-                    class="photo-card-media"
+                    class="grid h-[180px] w-full cursor-pointer place-items-center border-0 bg-secondary p-0 focus-visible:border-ring focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-ring/50"
                     type="button"
                     onClick={() => setViewing(photo)}
                   >
-                    <Show when={photo.preview_url ?? photo.url} fallback={<span>NO IMAGE</span>}>
-                      <img src={photo.preview_url ?? photo.url ?? ""} alt="" loading="lazy" />
+                    <Show when={photo.preview_url ?? photo.url} fallback={<span class="text-xs tracking-widest text-muted-foreground">NO IMAGE</span>}>
+                      <img class="max-h-[180px] max-w-full object-contain" src={photo.preview_url ?? photo.url ?? ""} alt="" loading="lazy" />
                     </Show>
                   </button>
-                  <div class="photo-card-foot">
-                    <div class="photo-card-info">
+                  <div class="mt-auto flex items-center justify-between gap-2 border-t border-border px-2.5 py-2">
+                    <div class="flex min-w-0 items-center gap-2">
                       <SwitchRow
                         label={photo.show === 0 ? "公开" : "私有"}
                         checked={photo.show === 0}
                         onChange={(checked) => void updateShow(photo, checked ? 0 : 1)}
                       />
-                      <span class="card-badge">排序 {photo.sort}</span>
+                      <span class={`${badgeSecondary} truncate`}>排序 {photo.sort}</span>
                     </div>
-                    <div class="photo-card-actions">
+                    <div class="flex gap-1.5">
                       <button
-                        class="row-action"
+                        class={rowAction}
                         type="button"
                         aria-label="绑定相册"
                         onClick={() => {
@@ -278,7 +304,7 @@ export function PhotosView(props: { albums: Album[]; onChanged: () => Promise<vo
                         相册
                       </button>
                       <button
-                        class="row-action"
+                        class={rowAction}
                         type="button"
                         aria-label="编辑图片"
                         onClick={() => setEditing(photo)}
@@ -291,9 +317,9 @@ export function PhotosView(props: { albums: Album[]; onChanged: () => Promise<vo
               )}
             </For>
           </div>
-          <div class="pager">
+          <div class="mt-4 flex items-center gap-2.5">
             <select
-              class="filter-select"
+              class={selectAutoCls}
               value={String(page())}
               onChange={(event) => setPage(Number(event.currentTarget.value))}
             >
@@ -302,7 +328,7 @@ export function PhotosView(props: { albums: Album[]; onChanged: () => Promise<vo
               ))}
             </select>
             <button
-              class="row-action"
+              class={rowAction}
               type="button"
               aria-label="上一页"
               disabled={page() <= 1}
@@ -311,7 +337,7 @@ export function PhotosView(props: { albums: Album[]; onChanged: () => Promise<vo
               上一页
             </button>
             <button
-              class="row-action"
+              class={rowAction}
               type="button"
               aria-label="下一页"
               disabled={page() >= pages()}
@@ -319,7 +345,7 @@ export function PhotosView(props: { albums: Album[]; onChanged: () => Promise<vo
             >
               下一页
             </button>
-            <span class="pager-total">共 {total()} 张</span>
+            <span class={metaCls}>共 {total()} 张</span>
           </div>
         </Show>
       </Show>
@@ -343,82 +369,98 @@ export function PhotosView(props: { albums: Album[]; onChanged: () => Promise<vo
       </Show>
 
       <Show when={binding()}>
-        <div class="dialog-overlay">
-          <form class="dialog-panel" role="dialog" aria-modal="true" onSubmit={submitBindAlbum}>
-            <div class="table-heading dialog-heading">
-              <span>绑定相册</span>
-              <button class="row-action" type="button" onClick={() => setBinding(null)}>
-                关闭
-              </button>
-            </div>
-            <div class="dialog-body">
-              <label>
-                相册
-                <select
-                  value={bindAlbum()}
-                  onChange={(event) => setBindAlbum(event.currentTarget.value)}
-                >
-                  <option value="">请选择相册</option>
-                  <For each={props.albums}>
-                    {(item) => <option value={item.album_value}>{item.name}</option>}
-                  </For>
-                </select>
-              </label>
-            </div>
-            <div class="dialog-footer">
-              <Button class="primary-button" type="submit" disabled={!bindAlbum()}>
-                更新
-              </Button>
-            </div>
-          </form>
-        </div>
+        {(photo) => (
+          <Dialog
+            defaultOpen
+            onOpenChange={(open) => {
+              if (!open) setBinding(null);
+            }}
+          >
+            <DialogBackdrop class={dialogBackdropCls} />
+            <DialogContent class={`${dialogContentCls} w-[min(520px,100%)]`} aria-label="绑定相册">
+              <form class="flex min-h-0 flex-1 flex-col" onSubmit={submitBindAlbum}>
+                <header class={dialogHeadingCls}>
+                  <DialogTitle class={dialogTitleCls}>绑定相册</DialogTitle>
+                  <DialogClose class={rowAction}>关闭</DialogClose>
+                </header>
+                <div class={dialogBodyCls}>
+                  <label class={`${fieldCls} ${labelCls}`}>
+                    相册
+                    <select
+                      class={selectCls}
+                      value={bindAlbum()}
+                      onChange={(event) => setBindAlbum(event.currentTarget.value)}
+                    >
+                      <option value="">请选择相册</option>
+                      <For each={props.albums}>
+                        {(item) => <option value={item.album_value}>{item.name}</option>}
+                      </For>
+                    </select>
+                  </label>
+                </div>
+                <footer class={dialogFooterCls}>
+                  <Button class={btnPrimary} type="submit" disabled={!bindAlbum()}>
+                    更新
+                  </Button>
+                </footer>
+              </form>
+            </DialogContent>
+          </Dialog>
+        )}
       </Show>
 
       <Show when={batchOpen()}>
-        <div class="dialog-overlay">
-          <form class="dialog-panel" role="dialog" aria-modal="true" onSubmit={(event) => event.preventDefault()}>
-            <div class="table-heading dialog-heading">
-              <span>批量删除</span>
-              <button
-                class="row-action"
-                type="button"
-                onClick={() => {
-                  setBatchOpen(false);
-                  setBatchIds([]);
-                }}
-              >
-                关闭
-              </button>
-            </div>
-            <div class="dialog-body batch-list">
-              <For each={pageData()?.data ?? []}>
-                {(photo) => (
-                  <label class="batch-item">
-                    <input
-                      type="checkbox"
-                      checked={batchIds().includes(photo.id)}
-                      onChange={(event) => toggleBatch(photo.id, event.currentTarget.checked)}
-                    />
-                    <img src={photo.preview_url ?? photo.url ?? ""} alt="" loading="lazy" />
-                    <span class="batch-item-meta">
-                      <strong>{photo.id.length > 16 ? `${photo.id.slice(0, 16)}…` : photo.id}</strong>
-                      <small>{photo.title || "N/A"}</small>
-                    </span>
-                  </label>
-                )}
-              </For>
-            </div>
-            <div class="dialog-footer">
-              <Button
-                class="primary-button"
-                disabled={batchIds().length === 0 || batchDeleting()}
-                onClick={() => void submitBatchDelete()}
-              >
-                {batchDeleting() ? "删除中…" : `删除 ${batchIds().length} 项`}
-              </Button>
-            </div>
-          </form>
-        </div>
+        <Dialog
+          defaultOpen
+          onOpenChange={(open) => {
+            if (!open) {
+              setBatchOpen(false);
+              setBatchIds([]);
+            }
+          }}
+        >
+          <DialogBackdrop class={dialogBackdropCls} />
+          <DialogContent aria-label="批量删除">
+            <form class="flex min-h-0 flex-1 flex-col" onSubmit={(event) => event.preventDefault()}>
+              <header class={dialogHeadingCls}>
+                <DialogTitle class={dialogTitleCls}>批量删除</DialogTitle>
+                <DialogClose class={rowAction}>关闭</DialogClose>
+              </header>
+              <div class={`${dialogBodyCls} !flex !grid-cols-1 flex-col`}>
+                <div class="flex flex-col gap-2">
+                  <For each={pageData()?.data ?? []}>
+                    {(photo) => (
+                      <label class="flex cursor-pointer items-center gap-3 rounded-lg border border-border bg-secondary px-3 py-2.5 transition-colors has-checked:border-ring">
+                        <input
+                          type="checkbox"
+                          class="accent-primary"
+                          checked={batchIds().includes(photo.id)}
+                          onChange={(event) => toggleBatch(photo.id, event.currentTarget.checked)}
+                        />
+                        <img class="size-11 rounded-lg object-cover" src={photo.preview_url ?? photo.url ?? ""} alt="" loading="lazy" />
+                        <span class="grid min-w-0 gap-0.5">
+                          <strong class="truncate text-[0.82rem] font-medium text-foreground">
+                            {photo.id.length > 16 ? `${photo.id.slice(0, 16)}…` : photo.id}
+                          </strong>
+                          <small class="text-xs text-muted-foreground">{photo.title || "N/A"}</small>
+                        </span>
+                      </label>
+                    )}
+                  </For>
+                </div>
+              </div>
+              <footer class={dialogFooterCls}>
+                <Button
+                  class={btnPrimary}
+                  disabled={batchIds().length === 0 || batchDeleting()}
+                  onClick={() => void submitBatchDelete()}
+                >
+                  {batchDeleting() ? "删除中…" : `删除 ${batchIds().length} 项`}
+                </Button>
+              </footer>
+            </form>
+          </DialogContent>
+        </Dialog>
       </Show>
     </section>
   );
@@ -480,129 +522,140 @@ function PhotoEditDialog(props: { photo: Photo; onClose: () => void; onSaved: ()
   }
 
   return (
-    <div class="dialog-overlay">
-      <form class="dialog-panel dialog-wide" role="dialog" aria-modal="true" onSubmit={submit}>
-        <div class="table-heading dialog-heading">
-          <span>编辑图片</span>
-          <button class="row-action" type="button" onClick={props.onClose}>
-            关闭
-          </button>
-        </div>
-        <div class="dialog-body">
-          <label>
-            标题
-            <input
-              value={draft().title ?? ""}
-              placeholder="请输入图片标题"
-              onInput={(event) => update({ title: event.currentTarget.value })}
-            />
-          </label>
-          <label>
-            链接
-            <input
-              value={draft().url ?? ""}
-              placeholder="请输入图片链接"
-              onInput={(event) => update({ url: event.currentTarget.value })}
-            />
-          </label>
-          <label>
-            预览链接
-            <input
-              value={draft().preview_url ?? ""}
-              placeholder="请输入预览链接"
-              onInput={(event) => update({ preview_url: event.currentTarget.value })}
-            />
-          </label>
-          <label>
-            视频链接
-            <input
-              value={draft().video_url ?? ""}
-              placeholder="请输入视频链接（Live Photo）"
-              onInput={(event) => update({ video_url: event.currentTarget.value })}
-            />
-          </label>
-          <label>
-            详情
-            <input
-              value={draft().detail ?? ""}
-              placeholder="请输入图片详情"
-              onInput={(event) => update({ detail: event.currentTarget.value })}
-            />
-          </label>
-          <div class="field-row">
-            <label>
-              宽度（px）
+    <Dialog defaultOpen onOpenChange={(open) => { if (!open) props.onClose(); }}>
+      <DialogBackdrop class={dialogBackdropCls} />
+      <DialogContent class={`${dialogContentCls} w-[min(520px,100%)]`} aria-label="编辑图片">
+        <form class="flex min-h-0 flex-1 flex-col" onSubmit={submit}>
+          <header class={dialogHeadingCls}>
+            <DialogTitle class={dialogTitleCls}>编辑图片</DialogTitle>
+            <DialogClose class={rowAction}>关闭</DialogClose>
+          </header>
+          <div class={dialogBodyCls}>
+            <label class={`${fieldCls} ${labelCls}`}>
+              标题
               <input
+                class={inputCls}
+                value={draft().title ?? ""}
+                placeholder="请输入图片标题"
+                onInput={(event) => update({ title: event.currentTarget.value })}
+              />
+            </label>
+            <label class={`${fieldCls} ${labelCls}`}>
+              链接
+              <input
+                class={inputCls}
+                value={draft().url ?? ""}
+                placeholder="请输入图片链接"
+                onInput={(event) => update({ url: event.currentTarget.value })}
+              />
+            </label>
+            <label class={`${fieldCls} ${labelCls}`}>
+              预览链接
+              <input
+                class={inputCls}
+                value={draft().preview_url ?? ""}
+                placeholder="请输入预览链接"
+                onInput={(event) => update({ preview_url: event.currentTarget.value })}
+              />
+            </label>
+            <label class={`${fieldCls} ${labelCls}`}>
+              视频链接
+              <input
+                class={inputCls}
+                value={draft().video_url ?? ""}
+                placeholder="请输入视频链接（Live Photo）"
+                onInput={(event) => update({ video_url: event.currentTarget.value })}
+              />
+            </label>
+            <label class={`${fieldCls} ${labelCls}`}>
+              详情
+              <input
+                class={inputCls}
+                value={draft().detail ?? ""}
+                placeholder="请输入图片详情"
+                onInput={(event) => update({ detail: event.currentTarget.value })}
+              />
+            </label>
+            <div class="grid grid-cols-2 gap-3.5 max-[767px]:grid-cols-1">
+              <label class={`${fieldCls} ${labelCls}`}>
+                宽度（px）
+                <input
+                  class={inputCls}
+                  type="number"
+                  value={draft().width}
+                  onInput={(event) => update({ width: Number(event.currentTarget.value) })}
+                />
+              </label>
+              <label class={`${fieldCls} ${labelCls}`}>
+                高度（px）
+                <input
+                  class={inputCls}
+                  type="number"
+                  value={draft().height}
+                  onInput={(event) => update({ height: Number(event.currentTarget.value) })}
+                />
+              </label>
+            </div>
+            <div class="grid grid-cols-2 gap-3.5 max-[767px]:grid-cols-1">
+              <label class={`${fieldCls} ${labelCls}`}>
+                经度
+                <input
+                  class={inputCls}
+                  value={draft().lon ?? ""}
+                  placeholder="请输入经度"
+                  onInput={(event) => update({ lon: event.currentTarget.value })}
+                />
+              </label>
+              <label class={`${fieldCls} ${labelCls}`}>
+                纬度
+                <input
+                  class={inputCls}
+                  value={draft().lat ?? ""}
+                  placeholder="请输入纬度"
+                  onInput={(event) => update({ lat: event.currentTarget.value })}
+                />
+              </label>
+            </div>
+            <label class={`${fieldCls} ${labelCls}`}>
+              排序
+              <input
+                class={inputCls}
                 type="number"
-                value={draft().width}
-                onInput={(event) => update({ width: Number(event.currentTarget.value) })}
+                value={draft().sort}
+                onInput={(event) => update({ sort: Number(event.currentTarget.value) })}
               />
             </label>
-            <label>
-              高度（px）
-              <input
-                type="number"
-                value={draft().height}
-                onInput={(event) => update({ height: Number(event.currentTarget.value) })}
-              />
-            </label>
-          </div>
-          <div class="field-row">
-            <label>
-              经度
-              <input
-                value={draft().lon ?? ""}
-                placeholder="请输入经度"
-                onInput={(event) => update({ lon: event.currentTarget.value })}
-              />
-            </label>
-            <label>
-              纬度
-              <input
-                value={draft().lat ?? ""}
-                placeholder="请输入纬度"
-                onInput={(event) => update({ lat: event.currentTarget.value })}
-              />
-            </label>
-          </div>
-          <label>
-            排序
-            <input
-              type="number"
-              value={draft().sort}
-              onInput={(event) => update({ sort: Number(event.currentTarget.value) })}
+            <TagInput
+              tags={draft().labels ?? []}
+              placeholder="添加标签后回车"
+              onChange={(tags) => update({ labels: tags })}
             />
-          </label>
-          <TagInput
-            tags={draft().labels ?? []}
-            placeholder="添加标签后回车"
-            onChange={(tags) => update({ labels: tags })}
-          />
-          <SwitchRow
-            label="显示状态"
-            detail="关闭后图片不会在前台显示"
-            checked={draft().show === 0}
-            onChange={(checked) => update({ show: checked ? 0 : 1 })}
-          />
-          <SwitchRow
-            label="首页显示"
-            detail="开启后图片会显示在首页"
-            checked={draft().show_on_mainpage === 0}
-            onChange={(checked) => update({ show_on_mainpage: checked ? 0 : 1 })}
-          />
-        </div>
-        <Show when={error()}>
-          <div class="error-banner dialog-error" role="alert">
-            {error()}
+            <SwitchRow
+              label="显示状态"
+              detail="关闭后图片不会在前台显示"
+              checked={draft().show === 0}
+              onChange={(checked) => update({ show: checked ? 0 : 1 })}
+            />
+            <SwitchRow
+              label="首页显示"
+              detail="开启后图片会显示在首页"
+              checked={draft().show_on_mainpage === 0}
+              onChange={(checked) => update({ show_on_mainpage: checked ? 0 : 1 })}
+            />
           </div>
-        </Show>
-        <div class="dialog-footer">
-          <Button class="primary-button" type="submit" disabled={pending()}>
-            {pending() ? "更新中…" : "更新"}
-          </Button>
-        </div>
-      </form>
-    </div>
+          <Show when={error()}>
+            <div class={`${errorBanner} mx-5`} role="alert">
+              {error()}
+            </div>
+          </Show>
+          <footer class={dialogFooterCls}>
+            <Button class={btnPrimary} type="submit" disabled={pending()}>
+              {pending() ? "更新中…" : "更新"}
+            </Button>
+          </footer>
+        </form>
+      </DialogContent>
+    </Dialog>
   );
 }
 
@@ -618,58 +671,84 @@ function PhotoViewDialog(props: { photo: Photo; onClose: () => void }) {
     }).filter((row) => row.value);
 
   return (
-    <div class="dialog-overlay">
-      <div class="dialog-panel dialog-wide" role="dialog" aria-modal="true">
-        <div class="table-heading dialog-heading">
-          <span>{photo().title || photo().image_name || photo().id}</span>
-          <button class="row-action" type="button" onClick={props.onClose}>
-            关闭
-          </button>
-        </div>
-        <div class="dialog-body">
+    <Dialog defaultOpen onOpenChange={(open) => { if (!open) props.onClose(); }}>
+      <DialogBackdrop class={dialogBackdropCls} />
+      <DialogContent aria-label="查看图片">
+        <header class={dialogHeadingCls}>
+          <DialogTitle class={dialogTitleCls}>
+            {photo().title || photo().image_name || photo().id}
+          </DialogTitle>
+          <DialogClose class={rowAction}>关闭</DialogClose>
+        </header>
+        <div class={dialogBodyCls}>
           <Show
             when={photo().type === 2 && photo().video_url}
             fallback={
-              <img class="view-image" src={photo().preview_url ?? photo().url ?? ""} alt={photo().detail ?? ""} />
+              <img
+                class="col-span-full max-h-[46dvh] w-full max-w-full rounded-lg bg-secondary object-contain"
+                src={photo().preview_url ?? photo().url ?? ""}
+                alt={photo().detail ?? ""}
+              />
             }
           >
-            <video class="view-image" src={photo().video_url ?? ""} controls muted loop playsinline />
+            <video
+              class="col-span-full max-h-[46dvh] w-full max-w-full rounded-lg bg-secondary object-contain"
+              src={photo().video_url ?? ""}
+              controls
+              muted
+              loop
+              playsinline
+            />
           </Show>
           <Show when={(photo().labels ?? []).length > 0}>
-            <div class="tag-row">
-              <For each={photo().labels ?? []}>{(tag) => <span class="tag-chip static">{tag}</span>}</For>
+            <div class="col-span-full flex flex-wrap gap-1.5">
+              <For each={photo().labels ?? []}>
+                {(tag) => <span class={`${badgeSecondary} cursor-default`}>{tag}</span>}
+              </For>
             </div>
           </Show>
           <Show when={exifRows().length > 0}>
-            <table class="exif-table">
+            <table class={`${exifTableCls} col-span-full`}>
               <thead>
                 <tr>
-                  <th>参数</th>
-                  <th>值</th>
+                  <th class={exifCellCls}>参数</th>
+                  <th class={exifCellCls}>值</th>
                 </tr>
               </thead>
               <tbody>
                 <For each={exifRows()}>
                   {(row) => (
                     <tr>
-                      <td>{row.label}</td>
-                      <td>{row.value}</td>
+                      <td class={`${exifCellCls} text-muted-foreground`}>{row.label}</td>
+                      <td class={exifCellCls}>{row.value}</td>
                     </tr>
                   )}
                 </For>
               </tbody>
             </table>
           </Show>
-          <div class="view-meta">
-            <div><span>详情</span><strong>{photo().detail || "—"}</strong></div>
-            <div><span>尺寸</span><strong>{photo().width} × {photo().height}</strong></div>
-            <div><span>经纬度</span><strong>{photo().lon || "—"} / {photo().lat || "—"}</strong></div>
-            <div><span>排序</span><strong>{photo().sort}</strong></div>
+          <div class="col-span-full grid gap-2">
+            <div class="flex justify-between gap-3 rounded-lg border border-border bg-secondary px-3 py-2">
+              <span class="text-xs text-muted-foreground">详情</span>
+              <strong class="text-[0.82rem] font-medium text-foreground">{photo().detail || "—"}</strong>
+            </div>
+            <div class="flex justify-between gap-3 rounded-lg border border-border bg-secondary px-3 py-2">
+              <span class="text-xs text-muted-foreground">尺寸</span>
+              <strong class="text-[0.82rem] font-medium text-foreground">{photo().width} × {photo().height}</strong>
+            </div>
+            <div class="flex justify-between gap-3 rounded-lg border border-border bg-secondary px-3 py-2">
+              <span class="text-xs text-muted-foreground">经纬度</span>
+              <strong class="text-[0.82rem] font-medium text-foreground">{photo().lon || "—"} / {photo().lat || "—"}</strong>
+            </div>
+            <div class="flex justify-between gap-3 rounded-lg border border-border bg-secondary px-3 py-2">
+              <span class="text-xs text-muted-foreground">排序</span>
+              <strong class="text-[0.82rem] font-medium text-foreground">{photo().sort}</strong>
+            </div>
           </div>
           <SwitchRow label="显示状态" checked={photo().show === 0} disabled />
           <SwitchRow label="首页显示" checked={photo().show_on_mainpage === 0} disabled />
         </div>
-      </div>
-    </div>
+      </DialogContent>
+    </Dialog>
   );
 }

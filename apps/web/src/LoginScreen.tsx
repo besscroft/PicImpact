@@ -1,6 +1,8 @@
 import { Button } from "@ui-sdk/solid/button";
 import { createSignal } from "solid-js";
 
+import { btnPrimary, cardCls, errorBanner, fieldCls, inputCls, labelCls } from "./admin/shared";
+
 export function LoginScreen(props: {
   registrationOpen: boolean;
   onRegistrationClosed: () => void;
@@ -46,18 +48,21 @@ export function LoginScreen(props: {
   }
 
   return (
-    <section class="auth-card" aria-labelledby="auth-title">
-      <div class="auth-kicker">PICIMPACT / PRIVATE WORKSPACE</div>
-      <h1 id="auth-title">{mode() === "sign-in" ? "回到你的影像库" : "建立管理员账号"}</h1>
-      <p class="auth-intro">
+    <section class={`${cardCls} w-[min(440px,100%)] p-8`} aria-labelledby="auth-title">
+      <div class="mb-3.5 text-xs font-medium text-muted-foreground">PICIMPACT / PRIVATE WORKSPACE</div>
+      <h1 id="auth-title" class="mb-2.5 text-2xl font-semibold tracking-tight text-foreground">
+        {mode() === "sign-in" ? "回到你的影像库" : "建立管理员账号"}
+      </h1>
+      <p class="mb-6 text-sm leading-relaxed text-muted-foreground">
         {mode() === "sign-in"
           ? "登录后管理照片、相册、配置与备份。"
           : "创建账号后即可进入这个实例的管理工作区。"}
       </p>
-      <form class="auth-form" onSubmit={submit}>
-        <label>
+      <form class="grid gap-3.5" onSubmit={submit}>
+        <label class={`${fieldCls} ${labelCls}`}>
           用户名
           <input
+            class={inputCls}
             required
             minlength={3}
             maxlength={30}
@@ -69,9 +74,10 @@ export function LoginScreen(props: {
             placeholder={props.registrationOpen ? "3–30 个字母、数字、点或下划线" : "你的用户名"}
           />
         </label>
-        <label>
+        <label class={`${fieldCls} ${labelCls}`}>
           密码
           <input
+            class={inputCls}
             required
             minlength={8}
             type="password"
@@ -82,11 +88,11 @@ export function LoginScreen(props: {
           />
         </label>
         {error() && (
-          <div class="auth-error" role="alert">
+          <div class={errorBanner} role="alert">
             {error()}
           </div>
         )}
-        <Button class="primary-button auth-submit" type="submit" disabled={pending()}>
+        <Button class={`${btnPrimary} mt-1 w-full`} type="submit" disabled={pending()}>
           {pending() ? "处理中…" : mode() === "sign-in" ? "登录工作区" : "创建账号"}
         </Button>
       </form>

@@ -1,8 +1,35 @@
 import { Button } from "@ui-sdk/solid/button";
+import {
+  Dialog,
+  DialogBackdrop,
+  DialogClose,
+  DialogContent,
+  DialogTitle,
+} from "@ui-sdk/solid/dialog";
 import { Tabs, TabsList, TabsPanel, TabsTab } from "@ui-sdk/solid/tabs";
 import { For, Show, createSignal } from "solid-js";
 
-import { STORAGE_PROVIDERS } from "../storage-provider";
+import {
+  STORAGE_PROVIDERS,
+} from "../storage-provider";
+import {
+  btnOutline,
+  btnPrimary,
+  cardCls,
+  dialogBackdropCls,
+  dialogBodyCls,
+  dialogContentCls,
+  dialogFooterCls,
+  dialogHeadingCls,
+  dialogTitleCls,
+  fieldCls,
+  focusRing,
+  inputCls,
+  labelCls,
+  metaCls,
+  rowAction,
+  selectCls,
+} from "../admin/shared";
 import type { Config } from "../types";
 
 export function StorageConfigView(props: {
@@ -10,11 +37,18 @@ export function StorageConfigView(props: {
   onSaveStorage: (values: Record<string, string>) => Promise<boolean>;
 }) {
   return (
-    <section class="content-grid">
-      <Tabs class="storage-tabs" defaultValue="s3">
-        <TabsList class="storage-tab-list" aria-label="存储类型">
+    <section class="grid gap-5">
+      <Tabs defaultValue="s3">
+        <TabsList class="flex flex-wrap gap-2" aria-label="存储类型">
           <For each={STORAGE_PROVIDERS}>
-            {(provider) => <TabsTab value={provider.value}>{provider.label}</TabsTab>}
+            {(provider) => (
+              <TabsTab
+                class={`inline-flex h-8 cursor-pointer items-center rounded-lg border border-transparent px-3 text-sm font-medium text-foreground transition-colors hover:bg-muted disabled:pointer-events-none disabled:opacity-50 data-selected:bg-primary data-selected:text-primary-foreground ${focusRing}`}
+                value={provider.value}
+              >
+                {provider.label}
+              </TabsTab>
+            )}
           </For>
         </TabsList>
         <TabsPanel value="s3">
@@ -40,7 +74,7 @@ export function StorageConfigView(props: {
 
 export function ConfigView() {
   return (
-    <section class="content-grid">
+    <section class="grid gap-5">
       <BackupPanel />
     </section>
   );
@@ -101,17 +135,22 @@ function BackupPanel() {
   }
 
   return (
-    <section class="backup-panel">
+    <section class={`${cardCls} grid grid-cols-[1fr_auto] gap-5 p-5.5 max-[760px]:grid-cols-1`}>
       <div>
-        <div class="eyebrow">V3 BACKUP BRIDGE</div>
-        <h2>迁移旧数据</h2>
-        <p>支持 `picimpact-backup` v1，导入前先预览数量与校验告警。</p>
+        <div class={`mb-1.5 ${metaCls}`}>V3 BACKUP BRIDGE</div>
+        <h2 class="m-0 mb-1.5 text-lg font-semibold tracking-tight text-foreground">迁移旧数据</h2>
+        <p class="m-0 text-sm leading-relaxed text-muted-foreground">
+          支持 `picimpact-backup` v1，导入前先预览数量与校验告警。
+        </p>
       </div>
-      <div class="backup-actions">
-        <label class="file-button">
+      <div class="flex items-end gap-2.5 max-[760px]:items-center max-[760px]:justify-start">
+        <label
+          class={`inline-flex min-h-8 cursor-pointer items-center rounded-lg border border-border bg-background px-3.5 py-1.5 text-sm font-medium text-foreground transition-colors hover:bg-muted ${focusRing}`}
+        >
           选择 JSON
           <input
             type="file"
+            class="sr-only"
             accept="application/json,.json"
             onChange={(event) => {
               const file = event.currentTarget.files?.[0];
@@ -119,27 +158,23 @@ function BackupPanel() {
             }}
           />
         </label>
-        <Button
-          class="secondary-button"
-          disabled={!importPayload()}
-          onClick={() => importBackup()}
-        >
+        <Button class={btnOutline} disabled={!importPayload()} onClick={() => importBackup()}>
           确认导入
         </Button>
       </div>
       <Show when={message()}>
-        <span class="upload-message" role="status">
+        <span class="text-sm text-foreground" role="status">
           {message()}
         </span>
       </Show>
       <Show when={error()}>
-        <span class="upload-message" role="alert">
+        <span class="text-sm text-destructive" role="alert">
           {error()}
         </span>
       </Show>
       <Show when={importPreview()}>
         {(preview) => (
-          <div class="preview-grid">
+          <div class="grid grid-cols-4 gap-2.5 border-t border-border pt-4 max-[760px]:grid-cols-2">
             <PreviewMetric label="Photos" value={preview().counts.images ?? 0} />
             <PreviewMetric label="Albums" value={preview().counts.albums ?? 0} />
             <PreviewMetric label="Config" value={preview().counts.configs ?? 0} />
@@ -156,9 +191,11 @@ function BackupPanel() {
 
 function PreviewMetric(props: { label: string; value: number }) {
   return (
-    <div class="preview-metric">
-      <span>{props.label}</span>
-      <strong>{props.value}</strong>
+    <div class="grid gap-1">
+      <span class={metaCls}>{props.label}</span>
+      <strong class="text-2xl font-semibold tracking-tight text-foreground tabular-nums">
+        {props.value}
+      </strong>
     </div>
   );
 }
@@ -235,100 +272,101 @@ function StorageConfigPanel(props: {
 
   return (
     <>
-      <div class="table-shell storage-panel">
-        <div class="table-heading">
-          <span>{props.title}</span>
-          <button class="row-action storage-edit" type="button" onClick={openDialog}>
+      <div class={`${cardCls} max-w-[900px]`}>
+        <div class="flex items-center justify-between border-b border-border px-4.5 py-4">
+          <span class="text-sm font-medium text-foreground">{props.title}</span>
+          <button class={`${rowAction} text-[0.78rem]`} type="button" onClick={openDialog}>
             编辑
           </button>
         </div>
-        <div class="config-list">
+        <div class="grid">
           <For each={props.fields}>
             {(field) => (
-              <div class="config-row">
-                <strong>{field.key}</strong>
-                <span>{displayValue(field)}</span>
-                <small>{field.hint}</small>
+              <div class="grid grid-cols-[minmax(150px,0.7fr)_minmax(160px,1fr)_minmax(120px,0.7fr)] gap-3.5 border-b border-border px-4.5 py-3.5 last:border-b-0">
+                <strong class="text-sm font-medium text-foreground">{field.key}</strong>
+                <span class="truncate text-sm text-foreground">{displayValue(field)}</span>
+                <small class={metaCls}>{field.hint}</small>
               </div>
             )}
           </For>
         </div>
       </div>
       <Show when={open()}>
-        <div class="dialog-overlay">
-          <form class="dialog-panel" role="dialog" aria-modal="true" onSubmit={submit}>
-            <div class="table-heading dialog-heading">
-              <span>编辑{props.title}</span>
-              <button
-                class="row-action"
-                type="button"
-                onClick={() => setOpen(false)}
-                aria-label="关闭"
-              >
-                关闭
-              </button>
-            </div>
-            <div class="dialog-body">
-              <For each={props.fields}>
-                {(field) =>
-                  field.pathStyle ? (
-                    <label>
-                      {field.label}（{field.key}）
-                      <select
-                        value={draft()[field.key] ?? ""}
-                        onChange={(event) =>
-                          setDraft({ ...draft(), [field.key]: event.currentTarget.value })
-                        }
-                      >
-                        <option value="">默认</option>
-                        <option value="true">路径式：endpoint/bucket</option>
-                        <option value="false">虚拟主机式：bucket.endpoint</option>
-                      </select>
-                    </label>
-                  ) : field.toggle ? (
-                    <label>
-                      {field.label}（{field.key}）
-                      <select
-                        value={draft()[field.key] === "true" ? "true" : "false"}
-                        onChange={(event) =>
-                          setDraft({ ...draft(), [field.key]: event.currentTarget.value })
-                        }
-                      >
-                        <option value="false">关闭：服务端代理下载</option>
-                        <option value="true">开启：对象存储直链下载</option>
-                      </select>
-                    </label>
-                  ) : (
-                    <label>
-                      {field.label}（{field.key}）
-                      <input
-                        type={field.secret ? "password" : "text"}
-                        value={draft()[field.key] ?? ""}
-                        placeholder={field.hint}
-                        onInput={(event) =>
-                          setDraft({ ...draft(), [field.key]: event.currentTarget.value })
-                        }
-                      />
-                    </label>
-                  )
-                }
-              </For>
-            </div>
-            <div class="dialog-footer">
-              <Button
-                class="secondary-button"
-                type="button"
-                disabled={pending()}
-                onClick={() => setOpen(false)}
-              >
-                取消
-              </Button>
-              <Button class="primary-button" type="submit" disabled={pending()}>
-                保存
-              </Button>
-            </div>
-          </form>
-        </div>
+        <Dialog
+          defaultOpen
+          onOpenChange={(next) => {
+            if (!next) setOpen(false);
+          }}
+        >
+          <DialogBackdrop class={dialogBackdropCls} />
+          <DialogContent aria-label={`编辑${props.title}`}>
+            <form class="flex min-h-0 flex-1 flex-col" onSubmit={submit}>
+              <header class={dialogHeadingCls}>
+                <DialogTitle class={dialogTitleCls}>编辑{props.title}</DialogTitle>
+                <DialogClose class={rowAction} aria-label="关闭">
+                  关闭
+                </DialogClose>
+              </header>
+              <div class={dialogBodyCls}>
+                <For each={props.fields}>
+                  {(field) =>
+                    field.pathStyle ? (
+                      <label class={`${fieldCls} ${labelCls}`}>
+                        {field.label}（{field.key}）
+                        <select
+                          class={selectCls}
+                          value={draft()[field.key] ?? ""}
+                          onChange={(event) =>
+                            setDraft({ ...draft(), [field.key]: event.currentTarget.value })
+                          }
+                        >
+                          <option value="">默认</option>
+                          <option value="true">路径式：endpoint/bucket</option>
+                          <option value="false">虚拟主机式：bucket.endpoint</option>
+                        </select>
+                      </label>
+                    ) : field.toggle ? (
+                      <label class={`${fieldCls} ${labelCls}`}>
+                        {field.label}（{field.key}）
+                        <select
+                          class={selectCls}
+                          value={draft()[field.key] === "true" ? "true" : "false"}
+                          onChange={(event) =>
+                            setDraft({ ...draft(), [field.key]: event.currentTarget.value })
+                          }
+                        >
+                          <option value="false">关闭：服务端代理下载</option>
+                          <option value="true">开启：对象存储直链下载</option>
+                        </select>
+                      </label>
+                    ) : (
+                      <label class={`${fieldCls} ${labelCls}`}>
+                        {field.label}（{field.key}）
+                        <input
+                          class={inputCls}
+                          type={field.secret ? "password" : "text"}
+                          value={draft()[field.key] ?? ""}
+                          placeholder={field.hint}
+                          onInput={(event) =>
+                            setDraft({ ...draft(), [field.key]: event.currentTarget.value })
+                          }
+                        />
+                      </label>
+                    )
+                  }
+                </For>
+              </div>
+              <footer class={dialogFooterCls}>
+                <DialogClose class={btnOutline} disabled={pending()}>
+                  取消
+                </DialogClose>
+                <Button class={btnPrimary} type="submit" disabled={pending()}>
+                  保存
+                </Button>
+              </footer>
+            </form>
+          </DialogContent>
+        </Dialog>
       </Show>
     </>
   );

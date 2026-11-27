@@ -1,6 +1,7 @@
 import { getRequestListener } from "@hono/node-server";
 import { readFileSync } from "node:fs";
 import solid from "@solidjs/vite-plugin";
+import tailwindcss from "@tailwindcss/vite";
 import { defineConfig } from "vite-plus";
 
 import { createApp } from "./src/server/app";
@@ -68,7 +69,7 @@ function apiMiddleware() {
 }
 
 export default defineConfig({
-  plugins: [solid(), apiMiddleware()],
+  plugins: [tailwindcss(), solid(), apiMiddleware()],
   optimizeDeps: {
     exclude: ["@ui-sdk/core"],
   },
