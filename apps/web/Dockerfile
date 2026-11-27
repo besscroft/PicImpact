@@ -9,7 +9,7 @@ COPY apps/v3/package.json apps/v3/package.json
 RUN pnpm install --frozen-lockfile --filter @picimpact/web...
 
 COPY . .
-RUN pnpm --filter @picimpact/web build
+RUN pnpm --filter @picimpact/web run build
 
 FROM node:24-alpine AS runtime
 

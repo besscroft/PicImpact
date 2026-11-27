@@ -5,16 +5,17 @@
   "description": "PicImpact v4 web application built with Solid 2, Hono and Drizzle.",
   "type": "module",
   "scripts": {
-    "dev": "vp dev --host 0.0.0.0",
-    "dev:worker": "pnpm db:migrate && wrangler dev src/server/worker.ts",
-    "deploy:worker": "pnpm db:migrate && pnpm build && wrangler deploy",
-    "build": "pnpm db:migrate && vp build --outDir dist/client && vp build --config vite.server.config.ts --outDir dist/server",
+    "dev": "pnpm run migrate && vp dev --host 0.0.0.0",
+    "migrate": "tsx src/server/db/migrate.ts",
+    "build": "vp build --outDir dist/client && vp build --config vite.server.config.ts --outDir dist/server",
     "start": "node dist/server/server.js",
+    "dev:cloudflare": "pnpm run migrate && pnpm run build:cloudflare && wrangler dev",
+    "build:cloudflare": "vp build --outDir dist/client",
+    "deploy:cloudflare": "pnpm run migrate && wrangler deploy",
     "test": "vitest run",
     "test:watch": "vitest",
     "typecheck": "tsc --noEmit",
-    "db:generate": "drizzle-kit generate",
-    "db:migrate": "tsx src/server/db/migrate.ts"
+    "db:generate": "drizzle-kit generate"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "3.1177.0",

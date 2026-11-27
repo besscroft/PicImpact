@@ -6,17 +6,18 @@
   "scripts": {
     "check": "vp check",
     "ready": "vp check",
-    "web:dev": "pnpm run web:db:migrate && pnpm --filter @picimpact/web dev",
-    "web:dev:worker": "pnpm --filter @picimpact/web dev:worker",
-    "web:worker:deploy": "pnpm --filter @picimpact/web build && pnpm --filter @picimpact/web exec wrangler deploy",
-    "web:build": "pnpm --filter @picimpact/web build",
-    "web:start": "pnpm --filter @picimpact/web start",
+    "web:dev": "pnpm --filter @picimpact/web run dev",
+    "web:migrate": "pnpm --filter @picimpact/web run migrate",
+    "web:build": "pnpm --filter @picimpact/web run build",
+    "web:start": "pnpm --filter @picimpact/web run start",
+    "web:dev:cloudflare": "pnpm --filter @picimpact/web run dev:cloudflare",
+    "web:build:cloudflare": "pnpm --filter @picimpact/web run build:cloudflare",
+    "web:deploy:cloudflare": "pnpm --filter @picimpact/web run deploy:cloudflare",
     "web:test": "pnpm --filter @picimpact/web test",
     "web:test:watch": "pnpm --filter @picimpact/web test:watch",
     "web:typecheck": "pnpm --filter @picimpact/web typecheck",
     "web:check": "pnpm run web:typecheck && pnpm run web:test",
-    "web:db:generate": "pnpm --filter @picimpact/web db:generate",
-    "web:db:migrate": "pnpm --filter @picimpact/web db:migrate"
+    "web:db:generate": "pnpm --filter @picimpact/web db:generate"
   },
   "devDependencies": {
     "vite-plus": "catalog:"
