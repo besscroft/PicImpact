@@ -31,6 +31,8 @@ import {
   labelCls,
   badgeSecondary,
   selectCls,
+  segmentedItemCls,
+  segmentedTrackCls,
   switchCls,
   switchThumbCls,
 } from "../admin/shared";
@@ -195,7 +197,7 @@ export function AlbumsView(props: {
         <section class={`${cardCls} flex min-w-0 flex-col overflow-clip`} aria-label="相册列表" ref={list}>
           <div class="flex flex-wrap items-center justify-between gap-2 border-b border-border px-3.5 py-2.5 @max-[350px]:grid @max-[350px]:grid-cols-1">
             <SegmentedControl
-              class="relative inline-flex isolate gap-0.5 rounded-lg border border-border bg-muted p-1 data-disabled:opacity-[0.62]"
+              class={segmentedTrackCls}
               aria-label="前台展示筛选"
               value={filter()}
               disabled={busy()}
@@ -206,10 +208,7 @@ export function AlbumsView(props: {
               <SegmentedControlIndicator />
               <For each={FILTERS}>
                 {(item) => (
-                  <SegmentedControlItem
-                    class="min-h-7 cursor-pointer rounded-md border-0 bg-transparent px-3 py-1 text-[0.8rem] font-medium text-muted-foreground transition-colors hover:text-foreground focus-visible:border-ring focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-ring/50 data-checked:text-foreground"
-                    value={item.value}
-                  >
+                  <SegmentedControlItem class={segmentedItemCls} value={item.value}>
                     {item.label}
                   </SegmentedControlItem>
                 )}

@@ -294,11 +294,13 @@
   left: var(--segmented-control-indicator-left);
   width: var(--segmented-control-indicator-width);
   height: var(--segmented-control-indicator-height);
-  border-radius: var(--radius-md);
+  /* --radius-* 主题变量因 @theme inline 不落盘，只能引用 .app-shell 作用域的 --radius 求值 */
+  border-radius: calc(var(--radius, 0.625rem) - 4px);
   background: var(--card);
-  box-shadow: 0 1px 3px rgb(0 0 0 / 0.12), 0 0 0 1px rgb(0 0 0 / 0.04);
+  box-shadow: 0 1px 2px rgb(0 0 0 / 0.10);
   transition-property: top, left, width, height;
-  transition-duration: 180ms;
+  transition-duration: 220ms;
+  transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 [data-slot="segmented-control-indicator"][data-activation-direction="none"] {

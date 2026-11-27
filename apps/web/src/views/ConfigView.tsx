@@ -6,11 +6,17 @@ import {
   DialogContent,
   DialogTitle,
 } from "@ui-sdk/solid/dialog";
-import { Tabs, TabsList, TabsPanel, TabsTab } from "@ui-sdk/solid/tabs";
+import {
+  SegmentedControl,
+  SegmentedControlIndicator,
+  SegmentedControlItem,
+} from "@ui-sdk/solid/segmented-control";
 import { For, Show, createSignal } from "solid-js";
 
 import {
   STORAGE_PROVIDERS,
+  isStorageProvider,
+  type StorageProvider,
 } from "../storage-provider";
 import {
   btnOutline,
@@ -28,6 +34,8 @@ import {
   labelCls,
   metaCls,
   rowAction,
+  segmentedItemCls,
+  segmentedTrackCls,
   selectCls,
 } from "../admin/shared";
 import type { Config } from "../types";
@@ -36,38 +44,35 @@ export function StorageConfigView(props: {
   configs: Config[];
   onSaveStorage: (values: Record<string, string>) => Promise<boolean>;
 }) {
+  const [provider, setProvider] = createSignal<StorageProvider>("s3");
+  const activeFields = () => (provider() === "s3" ? S3_STORAGE_FIELDS : R2_STORAGE_FIELDS);
+  const activeTitle = () => (provider() === "s3" ? "S3 存储配置" : "R2 存储配置");
+
   return (
     <section class="grid gap-5">
-      <Tabs defaultValue="s3">
-        <TabsList class="flex flex-wrap gap-2" aria-label="存储类型">
-          <For each={STORAGE_PROVIDERS}>
-            {(provider) => (
-              <TabsTab
-                class={`inline-flex h-8 cursor-pointer items-center rounded-lg border border-transparent px-3 text-sm font-medium text-foreground transition-colors hover:bg-muted disabled:pointer-events-none disabled:opacity-50 data-selected:bg-primary data-selected:text-primary-foreground ${focusRing}`}
-                value={provider.value}
-              >
-                {provider.label}
-              </TabsTab>
-            )}
-          </For>
-        </TabsList>
-        <TabsPanel value="s3">
-          <StorageConfigPanel
-            title="S3 存储配置"
-            fields={S3_STORAGE_FIELDS}
-            configs={props.configs}
-            onSave={props.onSaveStorage}
-          />
-        </TabsPanel>
-        <TabsPanel value="r2">
-          <StorageConfigPanel
-            title="R2 存储配置"
-            fields={R2_STORAGE_FIELDS}
-            configs={props.configs}
-            onSave={props.onSaveStorage}
-          />
-        </TabsPanel>
-      </Tabs>
+      <SegmentedControl
+        class={segmentedTrackCls}
+        aria-label="存储类型"
+        value={provider()}
+        onValueChange={(next) => {
+          if (isStorageProvider(next)) setProvider(next);
+        }}
+      >
+        <SegmentedControlIndicator />
+        <For each={STORAGE_PROVIDERS}>
+          {(item) => (
+            <SegmentedControlItem class={segmentedItemCls} value={item.value}>
+              {item.label}
+            </SegmentedControlItem>
+          )}
+        </For>
+      </SegmentedControl>
+      <StorageConfigPanel
+        title={activeTitle()}
+        fields={activeFields()}
+        configs={props.configs}
+        onSave={props.onSaveStorage}
+      />
     </section>
   );
 }

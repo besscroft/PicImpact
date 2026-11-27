@@ -29,6 +29,11 @@ export const badgeDestructive = `${badgeCls} bg-destructive/10 text-destructive`
 
 export const rowAction = `inline-flex cursor-pointer items-center rounded-md px-1.5 py-1 text-xs text-muted-foreground transition-colors hover:bg-muted hover:text-foreground disabled:pointer-events-none disabled:opacity-50 ${focusRing}`;
 
+/* SegmentedControl —— 轨道无边框，选中态白底滑块由 styles.css 的指示器规则绘制 */
+export const segmentedTrackCls =
+  "relative inline-flex isolate gap-0.5 rounded-lg bg-muted p-1 data-disabled:opacity-[0.62]";
+export const segmentedItemCls = `min-h-7 cursor-pointer rounded-md border-0 bg-transparent px-3 py-1 text-[0.8rem] font-medium text-muted-foreground transition-colors hover:text-foreground data-checked:text-foreground ${focusRing}`;
+
 export const errorBanner =
   "rounded-lg border border-destructive/30 bg-destructive/5 px-3 py-2 text-sm text-destructive";
 export const noticeBanner =
