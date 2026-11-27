@@ -10,6 +10,25 @@ binding = "ASSETS"
 not_found_handling = "single-page-application"
 run_worker_first = ["/api", "/api/*"]
 
+[observability]
+enabled = false
+head_sampling_rate = 1
+redact_query_string = false
+
+[observability.logs]
+enabled = true
+head_sampling_rate = 1
+invocation_logs = true
+persist = true
+
+[observability.traces]
+enabled = true
+head_sampling_rate = 1
+persist = true
+
+[observability.issues]
+enabled = false
+
 # Set BETTER_AUTH_URL and BETTER_AUTH_SECRET in the deployment environment.
 # For Wrangler deployments, uncomment this block and enter your Hyperdrive ID:
 # [[hyperdrive]]
