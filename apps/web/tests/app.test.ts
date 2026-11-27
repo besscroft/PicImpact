@@ -518,6 +518,7 @@ describe("PicImpact web API", () => {
         "id",
         "name",
         "email",
+        "username",
         "emailVerified",
         "image",
         "createdAt",

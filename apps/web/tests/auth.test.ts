@@ -1,6 +1,8 @@
 import { randomUUID } from "node:crypto";
-import { readFileSync } from "node:fs";
+import { fileURLToPath } from "node:url";
+import { readMigrationFiles } from "drizzle-orm/migrator";
 import { Pool } from "pg";
+import { hashPassword } from "better-auth/crypto";
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from "vite-plus/test";
 
 import { createApp } from "../src/server/app";
@@ -19,22 +21,22 @@ describe.skipIf(!databaseUrl)("first administrator registration", () => {
   let adminPool: Pool;
   let pool: Pool;
 
-  function createTestApp() {
+  function createTestApp(database = pool) {
     return createApp({
       store: new MemoryPicImpactStore(),
-      auth: createAuth(createPostgresDb(pool), authOptions),
+      auth: createAuth(createPostgresDb(database), authOptions),
     });
   }
 
   function signUp(
     app: ReturnType<typeof createTestApp>,
-    email = "admin@example.test",
+    username = "administrator",
     password = "test-password-1234",
   ) {
-    return app.request("http://localhost/api/auth/sign-up/email", {
+    return app.request("http://localhost/api/auth/sign-up/username", {
       method: "POST",
       headers: { "Content-Type": "application/json", Origin: "http://localhost" },
-      body: JSON.stringify({ name: "Administrator", email, password }),
+      body: JSON.stringify({ username, password }),
     });
   }
 
@@ -44,18 +46,25 @@ describe.skipIf(!databaseUrl)("first administrator registration", () => {
     return response.json();
   }
 
+  const migrations = readMigrationFiles({
+    migrationsFolder: fileURLToPath(new URL("../drizzle/", import.meta.url)),
+  });
+
+  async function applyMigration(
+    database: Pool,
+    name: string,
+    migration: (typeof migrations)[number],
+  ) {
+    for (const statement of migration.sql) {
+      await database.query(statement.replaceAll('"public".', `"${name}".`));
+    }
+  }
+
   beforeAll(async () => {
     adminPool = new Pool({ connectionString: databaseUrl });
     await adminPool.query(`CREATE SCHEMA "${schemaName}"`);
-    pool = new Pool({
-      connectionString: databaseUrl,
-      options: `-c search_path=${schemaName}`,
-    });
-    const migration = readFileSync(
-      new URL("../drizzle/0000_absent_chimera.sql", import.meta.url),
-      "utf8",
-    ).replaceAll('"public".', `"${schemaName}".`);
-    await pool.query(migration);
+    pool = new Pool({ connectionString: databaseUrl, options: `-c search_path=${schemaName}` });
+    for (const migration of migrations) await applyMigration(pool, schemaName, migration);
   });
 
   beforeEach(async () => {
@@ -77,6 +86,8 @@ describe.skipIf(!databaseUrl)("first administrator registration", () => {
     const created = await signUp(app);
     expect(created.status).toBe(200);
     expect(created.headers.get("set-cookie")).toContain("pic-impact.session_token");
+    const createdUser = await pool.query('SELECT username FROM "user"');
+    expect(createdUser.rows).toEqual([{ username: "administrator" }]);
     expect(await session(app)).toMatchObject({ authenticated: false, registrationOpen: false });
   });
 
@@ -84,17 +95,17 @@ describe.skipIf(!databaseUrl)("first administrator registration", () => {
     const app = createTestApp();
     expect((await signUp(app)).status).toBe(200);
 
-    const response = await signUp(app, "another@example.test");
+    const response = await signUp(app, "another_admin");
     expect(response.status).toBe(403);
     expect(await response.json()).toMatchObject({ code: "REGISTRATION_CLOSED" });
     const restarted = createTestApp();
     expect(await session(restarted)).toMatchObject({ registrationOpen: false });
-    expect((await signUp(restarted, "third@example.test")).status).toBe(403);
+    expect((await signUp(restarted, "third_admin")).status).toBe(403);
 
-    const login = await restarted.request("http://localhost/api/auth/sign-in/email", {
+    const login = await restarted.request("http://localhost/api/auth/sign-in/username", {
       method: "POST",
       headers: { "Content-Type": "application/json", Origin: "http://localhost" },
-      body: JSON.stringify({ email: "admin@example.test", password: "test-password-1234" }),
+      body: JSON.stringify({ username: "Administrator", password: "test-password-1234" }),
     });
     expect(login.status).toBe(200);
     const cookie = login.headers.get("set-cookie")!.split(";")[0];
@@ -106,8 +117,8 @@ describe.skipIf(!databaseUrl)("first administrator registration", () => {
 
   it("allows only one registration across concurrent application instances", async () => {
     const responses = await Promise.all([
-      signUp(createTestApp(), "first@example.test"),
-      signUp(createTestApp(), "second@example.test"),
+      signUp(createTestApp(), "first_admin"),
+      signUp(createTestApp(), "second_admin"),
     ]);
     expect(responses.map((response) => response.status).sort()).toEqual([200, 403]);
     const users = await pool.query('SELECT count(*)::int AS count FROM "user"');
@@ -116,9 +127,68 @@ describe.skipIf(!databaseUrl)("first administrator registration", () => {
 
   it("keeps registration open after an invalid submission", async () => {
     const app = createTestApp();
-    expect((await signUp(app, "admin@example.test", "short")).status).toBe(400);
+    expect((await signUp(app, "administrator", "short")).status).toBe(400);
+    expect((await signUp(app, "")).status).toBe(400);
     expect(await session(app)).toMatchObject({ registrationOpen: true });
-    expect((await signUp(app)).status).toBe(200);
+    expect((await signUp(app, "New..Admin")).status).toBe(200);
+  });
+
+  it("does not expose email-based registration", async () => {
+    const app = createTestApp();
+    const response = await app.request("http://localhost/api/auth/sign-up/email", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Origin: "http://localhost" },
+      body: JSON.stringify({
+        name: "Administrator",
+        email: "legacy@example.test",
+        password: "test-password-1234",
+      }),
+    });
+    expect(response.status).toBe(404);
+    expect(await session(app)).toMatchObject({ registrationOpen: true });
+  });
+
+  it("migrates existing accounts to distinct usernames and keeps their passwords", async () => {
+    const legacySchema = `${schemaName}_legacy`;
+    await adminPool.query(`CREATE SCHEMA "${legacySchema}"`);
+    const legacyPool = new Pool({
+      connectionString: databaseUrl,
+      options: `-c search_path=${legacySchema}`,
+    });
+    try {
+      await applyMigration(legacyPool, legacySchema, migrations[0]);
+      await legacyPool.query(`
+        INSERT INTO "user" (id, name, email) VALUES
+          ('1', 'Legacy', 'legacy@example.test'),
+          ('2', 'First', 'shared@example.test'),
+          ('3', 'Second', 'shared@example.org'),
+          ('4', 'Third', 'shared_2@example.test');
+      `);
+      await legacyPool.query(
+        `INSERT INTO "account" (id, "accountId", "providerId", "userId", password)
+         VALUES ('credential-1', '1', 'credential', '1', $1)`,
+        [await hashPassword("test-password-1234")],
+      );
+      for (const migration of migrations.slice(1)) {
+        await applyMigration(legacyPool, legacySchema, migration);
+      }
+      const users = await legacyPool.query('SELECT username FROM "user"');
+      expect(new Set(users.rows.map(({ username }) => username)).size).toBe(4);
+
+      const app = createTestApp(legacyPool);
+      const post = (method: string, body: Record<string, string>) =>
+        app.request(`http://localhost/api/auth/sign-in/${method}`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json", Origin: "http://localhost" },
+          body: JSON.stringify({ ...body, password: "test-password-1234" }),
+        });
+      expect((await post("username", { username: "legacy" })).status).toBe(200);
+      expect((await post("email", { email: "legacy@example.test" })).status).toBe(404);
+      expect(await session(app)).toMatchObject({ registrationOpen: false });
+    } finally {
+      await legacyPool.end();
+      await adminPool.query(`DROP SCHEMA "${legacySchema}" CASCADE`);
+    }
   });
 
   it("rolls back the user when saving credentials fails so registration can be retried", async () => {

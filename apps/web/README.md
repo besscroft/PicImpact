@@ -88,10 +88,20 @@ provider's recommended TLS options.
 
 With the database and Better Auth configured, the admin modules require a
 Better Auth session. When no users exist, the admin entry point shows the initial
-administrator registration form. Once the first account is created, it shows only
-email/password sign-in and the server rejects further registrations. Registration
-is serialized with a PostgreSQL transaction lock, including across app instances.
+administrator registration form. Registration and sign-in use only a username and
+password; once the first account is created, the entry point shows only username/
+password sign-in and the server rejects further registrations. Better Auth keeps a
+synthetic internal email identifier for its required user record, but no email
+account or email input is required. Registration is serialized with a PostgreSQL
+transaction lock, including across app instances.
 The development server uses the same authentication rules as Node and Workers.
+
+On upgrade, run the database migrations before starting the new version. The
+username migration uses the part before `@` of each existing account's email,
+lowercased with unsupported characters replaced by underscores. If the result
+is unusable or already assigned, the migration generates a unique username.
+Existing passwords continue to work. The assigned username is stored in
+`"user".username`.
 
 Set `TEST_DATABASE_URL` when running `pnpm run web:test` to include the PostgreSQL
 authentication integration tests. They create and remove an isolated schema and

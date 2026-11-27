@@ -8,6 +8,13 @@
       "when": 1795574186461,
       "tag": "0000_absent_chimera",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1795757064329,
+      "tag": "0001_misty_snowbird",
+      "breakpoints": true
     }
   ]
 }

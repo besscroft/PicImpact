@@ -7,8 +7,7 @@ export function LoginScreen(props: {
   onAuthenticated: () => void;
 }) {
   const mode = () => (props.registrationOpen ? "sign-up" : "sign-in");
-  const [name, setName] = createSignal("");
-  const [email, setEmail] = createSignal("");
+  const [username, setUsername] = createSignal("");
   const [password, setPassword] = createSignal("");
   const [error, setError] = createSignal<string | null>(null);
   const [pending, setPending] = createSignal(false);
@@ -17,20 +16,13 @@ export function LoginScreen(props: {
     event.preventDefault();
     setPending(true);
     setError(null);
-    const endpoint = mode() === "sign-in" ? "/api/auth/sign-in/email" : "/api/auth/sign-up/email";
-    const body =
-      mode() === "sign-in"
-        ? { email: email().trim(), password: password() }
-        : {
-            name: name().trim(),
-            email: email().trim(),
-            password: password(),
-          };
+    const endpoint =
+      mode() === "sign-in" ? "/api/auth/sign-in/username" : "/api/auth/sign-up/username";
     try {
       const response = await fetch(endpoint, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(body),
+        body: JSON.stringify({ username: username().trim(), password: password() }),
       });
       if (!response.ok) {
         const payload = (await response.json().catch(() => null)) as {
@@ -42,7 +34,7 @@ export function LoginScreen(props: {
           props.onRegistrationClosed();
         }
         throw new Error(
-          payload?.message ?? payload?.error?.message ?? "登录失败，请检查邮箱和密码",
+          payload?.message ?? payload?.error?.message ?? "登录失败，请检查用户名和密码",
         );
       }
       props.onAuthenticated();
@@ -63,27 +55,18 @@ export function LoginScreen(props: {
           : "创建账号后即可进入这个实例的管理工作区。"}
       </p>
       <form class="auth-form" onSubmit={submit}>
-        {mode() === "sign-up" && (
-          <label>
-            名称
-            <input
-              required
-              autocomplete="name"
-              value={name()}
-              onInput={(event) => setName(event.currentTarget.value)}
-              placeholder="你的名字"
-            />
-          </label>
-        )}
         <label>
-          邮箱
+          用户名
           <input
             required
-            type="email"
-            autocomplete="email"
-            value={email()}
-            onInput={(event) => setEmail(event.currentTarget.value)}
-            placeholder="you@example.com"
+            minlength={3}
+            maxlength={30}
+            pattern="[A-Za-z0-9_.]+"
+            type="text"
+            autocomplete="username"
+            value={username()}
+            onInput={(event) => setUsername(event.currentTarget.value)}
+            placeholder={props.registrationOpen ? "3–30 个字母、数字、点或下划线" : "你的用户名"}
           />
         </label>
         <label>
