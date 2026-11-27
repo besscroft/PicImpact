@@ -4,6 +4,7 @@ import solid from "@solidjs/vite-plugin";
 import { defineConfig } from "vite-plus";
 
 import { createApp } from "./src/server/app";
+import { createAuth } from "./src/server/auth";
 import { createPostgresDb } from "./src/server/db";
 import { createPostgresPool } from "./src/server/db/pool";
 import { DrizzlePicImpactStore } from "./src/server/store";
@@ -46,6 +47,10 @@ function apiMiddleware() {
       const store = new DrizzlePicImpactStore(db);
       const app = createApp({
         store,
+        auth: createAuth(db, {
+          baseURL: process.env.BETTER_AUTH_URL,
+          secret: process.env.BETTER_AUTH_SECRET,
+        }),
         storageResolver: createStorageResolver(store, {
           createS3: (options) => new S3ObjectStorage(options),
         }),

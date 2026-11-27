@@ -56,6 +56,7 @@ function AdminApp() {
   const [authReady, setAuthReady] = createSignal(false);
   const [authConfigured, setAuthConfigured] = createSignal(false);
   const [authenticated, setAuthenticated] = createSignal(false);
+  const [registrationOpen, setRegistrationOpen] = createSignal(false);
   const [sidebarOpen, setSidebarOpen] = createSignal(true);
 
   async function refresh() {
@@ -91,9 +92,11 @@ function AdminApp() {
       const response = await getJson<{
         configured: boolean;
         authenticated: boolean;
+        registrationOpen: boolean;
       }>("/api/session");
       setAuthConfigured(response.configured);
       setAuthenticated(response.authenticated);
+      setRegistrationOpen(response.registrationOpen);
       if (!response.configured || response.authenticated) {
         await refresh();
       }
@@ -149,7 +152,10 @@ function AdminApp() {
       <Show when={authReady() && authConfigured() && !authenticated()}>
         <main class="auth-layout">
           <LoginScreen
+            registrationOpen={registrationOpen()}
+            onRegistrationClosed={() => setRegistrationOpen(false)}
             onAuthenticated={() => {
+              setRegistrationOpen(false);
               setAuthenticated(true);
               void refresh();
             }}

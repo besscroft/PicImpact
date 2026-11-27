@@ -13,6 +13,7 @@ import { exportBackup, importBackup } from "./store";
 
 type AuthHandler = {
   handler(request: Request): Response | Promise<Response>;
+  isRegistrationOpen(): Promise<boolean>;
   api: {
     getSession(input: { headers: Headers }): Promise<unknown>;
   };
@@ -171,13 +172,20 @@ export function createApp(options: {
   app.use("/api/admin/*", requireAuth);
 
   app.get("/api/session", async (c) => {
+    c.header("Cache-Control", "no-store");
     if (!options.auth) {
-      return c.json({ configured: false, authenticated: true, session: null });
+      return c.json({
+        configured: false,
+        authenticated: true,
+        registrationOpen: false,
+        session: null,
+      });
     }
     const session = await options.auth.api.getSession({ headers: c.req.raw.headers });
     return c.json({
       configured: true,
       authenticated: Boolean(session),
+      registrationOpen: await options.auth.isRegistrationOpen(),
       session,
     });
   });

@@ -87,8 +87,16 @@ provider's recommended TLS options.
 ## Authentication
 
 With the database and Better Auth configured, the admin modules require a
-Better Auth session. The UI includes email/password sign-in and account sign-up
-at the same entry point.
+Better Auth session. When no users exist, the admin entry point shows the initial
+administrator registration form. Once the first account is created, it shows only
+email/password sign-in and the server rejects further registrations. Registration
+is serialized with a PostgreSQL transaction lock, including across app instances.
+The development server uses the same authentication rules as Node and Workers.
+
+Set `TEST_DATABASE_URL` when running `pnpm run web:test` to include the PostgreSQL
+authentication integration tests. They create and remove an isolated schema and
+require a database role with permission to create schemas. Without this variable,
+the database integration tests are skipped.
 
 ## Uploads
 

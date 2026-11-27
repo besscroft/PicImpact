@@ -1,8 +1,12 @@
 import { Button } from "@ui-sdk/solid/button";
 import { createSignal } from "solid-js";
 
-export function LoginScreen(props: { onAuthenticated: () => void }) {
-  const [mode, setMode] = createSignal<"sign-in" | "sign-up">("sign-in");
+export function LoginScreen(props: {
+  registrationOpen: boolean;
+  onRegistrationClosed: () => void;
+  onAuthenticated: () => void;
+}) {
+  const mode = () => (props.registrationOpen ? "sign-up" : "sign-in");
   const [name, setName] = createSignal("");
   const [email, setEmail] = createSignal("");
   const [password, setPassword] = createSignal("");
@@ -30,9 +34,13 @@ export function LoginScreen(props: { onAuthenticated: () => void }) {
       });
       if (!response.ok) {
         const payload = (await response.json().catch(() => null)) as {
+          code?: string;
           message?: string;
           error?: { message?: string };
         } | null;
+        if (payload?.code === "REGISTRATION_CLOSED") {
+          props.onRegistrationClosed();
+        }
         throw new Error(
           payload?.message ?? payload?.error?.message ?? "登录失败，请检查邮箱和密码",
         );
@@ -99,16 +107,6 @@ export function LoginScreen(props: { onAuthenticated: () => void }) {
           {pending() ? "处理中…" : mode() === "sign-in" ? "登录工作区" : "创建账号"}
         </Button>
       </form>
-      <button
-        class="auth-switch"
-        type="button"
-        onClick={() => {
-          setMode(mode() === "sign-in" ? "sign-up" : "sign-in");
-          setError(null);
-        }}
-      >
-        {mode() === "sign-in" ? "还没有账号？创建管理员账号" : "已有账号？返回登录"}
-      </button>
     </section>
   );
 }

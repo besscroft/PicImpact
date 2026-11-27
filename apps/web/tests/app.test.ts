@@ -470,6 +470,7 @@ describe("PicImpact web API", () => {
       store: new MemoryPicImpactStore(),
       auth: {
         handler: () => new Response(null, { status: 204 }),
+        isRegistrationOpen: async () => false,
         api: {
           getSession: async () => null,
         },
@@ -483,6 +484,29 @@ describe("PicImpact web API", () => {
       message: "Authentication required",
     });
   });
+
+  it.each([true, false])(
+    "reports registration availability without caching it: %s",
+    async (registrationOpen) => {
+      const app = createApp({
+        store: new MemoryPicImpactStore(),
+        auth: {
+          handler: () => new Response(null, { status: 204 }),
+          isRegistrationOpen: async () => registrationOpen,
+          api: { getSession: async () => null },
+        },
+      });
+
+      const response = await app.request("http://localhost/api/session");
+      expect(response.headers.get("cache-control")).toContain("no-store");
+      expect(await response.json()).toEqual({
+        configured: true,
+        authenticated: false,
+        registrationOpen,
+        session: null,
+      });
+    },
+  );
 
   it("keeps the Better Auth core schema separate from v3 plugin tables", () => {
     expect(Object.keys(schema)).toEqual(
