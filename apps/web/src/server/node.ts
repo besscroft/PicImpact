@@ -3,24 +3,18 @@ import { serveStatic } from "@hono/node-server/serve-static";
 
 import { createApp } from "./app";
 import { createAuth } from "./auth";
-import { createLocalDb } from "./db/local";
-import { createNeonDb } from "./db";
-import { createStore } from "./store";
+import { createPostgresDb } from "./db";
+import { createPostgresPool } from "./db/pool";
+import { DrizzlePicImpactStore } from "./store";
 import { createStorageResolver } from "./storage-config";
 import { S3ObjectStorage } from "./storage-s3";
 
-const env = {
-  DATABASE_URL: process.env.DATABASE_URL,
-};
-const store = createStore(env, {
-  createLocalDb: (databaseUrl) => createLocalDb(databaseUrl),
+const db = createPostgresDb(createPostgresPool(process.env.DATABASE_URL));
+const store = new DrizzlePicImpactStore(db);
+const auth = createAuth(db, {
+  baseURL: process.env.BETTER_AUTH_URL,
+  secret: process.env.BETTER_AUTH_SECRET,
 });
-const auth = env.DATABASE_URL
-  ? createAuth(createNeonDb(env.DATABASE_URL), {
-      baseURL: process.env.BETTER_AUTH_URL,
-      secret: process.env.BETTER_AUTH_SECRET,
-    })
-  : undefined;
 const app = createApp({
   store,
   auth,

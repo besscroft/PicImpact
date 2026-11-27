@@ -1,12 +1,8 @@
-import { neon } from "@neondatabase/serverless";
-import { drizzle } from "drizzle-orm/neon-http";
-import { migrate as migrateNeon } from "drizzle-orm/neon-http/migrator";
-import { migrate as migrateNode } from "drizzle-orm/node-postgres/migrator";
+import { migrate } from "drizzle-orm/node-postgres/migrator";
 import { readFileSync } from "node:fs";
 
-import { isLocalPostgres } from "./index";
-import { createLocalDb } from "./local";
-import { schema } from "./schema";
+import { createPostgresDb } from "./index";
+import { createPostgresPool } from "./pool";
 
 // 手动加载 .env（与 vite.config.ts 行为一致）
 try {
@@ -24,19 +20,10 @@ try {
   // .env 不存在时忽略
 }
 
-const databaseUrl = process.env.DATABASE_URL;
-
-if (!databaseUrl) {
-  throw new Error("DATABASE_URL is required to run migrations");
-}
-
-if (isLocalPostgres(databaseUrl)) {
-  const db = createLocalDb(databaseUrl);
-  await migrateNode(db, { migrationsFolder: "./drizzle" });
-  console.log("Migration complete (node-postgres).");
-} else {
-  const sql = neon(databaseUrl);
-  const db = drizzle({ client: sql, schema });
-  await migrateNeon(db, { migrationsFolder: "./drizzle" });
-  console.log("Migration complete (neon-http).");
+const pool = createPostgresPool(process.env.DATABASE_URL);
+try {
+  await migrate(createPostgresDb(pool), { migrationsFolder: "./drizzle" });
+  console.log("Migration complete.");
+} finally {
+  await pool.end();
 }

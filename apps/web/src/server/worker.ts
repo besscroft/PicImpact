@@ -1,54 +1,63 @@
 import type { R2Bucket } from "@cloudflare/workers-types";
+import { Client } from "pg";
 
 import { createApp } from "./app";
 import { createAuth } from "./auth";
-import { createNeonDb } from "./db";
-import { createStore, type StoreEnv } from "./store";
+import { createPostgresDb } from "./db";
+import { DrizzlePicImpactStore } from "./store";
 import { S3FetchObjectStorage } from "./storage-s3-fetch";
 import { createStorageResolver } from "./storage-config";
 
-type Env = StoreEnv & {
+type Env = {
+  HYPERDRIVE?: Pick<Hyperdrive, "connectionString">;
   BETTER_AUTH_SECRET?: string;
   BETTER_AUTH_URL?: string;
   ASSETS?: Fetcher;
   R2?: R2Bucket;
 };
 
-let cachedApp: ReturnType<typeof createApp> | undefined;
-let cachedDatabaseUrl: string | undefined;
-
-function getApp(env: Env) {
-  if (cachedApp && cachedDatabaseUrl === env.DATABASE_URL) {
-    return cachedApp;
-  }
-  const store = createStore(env);
-  const auth = env.DATABASE_URL
-    ? createAuth(createNeonDb(env.DATABASE_URL), {
-        baseURL: env.BETTER_AUTH_URL,
-        secret: env.BETTER_AUTH_SECRET,
-      })
-    : undefined;
-  cachedDatabaseUrl = env.DATABASE_URL;
-  cachedApp = createApp({
-    store,
-    auth,
-    storageResolver: createStorageResolver(store, {
-      r2: env.R2,
-      createS3: (options) => new S3FetchObjectStorage(options),
-    }),
-  });
-  return cachedApp;
-}
-
 export default {
-  fetch(request: Request, env: Env, executionContext: ExecutionContext) {
-    return Promise.resolve(getApp(env).fetch(request, env, executionContext)).then(
-      async (response) => {
-        if (response.status === 404 && env.ASSETS) {
-          return env.ASSETS.fetch(request);
-        }
-        return response;
-      },
-    );
+  async fetch(request: Request, env: Env, executionContext: ExecutionContext) {
+    const path = new URL(request.url).pathname;
+    if (path !== "/api" && !path.startsWith("/api/")) {
+      return env.ASSETS?.fetch(request) ?? new Response("Not found", { status: 404 });
+    }
+
+    const connectionString = env.HYPERDRIVE?.connectionString;
+    if (!connectionString) {
+      return Response.json({ code: 503, message: "Missing HYPERDRIVE binding" }, { status: 503 });
+    }
+
+    const client = new Client({ connectionString, connectionTimeoutMillis: 10_000 });
+    client.on("error", () => console.error("The Worker PostgreSQL connection failed."));
+    try {
+      try {
+        await client.connect();
+      } catch (error) {
+        console.error(
+          "Could not connect to PostgreSQL through Hyperdrive.",
+          (error as { code?: string })?.code,
+        );
+        return Response.json({ code: 503, message: "PostgreSQL is unavailable" }, { status: 503 });
+      }
+
+      const db = createPostgresDb(client);
+      const store = new DrizzlePicImpactStore(db);
+      const app = createApp({
+        store,
+        auth: createAuth(db, { baseURL: env.BETTER_AUTH_URL, secret: env.BETTER_AUTH_SECRET }),
+        storageResolver: createStorageResolver(store, {
+          r2: env.R2,
+          createS3: (options) => new S3FetchObjectStorage(options),
+        }),
+      });
+      return await app.fetch(request, env, executionContext);
+    } finally {
+      executionContext.waitUntil(
+        client
+          .end()
+          .catch(() => console.error("Could not close the Worker PostgreSQL connection.")),
+      );
+    }
   },
 };

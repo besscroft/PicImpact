@@ -25,10 +25,14 @@ pnpm --filter @picimpact/web dev
 
 ## PostgreSQL
 
-```shell
-pnpm --filter @picimpact/web db:generate
-pnpm --filter @picimpact/web db:migrate
-```
+For a new database, set `DATABASE_URL` to a standard `postgresql://` connection
+string in your local shell or `apps/web/.env`, then run `pnpm run web:db:migrate`
+from the repository root. Use a database role that can create schemas, tables,
+and indexes. The script applies the checked-in migrations over PostgreSQL; it
+does not need a Cloudflare binding. Use the provider's direct or session-mode
+connection for migrations. Run migrations before starting either deployment;
+neither deployment creates tables at startup. `pnpm run web:db:generate` is only
+needed when changing the schema.
 
 The Drizzle schema keeps the v3 table names and column names for `images`,
 `albums`, `configs`, and `images_albums_relation`. Better Auth tables are
@@ -38,16 +42,37 @@ not copied into the v4 baseline.
 
 ## Deploy
 
-- Docker: build `apps/web/Dockerfile`, then run the container with
-  `DATABASE_URL`, `BETTER_AUTH_SECRET`, and `BETTER_AUTH_URL`.
-- Cloudflare Workers: build the client, then deploy `wrangler.toml`. The Worker
-  entry uses the same Hono app and Neon-compatible PostgreSQL HTTP driver.
+### Docker
+
+Build from the repository root with `docker build -f apps/web/Dockerfile .`.
+Run the image with `DATABASE_URL`, `BETTER_AUTH_SECRET`, and `BETTER_AUTH_URL`.
+The connection string must be reachable from the container; for another
+container, use its service/DNS name, not `localhost`. Use the database
+provider's recommended TLS options.
+
+### Cloudflare Workers
+
+1. Create a Cloudflare Hyperdrive configuration targeting the same PostgreSQL
+   database you migrated. Use the provider's recommended origin connection
+   (for Supabase, use a direct connection or its session pooler if IPv4 is
+   needed). The database must be reachable by Hyperdrive; private origins
+   require [private database connectivity](https://developers.cloudflare.com/hyperdrive/configuration/connect-to-private-database/).
+   Disable Hyperdrive query caching for this application so authentication and
+   admin reads see writes immediately.
+2. Bind that configuration to the Worker as `HYPERDRIVE`. For Wrangler or
+   Workers Builds, configure the `[[hyperdrive]]` block in `wrangler.toml` with
+   its ID. A `DATABASE_URL` Worker variable is no longer used. Set
+   `BETTER_AUTH_URL` to your public site URL and `BETTER_AUTH_SECRET` to a random
+   Worker secret. Do not put database credentials in `wrangler.toml`.
+3. Run `pnpm run web:build`, then `pnpm --filter @picimpact/web exec wrangler deploy`
+   from the repository root. Check `/api/health` for a working connection and
+   `/api/public/albums` to verify the tables are present.
 
 ## Authentication
 
-When `DATABASE_URL`, `BETTER_AUTH_SECRET`, and `BETTER_AUTH_URL` are set, the
-admin modules require a Better Auth session. The UI includes email/password
-sign-in and account sign-up at the same entry point.
+With the database and Better Auth configured, the admin modules require a
+Better Auth session. The UI includes email/password sign-in and account sign-up
+at the same entry point.
 
 ## Uploads
 

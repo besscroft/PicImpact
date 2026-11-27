@@ -1,6 +1,6 @@
 ﻿import { and, asc, desc, eq, inArray } from "drizzle-orm";
 
-import { createNeonDb, isLocalPostgres, type Database } from "./db";
+import type { Database } from "./db";
 import { albums, configs, images, imagesAlbumsRelation } from "./db/schema";
 import {
   BACKUP_FORMAT,
@@ -1055,28 +1055,6 @@ export class DrizzlePicImpactStore implements PicImpactStore {
       },
     };
   }
-}
-
-export type StoreEnv = {
-  DATABASE_URL?: string;
-};
-
-export function createStore(
-  env: StoreEnv,
-  options: { createLocalDb?: (databaseUrl: string) => Database } = {},
-): PicImpactStore {
-  if (!env.DATABASE_URL) {
-    throw new Error("Missing DATABASE_URL: configure a Postgres connection string to run PicImpact.");
-  }
-  if (isLocalPostgres(env.DATABASE_URL)) {
-    if (!options.createLocalDb) {
-      throw new Error(
-        "Local Postgres URLs require the Node runtime with the pg driver (worker deployments must use Neon).",
-      );
-    }
-    return new DrizzlePicImpactStore(options.createLocalDb(env.DATABASE_URL));
-  }
-  return new DrizzlePicImpactStore(createNeonDb(env.DATABASE_URL));
 }
 
 export async function exportBackup(store: PicImpactStore): Promise<BackupEnvelopeV1> {

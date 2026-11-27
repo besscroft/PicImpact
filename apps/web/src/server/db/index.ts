@@ -1,24 +1,10 @@
-import { neon } from "@neondatabase/serverless";
-import { drizzle } from "drizzle-orm/neon-http";
-import type { NeonHttpDatabase } from "drizzle-orm/neon-http";
-import type { NodePgDatabase } from "drizzle-orm/node-postgres";
+import { drizzle, type NodePgDatabase } from "drizzle-orm/node-postgres";
+import type { Client, Pool } from "pg";
 
 import { schema } from "./schema";
 
-export function createNeonDb(databaseUrl: string) {
-  return drizzle({
-    client: neon(databaseUrl),
-    schema,
-  });
+export function createPostgresDb(client: Client | Pool): Database {
+  return drizzle({ client, schema });
 }
 
-export function isLocalPostgres(databaseUrl: string) {
-  try {
-    const host = new URL(databaseUrl).hostname;
-    return host === "localhost" || host === "127.0.0.1" || host === "::1";
-  } catch {
-    return false;
-  }
-}
-
-export type Database = NeonHttpDatabase<typeof schema> | NodePgDatabase<typeof schema>;
+export type Database = NodePgDatabase<typeof schema>;

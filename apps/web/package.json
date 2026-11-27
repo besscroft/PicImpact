@@ -20,7 +20,6 @@
     "@better-auth/drizzle-adapter": "1.7.28",
     "@cloudflare/workers-types": "5.20261124.1",
     "@hono/node-server": "2.1.11",
-    "@neondatabase/serverless": "1.2.1",
     "@solidjs/web": "2.0.3",
     "@ui-sdk/core": "0.1.0-beta.16",
     "@ui-sdk/solid": "0.1.0-beta.16",

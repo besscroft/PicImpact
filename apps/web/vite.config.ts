@@ -4,8 +4,9 @@ import solid from "@solidjs/vite-plugin";
 import { defineConfig } from "vite-plus";
 
 import { createApp } from "./src/server/app";
-import { createStore } from "./src/server/store";
-import { createLocalDb } from "./src/server/db/local";
+import { createPostgresDb } from "./src/server/db";
+import { createPostgresPool } from "./src/server/db/pool";
+import { DrizzlePicImpactStore } from "./src/server/store";
 import { createStorageResolver } from "./src/server/storage-config";
 import { S3ObjectStorage } from "./src/server/storage-s3";
 
@@ -41,15 +42,8 @@ function apiMiddleware() {
         // Vitest 会复用 vite.config 创建独立服务器，单测自建 Hono app，无需 API 中间件
         return;
       }
-      if (!process.env.DATABASE_URL) {
-        throw new Error(
-          "Missing DATABASE_URL: dev server requires a Postgres connection string (the in-memory store has been removed).",
-        );
-      }
-      const store = createStore(
-        { DATABASE_URL: process.env.DATABASE_URL },
-        { createLocalDb: (databaseUrl) => createLocalDb(databaseUrl) },
-      );
+      const db = createPostgresDb(createPostgresPool(process.env.DATABASE_URL));
+      const store = new DrizzlePicImpactStore(db);
       const app = createApp({
         store,
         storageResolver: createStorageResolver(store, {
