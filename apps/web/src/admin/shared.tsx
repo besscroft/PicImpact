@@ -48,7 +48,9 @@ export const dialogTitleCls = "text-sm font-medium text-foreground";
 export const switchCls =
   "inline-flex h-5 w-9 shrink-0 cursor-pointer items-center rounded-full border border-transparent bg-input p-0.5 transition-colors data-checked:bg-primary disabled:cursor-default disabled:opacity-50";
 export const switchThumbCls =
-  "ml-0 size-4 rounded-full bg-card shadow-sm transition-[translate] duration-150 data-checked:translate-x-4";
+  // ml-0 必须保留：ui-sdk 组件层会给 data-checked 滑块加 margin-inline-start:auto，
+  // 缺少它时 auto margin + translate 会把滑块推出轨道之外。
+  "ml-0 size-4 rounded-full bg-card shadow-sm transition-[translate] duration-150 data-checked:translate-x-3.5";
 
 export const exifTableCls = "w-full border-collapse text-sm";
 export const exifCellCls = "border border-border px-2.5 py-1.5 text-left";
