@@ -169,6 +169,7 @@ type StorageField = {
   hint: string;
   secret?: boolean;
   pathStyle?: boolean;
+  toggle?: boolean;
 };
 
 const S3_STORAGE_FIELDS: StorageField[] = [
@@ -180,6 +181,7 @@ const S3_STORAGE_FIELDS: StorageField[] = [
   { key: "storage.force_path_style", label: "Bucket 寻址方式", hint: "默认沿用现有寻址；可选路径式或虚拟主机式", pathStyle: true },
   { key: "storage.public_url", label: "Public URL", hint: "自定义域名，可选" },
   { key: "storage.storage_folder", label: "存储文件夹", hint: "如 picimpact 或 picimpact/images，/ 或空为根路径" },
+  { key: "storage.direct_download", label: "直链下载", hint: "开启后下载原图走对象存储预签名直链，关闭则由服务端代理", toggle: true },
 ];
 
 const R2_STORAGE_FIELDS: StorageField[] = [
@@ -189,6 +191,7 @@ const R2_STORAGE_FIELDS: StorageField[] = [
   { key: "storage.r2.bucket", label: "Bucket", hint: "R2 存储桶名称" },
   { key: "storage.r2.storage_folder", label: "存储文件夹", hint: "如 picimpact 或 picimpact/images，/ 或空为根路径" },
   { key: "storage.r2.public_url", label: "Public URL", hint: "R2 公共访问域名，可选" },
+  { key: "storage.r2.direct_download", label: "直链下载", hint: "开启后下载原图走 R2 预签名直链，关闭则由服务端代理", toggle: true },
 ];
 
 function StorageConfigPanel(props: {
@@ -204,8 +207,9 @@ function StorageConfigPanel(props: {
   const configValue = (key: string) =>
     props.configs.find((config) => config.config_key === key)?.config_value ?? "";
 
-  const displayValue = (field: { key: string; secret?: boolean }) => {
+  const displayValue = (field: { key: string; secret?: boolean; toggle?: boolean }) => {
     const value = configValue(field.key);
+    if (field.toggle) return value === "true" ? "开启" : "关闭";
     if (!value) return "—";
     if (field.secret) {
       return value.length > 4 ? `${"•".repeat(10)}${value.slice(-4)}` : "••••••";
@@ -279,6 +283,19 @@ function StorageConfigPanel(props: {
                         <option value="">默认</option>
                         <option value="true">路径式：endpoint/bucket</option>
                         <option value="false">虚拟主机式：bucket.endpoint</option>
+                      </select>
+                    </label>
+                  ) : field.toggle ? (
+                    <label>
+                      {field.label}（{field.key}）
+                      <select
+                        value={draft()[field.key] === "true" ? "true" : "false"}
+                        onChange={(event) =>
+                          setDraft({ ...draft(), [field.key]: event.currentTarget.value })
+                        }
+                      >
+                        <option value="false">关闭：服务端代理下载</option>
+                        <option value="true">开启：对象存储直链下载</option>
                       </select>
                     </label>
                   ) : (

@@ -34,12 +34,49 @@ export class S3FetchObjectStorage implements ObjectStorage {
       : `${requestOrigin}/api/storage/${encodePath(key)}`;
   }
 
-  private async request(
-    method: "GET" | "PUT",
-    key: string,
-    body?: Uint8Array,
-    contentType?: string,
-  ) {
+  async presignedGetUrl(key: string, expiresIn = 3600) {
+    const endpoint = this.objectUrl(key);
+    const amzDate = toAmzDate(new Date());
+    const dateStamp = amzDate.slice(0, 8);
+    const credentialScope = `${dateStamp}/${this.options.region}/s3/aws4_request`;
+
+    const query = [
+      ["X-Amz-Algorithm", "AWS4-HMAC-SHA256"],
+      ["X-Amz-Credential", `${this.options.accessKeyId}/${credentialScope}`],
+      ["X-Amz-Date", amzDate],
+      ["X-Amz-Expires", String(expiresIn)],
+      ["X-Amz-SignedHeaders", "host"],
+    ] as const;
+    const canonicalQuery = query
+      .map(([name, value]) => `${encodeSegment(name)}=${encodeSegment(value)}`)
+      .sort()
+      .join("&");
+
+    const canonicalRequest = [
+      "GET",
+      endpoint.pathname,
+      canonicalQuery,
+      `host:${endpoint.host}\n`,
+      "host",
+      "UNSIGNED-PAYLOAD",
+    ].join("\n");
+    const stringToSign = [
+      "AWS4-HMAC-SHA256",
+      amzDate,
+      credentialScope,
+      await sha256Hex(canonicalRequest),
+    ].join("\n");
+    const signingKey = await deriveSigningKey(
+      this.options.secretAccessKey,
+      dateStamp,
+      this.options.region,
+    );
+    const signature = toHex(await hmac(signingKey, stringToSign));
+
+    return `${endpoint.origin}${endpoint.pathname}?${canonicalQuery}&X-Amz-Signature=${encodeSegment(signature)}`;
+  }
+
+  private objectUrl(key: string) {
     const endpoint = new URL(
       this.options.endpoint ?? `https://s3.${this.options.region}.${this.options.region.startsWith("cn-") ? "amazonaws.com.cn" : "amazonaws.com"}`,
     );
@@ -50,6 +87,16 @@ export class S3FetchObjectStorage implements ObjectStorage {
     if (virtualHost) endpoint.hostname = `${bucket}.${endpoint.hostname}`;
     const bucketPath = virtualHost ? "" : `/${encodeSegment(bucket)}`;
     endpoint.pathname = `${trimSlash(endpoint.pathname)}${bucketPath}/${key.split("/").map(encodeSegment).join("/")}`;
+    return endpoint;
+  }
+
+  private async request(
+    method: "GET" | "PUT",
+    key: string,
+    body?: Uint8Array,
+    contentType?: string,
+  ) {
+    const endpoint = this.objectUrl(key);
 
     const payload = body ?? new Uint8Array();
     const payloadHash = await sha256Hex(payload);

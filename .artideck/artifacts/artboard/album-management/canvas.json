@@ -1,0 +1,19 @@
+{
+  "version": 1,
+  "title": "PicImpact 相册管理 · 设计对照",
+  "activePage": "directions",
+  "pages": [{ "id": "directions", "name": "设计方向" }],
+  "focus": { "target": "direction" },
+  "boards": {
+    "shelf": { "file": "pages/shelf.html", "page": "directions", "x": 0, "y": 460, "w": 1280, "h": 800, "title": "A · 封面陈列" },
+    "index": { "file": "pages/index.html", "page": "directions", "x": 1360, "y": 460, "w": 1280, "h": 800, "title": "B · 档案工作台" },
+    "visibility": { "file": "pages/visibility.html", "page": "directions", "x": 2720, "y": 460, "w": 1280, "h": 800, "title": "C · 前台陈列清单" }
+  },
+  "groups": {
+    "direction": { "title": "相册管理应该让哪件事最顺手？", "boards": ["shelf", "index", "visibility"], "choose": true, "recommend": "index" }
+  },
+  "notes": {
+    "round-one": { "kind": "title", "page": "directions", "x": 0, "y": 0, "text": "相册管理 · 三种方向", "description": "在画板上选一套并提交。三张图使用同一组示例相册，尚未修改后台。" },
+    "why-index": { "kind": "sticky", "page": "directions", "x": 1360, "y": 1450, "w": 560, "text": "推荐 B：列表扫读和编辑可以同时进行，且不依赖封面等新字段。" }
+  }
+}

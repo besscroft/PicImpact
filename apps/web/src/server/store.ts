@@ -31,6 +31,7 @@ export type ConfigInput = Pick<BackupConfigRecord, "config_key"> &
   Partial<Pick<BackupConfigRecord, "config_value" | "detail">>;
 
 export type PublicImageRecord = BackupImageRecord & {
+  image_key?: string | null;
   album_value?: string;
   album_name?: string;
   album_license?: string | null;
@@ -497,10 +498,11 @@ export function createDashboardData(
 
 type DrizzleRow = Record<string, unknown>;
 
-function asImageRecord(row: DrizzleRow): BackupImageRecord {
+function asImageRecord(row: DrizzleRow): BackupImageRecord & { image_key: string | null } {
   return {
     id: String(row.id),
     image_name: (row.image_name as string | null) ?? null,
+    image_key: (row.image_key as string | null) ?? null,
     url: (row.url as string | null) ?? null,
     preview_url: (row.preview_url as string | null) ?? null,
     video_url: (row.video_url as string | null) ?? null,

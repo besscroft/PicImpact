@@ -1,4 +1,12 @@
 import { Button } from "@ui-sdk/solid/button";
+import {
+  Toast,
+  ToastAction,
+  ToastClose,
+  ToastDescription,
+  ToastRegion,
+  ToastTitle,
+} from "@ui-sdk/solid/toast";
 import { animate } from "motion";
 import { For, Show, createEffect, createSignal } from "solid-js";
 
@@ -58,6 +66,12 @@ function AdminApp() {
   const [authenticated, setAuthenticated] = createSignal(false);
   const [registrationOpen, setRegistrationOpen] = createSignal(false);
   const [sidebarOpen, setSidebarOpen] = createSignal(true);
+  const [uploadSaveApi, setUploadSaveApi] = createSignal<{
+    save: () => Promise<void>;
+    ready: () => boolean;
+    hint: () => string;
+  } | null>(null);
+  const [albumFormApi, setAlbumFormApi] = createSignal<{ open: () => void } | null>(null);
 
   async function refresh() {
     setLoading(true);
@@ -85,6 +99,13 @@ function AdminApp() {
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : "概览刷新失败");
     }
+  }
+
+  async function refreshAlbums() {
+    const response = await getJson<{ data: Album[] }>("/api/albums");
+    setAlbums(response.data);
+    void refreshDashboard();
+    return response.data;
   }
 
   async function loadSession() {
@@ -237,16 +258,28 @@ function AdminApp() {
                 <ToolbarIcon />
               </button>
               <div class="toolbar-spacer" />
-              <a class="quiet-link" href="/api/health" target="_blank" rel="noreferrer">
-                API health
-              </a>
-              <a class="quiet-link" href="/api/backup/export">
-                导出备份
-              </a>
-              <Button class="primary-button" onClick={() => refresh()} pendingAnnouncement="刷新中">
-                <span data-show="idle">刷新数据</span>
-                <span data-show="pending">刷新中…</span>
-              </Button>
+              <Show when={view() === "albums" && albumFormApi()}>
+                <Button
+                  class="primary-button"
+                  type="button"
+                  onClick={() => albumFormApi()!.open()}
+                >
+                  新建相册
+                </Button>
+              </Show>
+              <Show when={view() === "upload" && uploadSaveApi()}>
+                <span class="toolbar-hint">{uploadSaveApi()!.hint()}</span>
+                <Button
+                  class="primary-button"
+                  type="button"
+                  disabled={!uploadSaveApi()!.ready()}
+                  onClick={() => uploadSaveApi()!.save()}
+                  pendingAnnouncement="保存中"
+                >
+                  <span data-show="idle">保存</span>
+                  <span data-show="pending">保存中…</span>
+                </Button>
+              </Show>
             </header>
 
             <div class="admin-content">
@@ -269,14 +302,18 @@ function AdminApp() {
                   <UploadView
                     albums={albums()}
                     onChanged={refreshDashboard}
-                    onGoManage={() => setView("photos")}
+                    registerSave={setUploadSaveApi}
                   />
                 </Show>
                 <Show when={view() === "photos"}>
                   <PhotosView albums={albums()} onChanged={refresh} />
                 </Show>
                 <Show when={view() === "albums"}>
-                  <AlbumsView albums={albums()} onChanged={refresh} />
+                  <AlbumsView
+                    albums={albums()}
+                    onChanged={refreshAlbums}
+                    registerAction={setAlbumFormApi}
+                  />
                 </Show>
                 <Show when={view() === "storage"}>
                   <StorageConfigView configs={configs()} onSaveStorage={saveStorageConfig} />
@@ -295,9 +332,85 @@ function AdminApp() {
 
 function App() {
   const route = getRoute();
-  if (route.kind === "admin") return <AdminApp />;
-  if (route.kind === "preview") return <PublicPreview id={route.id} />;
-  return <PublicHome album={route.album} />;
+  const content =
+    route.kind === "admin" ? (
+      <AdminApp />
+    ) : route.kind === "preview" ? (
+      <PublicPreview id={route.id} />
+    ) : (
+      <PublicHome album={route.album} />
+    );
+  return (
+    <>
+      {content}
+      <ToastRegion side="bottom" align="end" aria-label="通知">
+        {(item) => (
+          <Toast>
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              data-show="success"
+              aria-hidden="true"
+            >
+              <circle cx="12" cy="12" r="10" />
+              <path d="m16 9-5.5 5.5L8 12" />
+            </svg>
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              data-show="error"
+              aria-hidden="true"
+            >
+              <path d="m15 9-6 6" />
+              <path d="M2.586 16.726A2 2 0 0 1 2 15.312V8.688a2 2 0 0 1 .586-1.414l4.688-4.688A2 2 0 0 1 8.688 2h6.624a2 2 0 0 1 1.414.586l4.688 4.688A2 2 0 0 1 22 8.688v6.624a2 2 0 0 1-.586 1.414l-4.688 4.688a2 2 0 0 1-1.414.586H8.688a2 2 0 0 1-1.414-.586z" />
+              <path d="m9 9 6 6" />
+            </svg>
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              data-show="loading"
+              aria-hidden="true"
+            >
+              <path d="M21 12a9 9 0 1 1-6.219-8.56" />
+            </svg>
+            <div data-slot="stack">
+              <ToastTitle />
+              <ToastDescription />
+            </div>
+            <Show when={item.action}>
+              <ToastAction data-variant="solid" />
+            </Show>
+            <ToastClose aria-label="关闭">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+              >
+                <path d="M18 6 6 18" />
+                <path d="m6 6 12 12" />
+              </svg>
+            </ToastClose>
+          </Toast>
+        )}
+      </ToastRegion>
+    </>
+  );
 }
 
 export default App;

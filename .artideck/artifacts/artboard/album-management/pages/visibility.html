@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="ryugi-icons" content="1">
+  <title>前台陈列清单 · PicImpact</title>
+  <link rel="stylesheet" href="tokens.css">
+  <link rel="stylesheet" href="common.css">
+  <style>
+    .preview { padding: 12px 16px; margin-bottom: 19px; border: 1px solid var(--line); border-radius: 8px; background: var(--white); display: flex; gap: 10px 20px; align-items: center; }
+    .preview-title { display: flex; align-items: center; gap: 7px; font-size: 12px; font-weight: 650; flex-shrink: 0; }
+    .preview-nav { display: flex; flex-wrap: wrap; gap: 6px 12px; font-size: 12px; color: var(--accent); }
+    .preview-nav span { white-space: nowrap; }
+    .preview-nav span + span::before { content: " / "; color: var(--muted); margin-right: 9px; }
+    .lanes { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .lane { border: 1px solid var(--line); border-radius: 9px; background: var(--panel); min-width: 0; }
+    .lane.public { border-top: 3px solid var(--accent); }
+    .lane.hidden { border-top: 3px solid #a19b91; }
+    .lane-head { padding: 16px 15px 13px; border-bottom: 1px solid var(--line); }
+    .lane-head h2 { display: flex; align-items: center; gap: 8px; }
+    .lane.public .lane-head h2 ryugi-icon { color: var(--accent); }
+    .lane-head .number { margin-left: auto; color: var(--muted); }
+    .lane-head p { margin-top: 5px; color: var(--muted); font-size: 12px; }
+    .lane ul { list-style: none; padding: 0; margin: 0; }
+    .lane li { min-height: 74px; display: grid; grid-template-columns: 28px minmax(0, 1fr) auto; align-items: center; gap: 8px; margin-inline: 15px; }
+    .lane li + li { border-top: 1px solid var(--line); }
+    .lane .rank { color: var(--muted); }
+    .lane.public .rank { color: var(--accent); }
+    .lane h3 { margin-bottom: 3px; }
+    .lane .quiet { min-height: 29px; padding-inline: 8px; font-size: 11px; }
+    .lane-foot { padding: 9px 15px; min-height: 37px; border-top: 1px solid var(--line); color: var(--muted); font-size: 11px; }
+    @media (max-width: 740px) { .lanes { grid-template-columns: 1fr; } }
+    @media (max-width: 480px) { .preview { align-items: flex-start; flex-direction: column; } .lane li { margin-inline: 10px; } }
+  </style>
+</head>
+<body>
+  <script src="shared.js"></script>
+  <script>
+    const published = albums.filter(album => album.visible);
+    const hidden = albums.filter(album => !album.visible);
+    function lane(list, visible) {
+      return `<section class="lane ${visible ? 'public' : 'hidden'}"><header class="lane-head"><h2>${icon(visible ? 'eye' : 'eye-off', 18)}${visible ? '已公开' : '已隐藏'}<span class="number">${list.length} 个</span></h2><p>${visible ? '出现在前台相册导航' : '不出现在前台相册导航'}</p></header><ul>${list.map(album => `<li><span class="rank number"${visible ? ' aria-label="相册顺序"' : ''}>${visible ? album.order : '—'}</span><div><h3>${album.name}</h3><p class="route">${album.route}</p></div><button class="quiet" aria-label="${visible ? '隐藏' : '公开'}${album.name}">${visible ? '设为隐藏' : '设为公开'}</button></li>`).join('')}</ul><p class="lane-foot">${visible ? '顺序与上方导航预览一致' : '重新公开后，按相册顺序插入前台导航'}</p></section>`;
+    }
+    shell(`<section class="preview" aria-label="前台相册导航预览"><span class="preview-title">${icon('navigation', 15)}前台导航预览</span><div class="preview-nav">${published.map(album => `<span>${album.name}</span>`).join('')}</div></section><div class="lanes">${lane(published, true)}${lane(hidden, false)}</div>`, '决定前台显示哪些相册，以及它们的排列顺序。');
+  </script>
+</body>
+</html>

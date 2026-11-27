@@ -25,6 +25,7 @@ const photoInputSchema = z.object({
   url: z.string().nullable().optional(),
   preview_url: z.string().nullable().optional(),
   video_url: z.string().nullable().optional(),
+  image_key: z.string().nullable().optional(),
   blurhash: z.string().nullable().optional(),
   exif: z.any().nullable().optional(),
   labels: z.any().nullable().optional(),
@@ -83,6 +84,8 @@ const STORAGE_CONFIG_KEYS = [
   "storage.r2.bucket",
   "storage.r2.storage_folder",
   "storage.r2.public_url",
+  "storage.direct_download",
+  "storage.r2.direct_download",
 ] as const;
 
 const STORAGE_CONFIG_KEY_SET = new Set<string>(STORAGE_CONFIG_KEYS);
@@ -220,6 +223,76 @@ export function createApp(options: {
     return c.json({ data: image, neighbors });
   });
 
+  /**
+   * GET /api/public/download/config
+   *
+   * 对齐 v3 的 direct-download 业务：返回 S3/R2 各自的直链下载开关，
+   * 每个标志 = 配置开关开启 && 当前存储实现支持 presign（R2 binding 不支持时
+   * 前端自动回落到代理下载）。driver 作为前端缺省 storage 参数。
+   */
+  app.get("/api/public/download/config", async (c) => {
+    const configs = await options.store.listConfigs();
+    const values = new Map(configs.map((row) => [row.config_key, row.config_value ?? ""]));
+    const presignSupported = async (provider: StorageProvider) => {
+      const { storage } = await resolveStorage(provider);
+      return typeof storage?.presignedGetUrl === "function";
+    };
+    c.header("Cache-Control", "private, max-age=60");
+    return c.json({
+      data: {
+        s3DirectDownload:
+          values.get("storage.direct_download") === "true" && (await presignSupported("s3")),
+        r2DirectDownload:
+          values.get("storage.r2.direct_download") === "true" && (await presignSupported("r2")),
+        driver: values.get("storage.driver") || "",
+      },
+    });
+  });
+
+  app.get("/api/public/download/:id/presigned", async (c) => {
+    const selection = c.req.query("storage");
+    if (selection !== undefined && !isStorageProvider(selection)) {
+      return c.json(jsonError("Unsupported storage type", 400), 400);
+    }
+    const { storage, storageFolder } = await resolveStorage(selection);
+    if (!storage?.presignedGetUrl) {
+      return c.json(jsonError("Presigned download is not available for the current storage", 400), 400);
+    }
+    const image = await options.store.getPublicImage(c.req.param("id"));
+    if (!image) return c.json(jsonError("Image not found", 404), 404);
+    const key = downloadObjectKey(image, storageFolder);
+    if (!key) return c.json(jsonError("Image URL not found", 404), 404);
+    const url = await storage.presignedGetUrl(key);
+    c.header("Cache-Control", "private, max-age=60");
+    return c.json({
+      data: { url, filename: deriveDownloadFilename(image.image_name, image.url) },
+    });
+  });
+
+  app.get("/api/public/download/:id", async (c) => {
+    const selection = c.req.query("storage");
+    if (selection !== undefined && !isStorageProvider(selection)) {
+      return c.json(jsonError("Unsupported storage type", 400), 400);
+    }
+    const { storage, storageFolder } = await resolveStorage(selection);
+    if (!storage) return c.json(jsonError("Object storage is not configured", 503), 503);
+    const image = await options.store.getPublicImage(c.req.param("id"));
+    if (!image) return c.json(jsonError("Image not found", 404), 404);
+    const key = downloadObjectKey(image, storageFolder);
+    if (!key) return c.json(jsonError("Image URL not found", 404), 404);
+    const object = await storage.get(key);
+    if (!object) return c.json(jsonError("Object not found", 404), 404);
+    return new Response(object.body as unknown as BodyInit, {
+      headers: {
+        "Content-Type": object.contentType,
+        "Content-Disposition": buildContentDisposition(
+          deriveDownloadFilename(image.image_name, image.url),
+        ),
+        "Cache-Control": "private, no-store",
+      },
+    });
+  });
+
   app.get("/api/admin/dashboard", async (c) =>
     c.json({
       data: await options.store.getDashboard(),
@@ -348,6 +421,15 @@ export function createApp(options: {
     }
 
     const isVideo = file.type.startsWith("video/");
+
+    // persist=0 时仅上传到对象存储，不入库；由客户端拿到对象信息后按需调用 /api/photos 保存
+    if (stringField(formData?.get("persist")) === "0") {
+      return c.json(
+        { object: { key, url, previewUrl, contentType: file.type, isVideo } },
+        201,
+      );
+    }
+
     const photo = await options.store.upsertImage({
       id: crypto.randomUUID(),
       image_name: file.name,
@@ -550,4 +632,55 @@ function createUploadKey(fileName: string, kind?: "preview", folderPrefix?: stri
   const prefix = kind === "preview" ? "photos/preview" : "photos";
   const path = `${prefix}/${new Date().toISOString().slice(0, 10)}/${crypto.randomUUID()}-${safeName}`;
   return folderPrefix ? `${folderPrefix}/${path}` : path;
+}
+
+/** 从图片记录推导下载对象 key：image_key 优先，否则从 url 剥离 scheme/host 与代理前缀。 */
+function downloadObjectKey(
+  image: { image_key?: string | null; url?: string | null },
+  storageFolder: string,
+) {
+  const raw = image.image_key || deriveKeyFromUrl(image.url ?? null);
+  if (!raw) return null;
+  const stripped =
+    storageFolder && raw.startsWith(`${storageFolder}/`) ? raw.slice(storageFolder.length + 1) : raw;
+  return storageFolder ? `${storageFolder}/${stripped}` : stripped;
+}
+
+function deriveKeyFromUrl(url: string | null): string | null {
+  if (!url) return null;
+  let key = url.split("?")[0];
+  if (/^https?:\/\//i.test(key)) {
+    const match = key.match(/^https?:\/\/[^/]+(\/.*)$/);
+    if (!match) return null;
+    key = match[1].slice(1);
+    if (key.startsWith("api/storage/")) key = key.slice("api/storage/".length);
+  }
+  return key
+    .split("/")
+    .map((segment) => {
+      try {
+        return decodeURIComponent(segment);
+      } catch {
+        return segment;
+      }
+    })
+    .join("/");
+}
+
+/** v3 的 deriveFilename：image_name 优先，否则取 url 尾段。 */
+function deriveDownloadFilename(imageName: string | null | undefined, url: string | null | undefined) {
+  if (imageName) return imageName;
+  const tail = (url ?? "").split("?")[0].split("/").pop() || "download.jpg";
+  try {
+    return decodeURIComponent(tail);
+  } catch {
+    return tail;
+  }
+}
+
+function buildContentDisposition(filename: string) {
+  const encoded = encodeURIComponent(filename);
+  // 引号部分只能是 ByteString（Latin-1），非 ASCII 字符替换后用 filename* 携带真实名
+  const asciiFallback = filename.replace(/[^\x20-\x7e]/g, "_").replace(/["\\]/g, "_") || "download";
+  return `attachment; filename="${asciiFallback}"; filename*=UTF-8''${encoded}`;
 }

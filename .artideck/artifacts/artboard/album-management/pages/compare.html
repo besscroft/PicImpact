@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>PicImpact 相册管理 · 设计对照</title>
+  <link rel="stylesheet" href="tokens.css">
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; background: #e6e3dc; color: var(--text); font: 14px/1.5 var(--font); }
+    header { max-width: 1360px; padding: 22px 24px 14px; margin: auto; }
+    h1 { font-size: 24px; margin: 0 0 10px; }
+    nav { display: flex; flex-wrap: wrap; gap: 8px; }
+    a { padding: 7px 12px; color: var(--text); background: var(--panel); border: 1px solid var(--line); border-radius: 6px; text-decoration: none; }
+    a[aria-current="true"] { color: var(--accent); border-color: var(--accent); }
+    a:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+    p { color: var(--muted); margin: 10px 0 0; }
+    main { max-width: 1360px; margin: auto; padding: 0 24px 22px; }
+    iframe { display: block; width: 100%; height: max(660px, calc(100dvh - 150px)); border: 1px solid var(--line); border-radius: 10px; background: var(--bg); }
+    @media (max-width: 620px) { header, main { padding-inline: 12px; } }
+  </style>
+</head>
+<body>
+  <header><h1>PicImpact · 相册管理设计对照</h1><nav aria-label="查看设计方向"><a href="shelf.html" target="design">A 封面陈列</a><a href="index.html" target="design" aria-current="true">B 档案工作台 · 推荐</a><a href="visibility.html" target="design">C 前台陈列清单</a></nav><p>静态概念稿 · 三套方案使用同一组示例相册</p></header>
+  <main><iframe src="index.html" name="design" title="相册管理设计预览"></iframe></main>
+  <script>
+    const links = document.querySelectorAll('nav a');
+    links.forEach(link => link.addEventListener('click', () => {
+      links.forEach(item => item.removeAttribute('aria-current'));
+      link.setAttribute('aria-current', 'true');
+    }));
+  </script>
+</body>
+</html>

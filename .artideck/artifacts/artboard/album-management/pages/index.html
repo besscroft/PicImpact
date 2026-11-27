@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="ryugi-icons" content="1">
+  <title>档案工作台 · PicImpact</title>
+  <link rel="stylesheet" href="tokens.css">
+  <link rel="stylesheet" href="common.css">
+  <style>
+    .desk { display: grid; grid-template-columns: minmax(0, 1.7fr) minmax(0, 1fr); gap: 16px; align-items: stretch; }
+    .register, .inspector { border: 1px solid var(--line); border-radius: 9px; background: var(--panel); min-width: 0; }
+    .register { overflow: hidden; }
+    .register-header { padding: 12px 14px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; align-items: center; gap: 6px; }
+    .search { min-width: 0; max-width: 182px; flex: 1; display: flex; align-items: center; gap: 6px; padding: 5px 8px; border: 1px solid var(--line); background: var(--white); border-radius: 6px; color: var(--muted); }
+    .search input { background: transparent; border: none; width: 100%; min-width: 0; padding: 0; font: 12px var(--font); color: var(--text); }
+    .search input:focus { outline: none; }
+    .search:focus-within { outline: 2px solid var(--accent); }
+    table { border-collapse: collapse; width: 100%; text-align: left; }
+    th { color: var(--muted); font-size: 11px; font-weight: 500; background: var(--panel-soft); }
+    th, td { padding: 8px 13px; border-bottom: 1px solid var(--line); }
+    th:first-child, td:first-child { width: 48px; text-align: center; }
+    th:last-child, td:last-child { width: 37px; padding-left: 0; }
+    td { height: 57px; }
+    tbody tr[data-current] { background: var(--accent-soft); }
+    tbody tr[data-current] td:first-child { box-shadow: inset 3px 0 var(--accent); color: var(--accent); }
+    .album-name { display: block; margin-bottom: 2px; font-weight: 650; }
+    .table-end { display: flex; justify-content: space-between; padding: 11px 14px; color: var(--muted); font-size: 11px; }
+    .inspector { display: flex; flex-direction: column; }
+    .identity { padding: 16px; border-bottom: 1px solid var(--line); }
+    .identity-top { display: flex; justify-content: space-between; gap: 8px; align-items: center; color: var(--muted); font-size: 11px; margin-bottom: 10px; }
+    .identity h2 { font-size: 23px; margin-bottom: 4px; }
+    .field-block { display: grid; gap: 8px; padding: 13px 16px; border-bottom: 1px solid var(--line); }
+    .field-block h3 { font-size: 13px; }
+    .field { display: flex; align-items: center; justify-content: space-between; gap: 8px; color: var(--muted); font-size: 12px; }
+    .field span:last-child { text-align: right; color: var(--text); }
+    .description { color: var(--muted); font-size: 12px; }
+    .inspector-footer { margin-top: auto; padding: 11px 16px; display: flex; justify-content: flex-end; }
+    @media (max-width: 840px) { .register-header { flex-wrap: wrap; } .search { min-width: 100%; } .desk { grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); } }
+    @media (max-width: 680px) { .desk { grid-template-columns: 1fr; } .search { min-width: 0; } th, td { padding-inline: 8px; } .register-header { padding-inline: 8px; } }
+  </style>
+</head>
+<body>
+  <script src="shared.js"></script>
+  <script>
+    const current = albums[0];
+    shell(`<div class="desk"><section class="register" aria-label="相册列表"><div class="register-header"><div class="tabs" aria-label="筛选相册"><button class="tab" aria-pressed="true">全部</button><button class="tab" aria-pressed="false">公开</button><button class="tab" aria-pressed="false">隐藏</button></div><label class="search">${icon('search', 14)}<input type="search" placeholder="搜索名称或路径" aria-label="搜索名称或路径"></label></div>
+      <table><thead><tr><th scope="col">顺序</th><th scope="col">相册 / 路径</th><th scope="col">前台展示</th><th scope="col" aria-label="详情"></th></tr></thead><tbody>${albums.map(album => `<tr ${album === current ? 'data-current' : ''}><td class="number">${album.order}</td><td><span class="album-name">${album.name}</span><span class="route">${album.route}</span></td><td>${status(album)}</td><td>${icon('chevron-right', 14)}</td></tr>`).join('')}</tbody></table><div class="table-end"><span>共 6 个相册</span><span>按相册顺序排列</span></div></section>
+      <aside class="inspector" aria-label="当前相册详情"><div class="identity"><div class="identity-top"><span>相册详情</span>${status(current)}</div><h2>${current.name}</h2><p class="route">${current.route}</p></div>
+      <section class="field-block"><h3>简介</h3><p class="description">${current.detail}</p></section><section class="field-block"><h3>前台展示</h3><div class="field"><span>显示状态</span><span>公开</span></div><div class="field"><span>相册顺序</span><span class="number">${current.order}</span></div><div class="field"><span>相册主题</span><span>${current.theme}</span></div></section><section class="field-block"><h3>图片设置</h3><div class="field"><span>图片排序</span><span>上传时间 新→旧</span></div><div class="field"><span>随机排序</span><span>关闭</span></div><div class="field"><span>许可协议</span><span>未设置</span></div></section><div class="inspector-footer"><button class="quiet">${icon('pencil', 14)}编辑相册</button></div></aside></div>`, '在同一页查找相册、核对设置。');
+  </script>
+</body>
+</html>

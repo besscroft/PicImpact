@@ -19,6 +19,7 @@
   },
   "dependencies": {
     "@aws-sdk/client-s3": "3.1177.0",
+    "@aws-sdk/s3-request-presigner": "3.1177.0",
     "@better-auth/drizzle-adapter": "1.7.28",
     "@cloudflare/workers-types": "5.20261124.1",
     "@hono/node-server": "2.1.11",

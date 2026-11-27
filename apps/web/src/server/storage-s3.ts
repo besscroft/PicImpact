@@ -1,4 +1,5 @@
 import { GetObjectCommand, PutObjectCommand, S3Client, S3ServiceException } from "@aws-sdk/client-s3";
+import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 
 import type { ObjectStorage, StoragePutInput, StoredObject } from "./storage";
 import { encodePath, StorageWriteDeniedError } from "./storage";
@@ -61,5 +62,13 @@ export class S3ObjectStorage implements ObjectStorage {
     return this.options.publicUrl
       ? `${this.options.publicUrl.replace(/\/+$/, "")}/${encodePath(key)}`
       : `${requestOrigin}/api/storage/${encodePath(key)}`;
+  }
+
+  presignedGetUrl(key: string, expiresIn = 3600) {
+    return getSignedUrl(
+      this.client,
+      new GetObjectCommand({ Bucket: this.options.bucket, Key: key }),
+      { expiresIn },
+    );
   }
 }

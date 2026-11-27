@@ -1,0 +1,59 @@
+* { box-sizing: border-box; }
+html, body { margin: 0; min-width: 320px; }
+body { background: var(--bg); color: var(--text); font: 14px/1.55 var(--font); }
+h1, h2, h3, p { margin: 0; }
+h1 { font-size: 34px; letter-spacing: -.06em; line-height: 1.15; font-weight: 650; }
+h2 { font-size: 19px; line-height: 1.3; letter-spacing: -.03em; }
+h3 { font-size: 15px; line-height: 1.4; }
+button { font: inherit; cursor: pointer; }
+button:focus-visible, a:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+.workspace { min-height: 800px; display: grid; grid-template-columns: 184px minmax(0, 1fr); }
+.sidebar { background: var(--panel); border-right: 1px solid var(--line); display: flex; flex-direction: column; padding: 23px 14px 18px; }
+.brand { display: flex; gap: 9px; align-items: center; margin: 0 7px 31px; font-size: 16px; font-weight: 700; letter-spacing: -.03em; }
+.brand-mark { display: grid; place-items: center; border: 1px solid #99abdc; color: var(--accent); font: 19px Georgia, serif; width: 31px; height: 31px; border-radius: 50%; }
+.nav-label { margin: 0 9px 7px; color: var(--muted); font-size: 11px; }
+.nav { display: grid; gap: 3px; }
+.nav-item { display: flex; align-items: center; gap: 9px; min-height: 37px; padding: 0 9px; color: var(--muted); white-space: nowrap; }
+.nav-item.active { color: var(--accent); background: var(--accent-soft); border-radius: 7px; font-weight: 650; }
+.side-end { margin-top: auto; padding: 12px 8px 0; border-top: 1px solid var(--line); color: var(--muted); white-space: nowrap; display: flex; align-items: center; gap: 8px; }
+.main { min-width: 0; }
+.crumb { height: 59px; border-bottom: 1px solid var(--line); display: flex; align-items: center; gap: 8px; padding: 0 32px; color: var(--muted); font-size: 12px; }
+.crumb strong { color: var(--text); font-weight: 600; }
+.page { padding: 27px 32px 25px; max-width: 1450px; margin: 0 auto; }
+.heading { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 22px; }
+.subtitle { margin-top: 8px; color: var(--muted); font-size: 13px; }
+.action, .quiet, .icon-button { display: inline-flex; align-items: center; justify-content: center; gap: 7px; min-height: 36px; border: 1px solid var(--line); border-radius: 7px; padding: 0 12px; color: var(--text); background: var(--white); white-space: nowrap; }
+.action { border-color: var(--text); background: var(--text); color: var(--white); padding-inline: 14px; font-weight: 600; }
+.icon-button { width: 31px; min-height: 31px; padding: 0; background: transparent; }
+.action:hover { background: #393532; }
+.quiet:hover, .icon-button:hover { border-color: var(--accent); color: var(--accent); }
+.route { color: var(--muted); font: 12px/1.4 var(--mono); overflow-wrap: anywhere; }
+.badge { display: inline-flex; align-items: center; gap: 5px; width: fit-content; white-space: nowrap; font-size: 11px; color: var(--muted); }
+.badge::before { content: ""; width: 6px; height: 6px; border: 1px solid currentColor; border-radius: 50%; }
+.badge[data-visible="true"] { color: var(--accent); }
+.badge[data-visible="true"]::before { background: currentColor; }
+.number { font: 12px/1.4 var(--mono); font-variant-numeric: tabular-nums; }
+.toolbar { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 15px; }
+.tabs { display: flex; align-items: center; gap: 4px; }
+.tab { padding: 6px 10px; border: 0; border-radius: 6px; color: var(--muted); background: transparent; white-space: nowrap; }
+.tab[aria-pressed="true"] { color: var(--accent); background: var(--accent-soft); font-weight: 650; }
+.demo-note { font-size: 11px; color: var(--muted); margin-top: 15px; }
+ryugi-icon { display: inline-flex; flex: none; }
+@media (max-width: 1050px) {
+  .workspace { grid-template-columns: 62px minmax(0, 1fr); }
+  .sidebar { padding-inline: 10px; }
+  .brand { margin-inline: auto; }
+  .brand span:last-child, .nav-label, .nav-item span, .side-end span { display: none; }
+  .nav-item, .side-end { justify-content: center; }
+  .page, .crumb { padding-inline: 24px; }
+}
+@media (max-width: 620px) {
+  .workspace { display: block; min-height: 0; }
+  .sidebar { display: none; }
+  .crumb { height: 45px; }
+  .page, .crumb { padding-inline: 16px; }
+  .page { padding-top: 21px; }
+  .heading { align-items: flex-start; }
+  h1 { font-size: 28px; }
+  .subtitle { font-size: 12px; }
+}

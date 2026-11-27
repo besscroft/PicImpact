@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="ryugi-icons" content="1">
+  <title>封面陈列 · PicImpact</title>
+  <link rel="stylesheet" href="tokens.css">
+  <link rel="stylesheet" href="common.css">
+  <style>
+    .shelf { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+    .album { min-width: 0; margin: 0; border: 1px solid var(--line); border-radius: 9px; background: var(--panel); padding: 7px; }
+    .cover { height: 139px; overflow: hidden; border-radius: 4px; background: #eae8e0; }
+    .cover svg { width: 100%; height: 100%; display: block; }
+    .cover.blank { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px; font-size: 12px; color: var(--muted); }
+    .caption { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; column-gap: 8px; padding: 8px 5px 3px; }
+    .caption .route { margin-top: 3px; }
+    .caption .actions { grid-row: span 2; display: grid; justify-items: end; gap: 4px; }
+    .caption .icon-button { border: 0; width: 26px; min-height: 24px; }
+    .toolbar .count { font-size: 12px; color: var(--muted); }
+    @media (max-width: 810px) { .shelf { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; } }
+    @media (max-width: 435px) { .cover { height: 100px; } .caption h3 { font-size: 13px; } .caption .actions { gap: 0; } }
+  </style>
+</head>
+<body>
+  <script src="shared.js"></script>
+  <script>
+    shell(`<div class="toolbar"><div class="tabs" aria-label="筛选相册"><button class="tab" aria-pressed="true">全部 6</button><button class="tab" aria-pressed="false">公开 3</button><button class="tab" aria-pressed="false">隐藏 3</button></div><span class="count">按相册顺序</span></div>
+      <section class="shelf" aria-label="相册封面">${albums.map(album => `<figure class="album">${cover(album)}<figcaption class="caption"><h3>${album.name}</h3><div class="actions">${status(album)}<button class="icon-button" aria-label="编辑${album.name}">${icon('ellipsis', 15)}</button></div><p class="route">${album.route}</p></figcaption></figure>`).join('')}</section>
+      <p class="demo-note">示例封面为插画；实际展示可从相册内选取一张照片。</p>`, '通过封面找到相册，查看它是否在前台展示。');
+  </script>
+</body>
+</html>

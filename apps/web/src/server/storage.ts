@@ -16,6 +16,8 @@ export interface ObjectStorage {
   put(input: StoragePutInput): Promise<void>;
   get(key: string): Promise<StoredObject | null>;
   url(key: string, requestOrigin: string): string;
+  /** 生成对象读取的预签名 URL；不支持预签名的实现（如 R2 binding）可不提供。 */
+  presignedGetUrl?(key: string, expiresIn?: number): Promise<string>;
 }
 
 export class StorageWriteDeniedError extends Error {

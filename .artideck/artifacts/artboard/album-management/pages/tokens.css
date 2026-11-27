@@ -1,0 +1,14 @@
+:root, [data-appearance="light"] {
+  color-scheme: light;
+  --bg: #f1efe9;
+  --panel: #faf9f6;
+  --panel-soft: #f4f2ec;
+  --line: #dedbd4;
+  --text: #211e1c;
+  --muted: #66625c;
+  --accent: #1d4ed8;
+  --accent-soft: #e9eefc;
+  --white: #fffefa;
+  --font: "LXGW Neo XiHei", "Microsoft YaHei UI", "PingFang SC", system-ui, sans-serif;
+  --mono: "Cascadia Mono", Consolas, monospace;
+}

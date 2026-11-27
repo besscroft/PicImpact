@@ -8,6 +8,8 @@ export function PublicPreview(props: { id: string }) {
   const [detail, setDetail] = createSignal<PublicImageDetail | null>(null);
   const [loading, setLoading] = createSignal(true);
   const [error, setError] = createSignal<string | null>(null);
+  const [downloading, setDownloading] = createSignal(false);
+  const [downloadError, setDownloadError] = createSignal<string | null>(null);
 
   async function load() {
     setLoading(true);
@@ -47,6 +49,87 @@ export function PublicPreview(props: { id: string }) {
     },
   );
 
+  // 对齐 v3 direct-download 业务：按存储开关决定走预签名直链还是服务端代理。
+  const handleDownload = async () => {
+    const current = detail();
+    if (!current?.data.url || downloading()) return;
+    setDownloading(true);
+    setDownloadError(null);
+    try {
+      const configResponse = await fetch("/api/public/download/config");
+      const config = (
+        configResponse.ok ? await configResponse.json().catch(() => null) : null
+      ) as DownloadConfig | null;
+      const storageType =
+        storageProviderFromUrl(current.data.url) ||
+        (typeof config?.data?.driver === "string" && config.data.driver
+          ? config.data.driver
+          : "r2");
+      const directDownload =
+        storageType === "s3"
+          ? Boolean(config?.data?.s3DirectDownload)
+          : Boolean(config?.data?.r2DirectDownload);
+
+      let blob: Blob | null = null;
+      let filename = "download.jpg";
+
+      if (directDownload) {
+        // 直链模式：服务端发预签名 URL，浏览器直接拉对象存储；失败回落代理下载。
+        try {
+          const presignedResponse = await fetch(
+            `/api/public/download/${encodeURIComponent(current.data.id)}/presigned?storage=${storageType}`,
+          );
+          if (!presignedResponse.ok) throw new Error("presigned request failed");
+          const presigned = (await presignedResponse.json()) as {
+            data?: { url?: string; filename?: string };
+          };
+          const data = presigned?.data;
+          if (!data?.url) throw new Error("presigned response missing url");
+          const objectResponse = await fetch(data.url);
+          if (!objectResponse.ok) throw new Error("object fetch failed");
+          blob = await objectResponse.blob();
+          if (data.filename) filename = data.filename;
+        } catch {
+          blob = null;
+        }
+      }
+
+      if (!blob) {
+        const proxyResponse = await fetch(
+          `/api/public/download/${encodeURIComponent(current.data.id)}?storage=${storageType}`,
+        );
+        if (!proxyResponse.ok) throw new Error("download request failed");
+        const disposition = proxyResponse.headers.get("content-disposition");
+        const encoded = disposition?.match(/filename\*=UTF-8''([^;]+)/);
+        const plain = disposition?.match(/filename="([^"]+)"/);
+        if (encoded) {
+          try {
+            filename = decodeURIComponent(encoded[1]);
+          } catch {
+            filename = encoded[1];
+          }
+        } else if (plain) {
+          filename = plain[1];
+        }
+        blob = await proxyResponse.blob();
+      }
+
+      const objectUrl = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = objectUrl;
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(objectUrl);
+    } catch {
+      setDownloadError("下载失败，请重试");
+      window.open(current?.data.url ?? "", "_blank");
+    } finally {
+      setDownloading(false);
+    }
+  };
+
   return (
     <div class="preview-shell">
       <header class="preview-topbar">
@@ -61,9 +144,22 @@ export function PublicPreview(props: { id: string }) {
           {detail()?.data.album_name ?? "Photo"}
         </span>
         <Show when={detail()?.data.url}>
-          <a class="preview-download" href={detail()?.data.url ?? ""} download>
-            下载原图
-          </a>
+          <button
+            class="preview-download"
+            type="button"
+            disabled={downloading()}
+            onClick={() => void handleDownload()}
+          >
+            {downloading() ? "下载中…" : "下载原图"}
+          </button>
+        </Show>
+        <Show when={downloadError()}>
+          <span class="upload-message" role="alert">
+            {downloadError()}
+          </span>
+        </Show>
+        <Show when={detail()?.data.album_license}>
+          {(license) => <span class="preview-license">{license()}</span>}
         </Show>
       </header>
       <Show when={loading()}>
@@ -182,3 +278,21 @@ function PreviewFact(props: { label: string; value: string | null }) {
     </Show>
   );
 }
+
+/** 代理模式上传的 url 带 ?storage=r2|s3 查询参数，可据此判断图片归属的存储。 */
+function storageProviderFromUrl(url: string | null | undefined): string | undefined {
+  if (!url) return undefined;
+  try {
+    return new URL(url, window.location.origin).searchParams.get("storage") ?? undefined;
+  } catch {
+    return undefined;
+  }
+}
+
+type DownloadConfig = {
+  data?: {
+    s3DirectDownload?: boolean;
+    r2DirectDownload?: boolean;
+    driver?: string;
+  };
+};

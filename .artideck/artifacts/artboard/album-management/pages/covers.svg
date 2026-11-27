@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg">
+  <symbol id="mountain" viewBox="0 0 350 145">
+    <path fill="#b2bcad" d="M0 0h350v145H0z"/><path fill="#d3cbb1" d="M0 63l120-16 155 14 75-16v57H0z"/><path fill="#778c89" d="M-10 105l68-42 32 3L168 25l63 40 20-8 100 43v45H0z"/><path fill="#d1d5c5" d="m125 49 43-24 34 22-18-4-14 6-10-7-16 9z"/><path fill="#52716c" d="M0 115l82-36 56 21 53-7 37-17 67 17 55-9v61H0z"/><path fill="#2c514b" d="M0 105l64 18 85-9 61 21 140-26v36H0z"/><path fill="#193936" d="m0 123 50 14 68-8 55 16H0z"/><path fill="#d3dec2" opacity=".55" d="m45 106 61-3 30 6 62-2-42 7-40-2z"/>
+  </symbol>
+  <symbol id="city" viewBox="0 0 350 145">
+    <path fill="#d3a784" d="M0 0h350v145H0z"/><path fill="#a36e58" d="M14 145V6l87 14v125z"/><path fill="#6d5349" d="M0 145V0l47 10v135z"/><path fill="#b17e60" d="m105 30 44-7v122h-44z"/><path fill="#d4b39a" d="m226 145 7-106 40-19v125z"/><path fill="#855d53" d="m268 145 3-121 69-24v145z"/><path fill="#5a4546" d="M324 145V0h26v145z"/><path fill="#edc495" d="m143 145 18-77 42-13 36 90z"/><path fill="#725b54" d="m70 145 97-35h42l78 35z"/><path fill="#f2cda1" d="m90 145 88-22 51 22z"/><path stroke="#573f39" stroke-width="2" d="M58 29v22m17-18v22m-17 11v22m17-18v22m210-48v23m14-26v23m-14 12v23m14-27v24"/><path fill="#3e3635" d="M182 109h5l3 25h-10z"/><circle cx="185" cy="105" r="3" fill="#3e3635"/>
+  </symbol>
+  <symbol id="lake" viewBox="0 0 350 145">
+    <path fill="#bac4c6" d="M0 0h350v145H0z"/><path fill="#e5d2b9" d="M0 41h350v25H0z"/><ellipse cx="246" cy="44" rx="17" ry="17" fill="#f2d9b0"/><path fill="#708a8c" d="m0 77 62-32 49 7 31 23 75-3 57-15 76 15v73H0z"/><path fill="#4e6d73" d="M0 85h350v60H0z"/><path fill="#9fadb0" d="m139 93 138-3-68 7zm63 12 129-6-57 8zm-155 9 206 3-94 3zm120 14 183-3v5z"/><path fill="#233f4a" d="M0 117l51 5 55 23H0z"/><path fill="#dec6a8" d="m216 88 60-2-27 4z"/>
+  </symbol>
+  <symbol id="light" viewBox="0 0 350 145">
+    <path fill="#af8972" d="M0 0h350v145H0z"/><path fill="#806454" d="M0 0h70v145H0z"/><path fill="#d8ad85" d="M118 0h178l54 145H64z"/><path fill="#f0c899" d="M169 0h114l65 128H112z"/><path fill="#b38a71" d="M211 0h6l36 128h-7zm-97 65h201l4 7H110z"/><path fill="#967667" d="M0 128h350v17H0z"/><ellipse cx="181" cy="125" rx="43" ry="7" fill="#8d644f" opacity=".5"/><path fill="#635e4d" d="M158 102h21l-4 23h-13z"/><path stroke="#635e4d" stroke-width="2" fill="none" d="M168 105q3-37-14-48m15 47q-2-29 15-43m-16 43q-6-17-18-20"/>
+  </symbol>
+  <symbol id="mono" viewBox="0 0 350 145">
+    <path fill="#bfc0ba" d="M0 0h350v145H0z"/><path fill="#d6d6d0" d="m0 105 214-66 136 19v87H0z"/><path fill="#8d8e89" d="M0 119l229-66 121 15v77H0z"/><path fill="#404340" d="M0 0h350v13L0 103z"/><path fill="#252a28" d="M0 112 350 24v13L0 126z"/><path fill="#575855" d="M0 140l350-84v10l-308 79H0z"/><path fill="#29302e" d="M91 0h8l5 104-9 3zm126 0h7l6 74-8 3zm80 0h6l5 52-7 3z"/>
+  </symbol>
+</svg>
