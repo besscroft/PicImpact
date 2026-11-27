@@ -6,8 +6,9 @@
   "type": "module",
   "scripts": {
     "dev": "vp dev --host 0.0.0.0",
-    "dev:worker": "wrangler dev src/server/worker.ts",
-    "build": "vp build --outDir dist/client && vp build --config vite.server.config.ts --outDir dist/server",
+    "dev:worker": "pnpm db:migrate && wrangler dev src/server/worker.ts",
+    "deploy:worker": "pnpm db:migrate && pnpm build && wrangler deploy",
+    "build": "pnpm db:migrate && vp build --outDir dist/client && vp build --config vite.server.config.ts --outDir dist/server",
     "start": "node dist/server/server.js",
     "test": "vitest run",
     "test:watch": "vitest",

@@ -66,9 +66,18 @@ provider's recommended TLS options.
    PostgreSQL endpoint. Set `BETTER_AUTH_URL` to your public site URL and
    `BETTER_AUTH_SECRET` to a random Worker secret. Do not put database
    credentials in `wrangler.toml`.
-3. Run `pnpm run web:build`, then `pnpm --filter @picimpact/web exec wrangler deploy`
-   from the repository root. Check `/api/health` for a working connection and
-   `/api/public/albums` to verify the tables are present.
+3. The web `build` script runs `db:migrate` before compiling, so the existing
+   Cloudflare Workers Build command `pnpm --filter @picimpact/web build` now
+   migrates before every deployment. The build environment must expose
+   `DATABASE_URL`; a Worker runtime Secret is not automatically available to
+   the build step. Alternatively, run `pnpm run web:worker:deploy` locally or
+   from CI, which performs the same migration-before-build-before-deploy
+   sequence. Check `/api/health` for a
+   working connection and `/api/public/albums` to verify the tables are present.
+
+`pnpm run web:dev:worker` also migrates before starting local Wrangler dev. A
+successful migration is idempotent: Drizzle records the applied migration and
+skips it on later deployments.
 
 ## Authentication
 
