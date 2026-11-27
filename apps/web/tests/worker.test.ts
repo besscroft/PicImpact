@@ -28,6 +28,12 @@ const env = {
   BETTER_AUTH_SECRET: "test-secret-not-used-in-production-1234",
 };
 
+const directEnv = {
+  DATABASE_URL: "postgresql://test:sample@direct.example:5432/picimpact",
+  BETTER_AUTH_URL: "https://photos.example",
+  BETTER_AUTH_SECRET: "test-secret-not-used-in-production-1234",
+};
+
 function createContext() {
   const pending: Promise<unknown>[] = [];
   return {
@@ -74,6 +80,24 @@ describe("Worker PostgreSQL", () => {
     expect(response.status).toBe(503);
     expect(await response.json()).toMatchObject({ code: 503 });
     expect(connect).not.toHaveBeenCalled();
+  });
+
+  it("connects directly with DATABASE_URL when Hyperdrive is not configured", async () => {
+    const { context, pending } = createContext();
+    const response = await worker.fetch(
+      new Request("https://photos.example/api/public/albums"),
+      directEnv,
+      context,
+    );
+    await Promise.all(pending);
+
+    expect(response.status).toBe(200);
+    expect(await response.json()).toEqual({ data: [] });
+    expect(createClient).toHaveBeenCalledWith(
+      expect.objectContaining({ connectionString: directEnv.DATABASE_URL }),
+    );
+    expect(connect).toHaveBeenCalledTimes(1);
+    expect(end).toHaveBeenCalledTimes(1);
   });
 
   it("returns 503 and closes the client when the database cannot be reached", async () => {

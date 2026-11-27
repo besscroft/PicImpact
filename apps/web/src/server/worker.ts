@@ -10,6 +10,7 @@ import { createStorageResolver } from "./storage-config";
 
 type Env = {
   HYPERDRIVE?: Pick<Hyperdrive, "connectionString">;
+  DATABASE_URL?: string;
   BETTER_AUTH_SECRET?: string;
   BETTER_AUTH_URL?: string;
   ASSETS?: Fetcher;
@@ -23,9 +24,12 @@ export default {
       return env.ASSETS?.fetch(request) ?? new Response("Not found", { status: 404 });
     }
 
-    const connectionString = env.HYPERDRIVE?.connectionString;
+    const connectionString = env.HYPERDRIVE?.connectionString ?? env.DATABASE_URL;
     if (!connectionString) {
-      return Response.json({ code: 503, message: "Missing HYPERDRIVE binding" }, { status: 503 });
+      return Response.json(
+        { code: 503, message: "Configure HYPERDRIVE or DATABASE_URL" },
+        { status: 503 },
+      );
     }
 
     const client = new Client({ connectionString, connectionTimeoutMillis: 10_000 });
@@ -34,10 +38,7 @@ export default {
       try {
         await client.connect();
       } catch (error) {
-        console.error(
-          "Could not connect to PostgreSQL through Hyperdrive.",
-          (error as { code?: string })?.code,
-        );
+        console.error("Could not connect to PostgreSQL.", (error as { code?: string })?.code);
         return Response.json({ code: 503, message: "PostgreSQL is unavailable" }, { status: 503 });
       }
 

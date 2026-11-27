@@ -61,9 +61,11 @@ provider's recommended TLS options.
    admin reads see writes immediately.
 2. Bind that configuration to the Worker as `HYPERDRIVE`. For Wrangler or
    Workers Builds, configure the `[[hyperdrive]]` block in `wrangler.toml` with
-   its ID. A `DATABASE_URL` Worker variable is no longer used. Set
-   `BETTER_AUTH_URL` to your public site URL and `BETTER_AUTH_SECRET` to a random
-   Worker secret. Do not put database credentials in `wrangler.toml`.
+   its ID. This is the recommended mode. Alternatively, omit Hyperdrive and set
+   `DATABASE_URL` as a Worker Secret to connect directly to a publicly reachable
+   PostgreSQL endpoint. Set `BETTER_AUTH_URL` to your public site URL and
+   `BETTER_AUTH_SECRET` to a random Worker secret. Do not put database
+   credentials in `wrangler.toml`.
 3. Run `pnpm run web:build`, then `pnpm --filter @picimpact/web exec wrangler deploy`
    from the repository root. Check `/api/health` for a working connection and
    `/api/public/albums` to verify the tables are present.
