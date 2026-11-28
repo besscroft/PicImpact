@@ -1,4 +1,3 @@
-import { Button } from "@ui-sdk/solid/button";
 import {
   Toast,
   ToastAction,
@@ -8,23 +7,20 @@ import {
   ToastTitle,
 } from "@ui-sdk/solid/toast";
 import { animate } from "motion";
-import { For, Show, createEffect, createSignal } from "solid-js";
+import { Show, createEffect, createSignal } from "solid-js";
 
 import {
-  LoadingState,
-  NavIcon,
-  ToolbarIcon,
-  btnPrimary,
-  errorBanner,
-  noticeBanner,
-  rowAction,
-} from "./admin/shared";
+  AdminLayout,
+  adminPathForView,
+  adminViewFromPath,
+  type UploadSaveApi,
+} from "./admin/AdminLayout";
+import { LoadingState, errorBanner, noticeBanner } from "./admin/shared";
 import { getJson } from "./api";
 import { LoginScreen } from "./LoginScreen";
 import { PublicHome } from "./public/HomeView";
 import { PublicPreview } from "./public/PreviewView";
 import { type AuthUser, type AuthSessionInfo } from "./auth-client";
-import { siteConfig } from "./site";
 import type { Album, Config, Dashboard, View } from "./types";
 import { AccountView } from "./views/AccountView";
 import { AlbumsView } from "./views/AlbumsView";
@@ -32,16 +28,6 @@ import { ConfigView, StorageConfigView } from "./views/ConfigView";
 import { DashboardView } from "./views/DashboardView";
 import { PhotosView } from "./views/PhotosView";
 import { UploadView } from "./views/UploadView";
-
-const moduleLabels: Record<View, string> = {
-  dashboard: "概览",
-  upload: "上传图片",
-  photos: "图片管理",
-  albums: "相册",
-  storage: "存储配置",
-  config: "配置",
-  account: "账户设置",
-};
 
 type Route =
   | { kind: "public"; album: string }
@@ -66,7 +52,10 @@ function getRoute(): Route {
 }
 
 function AdminApp() {
-  const [view, setView] = createSignal<View>("dashboard");
+  // 初始视图来自 URL，深链 /admin/<view> 可直达对应页面
+  const [view, setView] = createSignal<View>(
+    adminViewFromPath(window.location.pathname) ?? "dashboard",
+  );
   const [albums, setAlbums] = createSignal<Album[]>([]);
   const [configs, setConfigs] = createSignal<Config[]>([]);
   const [dashboard, setDashboard] = createSignal<Dashboard | null>(null);
@@ -79,17 +68,12 @@ function AdminApp() {
   const [registrationOpen, setRegistrationOpen] = createSignal(false);
   const [user, setUser] = createSignal<AuthUser | null>(null);
   const [sidebarOpen, setSidebarOpen] = createSignal(true);
-  const [uploadSaveApi, setUploadSaveApi] = createSignal<{
-    save: () => Promise<void>;
-    ready: () => boolean;
-    hint: () => string;
-  } | null>(null);
+  const [uploadSaveApi, setUploadSaveApi] = createSignal<UploadSaveApi | null>(null);
   const [albumFormApi, setAlbumFormApi] = createSignal<{ open: () => void } | null>(null);
 
-  const rail = () => !sidebarOpen();
-
-  async function refresh() {
-    setLoading(true);
+  async function refresh(options: { silent?: boolean } = {}) {
+    // silent：数据静默更新，不触发全页骨架屏（用于开关切换等局部变更后的同步）
+    if (!options.silent) setLoading(true);
     setError(null);
     try {
       const [albumResponse, configResponse, dashboardResponse] = await Promise.all([
@@ -175,18 +159,32 @@ function AdminApp() {
     return true;
   }
 
+  /* 菜单导航写入 URL，每个菜单页面即一个路由；同视图重复点击不新增历史记录 */
+  function navigate(next: View) {
+    if (view() === next) return;
+    history.pushState(null, "", adminPathForView(next));
+    setView(next);
+  }
+
   createEffect(
     () => true,
     () => {
       animate(".app-shell", { opacity: [0, 1], y: [12, 0] }, { duration: 0.45 });
       void loadSession();
+      // 非规范路径（/admin/dashboard、未知子段等）归一化到当前视图的规范地址
+      if (window.location.pathname !== adminPathForView(view())) {
+        history.replaceState(null, "", adminPathForView(view()));
+      }
+      // 浏览器前进/后退时按 URL 切回对应视图
+      window.addEventListener("popstate", () => {
+        const next = adminViewFromPath(window.location.pathname) ?? "dashboard";
+        setView(next);
+        if (window.location.pathname !== adminPathForView(next)) {
+          history.replaceState(null, "", adminPathForView(next));
+        }
+      });
     },
   );
-
-  const moduleLink = (active: boolean) =>
-    `flex w-full cursor-pointer items-center gap-2.5 rounded-md px-2.5 py-2 text-left text-sm text-sidebar-foreground transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground disabled:pointer-events-none disabled:opacity-50 focus-visible:border-ring focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-ring/50 ${
-      active ? "bg-sidebar-accent font-medium text-sidebar-accent-foreground" : ""
-    }${rail() ? " justify-center px-0" : ""}`;
 
   return (
     <div class="app-shell">
@@ -211,191 +209,65 @@ function AdminApp() {
       </Show>
 
       <Show when={authReady() && (!authConfigured() || authenticated())}>
-        <main class="grid h-dvh grid-cols-[auto_minmax(0,1fr)] overflow-hidden">
-          <aside
-            class={`flex flex-col overflow-hidden border-r border-sidebar-border bg-sidebar pb-3.5 pt-3 transition-[width] duration-200 ${
-              rail() ? "w-[58px] px-2" : "w-[232px] px-3"
-            }`}
-            aria-label="Admin sidebar"
-          >
-            <button
-              class={`flex w-full cursor-pointer items-center gap-2.5 rounded-lg px-2 py-1.5 text-left transition-colors hover:bg-sidebar-accent focus-visible:border-ring focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-ring/50 ${
-                rail() ? "justify-center px-0" : ""
-              }`}
-              type="button"
-              onClick={() => {
-                window.location.href = "/";
-              }}
-            >
-              <span
-                class="grid size-8 flex-none place-items-center rounded-full border border-sidebar-border text-sm font-semibold text-foreground"
-                aria-hidden="true"
-              >
-                P
-              </span>
-              <span
-                class={`overflow-hidden text-ellipsis whitespace-nowrap text-[0.93rem] font-bold tracking-wide text-foreground ${
-                  rail() ? "hidden" : ""
-                }`}
-              >
-                {siteConfig().title}
-              </span>
-            </button>
-
-            <div class="mt-4 grid gap-0.5">
-              <div
-                class={`px-2.5 pb-1 text-xs text-muted-foreground ${rail() ? "hidden" : ""}`}
-              >
-                菜单
-              </div>
-              <nav class="grid gap-0.5" aria-label="业务模块">
-                <For each={Object.keys(moduleLabels) as View[]}>
-                  {(item) => (
-                    <button
-                      type="button"
-                      class={moduleLink(view() === item)}
-                      onClick={() => setView(item)}
-                    >
-                      <NavIcon view={item} />
-                      <span
-                        class={`overflow-hidden text-ellipsis whitespace-nowrap ${
-                          rail() ? "hidden" : ""
-                        }`}
-                      >
-                        {moduleLabels[item]}
-                      </span>
-                    </button>
-                  )}
-                </For>
-              </nav>
+        <AdminLayout
+          view={view}
+          sidebarOpen={sidebarOpen}
+          onToggleSidebar={() => setSidebarOpen(!sidebarOpen())}
+          user={user}
+          authConfigured={authConfigured}
+          onNavigate={navigate}
+          onSignOut={signOut}
+          uploadSaveApi={uploadSaveApi}
+          albumFormApi={albumFormApi}
+        >
+          <Show when={notice()}>
+            <div class={noticeBanner} role="status">
+              {notice()}
             </div>
-
-            <div class="mt-auto grid gap-0.5">
-              <button
-                class={moduleLink(false)}
-                type="button"
-                onClick={() => {
-                  window.location.href = "/";
-                }}
-              >
-                <NavIcon view="home" />
-                <span
-                  class={`overflow-hidden text-ellipsis whitespace-nowrap ${
-                    rail() ? "hidden" : ""
-                  }`}
-                >
-                  回到首页
-                </span>
-              </button>
+          </Show>
+          <Show when={error()}>
+            <div class={`${errorBanner} mb-5`} role="alert">
+              {error()}
             </div>
+          </Show>
 
-            <div
-              class={`mt-3 flex items-center gap-2.5 border-t border-sidebar-border pt-3 ${
-                rail() ? "justify-center px-0" : "px-2"
-              }`}
-            >
-              <span
-                class="grid size-[30px] flex-none place-items-center rounded-full bg-sidebar-accent text-xs font-medium text-foreground"
-                aria-hidden="true"
-              >
-                P
-              </span>
-              <div class={`grid min-w-0 leading-tight ${rail() ? "hidden" : ""}`}>
-                <span class="truncate text-[0.82rem] font-semibold text-foreground">
-                  {user()?.name || user()?.username || "admin"}
-                </span>
-                <span class="truncate text-[0.7rem] text-muted-foreground">PicImpact v4</span>
-              </div>
-              <Show when={authConfigured() && !rail()}>
-                <button class={`ml-auto text-xs text-muted-foreground hover:text-foreground ${rowAction}`} type="button" onClick={signOut}>
-                  退出
-                </button>
-              </Show>
-            </div>
-          </aside>
-
-          <div class="flex min-w-0 min-h-0 flex-col">
-            <header class="flex items-center gap-3.5 px-4 pb-2 pt-3.5">
-              <button
-                class="grid size-[34px] cursor-pointer place-items-center rounded-lg text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:border-ring focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-ring/50"
-                type="button"
-                aria-label="切换侧栏"
-                onClick={() => setSidebarOpen(!sidebarOpen())}
-              >
-                <ToolbarIcon />
-              </button>
-              <div class="flex-1" />
-              <Show when={view() === "albums" && albumFormApi()}>
-                <Button class={btnPrimary} type="button" onClick={() => albumFormApi()!.open()}>
-                  新建相册
-                </Button>
-              </Show>
-              <Show when={view() === "upload" && uploadSaveApi()}>
-                <span class="text-xs text-destructive">{uploadSaveApi()!.hint()}</span>
-                <Button
-                  class={btnPrimary}
-                  type="button"
-                  disabled={!uploadSaveApi()!.ready()}
-                  onClick={() => uploadSaveApi()!.save()}
-                  pendingAnnouncement="保存中"
-                >
-                  <span data-show="idle">保存</span>
-                  <span data-show="pending">保存中…</span>
-                </Button>
-              </Show>
-            </header>
-
-            <div class="min-h-0 flex-1 overflow-x-hidden overflow-y-auto px-4 pb-4 pt-1">
-              <Show when={notice()}>
-                <div class={noticeBanner} role="status">
-                  {notice()}
-                </div>
-              </Show>
-              <Show when={error()}>
-                <div class={`${errorBanner} mb-5`} role="alert">
-                  {error()}
-                </div>
-              </Show>
-
-              <Show when={!loading()} fallback={<LoadingState />}>
-                <Show when={view() === "dashboard"}>
-                  <DashboardView dashboard={dashboard()} />
-                </Show>
-                <Show when={view() === "upload"}>
-                  <UploadView
-                    albums={albums()}
-                    onChanged={refreshDashboard}
-                    registerSave={setUploadSaveApi}
-                  />
-                </Show>
-                <Show when={view() === "photos"}>
-                  <PhotosView albums={albums()} onChanged={refresh} />
-                </Show>
-                <Show when={view() === "albums"}>
-                  <AlbumsView
-                    albums={albums()}
-                    onChanged={refreshAlbums}
-                    registerAction={setAlbumFormApi}
-                  />
-                </Show>
-                <Show when={view() === "storage"}>
-                  <StorageConfigView configs={configs()} onSaveStorage={saveStorageConfig} />
-                </Show>
-                <Show when={view() === "config"}>
-                  <ConfigView />
-                </Show>
-                <Show when={view() === "account"}>
-                  <AccountView
-                    user={user()}
-                    onUserNameChange={(name) =>
-                      setUser((previous) => (previous ? { ...previous, name } : previous))
-                    }
-                  />
-                </Show>
-              </Show>
-            </div>
-          </div>
-        </main>
+          <Show when={!loading()} fallback={<LoadingState />}>
+            <Show when={view() === "dashboard"}>
+              <DashboardView dashboard={dashboard()} />
+            </Show>
+            <Show when={view() === "upload"}>
+              <UploadView
+                albums={albums()}
+                onChanged={refreshDashboard}
+                registerSave={setUploadSaveApi}
+              />
+            </Show>
+            <Show when={view() === "photos"}>
+              <PhotosView albums={albums()} onChanged={() => refresh({ silent: true })} />
+            </Show>
+            <Show when={view() === "albums"}>
+              <AlbumsView
+                albums={albums()}
+                onChanged={refreshAlbums}
+                registerAction={setAlbumFormApi}
+              />
+            </Show>
+            <Show when={view() === "storage"}>
+              <StorageConfigView configs={configs()} onSaveStorage={saveStorageConfig} />
+            </Show>
+            <Show when={view() === "config"}>
+              <ConfigView />
+            </Show>
+            <Show when={view() === "account"}>
+              <AccountView
+                user={user()}
+                onUserNameChange={(name) =>
+                  setUser((previous) => (previous ? { ...previous, name } : previous))
+                }
+              />
+            </Show>
+          </Show>
+        </AdminLayout>
       </Show>
     </div>
   );

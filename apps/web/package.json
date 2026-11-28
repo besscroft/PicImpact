@@ -32,6 +32,7 @@
     "better-auth": "1.7.28",
     "drizzle-orm": "0.45.4",
     "exifreader": "4.38.1",
+    "heic-to": "1.4.2",
     "hono": "4.13.21",
     "motion": "14.14.0",
     "pg": "8.23.1",

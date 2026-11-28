@@ -131,7 +131,20 @@ export function PhotosView(props: { albums: Album[]; onChanged: () => Promise<vo
         body: JSON.stringify({ show }),
       });
       if (!response.ok) throw new Error("更新失败");
-      reload();
+      // 静默更新本地数据（列表徽标与详情开关即时反映），不重载列表、不触发骨架屏
+      const current = pageData();
+      if (current) {
+        setPageData({
+          ...current,
+          data: current.data.map((item) =>
+            item.id === photo.id ? { ...item, show, show_on_mainpage: item.show_on_mainpage } : item,
+          ),
+        });
+      }
+      const viewingCurrent = viewing();
+      if (viewingCurrent && viewingCurrent.id === photo.id) {
+        setViewing({ ...viewingCurrent, show });
+      }
       void props.onChanged();
     } catch (cause) {
       setListError(cause instanceof Error ? cause.message : "更新失败");
@@ -303,9 +316,9 @@ export function PhotosView(props: { albums: Album[]; onChanged: () => Promise<vo
                               .filter(Boolean)
                               .join(" · ")}
                           </span>
-                          <Show when={photo.show === 1 || (photo.labels?.length ?? 0) > 0}>
+                          <Show when={photo.show === 0 || (photo.labels?.length ?? 0) > 0}>
                             <div class="flex flex-wrap gap-1.5">
-                              <Show when={photo.show === 1}>
+                              <Show when={photo.show === 0}>
                                 <span class="rounded-full bg-white/25 px-2 py-0.5 text-xs text-white">私有</span>
                               </Show>
                               <For each={(photo.labels ?? []).slice(0, 3)}>
@@ -524,18 +537,6 @@ function PhotoEditDialog(props: { photo: Photo; onClose: () => void; onSaved: ()
   async function submit(event: SubmitEvent) {
     event.preventDefault();
     const current = draft();
-    if (!current.url) {
-      setError("请填写图片链接");
-      return;
-    }
-    if (!current.width || current.width <= 0) {
-      setError("请填写有效的宽度");
-      return;
-    }
-    if (!current.height || current.height <= 0) {
-      setError("请填写有效的高度");
-      return;
-    }
     setPending(true);
     setError(null);
     try {
@@ -544,14 +545,7 @@ function PhotoEditDialog(props: { photo: Photo; onClose: () => void; onSaved: ()
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           title: current.title ?? null,
-          url: current.url,
-          preview_url: current.preview_url ?? null,
-          video_url: current.video_url ?? null,
           detail: current.detail ?? null,
-          width: current.width,
-          height: current.height,
-          lon: current.lon ?? null,
-          lat: current.lat ?? null,
           sort: current.sort,
           labels: current.labels ?? [],
           show: current.show,
@@ -587,33 +581,6 @@ function PhotoEditDialog(props: { photo: Photo; onClose: () => void; onSaved: ()
               />
             </label>
             <label class={`${fieldCls} ${labelCls}`}>
-              链接
-              <input
-                class={inputCls}
-                value={draft().url ?? ""}
-                placeholder="请输入图片链接"
-                onInput={(event) => update({ url: event.currentTarget.value })}
-              />
-            </label>
-            <label class={`${fieldCls} ${labelCls}`}>
-              预览链接
-              <input
-                class={inputCls}
-                value={draft().preview_url ?? ""}
-                placeholder="请输入预览链接"
-                onInput={(event) => update({ preview_url: event.currentTarget.value })}
-              />
-            </label>
-            <label class={`${fieldCls} ${labelCls}`}>
-              视频链接
-              <input
-                class={inputCls}
-                value={draft().video_url ?? ""}
-                placeholder="请输入视频链接（Live Photo）"
-                onInput={(event) => update({ video_url: event.currentTarget.value })}
-              />
-            </label>
-            <label class={`${fieldCls} ${labelCls}`}>
               详情
               <input
                 class={inputCls}
@@ -622,46 +589,6 @@ function PhotoEditDialog(props: { photo: Photo; onClose: () => void; onSaved: ()
                 onInput={(event) => update({ detail: event.currentTarget.value })}
               />
             </label>
-            <div class="grid grid-cols-2 gap-3.5 max-[767px]:grid-cols-1">
-              <label class={`${fieldCls} ${labelCls}`}>
-                宽度（px）
-                <input
-                  class={inputCls}
-                  type="number"
-                  value={draft().width}
-                  onInput={(event) => update({ width: Number(event.currentTarget.value) })}
-                />
-              </label>
-              <label class={`${fieldCls} ${labelCls}`}>
-                高度（px）
-                <input
-                  class={inputCls}
-                  type="number"
-                  value={draft().height}
-                  onInput={(event) => update({ height: Number(event.currentTarget.value) })}
-                />
-              </label>
-            </div>
-            <div class="grid grid-cols-2 gap-3.5 max-[767px]:grid-cols-1">
-              <label class={`${fieldCls} ${labelCls}`}>
-                经度
-                <input
-                  class={inputCls}
-                  value={draft().lon ?? ""}
-                  placeholder="请输入经度"
-                  onInput={(event) => update({ lon: event.currentTarget.value })}
-                />
-              </label>
-              <label class={`${fieldCls} ${labelCls}`}>
-                纬度
-                <input
-                  class={inputCls}
-                  value={draft().lat ?? ""}
-                  placeholder="请输入纬度"
-                  onInput={(event) => update({ lat: event.currentTarget.value })}
-                />
-              </label>
-            </div>
             <label class={`${fieldCls} ${labelCls}`}>
               排序
               <input
@@ -779,19 +706,21 @@ function PhotoInspector(props: {
           </button>
         </div>
       </header>
-      <div class="min-h-0 flex-1 overflow-y-auto px-4 py-3.5">
+      <div class="no-scrollbar min-h-0 flex-1 overflow-y-auto px-4 py-3.5">
         <Show
           when={photo().type === 2 && photo().video_url}
           fallback={
-            <img
-              class="max-h-[44dvh] w-full rounded-lg bg-secondary object-contain"
-              src={photo().preview_url ?? photo().url ?? ""}
-              alt={photo().detail ?? ""}
-            />
+            <div class="aspect-[3/2] w-full overflow-hidden rounded-lg bg-secondary">
+              <img
+                class="h-full w-full object-cover"
+                src={photo().preview_url ?? photo().url ?? ""}
+                alt={photo().detail ?? ""}
+              />
+            </div>
           }
         >
           <video
-            class="max-h-[44dvh] w-full rounded-lg bg-secondary object-contain"
+            class="aspect-[3/2] w-full rounded-lg bg-secondary object-cover"
             src={photo().video_url ?? ""}
             controls
             muted

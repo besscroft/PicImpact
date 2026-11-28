@@ -3,7 +3,9 @@ import { toast } from "@ui-sdk/solid/toast";
 
 import {
   compressPreviewImage,
+  convertHeicToJpeg,
   encodeThumbHash,
+  isHeicFile,
   readImageExif,
   readImageSize,
   type ExifInfo,
@@ -12,18 +14,26 @@ import {
   badgeCls,
   badgeDestructive,
   badgeSecondary,
+  formatExifDateTime,
   inputCls,
   rowAction,
   selectCls,
+  TagInput,
 } from "../admin/shared";
 import { isStorageProvider, STORAGE_PROVIDERS, type StorageProvider } from "../storage-provider";
 import type { Album } from "../types";
 
 type UploadStatus = "pending" | "processing" | "uploading" | "done" | "error";
 
+type UploadItemKind = "image" | "video" | "livephoto";
+
 type UploadItem = {
   id: string;
+  kind: UploadItemKind;
+  /** image/livephoto 为图片文件（livephoto 的 file 始终是图），video 为视频文件 */
   file: File;
+  /** livephoto 的视频部分 */
+  videoFile?: File;
   status: UploadStatus;
   error?: string;
   previewUrl?: string;
@@ -36,7 +46,14 @@ type UploadItem = {
   gpsLon?: string;
   blurhash?: string;
   uploaded?: { key: string; url: string; previewUrl: string };
+  /** livephoto 视频部分的上传结果 */
+  videoUploaded?: { key: string; url: string };
 };
+
+/** 文件主名（去扩展名，小写），LivePhoto 图/视频按同名配对 */
+function fileStem(name: string) {
+  return name.replace(/\.[^.]+$/, "").toLowerCase();
+}
 
 const EXIF_FIELDS: Array<[keyof ExifInfo, string]> = [
   ["dateTime", "拍摄时间"],
@@ -58,7 +75,10 @@ function exifEntries(exif?: ExifInfo) {
   const camera = [exif.make, exif.model].filter(Boolean).join(" ");
   if (camera) entries.push({ label: "相机", value: camera });
   for (const [key, label] of EXIF_FIELDS) {
-    const value = exif[key].trim();
+    // String 防御：解析库可能产出非 string 字段，避免在响应式上下文里抛错（Solid 2 会 HALT 整个系统）
+    const raw = String(exif[key] ?? "").trim();
+    // 拍摄时间从 EXIF 的 2025:03:29 转为阅读习惯的 2025-03-29
+    const value = key === "dateTime" ? formatExifDateTime(raw) : raw;
     if (value) entries.push({ label, value });
   }
   return entries;
@@ -127,6 +147,7 @@ export function UploadView(props: {
   const [storage, setStorage] = createSignal<StorageProvider>("r2");
   const [title, setTitle] = createSignal("");
   const [detail, setDetail] = createSignal("");
+  const [labels, setLabels] = createSignal<string[]>([]);
   const [items, setItems] = createSignal<UploadItem[]>([]);
   const [selectedId, setSelectedId] = createSignal<string | null>(null);
   const [dragOver, setDragOver] = createSignal(false);
@@ -155,45 +176,98 @@ export function UploadView(props: {
       toast.error("请先选择相册", { description: "选择相册后才能上传文件" });
       return;
     }
-    const accepted: UploadItem[] = [];
+    const parseIds: string[] = [];
+    const next = [...items()];
     for (const file of Array.from(fileList)) {
-      if (!file.type.startsWith("image/") && !file.type.startsWith("video/")) {
-        continue;
+      const image = file.type.startsWith("image/");
+      const video = file.type.startsWith("video/");
+      if (!image && !video) continue;
+      const stem = fileStem(file.name);
+      // LivePhoto 自动配对：同名（主文件名相同）的图 + 视频合并为一个条目，支持分多次拖入
+      if (video) {
+        const target = next.find(
+          (item) => item.kind === "image" && !item.videoFile && fileStem(item.file.name) === stem,
+        );
+        if (target) {
+          const index = next.indexOf(target);
+          next[index] = {
+            ...target,
+            kind: "livephoto",
+            videoFile: file,
+            // 图部分可能已上传过，保留 uploaded；视频部分待传
+            status: "pending",
+            error: undefined,
+            progress: 0,
+          };
+          continue;
+        }
+      } else {
+        const target = next.find((item) => item.kind === "video" && fileStem(item.file.name) === stem);
+        if (target) {
+          const index = next.indexOf(target);
+          // 视频部分若已上传，结果转移到 videoUploaded；图片重新提供
+          next[index] = {
+            ...target,
+            kind: "livephoto",
+            file,
+            previewUrl: URL.createObjectURL(file),
+            videoUploaded: target.uploaded
+              ? { key: target.uploaded.key, url: target.uploaded.url }
+              : target.videoUploaded,
+            uploaded: undefined,
+            width: undefined,
+            height: undefined,
+            exif: undefined,
+            gpsLat: undefined,
+            gpsLon: undefined,
+            blurhash: undefined,
+            status: "pending",
+            error: undefined,
+            progress: 0,
+          };
+          parseIds.push(target.id);
+          continue;
+        }
       }
-      accepted.push({
+      const item: UploadItem = {
         id: `${Date.now()}-${Math.random().toString(36).slice(2)}`,
+        kind: image ? "image" : "video",
         file,
         status: "pending",
         progress: 0,
-        previewUrl: file.type.startsWith("image/") ? URL.createObjectURL(file) : undefined,
-      });
+        previewUrl: image ? URL.createObjectURL(file) : undefined,
+      };
+      next.push(item);
+      if (image) parseIds.push(item.id);
     }
-    if (accepted.length === 0) return;
-    setItems((current) => [...current, ...accepted]);
+    setItems(next);
     // 加入队列后立刻解析图片数据（尺寸 / EXIF），解析结果回填到详情面板
-    for (const item of accepted) {
-      if (!item.file.type.startsWith("video/")) void parseItemMeta(item.id, item.file);
+    for (const id of parseIds) {
+      const item = next.find((entry) => entry.id === id);
+      if (item) void parseItemMeta(item.id, item.file);
     }
     // 选择文件后自动开始上传（仅上传到对象存储，入库需点击「保存」）
     scheduleQueue();
   }
 
   async function parseItemMeta(id: string, file: File) {
+    // EXIF 与尺寸分开解析：HEIC 等浏览器无法解码的格式仍可回填 EXIF
     try {
-      const [exifResult, size] = await Promise.all([
-        readImageExif(await file.arrayBuffer()),
-        readImageSize(file),
-      ]);
+      const exifResult = await readImageExif(await file.arrayBuffer());
       patchItem(id, {
-        width: size.width,
-        height: size.height,
         exif: exifResult.exif,
         gpsLat: exifResult.gpsLat,
         gpsLon: exifResult.gpsLon,
       });
     } catch (error) {
+      console.warn("图片 EXIF 解析失败", error);
+    }
+    try {
+      const size = await readImageSize(file);
+      patchItem(id, { width: size.width, height: size.height });
+    } catch (error) {
       // 解析失败不影响上传，上传时仍会按原逻辑处理
-      console.warn("图片信息解析失败", error);
+      console.warn("图片尺寸解析失败", error);
     }
   }
 
@@ -232,37 +306,77 @@ export function UploadView(props: {
   async function uploadItem(id: string, provider: StorageProvider) {
     const item = items().find((entry) => entry.id === id);
     if (!item) return;
+
+    // LivePhoto：视频部分先独立上传（无预览/EXIF 处理），占进度前半程
+    let baseProgress = 0;
+    let progressScale = 1;
+    if (item.kind === "livephoto") {
+      if (!item.videoFile) throw new Error("LivePhoto 缺少视频部分");
+      if (!item.videoUploaded) {
+        patchItem(id, { status: "uploading", error: undefined, progress: 0 });
+        const videoForm = new FormData();
+        videoForm.set("file", item.videoFile);
+        videoForm.set("storage", provider);
+        videoForm.set("persist", "0");
+        const videoResult = await uploadWithProgress(videoForm, (percent) =>
+          patchItem(id, { progress: Math.round(percent / 2) }),
+        );
+        if (!videoResult.ok) {
+          throw new Error(videoResult.body?.message ?? "LivePhoto 视频上传失败");
+        }
+        const videoObject = videoResult.body?.object;
+        if (!videoObject) throw new Error("上传响应缺少对象信息");
+        patchItem(id, { videoUploaded: { key: videoObject.key, url: videoObject.url } });
+      }
+      baseProgress = 50;
+      progressScale = 0.5;
+    }
+
+    const isVideo = item.kind === "video";
     const formData = new FormData();
-    formData.set("file", item.file);
+    // HEIC：浏览器无法解码，先转 JPG 作为上传对象（前台 <img> 才能正常显示）
+    let uploadFile = item.file;
+    if (!isVideo && isHeicFile(uploadFile)) {
+      try {
+        uploadFile = await convertHeicToJpeg(uploadFile);
+        patchItem(id, { degraded: false });
+      } catch (cause) {
+        console.warn("HEIC 转换失败，降级原样上传", cause);
+        patchItem(id, { degraded: true });
+      }
+    }
+    formData.set("file", uploadFile);
     formData.set("storage", provider);
     formData.set("persist", "0");
-    if (!item.file.type.startsWith("video/")) {
-      patchItem(id, { status: "processing", error: undefined, progress: 0 });
+    if (!isVideo) {
+      patchItem(id, { status: "processing", error: undefined, progress: baseProgress });
       try {
-        const previewBlob = await compressPreviewImage(item.file, { quality: 0.2 });
+        const previewBlob = await compressPreviewImage(uploadFile, { quality: 0.2 });
         formData.set(
           "preview",
           new File([previewBlob], "preview.webp", { type: "image/webp" }),
         );
+        // EXIF 从原始文件读取（转换后的 JPG 可能丢元数据）
         const { exif, gpsLat, gpsLon } = await readImageExif(await item.file.arrayBuffer());
         formData.set("exif", JSON.stringify(exif));
         if (gpsLat) formData.set("lat", gpsLat);
         if (gpsLon) formData.set("lon", gpsLon);
-        const size = await readImageSize(item.file);
+        const size = await readImageSize(uploadFile);
         formData.set("width", String(size.width));
         formData.set("height", String(size.height));
-        const blurhash = await encodeThumbHash(item.file);
+        patchItem(id, { width: size.width, height: size.height });
+        const blurhash = await encodeThumbHash(uploadFile);
         patchItem(id, { blurhash });
         formData.set("blurhash", blurhash);
       } catch {
-        // 浏览器无法解码（如 HEIC）时降级：原样上传，由后端回退 preview_url 为原图
+        // 浏览器无法解码时降级：原样上传，由后端回退 preview_url 为原图
         patchItem(id, { degraded: true });
       }
     }
-    patchItem(id, { status: "uploading", error: undefined, progress: 0 });
+    patchItem(id, { status: "uploading", error: undefined, progress: baseProgress });
     try {
       const result = await uploadWithProgress(formData, (percent) =>
-        patchItem(id, { progress: percent }),
+        patchItem(id, { progress: baseProgress + Math.round(percent * progressScale) }),
       );
       if (!result.ok) {
         throw new Error(result.body?.message ?? "上传失败");
@@ -295,30 +409,45 @@ export function UploadView(props: {
     );
     const albumValue = album();
     if (!albumValue || done.length === 0 || saving()) return;
+    // 单张（含单个 LivePhoto 对）填写基本信息；批量上传不填，入库为空值
+    const withMeta = items().length === 1;
+    const meta = withMeta
+      ? {
+          title: title().trim() || null,
+          detail: detail().trim() || null,
+          labels: labels().length > 0 ? [...labels()] : null,
+        }
+      : { title: null, detail: null, labels: null };
     setSaving(true);
     try {
       for (const item of done) {
         const uploaded = item.uploaded!;
+        const photoId = crypto.randomUUID();
         const response = await fetch("/api/photos", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            id: crypto.randomUUID(),
+            id: photoId,
             image_name: item.file.name,
             url: uploaded.url,
             preview_url: uploaded.previewUrl,
-            video_url: item.file.type.startsWith("video/") ? uploaded.url : null,
+            video_url:
+              item.kind === "video"
+                ? uploaded.url
+                : item.kind === "livephoto"
+                  ? (item.videoUploaded?.url ?? null)
+                  : null,
             image_key: uploaded.key,
-            type: item.file.type.startsWith("video/") ? 2 : 1,
-            title: title().trim() || null,
-            detail: detail().trim() || null,
+            type: item.kind === "image" ? 1 : 2,
+            title: meta.title,
+            detail: meta.detail,
             width: item.width ?? 0,
             height: item.height ?? 0,
             lat: item.gpsLat || null,
             lon: item.gpsLon || null,
             blurhash: item.blurhash || null,
             exif: item.exif ?? null,
-            labels: null,
+            labels: meta.labels,
           }),
         });
         if (!response.ok) {
@@ -326,6 +455,15 @@ export function UploadView(props: {
             | { message?: string }
             | null;
           throw new Error(payload?.message ?? `保存失败（${response.status}）`);
+        }
+        // POST /api/photos 不含相册字段，绑定走独立端点
+        const bindResponse = await fetch(`/api/photos/${photoId}/album`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ album_value: albumValue }),
+        });
+        if (!bindResponse.ok) {
+          throw new Error("相册绑定失败");
         }
         setItems((current) => current.filter((entry) => entry.id !== item.id));
       }
@@ -390,131 +528,6 @@ export function UploadView(props: {
   return (
     <section class="grid gap-3.5">
       <div class="grid grid-cols-2 items-start gap-3.5 max-[767px]:grid-cols-1">
-        <div class="grid min-w-0 content-start gap-3.5">
-          <div class="grid gap-3.5 rounded-xl bg-secondary p-3.5">
-          <div class="grid grid-cols-2 gap-3 max-[767px]:grid-cols-1">
-            <label class="grid gap-1.5 text-sm font-medium text-foreground">
-              存储位置
-              <select
-                class={selectCls}
-                value={storage()}
-                disabled={running()}
-                onChange={(event) => {
-                  const value = event.currentTarget.value;
-                  if (isStorageProvider(value)) setStorage(value);
-                }}
-              >
-                <For each={STORAGE_PROVIDERS}>
-                  {(provider) => <option value={provider.value}>{provider.label}</option>}
-                </For>
-              </select>
-            </label>
-            <label class="grid gap-1.5 text-sm font-medium text-foreground">
-              相册
-              <select
-                class={selectCls}
-                value={album()}
-                onChange={(event) => setAlbum(event.currentTarget.value)}
-              >
-                <option value="">请选择相册</option>
-                <For each={props.albums}>
-                  {(item) => <option value={item.album_value}>{item.name}</option>}
-                </For>
-              </select>
-            </label>
-          </div>
-          <label class="grid gap-1.5 text-sm font-medium text-foreground">
-            标题（可选）
-            <input
-              class={inputCls}
-              type="text"
-              value={title()}
-              placeholder="应用到本次所有上传"
-              onInput={(event) => setTitle(event.currentTarget.value)}
-            />
-          </label>
-          <label class="grid gap-1.5 text-sm font-medium text-foreground">
-            描述（可选）
-            <textarea
-              class={`${inputCls} h-auto resize-none overflow-hidden py-2 leading-4`}
-              rows={1}
-              value={detail()}
-              placeholder="应用到本次所有上传"
-              onInput={(event) => {
-                setDetail(event.currentTarget.value);
-                // 输入时自动增高，默认保持一行高度
-                const el = event.currentTarget;
-                el.style.height = "auto";
-                el.style.height = `${el.scrollHeight}px`;
-              }}
-            />
-          </label>
-          </div>
-
-          <Show when={selectedItem()}>
-            <div class="grid gap-3 rounded-xl bg-secondary p-3.5">
-              <div class="flex min-w-0 items-center gap-2.5">
-                <div class="grid size-14 flex-none place-items-center overflow-hidden rounded-lg border border-border bg-card">
-                  <Show
-                    when={selectedItem()!.previewUrl}
-                    fallback={<span class="text-xs text-muted-foreground">视频</span>}
-                  >
-                    <img class="size-full object-cover" src={selectedItem()!.previewUrl ?? ""} alt="" />
-                  </Show>
-                </div>
-                <strong
-                  class="min-w-0 truncate text-sm font-medium text-foreground"
-                  title={selectedItem()!.file.name}
-                >
-                  {selectedItem()!.file.name}
-                </strong>
-              </div>
-              <dl class="m-0 grid gap-1.5 text-[0.78rem]">
-                <div class="flex justify-between gap-3">
-                  <dt class="flex-none text-muted-foreground">尺寸</dt>
-                  <dd class="m-0 text-right text-foreground [overflow-wrap:anywhere]">
-                    {selectedItem()!.width
-                      ? `${selectedItem()!.width} × ${selectedItem()!.height}`
-                      : selectedItem()!.file.type.startsWith("video/")
-                        ? "—"
-                        : "解析中…"}
-                  </dd>
-                </div>
-                <div class="flex justify-between gap-3">
-                  <dt class="flex-none text-muted-foreground">大小</dt>
-                  <dd class="m-0 text-right text-foreground [overflow-wrap:anywhere]">
-                    {formatSize(selectedItem()!.file.size)}
-                  </dd>
-                </div>
-                <div class="flex justify-between gap-3">
-                  <dt class="flex-none text-muted-foreground">类型</dt>
-                  <dd class="m-0 text-right text-foreground [overflow-wrap:anywhere]">
-                    {selectedItem()!.file.type || "未知"}
-                  </dd>
-                </div>
-                <For each={exifEntries(selectedItem()!.exif)}>
-                  {(entry) => (
-                    <div class="flex justify-between gap-3">
-                      <dt class="flex-none text-muted-foreground">{entry.label}</dt>
-                      <dd class="m-0 text-right text-foreground [overflow-wrap:anywhere]">
-                        {entry.value}
-                      </dd>
-                    </div>
-                  )}
-                </For>
-                <Show when={selectedItem()!.gpsLat && selectedItem()!.gpsLon}>
-                  <div class="flex justify-between gap-3">
-                    <dt class="flex-none text-muted-foreground">位置</dt>
-                    <dd class="m-0 text-right text-foreground [overflow-wrap:anywhere]">
-                      {selectedItem()!.gpsLat}, {selectedItem()!.gpsLon}
-                    </dd>
-                  </div>
-                </Show>
-              </dl>
-            </div>
-          </Show>
-        </div>
-
         <div class="grid content-start gap-3.5">
             <div
           class={`grid min-h-[180px] place-items-center gap-2 rounded-xl border border-dashed p-6 text-center text-sm transition-colors focus-visible:border-ring focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-ring/50 ${
@@ -633,11 +646,23 @@ export function UploadView(props: {
                     </Show>
                   </div>
                   <div class="grid min-w-0 flex-1 gap-0.5">
-                    <strong class="truncate text-sm font-medium text-foreground" title={item.file.name}>
-                      {item.file.name}
-                    </strong>
+                    <div class="flex min-w-0 items-center gap-1.5">
+                      <strong class="min-w-0 truncate text-sm font-medium text-foreground" title={item.file.name}>
+                        {item.file.name}
+                      </strong>
+                      <Show when={item.kind === "livephoto"}>
+                        <span class={`${badgeSecondary} flex-none`}>LivePhoto</span>
+                      </Show>
+                      <Show when={item.kind === "video"}>
+                        <span class={`${badgeSecondary} flex-none`}>视频</span>
+                      </Show>
+                    </div>
                     <span class="text-xs text-muted-foreground">
                       {formatSize(item.file.size)}
+                      <Show when={item.kind === "livephoto" && item.videoFile}>
+                        {" "}
+                        + {item.videoFile!.name}（{formatSize(item.videoFile!.size)}）
+                      </Show>
                       <Show when={item.status === "done" && item.degraded}> · 未生成预览图</Show>
                       <Show when={item.error}> · {item.error}</Show>
                     </span>
@@ -682,6 +707,146 @@ export function UploadView(props: {
             </For>
           </div>
         </Show>
+        </div>
+
+        <div class="grid min-w-0 content-start gap-3.5">
+          <div class="grid gap-3.5 rounded-xl bg-secondary p-3.5">
+          <div class="grid grid-cols-2 gap-3 max-[767px]:grid-cols-1">
+            <label class="grid gap-1.5 text-sm font-medium text-foreground">
+              存储位置
+              <select
+                class={selectCls}
+                value={storage()}
+                disabled={running()}
+                onChange={(event) => {
+                  const value = event.currentTarget.value;
+                  if (isStorageProvider(value)) setStorage(value);
+                }}
+              >
+                <For each={STORAGE_PROVIDERS}>
+                  {(provider) => <option value={provider.value}>{provider.label}</option>}
+                </For>
+              </select>
+            </label>
+            <label class="grid gap-1.5 text-sm font-medium text-foreground">
+              相册
+              <select
+                class={selectCls}
+                value={album()}
+                onChange={(event) => setAlbum(event.currentTarget.value)}
+              >
+                <option value="">请选择相册</option>
+                <For each={props.albums}>
+                  {(item) => <option value={item.album_value}>{item.name}</option>}
+                </For>
+              </select>
+            </label>
+          </div>
+          <Show
+            when={items().length <= 1}
+            fallback={
+              <p class="m-0 text-xs text-muted-foreground">
+                批量上传不填写标题、描述与标签，保存后可在图片管理中逐张编辑。
+              </p>
+            }
+          >
+            <label class="grid gap-1.5 text-sm font-medium text-foreground">
+              标题
+              <input
+                class={inputCls}
+                type="text"
+                value={title()}
+                onInput={(event) => setTitle(event.currentTarget.value)}
+              />
+            </label>
+            <label class="grid gap-1.5 text-sm font-medium text-foreground">
+              描述
+              <textarea
+                class={`${inputCls} h-auto resize-none overflow-hidden py-2 leading-4`}
+                rows={1}
+                value={detail()}
+                onInput={(event) => {
+                  setDetail(event.currentTarget.value);
+                  // 输入时自动增高，默认保持一行高度
+                  const el = event.currentTarget;
+                  el.style.height = "auto";
+                  el.style.height = `${el.scrollHeight}px`;
+                }}
+              />
+            </label>
+            <label class="grid gap-1.5 text-sm font-medium text-foreground">
+              标签
+              <TagInput
+                tags={labels()}
+                placeholder="输入后回车添加"
+                onChange={setLabels}
+              />
+            </label>
+          </Show>
+          </div>
+
+          <Show when={selectedItem()}>
+            <div class="grid gap-3 rounded-xl bg-secondary p-3.5">
+              <div class="flex min-w-0 items-center gap-2.5">
+                <div class="grid size-14 flex-none place-items-center overflow-hidden rounded-lg border border-border bg-card">
+                  <Show
+                    when={selectedItem()!.previewUrl}
+                    fallback={<span class="text-xs text-muted-foreground">视频</span>}
+                  >
+                    <img class="size-full object-cover" src={selectedItem()!.previewUrl ?? ""} alt="" />
+                  </Show>
+                </div>
+                <strong
+                  class="min-w-0 truncate text-sm font-medium text-foreground"
+                  title={selectedItem()!.file.name}
+                >
+                  {selectedItem()!.file.name}
+                </strong>
+              </div>
+              <dl class="m-0 grid gap-1.5 text-[0.78rem]">
+                <div class="flex justify-between gap-3">
+                  <dt class="flex-none text-muted-foreground">尺寸</dt>
+                  <dd class="m-0 text-right text-foreground [overflow-wrap:anywhere]">
+                    {selectedItem()!.width
+                      ? `${selectedItem()!.width} × ${selectedItem()!.height}`
+                      : selectedItem()!.kind !== "image"
+                        ? "—"
+                        : "解析中…"}
+                  </dd>
+                </div>
+                <div class="flex justify-between gap-3">
+                  <dt class="flex-none text-muted-foreground">大小</dt>
+                  <dd class="m-0 text-right text-foreground [overflow-wrap:anywhere]">
+                    {formatSize(selectedItem()!.file.size)}
+                  </dd>
+                </div>
+                <div class="flex justify-between gap-3">
+                  <dt class="flex-none text-muted-foreground">类型</dt>
+                  <dd class="m-0 text-right text-foreground [overflow-wrap:anywhere]">
+                    {selectedItem()!.file.type || "未知"}
+                  </dd>
+                </div>
+                <For each={exifEntries(selectedItem()!.exif)}>
+                  {(entry) => (
+                    <div class="flex justify-between gap-3">
+                      <dt class="flex-none text-muted-foreground">{entry.label}</dt>
+                      <dd class="m-0 text-right text-foreground [overflow-wrap:anywhere]">
+                        {entry.value}
+                      </dd>
+                    </div>
+                  )}
+                </For>
+                <Show when={selectedItem()!.gpsLat && selectedItem()!.gpsLon}>
+                  <div class="flex justify-between gap-3">
+                    <dt class="flex-none text-muted-foreground">位置</dt>
+                    <dd class="m-0 text-right text-foreground [overflow-wrap:anywhere]">
+                      {selectedItem()!.gpsLat}, {selectedItem()!.gpsLon}
+                    </dd>
+                  </div>
+                </Show>
+              </dl>
+            </div>
+          </Show>
         </div>
       </div>
     </section>

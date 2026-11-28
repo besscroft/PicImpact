@@ -1,4 +1,5 @@
 import ExifReader from "exifreader";
+import { heicTo } from "heic-to";
 import { rgbaToThumbHash } from "thumbhash";
 
 export type ExifInfo = {
@@ -19,8 +20,7 @@ export type ExifInfo = {
   white_balance: string;
 };
 
-function emptyExif(): ExifInfo {
-  return {
+function emptyExif(): ExifInfo {  return {
     make: "",
     model: "",
     bits: "",
@@ -40,33 +40,38 @@ function emptyExif(): ExifInfo {
 }
 
 /**
+ * exifreader 的 description 不保证是 string（如 ISOSpeedRatings 会返回 number），
+ * 统一归一化，避免非 string 字段流入下游（ExifInfo 声明全为 string）。
+ */
+function exifDesc(tag: unknown): string {
+  const value = (tag as { description?: unknown } | undefined)?.description;
+  return value === undefined || value === null ? "" : String(value);
+}
+
+/**
  * 解析图片 EXIF 信息（与 v3 的 exif 字段结构保持一致，便于备份互通）。
  */
 export async function readImageExif(file: ArrayBuffer) {
   const tags = await ExifReader.load(file);
   const exif = emptyExif();
-  exif.make = tags?.Make?.description ?? "";
-  exif.model = tags?.Model?.description ?? "";
-  exif.bits = tags?.["Bits Per Sample"]?.description ?? "";
-  exif.dateTime =
-    tags?.DateTimeOriginal?.description !== ""
-      ? (tags?.DateTimeOriginal?.description ?? "")
-      : (tags?.DateTime?.description ?? "");
-  exif.exposure_time = tags?.ExposureTime?.description ?? "";
-  exif.f_number = tags?.FNumber?.description ?? "";
-  exif.exposure_program = tags?.ExposureProgram?.description ?? "";
-  exif.iso_speed_rating = tags?.ISOSpeedRatings?.description ?? "";
-  exif.focal_length = tags?.FocalLength?.description ?? "";
-  exif.lens_specification = tags?.LensSpecification?.description ?? "";
-  exif.lens_model = tags?.LensModel?.description ?? "";
-  exif.exposure_mode = tags?.ExposureMode?.description ?? "";
-  exif.cfa_pattern =
-    (tags as Record<string, { description?: string }> | undefined)?.CFAPattern?.description ?? "";
-  exif.color_space = tags?.ColorSpace?.description ?? "";
-  exif.white_balance = tags?.WhiteBalance?.description ?? "";
+  exif.make = exifDesc(tags?.Make);
+  exif.model = exifDesc(tags?.Model);
+  exif.bits = exifDesc(tags?.["Bits Per Sample"]);
+  exif.dateTime = exifDesc(tags?.DateTimeOriginal) || exifDesc(tags?.DateTime);
+  exif.exposure_time = exifDesc(tags?.ExposureTime);
+  exif.f_number = exifDesc(tags?.FNumber);
+  exif.exposure_program = exifDesc(tags?.ExposureProgram);
+  exif.iso_speed_rating = exifDesc(tags?.ISOSpeedRatings);
+  exif.focal_length = exifDesc(tags?.FocalLength);
+  exif.lens_specification = exifDesc(tags?.LensSpecification);
+  exif.lens_model = exifDesc(tags?.LensModel);
+  exif.exposure_mode = exifDesc(tags?.ExposureMode);
+  exif.cfa_pattern = exifDesc(tags?.CFAPattern);
+  exif.color_space = exifDesc(tags?.ColorSpace);
+  exif.white_balance = exifDesc(tags?.WhiteBalance);
 
-  const gpsLat = tags?.GPSLatitude?.description ?? "";
-  const gpsLon = tags?.GPSLongitude?.description ?? "";
+  const gpsLat = exifDesc(tags?.GPSLatitude);
+  const gpsLon = exifDesc(tags?.GPSLongitude);
   return { exif, gpsLat, gpsLon };
 }
 
@@ -147,4 +152,24 @@ export async function compressPreviewImage(
   );
   if (!blob) throw new Error("预览图压缩失败");
   return blob;
+}
+
+/**
+ * 同步判断是否 HEIC/HEIF 文件。部分浏览器对 HEIC 的 MIME 为空，扩展名兜底。
+ */
+export function isHeicFile(file: File) {
+  const type = file.type.toLowerCase();
+  if (type === "image/heic" || type === "image/heif") return true;
+  const name = file.name.toLowerCase();
+  return name.endsWith(".heic") || name.endsWith(".heif");
+}
+
+/**
+ * HEIC 转 JPG（iPhone 直出等浏览器无法解码的格式）。转换后的文件作为上传对象，
+ * 使前台 <img> 可正常显示；转换本身失败时抛错，由调用方降级原样上传。
+ */
+export async function convertHeicToJpeg(file: File): Promise<File> {
+  const blob = await heicTo({ blob: file, type: "image/jpeg", quality: 0.9 });
+  const stem = file.name.replace(/\.[^.]+$/, "");
+  return new File([blob], `${stem}.jpg`, { type: "image/jpeg" });
 }
