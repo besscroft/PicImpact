@@ -1,6 +1,7 @@
 import { For, Show } from "solid-js";
 
 import { EmptyState, LoadingState, cardCls, metaCls } from "../admin/shared";
+import { BlurhashImage } from "../components/BlurhashImage";
 import type { Dashboard } from "../types";
 
 export function DashboardView(props: { dashboard: Dashboard | null }) {
@@ -37,9 +38,10 @@ export function DashboardView(props: { dashboard: Dashboard | null }) {
                             </div>
                           }
                         >
-                          <img
-                            class="block aspect-video w-full bg-secondary object-cover transition-colors group-hover:text-foreground"
+                          <BlurhashImage
+                            class="block aspect-video w-full bg-secondary"
                             src={photo.preview_url ?? photo.url ?? ""}
+                            blurhash={photo.blurhash}
                             alt={photo.title ?? photo.image_name ?? ""}
                             loading="lazy"
                           />

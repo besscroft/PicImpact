@@ -2,6 +2,7 @@ import { For, Show, createEffect, createMemo, createSignal, onCleanup } from "so
 
 import { albumHref, exifField } from "../admin/shared";
 import { getJson } from "../api";
+import { BlurhashImage } from "../components/BlurhashImage";
 import type { Album, PublicImage, PublicImagePage } from "../types";
 
 const galleryGap = 4;
@@ -240,11 +241,12 @@ function MasonryPhoto(props: { photo: PublicImage; priority: boolean }) {
     <div class="relative size-full bg-gallery-accent">
       <Show when={source()}>
         {(src) => (
-          <img
-            class="block size-full object-cover transition-transform duration-500 [transition-timing-function:cubic-bezier(0.2,0.8,0.2,1)] group-hover:scale-105"
+          <BlurhashImage
+            class="size-full"
             src={src()}
-            alt=""
+            blurhash={props.photo.blurhash}
             loading={props.priority ? "eager" : "lazy"}
+            imgClass="transition-transform duration-500 [transition-timing-function:cubic-bezier(0.2,0.8,0.2,1)] group-hover:scale-105"
           />
         )}
       </Show>

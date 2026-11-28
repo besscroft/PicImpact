@@ -2,6 +2,7 @@ import { For, Show, createEffect, createSignal, onCleanup } from "solid-js";
 
 import { LoadingState, albumHref, exifField, labelsOf } from "../admin/shared";
 import { getJson } from "../api";
+import { BlurhashImage } from "../components/BlurhashImage";
 import type { Photo, PublicImageDetail } from "../types";
 
 const accentCls = "text-[#6b8f1d]";
@@ -219,9 +220,11 @@ export function PublicPreview(props: { id: string }) {
                       </div>
                     }
                   >
-                    <img
-                      class="block h-[90vh] w-full object-contain max-[760px]:h-[56dvh]"
+                    <BlurhashImage
+                      class="block h-[90vh] w-full bg-[#e8ecdf] max-[760px]:h-[56dvh]"
                       src={source() ?? ""}
+                      blurhash={current().blurhash}
+                      fit="contain"
                       alt={current().title ?? current().image_name ?? ""}
                     />
                   </Show>

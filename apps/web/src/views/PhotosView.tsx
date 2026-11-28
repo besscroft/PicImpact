@@ -41,6 +41,7 @@ import {
   selectCls,
 } from "../admin/shared";
 import { getJson } from "../api";
+import { BlurhashImage } from "../components/BlurhashImage";
 import type { AdminPhotoPage, Album, Photo } from "../types";
 
 /* 卡片操作统一为图标按钮，参考 v3 的简约样式 */
@@ -298,10 +299,10 @@ export function PhotosView(props: { albums: Album[]; onChanged: () => Promise<vo
                         onClick={() => setViewing(photo)}
                       >
                         <Show when={photo.preview_url ?? photo.url} fallback={<span class="text-xs tracking-widest text-muted-foreground">NO IMAGE</span>}>
-                          <img
-                            class="h-[180px] w-full object-cover"
+                          <BlurhashImage
+                            class="h-[180px] w-full bg-secondary"
                             src={photo.preview_url ?? photo.url ?? ""}
-                            alt=""
+                            blurhash={photo.blurhash}
                             loading="lazy"
                           />
                         </Show>
@@ -472,7 +473,12 @@ export function PhotosView(props: { albums: Album[]; onChanged: () => Promise<vo
                           checked={batchIds().includes(photo.id)}
                           onChange={(event) => toggleBatch(photo.id, event.currentTarget.checked)}
                         />
-                        <img class="size-11 rounded-lg object-cover" src={photo.preview_url ?? photo.url ?? ""} alt="" loading="lazy" />
+                        <BlurhashImage
+                          class="size-11 shrink-0 rounded-lg bg-secondary"
+                          src={photo.preview_url ?? photo.url ?? ""}
+                          blurhash={photo.blurhash}
+                          loading="lazy"
+                        />
                         <span class="grid min-w-0 gap-0.5">
                           <strong class="truncate text-[0.82rem] font-medium text-foreground">
                             {photo.id.length > 16 ? `${photo.id.slice(0, 16)}…` : photo.id}
@@ -710,13 +716,12 @@ function PhotoInspector(props: {
         <Show
           when={photo().type === 2 && photo().video_url}
           fallback={
-            <div class="aspect-[3/2] w-full overflow-hidden rounded-lg bg-secondary">
-              <img
-                class="h-full w-full object-cover"
-                src={photo().preview_url ?? photo().url ?? ""}
-                alt={photo().detail ?? ""}
-              />
-            </div>
+            <BlurhashImage
+              class="aspect-[3/2] w-full rounded-lg bg-secondary"
+              src={photo().preview_url ?? photo().url ?? ""}
+              blurhash={photo().blurhash}
+              alt={photo().detail ?? ""}
+            />
           }
         >
           <video

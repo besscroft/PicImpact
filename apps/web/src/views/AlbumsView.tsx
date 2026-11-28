@@ -36,6 +36,7 @@ import {
   switchCls,
   switchThumbCls,
 } from "../admin/shared";
+import { BlurhashImage } from "../components/BlurhashImage";
 import type { AdminPhotoPage, Album } from "../types";
 import { getAlbumWorkspace, type AlbumFilter } from "./album-workspace";
 
@@ -424,7 +425,7 @@ function AlbumDetails(props: {
   onToggle: () => void;
   onDelete: () => void;
 }) {
-  const [preview, setPreview] = createSignal<{ url: string; alt: string } | null>(null);
+  const [preview, setPreview] = createSignal<{ url: string; alt: string; blurhash?: string | null } | null>(null);
   const [previewFailed, setPreviewFailed] = createSignal(false);
 
   createEffect(
@@ -441,7 +442,7 @@ function AlbumDetails(props: {
           const photo = data[0];
           const url = photo?.preview_url || photo?.url;
           if (url && !controller.signal.aborted) {
-            setPreview({ url, alt: photo.title || `${props.album.name}中的照片` });
+            setPreview({ url, alt: photo.title || `${props.album.name}中的照片`, blurhash: photo?.blurhash });
           }
         })
         .catch(() => undefined);
@@ -465,9 +466,10 @@ function AlbumDetails(props: {
       </header>
       <Show when={!previewFailed() && preview()}>
         {(photo) => (
-          <img
-            class="mx-4 mt-3 block h-[108px] w-[calc(100%-32px)] rounded-md object-cover"
+          <BlurhashImage
+            class="mx-4 mt-3 block h-[108px] w-[calc(100%-32px)] rounded-md bg-secondary"
             src={photo().url}
+            blurhash={photo().blurhash}
             alt={photo().alt}
             onError={() => setPreviewFailed(true)}
           />
