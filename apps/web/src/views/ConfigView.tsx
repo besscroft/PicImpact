@@ -11,14 +11,17 @@ import {
   SegmentedControlIndicator,
   SegmentedControlItem,
 } from "@ui-sdk/solid/segmented-control";
-import { For, Show, createSignal } from "solid-js";
+import { For, Show, createEffect, createSignal } from "solid-js";
 
 import {
   STORAGE_PROVIDERS,
   isStorageProvider,
   type StorageProvider,
 } from "../storage-provider";
+import { getJson } from "../api";
+import { applySiteConfig } from "../site";
 import {
+  LoadingState,
   btnOutline,
   btnPrimary,
   cardCls,
@@ -28,6 +31,7 @@ import {
   dialogFooterCls,
   dialogHeadingCls,
   dialogTitleCls,
+  errorBanner,
   fieldCls,
   focusRing,
   inputCls,
@@ -80,7 +84,138 @@ export function StorageConfigView(props: {
 export function ConfigView() {
   return (
     <section class="grid gap-5">
+      <SiteConfigPanel />
       <BackupPanel />
+    </section>
+  );
+}
+
+type SiteConfigDraft = {
+  title: string;
+  faviconUrl: string;
+  author: string;
+  umamiHost: string;
+  umamiAnalytics: string;
+};
+
+const SITE_CONFIG_FIELDS: Array<{
+  key: keyof SiteConfigDraft;
+  label: string;
+  hint: string;
+  placeholder: string;
+}> = [
+  { key: "title", label: "网站标题", hint: "浏览器标签页与公开端展示的标题", placeholder: "PicImpact" },
+  { key: "faviconUrl", label: "Favicon 地址", hint: "图片 URL，留空使用内置图标", placeholder: "https://example.com/favicon.ico" },
+  { key: "author", label: "网站归属者", hint: "展示在页面元信息中，可选", placeholder: "" },
+  { key: "umamiHost", label: "Umami 脚本地址", hint: "script.js 的完整 URL，留空不启用统计", placeholder: "https://cloud.umami.is/script.js" },
+  { key: "umamiAnalytics", label: "Umami Website ID", hint: "Umami 站点 ID，与脚本地址配合使用", placeholder: "" },
+];
+
+function SiteConfigPanel() {
+  const [draft, setDraft] = createSignal<SiteConfigDraft>({
+    title: "",
+    faviconUrl: "",
+    author: "",
+    umamiHost: "",
+    umamiAnalytics: "",
+  });
+  const [loading, setLoading] = createSignal(true);
+  const [pending, setPending] = createSignal(false);
+  const [message, setMessage] = createSignal<string | null>(null);
+  const [error, setError] = createSignal<string | null>(null);
+
+  createEffect(
+    () => true,
+    () => {
+      void (async () => {
+        try {
+          const response = await getJson<{ data: SiteConfigDraft }>("/api/site");
+          setDraft(response.data);
+        } catch {
+          setError("站点配置加载失败");
+        } finally {
+          setLoading(false);
+        }
+      })();
+    },
+  );
+
+  async function submit(event: SubmitEvent) {
+    event.preventDefault();
+    setPending(true);
+    setError(null);
+    setMessage(null);
+    try {
+      const response = await fetch("/api/site", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(draft()),
+      });
+      const body = (await response.json().catch(() => null)) as {
+        data?: SiteConfigDraft;
+        message?: string;
+      } | null;
+      if (!response.ok) {
+        setError(body?.message ?? "站点配置保存失败");
+        return;
+      }
+      if (body?.data) {
+        setDraft(body.data);
+        // 立即让当前页面生效：标题 / favicon / Umami
+        applySiteConfig(body.data);
+      }
+      setMessage("站点配置已保存");
+    } catch {
+      setError("站点配置保存失败");
+    } finally {
+      setPending(false);
+    }
+  }
+
+  return (
+    <section class={`${cardCls} max-w-[900px] p-5`}>
+      <div class="mb-3 grid gap-1">
+        <h2 class="m-0 text-lg font-semibold tracking-tight text-foreground">站点信息</h2>
+        <p class={`m-0 ${metaCls}`}>
+          网站标题与 favicon 会应用到公开端和管理端，Umami 配置完成后自动注入统计脚本。
+        </p>
+      </div>
+      <Show when={!loading()} fallback={<LoadingState />}>
+        <form class="grid max-w-[640px] gap-3.5" onSubmit={submit}>
+          <For each={SITE_CONFIG_FIELDS}>
+            {(field) => (
+              <label class={`${fieldCls} ${labelCls}`}>
+                {field.label}
+                <input
+                  class={inputCls}
+                  type={field.key === "faviconUrl" || field.key === "umamiHost" ? "url" : "text"}
+                  value={draft()[field.key]}
+                  placeholder={field.placeholder}
+                  onInput={(event) =>
+                    setDraft({ ...draft(), [field.key]: event.currentTarget.value })
+                  }
+                />
+                <span class={metaCls}>{field.hint}</span>
+              </label>
+            )}
+          </For>
+          <Show when={message()}>
+            <span class="text-sm text-foreground" role="status">
+              {message()}
+            </span>
+          </Show>
+          <Show when={error()}>
+            <div class={errorBanner} role="alert">
+              {error()}
+            </div>
+          </Show>
+          <div>
+            <Button class={btnPrimary} type="submit" disabled={pending()}>
+              {pending() ? "保存中…" : "保存"}
+            </Button>
+          </div>
+        </form>
+      </Show>
     </section>
   );
 }

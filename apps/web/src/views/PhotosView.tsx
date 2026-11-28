@@ -7,6 +7,8 @@ import {
   DialogTitle,
 } from "@ui-sdk/solid/dialog";
 import { For, Show, createEffect, createSignal } from "solid-js";
+import type { JSX } from "@solidjs/web";
+import { animate } from "motion";
 
 import {
   EXIF_ROWS,
@@ -28,6 +30,7 @@ import {
   exifCellCls,
   exifTableCls,
   exifValue,
+  focusRing,
   formatExifDateTime,
   fieldCls,
   inputCls,
@@ -39,6 +42,9 @@ import {
 } from "../admin/shared";
 import { getJson } from "../api";
 import type { AdminPhotoPage, Album, Photo } from "../types";
+
+/* 卡片操作统一为图标按钮，参考 v3 的简约样式 */
+const iconActionCls = `inline-flex size-8 shrink-0 cursor-pointer items-center justify-center rounded-lg border border-border bg-background text-muted-foreground transition-colors hover:bg-muted hover:text-foreground disabled:pointer-events-none disabled:opacity-50 ${focusRing}`;
 
 export function PhotosView(props: { albums: Album[]; onChanged: () => Promise<void> }) {
   const [album, setAlbum] = createSignal("");
@@ -105,6 +111,11 @@ export function PhotosView(props: { albums: Album[]; onChanged: () => Promise<vo
       params.set("pageSize", String(PHOTO_PAGE_SIZE));
       const response = await getJson<AdminPhotoPage>(`/api/photos?${params.toString()}`);
       setPageData(response);
+      // 详情栏跟随最新数据：照片被删除或不在当前筛选结果时自动收起
+      const current = viewing();
+      if (current) {
+        setViewing(response.data.find((item) => item.id === current.id) ?? null);
+      }
     } catch (cause) {
       setListError(cause instanceof Error ? cause.message : "加载失败");
     } finally {
@@ -181,7 +192,7 @@ export function PhotosView(props: { albums: Album[]; onChanged: () => Promise<vo
   const pages = () => Math.max(1, pageData()?.pages ?? 1);
 
   return (
-    <section class="grid gap-5">
+    <section class="@container flex flex-col gap-5 min-[1010px]:h-full">
       <div class="flex flex-wrap items-center justify-between gap-2.5">
         <div class="flex flex-wrap gap-2">
           <FilterSelect
@@ -258,94 +269,109 @@ export function PhotosView(props: { albums: Album[]; onChanged: () => Promise<vo
             />
           }
         >
-          <div class="grid grid-cols-[repeat(auto-fill,minmax(240px,1fr))] gap-3.5">
-            <For each={pageData()?.data ?? []}>
-              {(photo) => (
-                <article class={`${cardCls} flex flex-col overflow-hidden`}>
-                  <div class="flex items-center justify-between gap-2 border-b border-border px-2.5 py-2">
-                    <span class={`${badgeSecondary} truncate`}>{photo.album_name || "未分组"}</span>
-                    <button
-                      class={rowAction}
-                      type="button"
-                      aria-label="查看图片"
-                      onClick={() => setViewing(photo)}
+          <div class="flex gap-3.5 min-[1010px]:min-h-0 min-[1010px]:flex-1">
+            <div class="min-w-0 flex-1 min-[1010px]:flex min-[1010px]:min-h-0 min-[1010px]:flex-col">
+              <div class="grid grid-cols-[repeat(auto-fill,minmax(240px,1fr))] content-start gap-3.5 min-[1010px]:min-h-0 min-[1010px]:flex-1 min-[1010px]:overflow-y-auto">
+                <For each={pageData()?.data ?? []}>
+                  {(photo) => (
+                    <article
+                      class={`${cardCls} group relative flex flex-col overflow-hidden data-current:ring-2 data-current:ring-ring/50`}
+                      data-current={viewing()?.id === photo.id ? "" : undefined}
                     >
-                      查看
-                    </button>
-                  </div>
-                  <button
-                    class="grid h-[180px] w-full cursor-pointer place-items-center border-0 bg-secondary p-0 focus-visible:border-ring focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-ring/50"
-                    type="button"
-                    onClick={() => setViewing(photo)}
-                  >
-                    <Show when={photo.preview_url ?? photo.url} fallback={<span class="text-xs tracking-widest text-muted-foreground">NO IMAGE</span>}>
-                      <img class="max-h-[180px] max-w-full object-contain" src={photo.preview_url ?? photo.url ?? ""} alt="" loading="lazy" />
-                    </Show>
-                  </button>
-                  <div class="mt-auto flex items-center justify-between gap-2 border-t border-border px-2.5 py-2">
-                    <div class="flex min-w-0 items-center gap-2">
-                      <SwitchRow
-                        label={photo.show === 0 ? "公开" : "私有"}
-                        checked={photo.show === 0}
-                        onChange={(checked) => void updateShow(photo, checked ? 0 : 1)}
-                      />
-                      <span class={`${badgeSecondary} truncate`}>排序 {photo.sort}</span>
-                    </div>
-                    <div class="flex gap-1.5">
                       <button
-                        class={rowAction}
+                        class="block h-[180px] w-full cursor-pointer border-0 bg-secondary p-0 focus-visible:border-ring focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-ring/50"
                         type="button"
-                        aria-label="绑定相册"
-                        onClick={() => {
-                          setBinding(photo);
-                          setBindAlbum(photo.album_value ?? "");
-                        }}
+                        aria-label={`查看 ${photo.title || photo.image_name || "图片"}`}
+                        onClick={() => setViewing(photo)}
                       >
-                        相册
+                        <Show when={photo.preview_url ?? photo.url} fallback={<span class="text-xs tracking-widest text-muted-foreground">NO IMAGE</span>}>
+                          <img
+                            class="h-[180px] w-full object-cover"
+                            src={photo.preview_url ?? photo.url ?? ""}
+                            alt=""
+                            loading="lazy"
+                          />
+                        </Show>
                       </button>
-                      <button
-                        class={rowAction}
-                        type="button"
-                        aria-label="编辑图片"
-                        onClick={() => setEditing(photo)}
-                      >
-                        编辑
-                      </button>
-                    </div>
-                  </div>
-                </article>
-              )}
-            </For>
-          </div>
-          <div class="mt-4 flex items-center gap-2.5">
-            <select
-              class={selectAutoCls}
-              value={String(page())}
-              onChange={(event) => setPage(Number(event.currentTarget.value))}
-            >
-              {Array.from({ length: pages() }, (_, index) => index + 1).map((num) => (
-                <option value={String(num)}>第 {num} 页</option>
-              ))}
-            </select>
-            <button
-              class={rowAction}
-              type="button"
-              aria-label="上一页"
-              disabled={page() <= 1}
-              onClick={() => setPage(page() - 1)}
-            >
-              上一页
-            </button>
-            <button
-              class={rowAction}
-              type="button"
-              aria-label="下一页"
-              disabled={page() >= pages()}
-              onClick={() => setPage(page() + 1)}
-            >
-              下一页
-            </button>
-            <span class={metaCls}>共 {total()} 张</span>
+                      <Show when={photo.preview_url ?? photo.url}>
+                        <div class="pointer-events-none absolute inset-x-0 bottom-0 flex flex-col gap-1.5 bg-gradient-to-t from-black/70 via-black/30 to-transparent px-3 pb-2.5 pt-10 text-left opacity-0 transition-opacity duration-200 group-hover:opacity-100 group-focus-within:opacity-100">
+                          <span class="truncate text-sm font-semibold text-white">
+                            {photo.title || photo.image_name || photo.id}
+                          </span>
+                          <span class="truncate text-xs text-white/85">
+                            {[photo.album_name, photoFormat(photo), `${photo.width} × ${photo.height}`]
+                              .filter(Boolean)
+                              .join(" · ")}
+                          </span>
+                          <Show when={photo.show === 1 || (photo.labels?.length ?? 0) > 0}>
+                            <div class="flex flex-wrap gap-1.5">
+                              <Show when={photo.show === 1}>
+                                <span class="rounded-full bg-white/25 px-2 py-0.5 text-xs text-white">私有</span>
+                              </Show>
+                              <For each={(photo.labels ?? []).slice(0, 3)}>
+                                {(tag) => (
+                                  <span class="rounded-full bg-white/25 px-2 py-0.5 text-xs text-white">{tag}</span>
+                                )}
+                              </For>
+                            </div>
+                          </Show>
+                        </div>
+                      </Show>
+                    </article>
+                  )}
+                </For>
+              </div>
+              <div class="mt-4 flex items-center gap-2.5 min-[1010px]:shrink-0">
+                <select
+                  class={selectAutoCls}
+                  value={String(page())}
+                  onChange={(event) => setPage(Number(event.currentTarget.value))}
+                >
+                  {Array.from({ length: pages() }, (_, index) => index + 1).map((num) => (
+                    <option value={String(num)}>第 {num} 页</option>
+                  ))}
+                </select>
+                <button
+                  class={rowAction}
+                  type="button"
+                  aria-label="上一页"
+                  disabled={page() <= 1}
+                  onClick={() => setPage(page() - 1)}
+                >
+                  上一页
+                </button>
+                <button
+                  class={rowAction}
+                  type="button"
+                  aria-label="下一页"
+                  disabled={page() >= pages()}
+                  onClick={() => setPage(page() + 1)}
+                >
+                  下一页
+                </button>
+                <span class={metaCls}>共 {total()} 张</span>
+              </div>
+            </div>
+            <Show when={viewing()}>
+              <PhotoInspector
+                photo={viewing()!}
+                onBind={() => {
+                  const current = viewing();
+                  if (!current) return;
+                  setBinding(current);
+                  setBindAlbum(current.album_value ?? "");
+                }}
+                onEdit={() => {
+                  const current = viewing();
+                  if (current) setEditing(current);
+                }}
+                onToggleShow={(checked) => {
+                  const current = viewing();
+                  if (current) void updateShow(current, checked ? 0 : 1);
+                }}
+                onClose={() => setViewing(null)}
+              />
+            </Show>
           </div>
         </Show>
       </Show>
@@ -362,10 +388,6 @@ export function PhotosView(props: { albums: Album[]; onChanged: () => Promise<vo
             }}
           />
         )}
-      </Show>
-
-      <Show when={viewing()}>
-        {(photo) => <PhotoViewDialog photo={photo()} onClose={() => setViewing(null)} />}
       </Show>
 
       <Show when={binding()}>
@@ -463,6 +485,30 @@ export function PhotosView(props: { albums: Album[]; onChanged: () => Promise<vo
         </Dialog>
       </Show>
     </section>
+  );
+}
+
+/* 悬浮信息用：从文件名/链接后缀推断格式（JPG、WEBP…），取不到则返回空串 */
+function photoFormat(photo: Photo) {
+  const source = photo.image_name || photo.url || "";
+  const match = /\.([a-zA-Z0-9]+)(?:[?#]|$)/.exec(source);
+  return match ? match[1].toUpperCase() : "";
+}
+
+function CardIcon(props: { class?: string; children?: JSX.Element }) {
+  return (
+    <svg
+      class={props.class ?? "size-4"}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      aria-hidden="true"
+    >
+      {props.children}
+    </svg>
   );
 }
 
@@ -659,8 +705,25 @@ function PhotoEditDialog(props: { photo: Photo; onClose: () => void; onSaved: ()
   );
 }
 
-function PhotoViewDialog(props: { photo: Photo; onClose: () => void }) {
+/* 图片详情栏 —— 替代弹窗，宽约两张卡片，滑入动画；窄容器时悬浮在右侧 */
+function PhotoInspector(props: {
+  photo: Photo;
+  onBind: () => void;
+  onEdit: () => void;
+  onToggleShow: (checked: boolean) => void;
+  onClose: () => void;
+}) {
   const photo = () => props.photo;
+  let inspector!: HTMLElement;
+
+  createEffect(
+    () => true,
+    () => {
+      if (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) return;
+      animate(inspector, { opacity: [0, 1], x: [36, 0] }, { duration: 0.35, ease: [0.22, 1, 0.36, 1] });
+    },
+  );
+
   const exifRows = () =>
     EXIF_ROWS.map((row) => {
       const raw = exifValue(photo().exif, row.key);
@@ -671,84 +734,126 @@ function PhotoViewDialog(props: { photo: Photo; onClose: () => void }) {
     }).filter((row) => row.value);
 
   return (
-    <Dialog defaultOpen onOpenChange={(open) => { if (!open) props.onClose(); }}>
-      <DialogBackdrop class={dialogBackdropCls} />
-      <DialogContent aria-label="查看图片">
-        <header class={dialogHeadingCls}>
-          <DialogTitle class={dialogTitleCls}>
-            {photo().title || photo().image_name || photo().id}
-          </DialogTitle>
-          <DialogClose class={rowAction}>关闭</DialogClose>
-        </header>
-        <div class={dialogBodyCls}>
-          <Show
-            when={photo().type === 2 && photo().video_url}
-            fallback={
-              <img
-                class="col-span-full max-h-[46dvh] w-full max-w-full rounded-lg bg-secondary object-contain"
-                src={photo().preview_url ?? photo().url ?? ""}
-                alt={photo().detail ?? ""}
-              />
-            }
+    <aside
+      ref={inspector}
+      class={`${cardCls} flex flex-col overflow-hidden @max-[1009px]:fixed @max-[1009px]:inset-y-3 @max-[1009px]:right-3 @max-[1009px]:z-40 @max-[1009px]:w-[min(494px,calc(100vw-24px))] @max-[1009px]:shadow-xl @min-[1010px]:h-full @min-[1010px]:w-[494px] @min-[1010px]:shrink-0`}
+      aria-label="图片详情"
+    >
+      <header class="flex flex-none items-center justify-between gap-2 border-b border-border px-3.5 py-2.5">
+        <h2 class="m-0 min-w-0 truncate text-sm font-semibold text-foreground">
+          {photo().title || photo().image_name || photo().id}
+        </h2>
+        <div class="flex flex-none gap-1.5">
+          <button
+            class={iconActionCls}
+            type="button"
+            aria-label="绑定相册"
+            onClick={() => props.onBind()}
           >
-            <video
-              class="col-span-full max-h-[46dvh] w-full max-w-full rounded-lg bg-secondary object-contain"
-              src={photo().video_url ?? ""}
-              controls
-              muted
-              loop
-              playsinline
+            <CardIcon>
+              <path d="M14 4a1 1 0 0 1 1-1" />
+              <path d="M15 10a1 1 0 0 1-1-1" />
+              <path d="M21 4a1 1 0 0 0-1-1" />
+              <path d="M21 9a1 1 0 0 1-1 1" />
+              <path d="m3 7 3 3 3-3" />
+              <path d="M6 10V5a2 2 0 0 1 2-2h2" />
+              <rect x="3" y="14" width="7" height="7" rx="1" />
+            </CardIcon>
+          </button>
+          <button
+            class={iconActionCls}
+            type="button"
+            aria-label="编辑图片"
+            onClick={() => props.onEdit()}
+          >
+            <CardIcon>
+              <path d="M12 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+              <path d="M18.375 2.625a1 1 0 0 1 3 3l-9.013 9.014a2 2 0 0 1-.853.505l-2.873.84a.5.5 0 0 1-.62-.62l.84-2.873a2 2 0 0 1 .506-.852z" />
+            </CardIcon>
+          </button>
+          <button class={iconActionCls} type="button" aria-label="关闭详情" onClick={props.onClose}>
+            <CardIcon>
+              <path d="M18 6 6 18" />
+              <path d="m6 6 12 12" />
+            </CardIcon>
+          </button>
+        </div>
+      </header>
+      <div class="min-h-0 flex-1 overflow-y-auto px-4 py-3.5">
+        <Show
+          when={photo().type === 2 && photo().video_url}
+          fallback={
+            <img
+              class="max-h-[44dvh] w-full rounded-lg bg-secondary object-contain"
+              src={photo().preview_url ?? photo().url ?? ""}
+              alt={photo().detail ?? ""}
             />
-          </Show>
-          <Show when={(photo().labels ?? []).length > 0}>
-            <div class="col-span-full flex flex-wrap gap-1.5">
-              <For each={photo().labels ?? []}>
-                {(tag) => <span class={`${badgeSecondary} cursor-default`}>{tag}</span>}
-              </For>
-            </div>
-          </Show>
-          <Show when={exifRows().length > 0}>
-            <table class={`${exifTableCls} col-span-full`}>
-              <thead>
-                <tr>
-                  <th class={exifCellCls}>参数</th>
-                  <th class={exifCellCls}>值</th>
-                </tr>
-              </thead>
-              <tbody>
-                <For each={exifRows()}>
-                  {(row) => (
-                    <tr>
-                      <td class={`${exifCellCls} text-muted-foreground`}>{row.label}</td>
-                      <td class={exifCellCls}>{row.value}</td>
-                    </tr>
-                  )}
-                </For>
-              </tbody>
-            </table>
-          </Show>
-          <div class="col-span-full grid gap-2">
-            <div class="flex justify-between gap-3 rounded-lg border border-border bg-secondary px-3 py-2">
-              <span class="text-xs text-muted-foreground">详情</span>
-              <strong class="text-[0.82rem] font-medium text-foreground">{photo().detail || "—"}</strong>
-            </div>
-            <div class="flex justify-between gap-3 rounded-lg border border-border bg-secondary px-3 py-2">
-              <span class="text-xs text-muted-foreground">尺寸</span>
-              <strong class="text-[0.82rem] font-medium text-foreground">{photo().width} × {photo().height}</strong>
-            </div>
-            <div class="flex justify-between gap-3 rounded-lg border border-border bg-secondary px-3 py-2">
-              <span class="text-xs text-muted-foreground">经纬度</span>
-              <strong class="text-[0.82rem] font-medium text-foreground">{photo().lon || "—"} / {photo().lat || "—"}</strong>
-            </div>
-            <div class="flex justify-between gap-3 rounded-lg border border-border bg-secondary px-3 py-2">
-              <span class="text-xs text-muted-foreground">排序</span>
-              <strong class="text-[0.82rem] font-medium text-foreground">{photo().sort}</strong>
-            </div>
+          }
+        >
+          <video
+            class="max-h-[44dvh] w-full rounded-lg bg-secondary object-contain"
+            src={photo().video_url ?? ""}
+            controls
+            muted
+            loop
+            playsinline
+          />
+        </Show>
+        <Show when={(photo().labels ?? []).length > 0}>
+          <div class="mt-3 flex flex-wrap gap-1.5">
+            <For each={photo().labels ?? []}>
+              {(tag) => <span class={`${badgeSecondary} cursor-default`}>{tag}</span>}
+            </For>
           </div>
-          <SwitchRow label="显示状态" checked={photo().show === 0} disabled />
+        </Show>
+        <Show when={exifRows().length > 0}>
+          <table class={`${exifTableCls} mt-3`}>
+            <thead>
+              <tr>
+                <th class={exifCellCls}>参数</th>
+                <th class={exifCellCls}>值</th>
+              </tr>
+            </thead>
+            <tbody>
+              <For each={exifRows()}>
+                {(row) => (
+                  <tr>
+                    <td class={`${exifCellCls} text-muted-foreground`}>{row.label}</td>
+                    <td class={exifCellCls}>{row.value}</td>
+                  </tr>
+                )}
+              </For>
+            </tbody>
+          </table>
+        </Show>
+        <div class="mt-3 grid gap-2">
+          <div class="flex justify-between gap-3 rounded-lg border border-border bg-secondary px-3 py-2">
+            <span class="text-xs text-muted-foreground">详情</span>
+            <strong class="text-[0.82rem] font-medium text-foreground">{photo().detail || "—"}</strong>
+          </div>
+          <div class="flex justify-between gap-3 rounded-lg border border-border bg-secondary px-3 py-2">
+            <span class="text-xs text-muted-foreground">尺寸</span>
+            <strong class="text-[0.82rem] font-medium text-foreground">{photo().width} × {photo().height}</strong>
+          </div>
+          <div class="flex justify-between gap-3 rounded-lg border border-border bg-secondary px-3 py-2">
+            <span class="text-xs text-muted-foreground">经纬度</span>
+            <strong class="text-[0.82rem] font-medium text-foreground">{photo().lon || "—"} / {photo().lat || "—"}</strong>
+          </div>
+          <div class="flex justify-between gap-3 rounded-lg border border-border bg-secondary px-3 py-2">
+            <span class="text-xs text-muted-foreground">排序</span>
+            <strong class="text-[0.82rem] font-medium text-foreground">{photo().sort}</strong>
+          </div>
+        </div>
+        <div class="mt-3 grid gap-2">
+          <SwitchRow
+            label="显示状态"
+            detail="关闭后图片不会在前台显示"
+            checked={photo().show === 0}
+            onChange={(checked) => props.onToggleShow(checked)}
+          />
           <SwitchRow label="首页显示" checked={photo().show_on_mainpage === 0} disabled />
         </div>
-      </DialogContent>
-    </Dialog>
+      </div>
+    </aside>
   );
 }

@@ -23,7 +23,10 @@ import { getJson } from "./api";
 import { LoginScreen } from "./LoginScreen";
 import { PublicHome } from "./public/HomeView";
 import { PublicPreview } from "./public/PreviewView";
+import { type AuthUser, type AuthSessionInfo } from "./auth-client";
+import { siteConfig } from "./site";
 import type { Album, Config, Dashboard, View } from "./types";
+import { AccountView } from "./views/AccountView";
 import { AlbumsView } from "./views/AlbumsView";
 import { ConfigView, StorageConfigView } from "./views/ConfigView";
 import { DashboardView } from "./views/DashboardView";
@@ -37,6 +40,7 @@ const moduleLabels: Record<View, string> = {
   albums: "相册",
   storage: "存储配置",
   config: "配置",
+  account: "账户设置",
 };
 
 type Route =
@@ -73,6 +77,7 @@ function AdminApp() {
   const [authConfigured, setAuthConfigured] = createSignal(false);
   const [authenticated, setAuthenticated] = createSignal(false);
   const [registrationOpen, setRegistrationOpen] = createSignal(false);
+  const [user, setUser] = createSignal<AuthUser | null>(null);
   const [sidebarOpen, setSidebarOpen] = createSignal(true);
   const [uploadSaveApi, setUploadSaveApi] = createSignal<{
     save: () => Promise<void>;
@@ -124,10 +129,16 @@ function AdminApp() {
         configured: boolean;
         authenticated: boolean;
         registrationOpen: boolean;
+        session: { user: AuthUser } | AuthSessionInfo | null;
       }>("/api/session");
       setAuthConfigured(response.configured);
       setAuthenticated(response.authenticated);
       setRegistrationOpen(response.registrationOpen);
+      // better-auth 的 get-session 返回 { user, session }，这里取 user 供侧栏与账户设置使用
+      const sessionUser = (
+        response.session as { user?: AuthUser } | null
+      )?.user;
+      setUser(sessionUser ?? null);
       if (!response.configured || response.authenticated) {
         await refresh();
       }
@@ -223,11 +234,11 @@ function AdminApp() {
                 P
               </span>
               <span
-                class={`overflow-hidden whitespace-nowrap text-[0.93rem] font-bold tracking-wide text-foreground ${
+                class={`overflow-hidden text-ellipsis whitespace-nowrap text-[0.93rem] font-bold tracking-wide text-foreground ${
                   rail() ? "hidden" : ""
                 }`}
               >
-                PicImpact
+                {siteConfig().title}
               </span>
             </button>
 
@@ -290,7 +301,9 @@ function AdminApp() {
                 P
               </span>
               <div class={`grid min-w-0 leading-tight ${rail() ? "hidden" : ""}`}>
-                <span class="truncate text-[0.82rem] font-semibold text-foreground">admin</span>
+                <span class="truncate text-[0.82rem] font-semibold text-foreground">
+                  {user()?.name || user()?.username || "admin"}
+                </span>
                 <span class="truncate text-[0.7rem] text-muted-foreground">PicImpact v4</span>
               </div>
               <Show when={authConfigured() && !rail()}>
@@ -370,6 +383,14 @@ function AdminApp() {
                 </Show>
                 <Show when={view() === "config"}>
                   <ConfigView />
+                </Show>
+                <Show when={view() === "account"}>
+                  <AccountView
+                    user={user()}
+                    onUserNameChange={(name) =>
+                      setUser((previous) => (previous ? { ...previous, name } : previous))
+                    }
+                  />
                 </Show>
               </Show>
             </div>

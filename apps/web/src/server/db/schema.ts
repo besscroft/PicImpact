@@ -107,6 +107,8 @@ export const user = pgTable(
     username: text("username"),
     emailVerified: boolean("emailVerified").notNull().default(false),
     image: text("image"),
+    // better-auth twoFactor 插件在 user 上的标记字段（1.7.x 插件 schema，default false）
+    twoFactorEnabled: boolean("twoFactorEnabled").notNull().default(false),
     createdAt: timestamp("createdAt").notNull().defaultNow(),
     updatedAt: timestamp("updatedAt").notNull().defaultNow(),
   },
@@ -175,6 +177,53 @@ export const verification = pgTable(
   }),
 );
 
+// better-auth twoFactor 插件表，字段对齐 better-auth 1.7.x 插件 schema：
+// secret/backupCodes/userId + verified、failedVerificationCount、lockedUntil（账户锁定）
+export const twoFactor = pgTable(
+  "two_factor",
+  {
+    id: text("id").primaryKey(),
+    secret: text("secret").notNull(),
+    backupCodes: text("backupCodes").notNull(),
+    userId: text("userId")
+      .notNull()
+      .references(() => user.id, { onDelete: "cascade" }),
+    verified: boolean("verified").default(true),
+    failedVerificationCount: integer("failedVerificationCount").default(0),
+    lockedUntil: timestamp("lockedUntil"),
+    createdAt: timestamp("createdAt").notNull().defaultNow(),
+    updatedAt: timestamp("updatedAt").notNull().defaultNow(),
+  },
+  (table) => ({
+    secretIdx: index("two_factor_secret_idx").on(table.secret),
+    userIdx: index("two_factor_user_id_idx").on(table.userId),
+  }),
+);
+
+// @better-auth/passkey 1.7.x 插件表：credentialID 唯一定位凭据，aaguid 标记认证器型号
+export const passkey = pgTable(
+  "passkey",
+  {
+    id: text("id").primaryKey(),
+    name: text("name"),
+    publicKey: text("publicKey").notNull(),
+    userId: text("userId")
+      .notNull()
+      .references(() => user.id, { onDelete: "cascade" }),
+    credentialID: text("credentialID").notNull(),
+    counter: integer("counter").notNull(),
+    deviceType: text("deviceType").notNull(),
+    backedUp: boolean("backedUp").notNull(),
+    transports: text("transports"),
+    createdAt: timestamp("createdAt"),
+    aaguid: text("aaguid"),
+  },
+  (table) => ({
+    userIdx: index("passkey_user_id_idx").on(table.userId),
+    credentialIdx: index("passkey_credential_id_idx").on(table.credentialID),
+  }),
+);
+
 export const schema = {
   images,
   configs,
@@ -184,4 +233,6 @@ export const schema = {
   session,
   account,
   verification,
+  twoFactor,
+  passkey,
 };

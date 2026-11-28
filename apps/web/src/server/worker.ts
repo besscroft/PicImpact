@@ -13,6 +13,8 @@ type Env = {
   DATABASE_URL?: string;
   BETTER_AUTH_SECRET?: string;
   BETTER_AUTH_URL?: string;
+  BETTER_AUTH_PASSKEY_RP_ID?: string;
+  BETTER_AUTH_PASSKEY_RP_NAME?: string;
   ASSETS?: Fetcher;
   R2?: R2Bucket;
 };
@@ -46,7 +48,12 @@ export default {
       const store = new DrizzlePicImpactStore(db);
       const app = createApp({
         store,
-        auth: createAuth(db, { baseURL: env.BETTER_AUTH_URL, secret: env.BETTER_AUTH_SECRET }),
+        auth: createAuth(db, {
+          baseURL: env.BETTER_AUTH_URL,
+          secret: env.BETTER_AUTH_SECRET,
+          passkeyRpId: env.BETTER_AUTH_PASSKEY_RP_ID,
+          passkeyRpName: env.BETTER_AUTH_PASSKEY_RP_NAME,
+        }),
         storageResolver: createStorageResolver(store, {
           r2: env.R2,
           createS3: (options) => new S3FetchObjectStorage(options),

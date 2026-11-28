@@ -485,6 +485,100 @@ describe("PicImpact web API", () => {
     });
   });
 
+  it("serves site display config publicly and updates it through the admin API", async () => {
+    const store = new MemoryPicImpactStore();
+    const app = createApp({ store });
+
+    // 默认值：标题回落 PicImpact，其余为空
+    const initial = await app.request("http://localhost/api/public/site");
+    expect(initial.status).toBe(200);
+    expect(initial.headers.get("cache-control")).toContain("public");
+    expect(await initial.json()).toEqual({
+      data: {
+        title: "PicImpact",
+        faviconUrl: "",
+        author: "",
+        umamiHost: "",
+        umamiAnalytics: "",
+      },
+    });
+
+    const saved = await app.request("http://localhost/api/site", {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        title: "我的影集",
+        faviconUrl: "https://cdn.example.test/favicon.ico",
+        umamiHost: "https://cloud.umami.is/script.js",
+        umamiAnalytics: "umami-site-id",
+      }),
+    });
+    expect(saved.status).toBe(200);
+    expect(await saved.json()).toMatchObject({
+      data: {
+        title: "我的影集",
+        faviconUrl: "https://cdn.example.test/favicon.ico",
+        umamiHost: "https://cloud.umami.is/script.js",
+        umamiAnalytics: "umami-site-id",
+      },
+    });
+
+    const updated = await app.request("http://localhost/api/public/site");
+    expect(await updated.json()).toMatchObject({ data: { title: "我的影集" } });
+
+    // 清空：空字符串存为 null，读取时回落默认标题
+    const cleared = await app.request("http://localhost/api/site", {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ title: "", author: "" }),
+    });
+    expect(cleared.status).toBe(200);
+    expect(await cleared.json()).toMatchObject({
+      data: { title: "PicImpact", author: "" },
+    });
+  });
+
+  it("validates and guards site config updates", async () => {
+    const store = new MemoryPicImpactStore();
+    const app = createApp({
+      store,
+      auth: {
+        handler: () => new Response(null, { status: 204 }),
+        isRegistrationOpen: async () => false,
+        api: { getSession: async () => null },
+      },
+    });
+
+    // 配置了鉴权时未登录不可读写
+    const read = await app.request("http://localhost/api/site");
+    expect(read.status).toBe(401);
+    const write = await app.request("http://localhost/api/site", {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ title: "x" }),
+    });
+    expect(write.status).toBe(401);
+
+    // 公开端点不受鉴权影响
+    const publicRead = await app.request("http://localhost/api/public/site");
+    expect(publicRead.status).toBe(200);
+
+    // 空对象与非法 favicon URL 拒绝
+    const openApp = createApp({ store });
+    const empty = await openApp.request("http://localhost/api/site", {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({}),
+    });
+    expect(empty.status).toBe(400);
+    const invalid = await openApp.request("http://localhost/api/site", {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ faviconUrl: "not-a-url" }),
+    });
+    expect(invalid.status).toBe(400);
+  });
+
   it.each([true, false])(
     "reports registration availability without caching it: %s",
     async (registrationOpen) => {
@@ -508,11 +602,18 @@ describe("PicImpact web API", () => {
     },
   );
 
-  it("keeps the Better Auth core schema separate from v3 plugin tables", () => {
+  it("includes the Better Auth two-factor and passkey plugin tables in the schema", () => {
     expect(Object.keys(schema)).toEqual(
-      expect.arrayContaining(["user", "session", "account", "verification"]),
+      expect.arrayContaining([
+        "user",
+        "session",
+        "account",
+        "verification",
+        "twoFactor",
+        "passkey",
+      ]),
     );
-    expect(Object.keys(schema)).not.toEqual(expect.arrayContaining(["twoFactor", "passkey"]));
+    // twoFactor 插件 1.7.x 的 user 标记字段与表字段
     expect(Object.keys(schema.user)).toEqual(
       expect.arrayContaining([
         "id",
@@ -521,8 +622,35 @@ describe("PicImpact web API", () => {
         "username",
         "emailVerified",
         "image",
+        "twoFactorEnabled",
         "createdAt",
         "updatedAt",
+      ]),
+    );
+    expect(Object.keys(schema.twoFactor)).toEqual(
+      expect.arrayContaining([
+        "id",
+        "secret",
+        "backupCodes",
+        "userId",
+        "verified",
+        "failedVerificationCount",
+        "lockedUntil",
+      ]),
+    );
+    expect(Object.keys(schema.passkey)).toEqual(
+      expect.arrayContaining([
+        "id",
+        "name",
+        "publicKey",
+        "userId",
+        "credentialID",
+        "counter",
+        "deviceType",
+        "backedUp",
+        "transports",
+        "createdAt",
+        "aaguid",
       ]),
     );
   });

@@ -88,6 +88,27 @@ const STORAGE_CONFIG_KEYS = [
   "storage.r2.direct_download",
 ] as const;
 
+// 站点展示配置（对齐 v3 的 configs key：custom_title / custom_favicon_url / custom_author / umami_*）
+const SITE_CONFIG_KEYS = {
+  title: "custom_title",
+  faviconUrl: "custom_favicon_url",
+  author: "custom_author",
+  umamiHost: "umami_host",
+  umamiAnalytics: "umami_analytics",
+} as const;
+
+const DEFAULT_SITE_TITLE = "PicImpact";
+
+const siteConfigSchema = z
+  .object({
+    title: z.string().trim().max(100).optional(),
+    faviconUrl: z.union([z.literal(""), z.string().trim().url()]).optional(),
+    author: z.string().trim().max(100).optional(),
+    umamiHost: z.union([z.literal(""), z.string().trim().url()]).optional(),
+    umamiAnalytics: z.string().trim().max(200).optional(),
+  })
+  .refine((input) => Object.keys(input).length > 0, { message: "至少提供一个配置项" });
+
 const STORAGE_CONFIG_KEY_SET = new Set<string>(STORAGE_CONFIG_KEYS);
 
 const storageConfigSchema = z.record(z.string(), z.string());
@@ -169,6 +190,8 @@ export function createApp(options: {
   app.use("/api/config/*", requireAuth);
   app.use("/api/storage-config", requireAuth);
   app.use("/api/storage-config/*", requireAuth);
+  app.use("/api/site", requireAuth);
+  app.use("/api/site/*", requireAuth);
   app.use("/api/backup", requireAuth);
   app.use("/api/backup/*", requireAuth);
   app.use("/api/admin", requireAuth);
@@ -191,6 +214,17 @@ export function createApp(options: {
       registrationOpen: await options.auth.isRegistrationOpen(),
       session,
     });
+  });
+
+  /**
+   * GET /api/public/site
+   *
+   * 公开端站点展示配置：网站标题 / favicon / 作者 / Umami 统计。
+   * 前端启动时读取并应用到 document.title、favicon 与 Umami 脚本注入。
+   */
+  app.get("/api/public/site", async (c) => {
+    c.header("Cache-Control", "public, max-age=60");
+    return c.json({ data: await readSiteConfig(options.store) });
   });
 
   app.get("/api/health", (c) =>
@@ -521,6 +555,27 @@ export function createApp(options: {
     }),
   );
 
+  app.get("/api/site", async (c) =>
+    c.json({ data: await readSiteConfig(options.store) }),
+  );
+
+  app.put("/api/site", async (c) => {
+    const input = parseBody(siteConfigSchema, await c.req.json().catch(() => null));
+    const saved = await Promise.all(
+      Object.entries(SITE_CONFIG_KEYS)
+        .filter(([field]) => input[field as keyof typeof input] !== undefined)
+        .map(([field, key]) => {
+          const value = input[field as keyof typeof input];
+          // 空字符串表示清空配置，存储为 null
+          return options.store.upsertConfig({
+            config_key: key,
+            config_value: value ? value : null,
+          });
+        }),
+    );
+    return c.json({ data: await readSiteConfig(options.store), saved });
+  });
+
   app.get("/api/storage-config", async (c) => {
     const configs = await options.store.listConfigs();
     const values = new Map(configs.map((row) => [row.config_key, row.config_value ?? ""]));
@@ -598,6 +653,28 @@ export function createApp(options: {
 
 function stringField(value: FormDataEntryValue | null | undefined) {
   return typeof value === "string" && value.trim() ? value.trim() : null;
+}
+
+type SiteConfig = {
+  title: string;
+  faviconUrl: string;
+  author: string;
+  umamiHost: string;
+  umamiAnalytics: string;
+};
+
+/** 读取站点展示配置，空值回落到默认标题 PicImpact（favicon/umami 留空表示未配置）。 */
+async function readSiteConfig(store: PicImpactStore): Promise<SiteConfig> {
+  const rows = await store.listConfigs();
+  const values = new Map(rows.map((row) => [row.config_key, row.config_value ?? ""]));
+  const value = (key: string) => values.get(key) ?? "";
+  return {
+    title: value(SITE_CONFIG_KEYS.title) || DEFAULT_SITE_TITLE,
+    faviconUrl: value(SITE_CONFIG_KEYS.faviconUrl),
+    author: value(SITE_CONFIG_KEYS.author),
+    umamiHost: value(SITE_CONFIG_KEYS.umamiHost),
+    umamiAnalytics: value(SITE_CONFIG_KEYS.umamiAnalytics),
+  };
 }
 
 function numberField(value: FormDataEntryValue | null | undefined) {

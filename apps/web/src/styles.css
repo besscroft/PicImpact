@@ -309,6 +309,13 @@
 
 /* ===== 全局小规则 ===== */
 
+/* 后台 .app-shell 为 h-dvh 固定布局，页面本身不需要文档滚动。
+   锁定视口滚动，防止浏览器扩展注入 body 的元素（如翻译插件的弹层容器）
+   把文档撑出可滚动高度，导致底部多出一块空带。 */
+html:has(.app-shell) {
+  overflow: hidden;
+}
+
 /* 文档默认底色/文字（前台预览页沿用旧观感；字体由 @theme --font-sans（Inter）提供，
    后台 .app-shell 显式使用 Inter 栈，画廊 .public-shell 与预览页保留原字体栈） */
 :root {

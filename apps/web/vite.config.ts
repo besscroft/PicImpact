@@ -51,6 +51,8 @@ function apiMiddleware() {
         auth: createAuth(db, {
           baseURL: process.env.BETTER_AUTH_URL,
           secret: process.env.BETTER_AUTH_SECRET,
+          passkeyRpId: process.env.BETTER_AUTH_PASSKEY_RP_ID,
+          passkeyRpName: process.env.BETTER_AUTH_PASSKEY_RP_NAME,
         }),
         storageResolver: createStorageResolver(store, {
           createS3: (options) => new S3ObjectStorage(options),

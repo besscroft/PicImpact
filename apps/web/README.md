@@ -37,10 +37,11 @@ connection for migrations. `pnpm run web:db:generate` is only needed when
 changing the schema.
 
 The Drizzle schema keeps the v3 table names and column names for `images`,
-`albums`, `configs`, and `images_albums_relation`. Better Auth tables are
-generated from Better Auth 1.7.28's current core schema: `user`, `session`,
-`account`, and `verification`. v3-only `two_factor` and `passkey` tables are
-not copied into the v4 baseline.
+`albums`, `configs`, and `images_albums_relation`. Better Auth tables follow
+Better Auth 1.7.28's current core schema (`user`, `session`, `account`,
+`verification`) plus the two-factor and passkey plugin tables (`two_factor`
+and `passkey`, with `user.twoFactorEnabled`), matching the field definitions
+of the installed plugin versions rather than the v3 Prisma models.
 
 ## Deploy
 
@@ -102,6 +103,25 @@ lowercased with unsupported characters replaced by underscores. If the result
 is unusable or already assigned, the migration generates a unique username.
 Existing passwords continue to work. The assigned username is stored in
 `"user".username`.
+
+### Account settings
+
+The 账户设置 module covers the display name, password change (other sessions
+are revoked), two-factor authentication (TOTP with backup codes), passkey
+management, and active session revocation. Two-factor and passkey data live in
+the Better Auth plugin tables. Passkey relies on WebAuthn: `rpID` is derived
+from `BETTER_AUTH_URL`, and can be overridden with `BETTER_AUTH_PASSKEY_RP_ID`
+(plus an optional display name via `BETTER_AUTH_PASSKEY_RP_NAME`). Passkey
+sign-in requires the site to be served over HTTPS or `localhost`.
+
+### Site settings
+
+The 配置 module stores site display settings in the `configs` table:
+`custom_title` (site title, defaults to PicImpact), `custom_favicon_url`
+(favicon URL), `custom_author`, and Umami analytics via `umami_host` (the
+`script.js` URL) and `umami_analytics` (website ID). The public endpoint
+`GET /api/public/site` exposes only these display values, and the client
+applies the title, favicon, and Umami script at startup.
 
 Set `TEST_DATABASE_URL` when running `pnpm run web:test` to include the PostgreSQL
 authentication integration tests. They create and remove an isolated schema and

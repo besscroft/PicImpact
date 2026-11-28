@@ -191,7 +191,8 @@ export function normalizeAlbum(input: AlbumInput, existing?: BackupAlbumRecord):
 export function normalizeConfig(input: ConfigInput, existing?: BackupConfigRecord): BackupConfigRecord {
   return {
     config_key: input.config_key,
-    config_value: input.config_value ?? existing?.config_value ?? null,
+    // undefined = 未提供，保留旧值；null = 显式清空
+    config_value: input.config_value === undefined ? existing?.config_value ?? null : input.config_value,
     detail: input.detail ?? existing?.detail ?? null,
     createdAt: existing?.createdAt ?? nowIso(),
     updatedAt: nowIso(),

@@ -1,6 +1,7 @@
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "@better-auth/drizzle-adapter";
-import { username } from "better-auth/plugins";
+import { passkey } from "@better-auth/passkey";
+import { twoFactor, username } from "better-auth/plugins";
 import { sql } from "drizzle-orm";
 import { z } from "zod";
 
@@ -19,13 +20,32 @@ const registrationInput = z.object({
   password: z.string().min(8),
 });
 
+function safeHostname(url: string) {
+  try {
+    const hostname = new URL(url).hostname;
+    // localhost 之外取纯域名即可作为 RP ID（WebAuthn 禁止带端口）
+    return hostname || undefined;
+  } catch {
+    return undefined;
+  }
+}
+
 export function createAuth(
   db: Database,
   options: {
     secret?: string;
     baseURL?: string;
+    /** WebAuthn RP ID：默认从 BETTER_AUTH_URL 域名推导，可显式覆盖 */
+    passkeyRpId?: string;
+    passkeyRpName?: string;
   } = {},
 ) {
+  // WebAuthn 的 rpID 必须等于访问域名：优先显式配置，其次 BETTER_AUTH_URL 的域名
+  const rpId =
+    options.passkeyRpId ||
+    (options.baseURL ? safeHostname(options.baseURL) : undefined) ||
+    "localhost";
+  const rpName = options.passkeyRpName || "PicImpact";
   const authOptions = {
     baseURL: options.baseURL,
     secret: options.secret,
@@ -37,10 +57,20 @@ export function createAuth(
         displayUsername: false,
         immutableUsername: true,
       }),
+      twoFactor({
+        issuer: "PicImpact",
+      }),
+      passkey({
+        rpID: rpId,
+        rpName,
+      }),
     ],
     session: {
       expiresIn: 60 * 60 * 24 * 7,
       updateAge: 60 * 60 * 24,
+      // list-sessions、passkey 注册等敏感端点默认要求 1 天内的“新鲜会话”，
+      // 单管理员实例下只会带来莫名的 403；敏感操作已通过输入当前密码二次确认
+      freshAge: 0,
     },
   };
   const buildAuth = (database: AuthDatabase, allowSignup = false) =>

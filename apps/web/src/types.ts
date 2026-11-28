@@ -1,4 +1,11 @@
-export type View = "dashboard" | "upload" | "photos" | "albums" | "storage" | "config";
+export type View =
+  | "dashboard"
+  | "upload"
+  | "photos"
+  | "albums"
+  | "storage"
+  | "config"
+  | "account";
 
 export type Photo = {
   id: string;

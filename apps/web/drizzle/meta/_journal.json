@@ -15,6 +15,13 @@
       "when": 1795757064329,
       "tag": "0001_misty_snowbird",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1795796444453,
+      "tag": "0002_mute_alex_wilder",
+      "breakpoints": true
     }
   ]
 }
